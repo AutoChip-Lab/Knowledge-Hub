@@ -1,0 +1,110 @@
+{
+ "secNum": "3.4",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 封装工艺(die attach → bonding → molding → balls):把从晶圆上切下来的那颗裸 die，按『贴片→互连→塑封/加散热盖→底部植球』一步步做成一颗能贴到 PCB 板卡、供得上上百 W 级电流、散得掉 28–40W 热、又机械牢固抗温度循环的成品封装——最终封成带散热盖 + 底部 BGA 的封装，落到 PCIe 加速卡上插进数据中心服务器；封装这一步同时要把『电(供电/信号完整性)、热(散热)、机械(可靠固定)』三件事一并兼顾好，做不好封装，前面再好的 die 也用不起来",
+ "oneLine": "本案例落到「封装工艺:die attach → bonding → molding → balls」小节:晶圆切割后得到的是一颗颗裸 die,既碰不得、也没法直接接到电路板上——封装(packaging)就是给这颗 die『穿上能用的外壳』:① die attach(贴片)把裸 die 固定到封装基板上 → ② bonding(互连)用倒装 bump 或键合线把 die 上的几百上千个端子接到基板布线 → ③ molding/盖板(塑封保护,或在 TPU 这类高功耗大芯片上加金属散热盖 lid + 导热膏)→ ④ balls(底部植上 BGA 焊球)做成能回流贴到 PCB 的成品封装。一句话:封装要同时兼顾『电(把上百 W 级供电与高速信号干净地灌进 die、守住信号完整性 SI)、热(把 die 上 28–40W 的热经散热盖导出去,数据中心机箱里散得掉)、机械(把 die 牢牢固定、抗温度循环膨胀收缩不开裂不脱焊)』三件事。TPU v1 最终就是封成这样一颗带散热盖、底部 BGA 的芯片,焊到 PCIe 加速卡上插进服务器。这里把 TPU 已知结构(256×256 阵列的 die、24MiB UB、28–40W、做成 PCIe 卡)当作『被封装的对象』讲封装工艺概念;die attach 方式、bump/wire-bond 选型、底填、封料与散热盖材料、BGA 球距/球数、回流曲线与可靠性指标等均为这类 28nm 大芯片 / PCIe 加速卡的 OSAT 通行封装实践,TPU v1 不公开其私有封装结构/材料/数据。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 420\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"26\">封装工艺 = 把切下来的裸 die 做成「能贴板、供得上电、散得掉热」的成品封装:贴片 → 互连 → 塑封/盖板 → 植球;一套封装要同时兼顾 电(供电+信号完整性)、热(散热)、机械(可靠固定)三件事</text><g class=\"cs-part\" data-k=\"attach\" data-g=\"attach\"><rect class=\"cs-box\" x=\"24\" y=\"52\" width=\"158\" height=\"56\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"103\" y=\"76\">① die attach 贴片</text><text class=\"cs-sub\" x=\"103\" y=\"96\">裸 die 贴到基板上</text></g><line class=\"cs-arr\" x1=\"182\" y1=\"80\" x2=\"214\" y2=\"80\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"bond\" data-g=\"bond\"><rect class=\"cs-box\" x=\"218\" y=\"52\" width=\"158\" height=\"56\" rx=\"8\" fill=\"#f0f9ff\" stroke=\"#7dd3fc\"/><text class=\"cs-t\" x=\"297\" y=\"76\">② 互连 bonding</text><text class=\"cs-sub\" x=\"297\" y=\"96\">bump/线把 die 接到基板</text></g><line class=\"cs-arr\" x1=\"376\" y1=\"80\" x2=\"408\" y2=\"80\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"mold\" data-g=\"mold\"><rect class=\"cs-box\" x=\"412\" y=\"52\" width=\"158\" height=\"56\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"491\" y=\"76\">③ molding/盖板</text><text class=\"cs-sub\" x=\"491\" y=\"96\">塑封或加散热盖 lid</text></g><line class=\"cs-arr\" x1=\"570\" y1=\"80\" x2=\"602\" y2=\"80\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"balls\" data-g=\"balls\"><rect class=\"cs-box\" x=\"606\" y=\"52\" width=\"92\" height=\"56\" rx=\"8\" fill=\"#dcfce7\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"652\" y=\"76\">④ 植球</text><text class=\"cs-sub\" x=\"652\" y=\"96\">底部 BGA</text></g><text class=\"cs-note\" x=\"24\" y=\"150\">封装剖面(成品封装的样子,自下而上)：</text><g class=\"cs-part\" data-k=\"lid\" data-g=\"lid\"><rect class=\"cs-cell\" x=\"150\" y=\"172\" width=\"420\" height=\"34\" fill=\"#fca5a5\"/><text class=\"cs-cellt\" x=\"360\" y=\"194\">散热盖 lid / IHS（导热膏贴到 die 背面，把热引出去散）</text></g><g class=\"cs-part\" data-k=\"mold\" data-g=\"mold\"><rect class=\"cs-cell\" x=\"150\" y=\"206\" width=\"36\" height=\"40\" fill=\"#fde047\"/><rect class=\"cs-cell\" x=\"534\" y=\"206\" width=\"36\" height=\"40\" fill=\"#fde047\"/><text class=\"cs-cellt\" x=\"168\" y=\"231\">封料</text><text class=\"cs-cellt\" x=\"552\" y=\"231\">封料</text></g><g class=\"cs-part\" data-k=\"die\" data-g=\"die\"><rect class=\"cs-cell\" x=\"280\" y=\"208\" width=\"160\" height=\"38\" fill=\"#bfdbfe\"/><text class=\"cs-cellt\" x=\"360\" y=\"232\">裸 die（256×256 阵列）</text></g><g class=\"cs-part\" data-k=\"bond\" data-g=\"bond\"><rect class=\"cs-cell\" x=\"290\" y=\"246\" width=\"10\" height=\"10\" fill=\"#0ea5e9\"/><rect class=\"cs-cell\" x=\"320\" y=\"246\" width=\"10\" height=\"10\" fill=\"#0ea5e9\"/><rect class=\"cs-cell\" x=\"350\" y=\"246\" width=\"10\" height=\"10\" fill=\"#0ea5e9\"/><rect class=\"cs-cell\" x=\"380\" y=\"246\" width=\"10\" height=\"10\" fill=\"#0ea5e9\"/><rect class=\"cs-cell\" x=\"410\" y=\"246\" width=\"10\" height=\"10\" fill=\"#0ea5e9\"/><text class=\"cs-cellt\" x=\"470\" y=\"256\">↑ bump（倒装互连）</text></g><g class=\"cs-part\" data-k=\"attach\" data-g=\"attach\"><rect class=\"cs-cell\" x=\"150\" y=\"256\" width=\"420\" height=\"40\" fill=\"#e2e8f0\"/><text class=\"cs-cellt\" x=\"360\" y=\"281\">封装基板 substrate（内含布线/供电层，把 die 引脚扇出到底部）</text></g><g class=\"cs-part\" data-k=\"balls\" data-g=\"balls\"><rect class=\"cs-cell\" x=\"180\" y=\"296\" width=\"16\" height=\"16\" rx=\"8\" fill=\"#22c55e\"/><rect class=\"cs-cell\" x=\"250\" y=\"296\" width=\"16\" height=\"16\" rx=\"8\" fill=\"#22c55e\"/><rect class=\"cs-cell\" x=\"320\" y=\"296\" width=\"16\" height=\"16\" rx=\"8\" fill=\"#22c55e\"/><rect class=\"cs-cell\" x=\"390\" y=\"296\" width=\"16\" height=\"16\" rx=\"8\" fill=\"#22c55e\"/><rect class=\"cs-cell\" x=\"460\" y=\"296\" width=\"16\" height=\"16\" rx=\"8\" fill=\"#22c55e\"/><rect class=\"cs-cell\" x=\"530\" y=\"296\" width=\"16\" height=\"16\" rx=\"8\" fill=\"#22c55e\"/><text class=\"cs-cellt\" x=\"360\" y=\"332\">底部 BGA 焊球（贴到 PCB 板卡，做成 PCIe 加速卡上的那颗芯片）</text></g><text class=\"cs-note\" x=\"24\" y=\"362\">三件事一起兼顾：电=基板供电/信号完整性 SI + bump/球把上百 W 级电流灌进 die；热=散热盖+导热膏把 28–40W 热导出（数据中心机箱里得散得掉）；机械=封料/盖板/球把 die 牢牢固定、抗温度循环不开裂</text><text class=\"cs-note\" x=\"24\" y=\"396\">诚实边界：die attach 方式、bump/wire-bond 选型、底填、封料/散热盖材料、BGA 球距/球数、回流曲线、可靠性指标等均为这类 28nm 大芯片 / PCIe 加速卡的 OSAT 通行封装实践；TPU v1 不公开其私有封装结构/材料/数据，本图借其已知结构（256×256 die、24MiB UB、28–40W、PCIe 卡）作被封装对象讲概念</text></svg>",
+ "legend": [
+  {
+   "k": "attach",
+   "name": "① die attach 贴片(把裸 die 固定到基板上)",
+   "desc": "封装第一步:把切割后那颗裸 die 精确贴放、固定到封装基板(substrate)上——基板内部有多层布线和供电层,负责把 die 那密密麻麻的端子『扇出(fan-out)』到封装底部的引脚阵列。贴片决定了 die 的位置、平整度,以及 die 背面和散热路径、底部和供电路径怎么接。基板既要把上百 W 级的供电稳稳送进 die(电),又要在物理上把 die 撑住对齐(机械)。TPU v1 的 die(256×256 阵列、24MiB UB)就贴在这样一块基板上;具体 die attach 材料/工艺为 OSAT 通行实践,TPU 不公开。"
+  },
+  {
+   "k": "bond",
+   "name": "② 互连 bonding(bump / 键合线把 die 接到基板)",
+   "desc": "把 die 上的几百上千个 I/O 与供电端子,真正『接』到基板布线上——主流两条路:倒装(flip-chip,die 面朝下,用底部一片 bump 焊球阵列直接焊到基板,再灌底填胶 underfill 固定)或引线键合(wire-bond,用细金属线把 die 边缘焊盘逐根连到基板)。像 TPU 这种端子多、供电大、要走 PCIe 高速信号的大芯片,倒装 bump 能给出更多更短的电流/信号通路,利于供电和信号完整性。bump 既是电气连接、也分担机械应力。具体互连方式 TPU 不公开,为 OSAT 通行实践。"
+  },
+  {
+   "k": "mold",
+   "name": "③ molding 塑封 / 散热盖 lid(保护 + 把热引出去)",
+   "desc": "把贴好、连好的 die 保护起来:消费级常用塑封料(molding compound)整个包覆;而 TPU 这类高功耗大芯片更常在 die 上方加一块金属散热盖(lid / IHS),die 背面与盖之间填导热膏(TIM),把 die 工作时发的 28–40W 热经盖子高效导出、再交给卡上的散热器/风道散掉。这一步是封装『热』那条线的主战场——数据中心机箱里热散不掉,芯片就得降频甚至烧坏。封料/散热盖还顺带提供机械保护与防潮。材料/盖型为 OSAT 通行实践,TPU v1 不公开。"
+  },
+  {
+   "k": "balls",
+   "name": "④ 植球 balls(底部 BGA,贴到 PCB 板卡)",
+   "desc": "封装收尾:在封装基板底部植上一阵列焊球(BGA, Ball Grid Array)——这些球就是整颗封装对外的引脚,后续经回流焊把整颗芯片焊到 PCB 板卡上。球数/球距决定能引出多少电源/地/信号、能灌多大电流;球阵列也是封装与板卡之间的机械连接点,要抗温度循环不开裂。TPU v1 正是封成这样一颗底部 BGA 的芯片,焊到 PCIe 加速卡上插进服务器。具体球距/球数/焊料/回流曲线为 OSAT 通行实践,TPU 不公开。"
+  },
+  {
+   "k": "lid",
+   "name": "(剖面)散热盖 lid + 导热膏:封装『热』那条线",
+   "desc": "剖面顶部那块红色就是散热盖(lid/IHS):盖与 die 背面之间填一层导热膏(TIM),把 die 上集中产生的 28–40W 热抽出来、铺开到大面积盖子,再交给板卡散热器。对一颗几乎大半面积在算 INT8 MAC、又塞进数据中心机箱的芯片,这条『die→TIM→盖→散热器』的热路径做不好,温度一上来就触墙降频。散热盖材料、TIM 选型、贴合工艺均为 OSAT/业界通行实践,TPU v1 不公开其私有热设计数字;此处借 TPU 已知功耗(28–40W)讲热兼顾概念。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "attach",
+    "die"
+   ],
+   "cap": "① die attach:把晶圆切下来的那颗裸 die 精确贴放、固定到封装基板上——基板负责把 die 端子扇出到封装底部,既要送进上百 W 级供电(电),又要把 die 撑住对齐(机械)。TPU 的 256×256 die 就坐在这块基板上。"
+  },
+  {
+   "keys": [
+    "bond"
+   ],
+   "cap": "② bonding:用倒装 bump(die 面朝下焊一片焊球阵列再灌底填)或键合线,把 die 上几百上千端子真接到基板布线——端子多、供电大、走 PCIe 高速信号的大芯片偏向 bump,通路更多更短,利于供电与信号完整性。"
+  },
+  {
+   "keys": [
+    "mold",
+    "lid"
+   ],
+   "cap": "③ molding/盖板:塑封保护,或在这类高功耗芯片上加金属散热盖 lid + 导热膏,把 die 的 28–40W 热导出去——这是封装『热』那条线的主战场,数据中心散不掉热就要降频/烧坏。"
+  },
+  {
+   "keys": [
+    "balls"
+   ],
+   "cap": "④ 植球:在基板底部植上 BGA 焊球阵列,作为整颗封装对外的引脚——后续回流焊把芯片焊到 PCB,做成 PCIe 加速卡上的那颗 TPU,插进服务器。球数/球距定供电与信号引出能力,也是抗温度循环的机械连接点。"
+  }
+ ],
+ "before": [
+  "<b>封装目标先于工艺定:电/热/机械三件事一起定指标</b>。进封装前要按 die 的需求定下封装要供多大电(TPU 28–40W,意味着上百 W 级峰值电流要稳稳灌进 die)、要散掉多少热(28–40W,且在数据中心机箱风道里散得掉)、要引出多少 I/O(PCIe 3.0 高速信号 + 大量电源/地)、要扛什么机械/可靠性应力(温度循环、振动)——这三条预算在选封装类型前就要拍板。",
+  "<b>选封装形态与互连方式</b>:做成什么封装(TPU v1 走带散热盖 + 底部 BGA 的封装,焊到 PCIe 加速卡)、die 怎么接基板(倒装 bump 还是 wire-bond)、要不要散热盖、用什么基板层数,都要先选。端子多/供电大/走高速信号的大芯片通常偏向倒装 bump。TPU v1 不公开其私有封装形态与互连选型,以上为这类芯片通行做法。",
+  "<b>定材料与可靠性窗口</b>:die attach 材料、底填胶 underfill、塑封料/散热盖、导热膏 TIM、BGA 焊料及球距球数,以及对应的回流曲线和可靠性指标(温度循环、热阻、翘曲)都要事先标定——材料热膨胀系数不匹配会在温度循环里把焊点拉裂。这些是 OSAT 通行实践,TPU 不公开私有数字。",
+  "<b>对接上游切割好的合格 die 与下游板卡</b>:封装的输入是 3.3 节切割、并经晶圆/中测筛过的合格(KGD)裸 die——只有好 die 才值得花封装成本;输出要对接 PCIe 加速卡的板卡设计(BGA 焊盘、供电平面、散热器机械接口)。所以封装前要和切割/筛选、以及板卡/散热设计两头对齐。"
+ ],
+ "during": [
+  "<b>封装的任务一句话:把裸 die 做成『能贴板、供得上电、散得掉热、机械牢固』的成品封装</b>。切割后的 die 既碰不得也没法直接上板,封装就是给它穿上能用的外壳——按 die attach(贴片)→ bonding(互连)→ molding/盖板(保护+散热)→ balls(植球)四步走,最后做出一颗带散热盖、底部 BGA、能焊到 PCIe 加速卡的封装。TPU v1 那颗 256×256 阵列的 die 就是这样被封成卡上芯片的。",
+  "<b>四步成封,环环相扣:贴片 → 互连 → 塑封/盖板 → 植球</b>。先把裸 die 贴固到封装基板(基板内有布线/供电层,把端子扇出到底部)→ 用 bump 或键合线把 die 端子接到基板布线 → 塑封保护或加散热盖 lid+导热膏 → 基板底部植 BGA 焊球。每步都既做电气连接、又分担机械固定,顺序不可乱。",
+  "<b>电:把上百 W 级供电和 PCIe 高速信号干净地灌进 die、守住信号完整性 SI</b>。TPU 28–40W 看着不大,但峰值电流要靠基板供电层 + 大量 bump/球分头送进 die,任何一处电阻/电感过大都会掉压、抖动;PCIe 3.0 高速信号还要经封装基板走线、控制阻抗与串扰。封装基板布线、bump/球的数量与排布,就是在保证『电源送得稳、信号走得干净』。",
+  "<b>热:把 die 上 28–40W 的热经散热盖导出去,数据中心里散得掉</b>。TPU 几乎大半面积在算 INT8 MAC,热量集中。封装这一步靠 die→导热膏 TIM→金属散热盖 lid→板卡散热器这条路径把热抽出;热阻做不低,芯片一满载就触温度墙降频、甚至损坏。对插在密集服务器机箱里的数据中心加速卡,散热是封装能不能用起来的硬约束。",
+  "<b>机械:把 die 牢牢固定、抗温度循环不开裂不脱焊</b>。die、基板、散热盖、焊球各自的热膨胀系数不同,芯片反复升温降温(数据中心常年满载)会在 bump、底填、BGA 焊点上反复加应力——底填胶、封料、球阵列就是来分担和缓冲这些应力,保证多年不开裂、不脱焊。可靠性(机械)和电、热是封装必须同时满足的第三条腿。",
+  "<b>诚实边界(贯穿)</b>:die attach 方式与材料、倒装 bump/底填还是 wire-bond、塑封料与散热盖/导热膏材料、BGA 球距球数与焊料、回流曲线、热阻/温度循环等可靠性指标,均为这类 28nm 大芯片 / PCIe 加速卡的 OSAT/业界通行封装实践;TPU v1 不公开其私有封装结构、材料、热设计与可靠性数字。本节只借 TPU 已知结构(256×256 阵列的 die、24MiB UB、28–40W、做成 PCIe 卡)作为被封装的对象讲封装工艺概念,剖面图为示意,不杜撰 TPU 私有封装数据。"
+ ],
+ "result": [
+  {
+   "label": "封装产物",
+   "value": "一颗成品封装:带金属散热盖、底部 BGA 焊球、内含贴好连好的 256×256 阵列裸 die——能回流焊到 PCB,做成插进数据中心服务器的 PCIe 加速卡上的那颗 TPU"
+  },
+  {
+   "label": "四步次序",
+   "value": "die attach 贴片(die 固定到基板)→ bonding 互连(bump/键合线接到基板布线)→ molding/盖板(塑封保护或加散热盖 lid+导热膏)→ balls 植球(底部 BGA,对外引脚)"
+  },
+  {
+   "label": "电这条线",
+   "value": "基板供电层 + 大量 bump/BGA 球把上百 W 级电流稳稳灌进 die(28–40W),并经基板走线维持 PCIe 3.0 高速信号的信号完整性 SI(阻抗/串扰)"
+  },
+  {
+   "label": "热这条线",
+   "value": "die→导热膏 TIM→金属散热盖 lid→板卡散热器的散热路径,把集中产生的 28–40W 热导出去;数据中心机箱里散不掉就触温度墙降频/损坏"
+  },
+  {
+   "label": "机械这条线",
+   "value": "底填胶/封料/散热盖/BGA 球阵列把 die 牢牢固定,抵抗 die-基板-板卡热膨胀失配在温度循环里反复加给 bump/焊点的应力,保证多年不开裂、不脱焊"
+  },
+  {
+   "label": "诚实边界",
+   "value": "TPU v1 不公开其 die attach/互连/底填/封料/散热盖/导热膏/BGA 球距球数/回流曲线/可靠性指标;以上为 OSAT 通行封装实践与示意,非 TPU 私有封装数字"
+  }
+ ],
+ "after": [
+  "<b>测封装,看电/热/机械都达不达标</b>:封装后做电气连续性/开短路、阻抗与信号完整性测试(电),量封装热阻、满载温升(热),做翘曲与外观检查、并安排温度循环等可靠性应力试验(机械)——三条线任一不达标都要回溯是贴片、互连、盖板还是植球哪步出的问题。",
+  "<b>合格才贴板做成 PCIe 卡</b>:封装通过后,这颗芯片才回流焊到 PCB 板卡上,装上散热器、配好供电与 PCIe 接口,做成 PCIe 加速卡——再交给下一步整卡的成品测试与点亮(bring-up)。封装出错,板卡再好也带不动这颗 die。",
+  "<b>把热/可靠性数据反馈调封装与系统散热</b>:若热阻偏高、温升超标,要回喂封装端调散热盖/导热膏/界面工艺,或回喂系统端调板卡散热器与机箱风道;若温度循环里焊点开裂,要调底填/封料/球阵列。这是封装良率与可靠性持续迭代的闭环。",
+  "<b>大 die + 高功耗的封装薄弱点专项盯</b>:TPU 是 ≤331mm² 的大 die、又满载发热,翘曲、散热盖贴合、底填覆盖、BGA 角球应力这几处最易出问题,要单独统计、定位、整改——这是这种『大芯片 + 数据中心散热』封装的关键战场。",
+  "<b>诚实留痕</b>:本步封装的电/热/机械测试与可靠性数据记入封测档案(供后续封测/量产/失效分析复查),作为这颗封装可追溯的证据;具体数据为 OSAT 私有,非 TPU v1 公开。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(256×256 8-bit MAC 脉动阵列=65,536 个 MAC 的 die、24 MiB Unified Buffer、700MHz/92 TOPS、28nm/≤331mm²/28–40W、经 PCIe 3.0 做成 PCIe 加速卡为该文披露的 TPU v1 已知结构,作为被封装的对象;封装工艺的 die attach 贴片、倒装 bump/底填或 wire-bond 互连、molding 塑封/散热盖 lid+导热膏、BGA 植球四步,以及电(供电/信号完整性)、热(散热盖/热阻)、机械(温度循环/可靠性)的兼顾,均为这类 28nm 大芯片 / PCIe 加速卡的 OSAT/业界通行制造/封测/量产实践,剖面图与材料均为示意,非 TPU v1 公开的私有封装结构、材料、热设计或可靠性数字)"
+}

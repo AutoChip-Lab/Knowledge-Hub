@@ -1,0 +1,118 @@
+{
+ "secNum": "3.9",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 28–40W 的功耗架构:量化 / 少搬数 / 做减法 三杠杆",
+ "oneLine": "功耗架构不是事后省电,而是从一开始就决定「焦耳花在哪」——TPU 用三个杠杆把每次乘累加的能量压到极致,整卡 TDP 才 28–40W,远低于同期 GPU。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"32\">能效三杠杆(把每次乘累加的焦耳压到最小)</text><g class=\"cs-part\" data-k=\"quant\" data-g=\"quant\"><rect class=\"cs-box\" x=\"40\" y=\"48\" width=\"200\" height=\"62\" rx=\"8\"/><text class=\"cs-t\" x=\"140\" y=\"72\">杠杆① 量化</text><text class=\"cs-sub\" x=\"140\" y=\"90\">INT8 乘 / INT32 累加</text><text class=\"cs-sub\" x=\"140\" y=\"104\">MAC 更小 · 比浮点省电</text></g><g class=\"cs-part\" data-k=\"nomove\" data-g=\"nomove\"><rect class=\"cs-box\" x=\"260\" y=\"48\" width=\"200\" height=\"62\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"72\">杠杆② 少搬数</text><text class=\"cs-sub\" x=\"360\" y=\"90\">64K ALU 间直接传数</text><text class=\"cs-sub\" x=\"360\" y=\"104\">全程几乎不访存</text></g><g class=\"cs-part\" data-k=\"strip\" data-g=\"strip\"><rect class=\"cs-box\" x=\"480\" y=\"48\" width=\"200\" height=\"62\" rx=\"8\"/><text class=\"cs-t\" x=\"580\" y=\"72\">杠杆③ 做减法</text><text class=\"cs-sub\" x=\"580\" y=\"90\">砍 cache/乱序/分支预测</text><text class=\"cs-sub\" x=\"580\" y=\"104\">面积全让给 MAC</text></g><line class=\"cs-arr\" x1=\"140\" y1=\"110\" x2=\"220\" y2=\"158\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"360\" y1=\"110\" x2=\"360\" y2=\"158\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"580\" y1=\"110\" x2=\"500\" y2=\"158\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"40\" y=\"180\">功耗去向(同等算力下,焦耳花在哪)</text><g class=\"cs-part\" data-k=\"pmac\" data-g=\"pmac\"><rect class=\"cs-box\" x=\"40\" y=\"190\" width=\"430\" height=\"48\" rx=\"8\"/><text class=\"cs-t\" x=\"255\" y=\"214\">MAC 脉动阵列 — 真正做有用计算</text><text class=\"cs-sub\" x=\"255\" y=\"230\">功耗大头 · 65,536 个乘累加同时拉满</text></g><g class=\"cs-part\" data-k=\"pmove\" data-g=\"pmove\"><rect class=\"cs-box\" x=\"478\" y=\"190\" width=\"120\" height=\"48\" rx=\"8\"/><text class=\"cs-t\" x=\"538\" y=\"214\">数据搬运</text><text class=\"cs-sub\" x=\"538\" y=\"230\">被压到很小</text></g><g class=\"cs-part\" data-k=\"pctrl\" data-g=\"pctrl\"><rect class=\"cs-box\" x=\"604\" y=\"190\" width=\"76\" height=\"48\" rx=\"8\"/><text class=\"cs-t\" x=\"642\" y=\"212\">控制</text><text class=\"cs-sub\" x=\"642\" y=\"228\">极简</text></g><line class=\"cs-arr\" x1=\"220\" y1=\"158\" x2=\"240\" y2=\"186\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"360\" y1=\"158\" x2=\"520\" y2=\"186\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"500\" y1=\"158\" x2=\"640\" y2=\"186\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"40\" y=\"268\">功耗域(通行实践:数据中心推理 ASIC 一般这样切域,非 v1 披露细节)</text><g class=\"cs-part\" data-k=\"dcore\" data-g=\"dcore\"><rect class=\"cs-box\" x=\"40\" y=\"280\" width=\"200\" height=\"50\" rx=\"8\"/><text class=\"cs-t\" x=\"140\" y=\"302\">计算域</text><text class=\"cs-sub\" x=\"140\" y=\"318\">MXU + 累加器(最高占比)</text></g><g class=\"cs-part\" data-k=\"dmem\" data-g=\"dmem\"><rect class=\"cs-box\" x=\"260\" y=\"280\" width=\"200\" height=\"50\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"302\">片上存储域</text><text class=\"cs-sub\" x=\"360\" y=\"318\">24 MiB Unified Buffer SRAM</text></g><g class=\"cs-part\" data-k=\"dio\" data-g=\"dio\"><rect class=\"cs-box\" x=\"480\" y=\"280\" width=\"200\" height=\"50\" rx=\"8\"/><text class=\"cs-t\" x=\"580\" y=\"302\">IO/接口域</text><text class=\"cs-sub\" x=\"580\" y=\"318\">DDR3 + PCIe(可独立调压频)</text></g><g class=\"cs-part\" data-k=\"tdp\" data-g=\"tdp\"><rect class=\"cs-box\" x=\"180\" y=\"348\" width=\"360\" height=\"40\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"372\">整卡 TDP 28–40W(远低于同期 GPU)</text></g><polyline class=\"cs-arr\" points=\"140,330 140,368 176,368\" fill=\"none\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"360,330 360,346\" fill=\"none\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"580,330 580,368 544,368\" fill=\"none\" marker-end=\"url(#csar)\"/></svg>",
+ "legend": [
+  {
+   "k": "quant",
+   "name": "杠杆① 量化",
+   "desc": "推理容忍低精度 → 8-bit 整数乘 + 32-bit 累加。乘法器位宽小一截,单个 MAC 的面积和动态功耗都显著低于浮点,这是省电的第一来源。"
+  },
+  {
+   "k": "nomove",
+   "name": "杠杆② 少搬数",
+   "desc": "脉动阵列让数据在 65,536 个 ALU 之间直接逐拍传递、全程几乎不访存(论文原话)。搬数据往往比算一次还耗电,砍掉它就砍掉了大头能耗。"
+  },
+  {
+   "k": "strip",
+   "name": "杠杆③ 做减法",
+   "desc": "砍掉硬件 cache、乱序、分支预测这些通用 CPU 的「省时间但费电费面积」机构,把硅面积和功耗预算全让给 MAC 阵列。"
+  },
+  {
+   "k": "pmac",
+   "name": "MAC 占大头",
+   "desc": "功耗架构的目标:让绝大部分焦耳花在 MAC 阵列「做有用计算」上,而不是搬数据或维持控制逻辑——这就是高能效的判据。"
+  },
+  {
+   "k": "tdp",
+   "name": "TDP 预算",
+   "desc": "三杠杆叠加的结果是整卡 TDP 28–40W。这个天花板反过来又约束 §3.3 能堆多少 MAC——功耗与算力是一对互锁的旋钮。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "quant"
+   ],
+   "cap": "① 先压精度:认定推理容忍 INT8,乘法器变小,每次 MAC 的焦耳直接降一档"
+  },
+  {
+   "keys": [
+    "nomove",
+    "pmove"
+   ],
+   "cap": "② 再压访存:用脉动阵列让数据在 PE 间直接流动,把「搬运功耗」这块挤到很小"
+  },
+  {
+   "keys": [
+    "strip",
+    "pctrl"
+   ],
+   "cap": "③ 砍控制开销:去掉 cache/乱序/分支预测,把面积与功耗腾给计算"
+  },
+  {
+   "keys": [
+    "pmac"
+   ],
+   "cap": "④ 结果:同等算力下,功耗大头落在 MAC 阵列「做有用计算」上,能效最大化"
+  },
+  {
+   "keys": [
+    "dcore",
+    "dmem",
+    "dio",
+    "tdp"
+   ],
+   "cap": "⑤ 切功耗域(通行实践):计算 / 片上存储 / IO 各自管理,整卡收口到 28–40W TDP"
+  }
+ ],
+ "before": [
+  "<b>先定全局功耗预算</b>:这颗卡要插进数据中心服务器,整卡 TDP 和供电、散热(风冷)能给多少瓦?TPU 的目标定在 28–40W——这是一切下游取舍的硬天花板。",
+  "<b>要拍板的设计量(旋钮)</b>:数值精度、数据流形态(决定访存次数)、要不要保留 cache/乱序/分支预测、目标频率与电压、片上 SRAM 容量、功耗域怎么切。",
+  "<b>必备输入</b>:目标负载画像(§3.1——矩阵乘占比高、算术强度高)、工艺库的能耗特征(每次 MAC、每比特搬运、每比特访存各耗多少焦耳)、机房供电与散热上限。",
+  "<b>必须卡住的约束</b>:能效(TOPS/W)而非单纯峰值算力才是数据中心的真目标;功耗天花板直接决定 §3.3 能堆多少 MAC,二者互锁。"
+ ],
+ "during": [
+  "<b>认清谁最耗电</b>:在这类阵列加速器里,把数据搬来搬去(访存、片上长线传输)往往比做一次乘累加还费电 → 功耗架构的第一原则是「少搬数」。",
+  "<b>杠杆① 用精度换能量</b>:推理可接受 8-bit → 乘法器位宽小、动态功耗低,相比浮点既省 MAC 功耗又省 4× 存储/带宽功耗;用 32-bit 累加只在收尾处防溢出。",
+  "<b>杠杆② 用数据流换访存</b>:weight-stationary 脉动阵列让权重压住不动、激活流过、部分和在 PE 间逐级传递,数据「就地复用」,把访存能耗压到最低(论文:64K ALU 间传数全程不访存)。",
+  "<b>杠杆③ 用做减法换密度</b>:cache/乱序/分支预测是为「降延迟」服务的,但费电费面积;推理是 host-driven、确定性强的批处理,干脆砍掉,把功耗预算全投给 MAC。",
+  "<b>权衡的代价要认</b>:砍 cache → 改用 24 MiB 软件管理的 Unified Buffer,把「省电」的担子转嫁给编译器/调度(数据放哪、何时取由软件排);低精度 → 要靠量化方案守住精度。",
+  "<b>功耗域的切法(通行实践)</b>:数据中心推理 ASIC 一般把计算、片上存储、IO/接口分域,便于分别管理电压频率与门控空闲块——这是通行做法,TPU v1 未公开其具体电压域/DVFS 细节,不杜撰专属数字。"
+ ],
+ "result": [
+  {
+   "label": "整卡 TDP",
+   "value": "28–40W(远低于同期 GPU)"
+  },
+  {
+   "label": "杠杆① 量化",
+   "value": "INT8 乘 / INT32 累加,MAC 更小更省"
+  },
+  {
+   "label": "杠杆② 少搬数",
+   "value": "64K ALU 间直接传数,几乎不访存"
+  },
+  {
+   "label": "杠杆③ 做减法",
+   "value": "砍 cache/乱序/分支预测"
+  },
+  {
+   "label": "功耗大头",
+   "value": "落在 MAC 阵列(做有用计算)"
+  },
+  {
+   "label": "功耗域(通行)",
+   "value": "计算/片上存储/IO 分域;具体 DVFS 未披露,定性"
+  }
+ ],
+ "after": [
+  "<b>验证能效达标</b>:在真实负载上量 TOPS/W 与各模块功耗占比,确认焦耳确实花在 MAC 上;若搬运/控制占比偏高,回去调数据流或片上 SRAM 容量。",
+  "<b>与算力旋钮对账</b>:把实测功耗回填给 §3.3——功耗超预算就得砍阵列规模或降频,二者反复迭代到同时满足 TDP 与吞吐目标。",
+  "<b>把约束往下游传</b>:给物理实现(⑥)交功耗预算、功耗域划分与电源网络(PDN)/散热要求;给微架构(④)交时钟门控、空闲块关断的钩子。",
+  "<b>埋功耗可观测点</b>:留功耗/利用率计数器与温度传感,运营期监测每瓦吞吐;这部分 TPU v1 未公开细节,按数据中心 ASIC 通行实践处理,不编造专属数字。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(功耗域/DVFS 等未披露处按数据中心推理 ASIC 通行实践说明)"
+}

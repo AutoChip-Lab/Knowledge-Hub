@@ -1,0 +1,123 @@
+{
+ "secNum": "3.1",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 写验证计划:把规格拆成一张「特性 → 激励/覆盖/判据」对照表",
+ "oneLine": "功能验证的第一步不是写测试,而是写计划:把 TPU 规格逐条拆成可验证特性(矩阵乘对不对、各精度尺寸、累加器溢出/饱和、握手会不会死锁、十几条 CISC 指令的序列、跨时钟域),每一条都钉死「拿什么激励打它、用什么覆盖证明打到了、满足什么判据才算验完」——没进这张表的特性,等于没人负责。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><g class=\"cs-part\" data-k=\"spec\" data-g=\"spec\"><rect class=\"cs-box\" x=\"32\" y=\"150\" width=\"132\" height=\"86\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"98\" y=\"184\">设计规格</text><text class=\"cs-sub\" x=\"98\" y=\"202\">spec / 微架构</text><text class=\"cs-sub\" x=\"98\" y=\"218\">256×256 阵列·UB·指令</text></g><line class=\"cs-arr\" x1=\"164\" y1=\"193\" x2=\"208\" y2=\"193\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"170\" y=\"183\">逐条拆</text><g class=\"cs-part\" data-k=\"f1\" data-g=\"feat\"><rect class=\"cs-box\" x=\"212\" y=\"44\" width=\"220\" height=\"40\" rx=\"7\"/><text class=\"cs-t\" x=\"322\" y=\"62\">特性① 矩阵乘正确性</text><text class=\"cs-sub\" x=\"322\" y=\"78\">A×W 对参考模型 bit-准</text></g><g class=\"cs-part\" data-k=\"f2\" data-g=\"feat\"><rect class=\"cs-box\" x=\"212\" y=\"92\" width=\"220\" height=\"40\" rx=\"7\"/><text class=\"cs-t\" x=\"322\" y=\"110\">特性② 各精度/尺寸</text><text class=\"cs-sub\" x=\"322\" y=\"126\">INT8·部分块·非满阵</text></g><g class=\"cs-part\" data-k=\"f3\" data-g=\"feat\"><rect class=\"cs-box\" x=\"212\" y=\"140\" width=\"220\" height=\"40\" rx=\"7\"/><text class=\"cs-t\" x=\"322\" y=\"158\">特性③ 溢出/饱和</text><text class=\"cs-sub\" x=\"322\" y=\"174\">32bit 累加器边界</text></g><g class=\"cs-part\" data-k=\"f4\" data-g=\"feat\"><rect class=\"cs-box\" x=\"212\" y=\"188\" width=\"220\" height=\"40\" rx=\"7\"/><text class=\"cs-t\" x=\"322\" y=\"206\">特性④ 握手不死锁</text><text class=\"cs-sub\" x=\"322\" y=\"222\">UB/累加器读写反压</text></g><g class=\"cs-part\" data-k=\"f5\" data-g=\"feat\"><rect class=\"cs-box\" x=\"212\" y=\"236\" width=\"220\" height=\"40\" rx=\"7\"/><text class=\"cs-t\" x=\"322\" y=\"254\">特性⑤ 指令序列</text><text class=\"cs-sub\" x=\"322\" y=\"270\">十几条 CISC 译码/排序</text></g><g class=\"cs-part\" data-k=\"f6\" data-g=\"feat\"><rect class=\"cs-box\" x=\"212\" y=\"284\" width=\"220\" height=\"40\" rx=\"7\"/><text class=\"cs-t\" x=\"322\" y=\"302\">特性⑥ CDC 跨时钟</text><text class=\"cs-sub\" x=\"322\" y=\"318\">PCIe 域 ↔ 阵列核心域</text></g><line class=\"cs-arr\" x1=\"432\" y1=\"64\" x2=\"476\" y2=\"80\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"432\" y1=\"160\" x2=\"476\" y2=\"155\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"432\" y1=\"300\" x2=\"476\" y2=\"250\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"500\" y=\"36\">每条特性 → 映射三件套</text><g class=\"cs-part\" data-k=\"stim\" data-g=\"map\"><rect class=\"cs-box\" x=\"480\" y=\"56\" width=\"216\" height=\"58\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"588\" y=\"80\">激励策略</text><text class=\"cs-sub\" x=\"588\" y=\"98\">定向+约束随机·角点·回归向量</text></g><g class=\"cs-part\" data-k=\"cov\" data-g=\"map\"><rect class=\"cs-box\" x=\"480\" y=\"124\" width=\"216\" height=\"58\" rx=\"8\" fill=\"#fefce8\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"588\" y=\"148\">覆盖目标</text><text class=\"cs-sub\" x=\"588\" y=\"166\">covergroup / SVA / 代码覆盖</text></g><g class=\"cs-part\" data-k=\"crit\" data-g=\"map\"><rect class=\"cs-box\" x=\"480\" y=\"192\" width=\"216\" height=\"58\" rx=\"8\" fill=\"#fef2f2\" stroke=\"#fca5a5\"/><text class=\"cs-t\" x=\"588\" y=\"216\">完成判据</text><text class=\"cs-sub\" x=\"588\" y=\"234\">覆盖100%·0未决bug·回归全绿</text></g><text class=\"cs-note\" x=\"480\" y=\"286\">示意 covergroup:</text><text class=\"cs-note\" x=\"480\" y=\"304\">cp_size: coverpoint mat_k</text><text class=\"cs-note\" x=\"480\" y=\"320\">{ bins b[]={1,64,128,256}; }</text><text class=\"cs-note\" x=\"480\" y=\"338\">示意 assert:握手 req→ack≤N 拍</text><text class=\"cs-note\" x=\"32\" y=\"266\">注:验证计划方法学</text><text class=\"cs-note\" x=\"32\" y=\"284\">(UVM/SVA/covergroup)</text><text class=\"cs-note\" x=\"32\" y=\"302\">为业界通行实践,非</text><text class=\"cs-note\" x=\"32\" y=\"320\">TPU 公开的私有环境。</text></svg>",
+ "legend": [
+  {
+   "k": "spec",
+   "name": "设计规格(验证的源头)",
+   "desc": "从架构/微架构文档与 ④⑤ 交付物拿到被验对象的全部行为:256×256 INT8 脉动阵列、24 MiB 软件管理 Unified Buffer、4 MiB 32-bit 累加器、host 经 PCIe 发的十几条 CISC 指令、weight-stationary 数据流。规格里每一句「应当如此」都要在计划里落成一条可验证特性,否则就是验证盲区。"
+  },
+  {
+   "k": "feat",
+   "name": "特性清单(逐条拆)",
+   "desc": "把规格拆成一条条互不重叠、可独立判对错的特性:矩阵乘正确性、各精度/尺寸(满阵 256 与部分块)、累加器溢出/饱和、握手/反压不死锁、CISC 指令序列译码与排序、PCIe 域↔阵列核心域的 CDC。拆得够细,验证才能分工、追踪、收敛。"
+  },
+  {
+   "k": "map",
+   "name": "三件套映射(激励/覆盖/判据)",
+   "desc": "每条特性都必须答全三问:用什么激励去打它(定向 + 约束随机 + 角点)、用什么覆盖证明真的打到了(covergroup / SVA / 代码覆盖)、满足什么量化判据才算这条验完(覆盖闭合、0 未决 bug、回归全绿)。三者缺一,这条特性就不算有计划。"
+  },
+  {
+   "k": "stim",
+   "name": "激励策略",
+   "desc": "对算术正确性这类有明确黄金答案的,定向向量 + 约束随机大批扫;对累加器边界,专打最大正/负、刚好溢出、恰好饱和的角点;对握手/指令,构造合法与非法序列、背靠背与反压场景。"
+  },
+  {
+   "k": "crit",
+   "name": "完成判据",
+   "desc": "把「验完了」变成可签核的硬指标:功能覆盖率与代码覆盖率到目标(常要求 100% 且每个未命中 bin 有书面豁免)、所有 assert 无违例、bug 曲线收敛、整套回归在最终 RTL 上全绿。判据先写死,才不会「感觉差不多了」就收工。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "spec",
+    "feat"
+   ],
+   "cap": "① 从规格逐条拆特性:矩阵乘正确性、各精度尺寸、溢出/饱和、握手不死锁、指令序列、CDC——每条独立、可判对错。"
+  },
+  {
+   "keys": [
+    "f1",
+    "f3",
+    "stim"
+   ],
+   "cap": "② 给算术类特性配激励:正确性用定向+约束随机扫,溢出/饱和专打 32-bit 累加器的最大/恰好溢出/饱和角点。"
+  },
+  {
+   "keys": [
+    "f2",
+    "f4",
+    "cov"
+   ],
+   "cap": "③ 给每条特性定覆盖目标:尺寸 K∈{1,64,128,256} 做 covergroup,握手用 SVA 断言 req→ack 有界、无死锁。"
+  },
+  {
+   "keys": [
+    "f5",
+    "f6",
+    "stim",
+    "cov"
+   ],
+   "cap": "④ 指令序列与 CDC:构造合法/非法/背靠背指令流,跨时钟信号配 CDC 断言与亚稳态注入,覆盖各相位关系。"
+  },
+  {
+   "keys": [
+    "crit"
+   ],
+   "cap": "⑤ 钉死完成判据:功能+代码覆盖闭合、assert 零违例、bug 收敛、回归全绿——满足才算这条特性验完。"
+  }
+ ],
+ "before": [
+  "<b>圈定被验对象与边界</b>:从 ④⑤ 拿到 DUT 的规格——256×256 INT8 阵列、24 MiB Unified Buffer、4 MiB 32-bit 累加器、十几条 CISC 指令接口、weight-stationary——明确哪些在本计划范围内、哪些(如模拟 IO、PCIe PHY)在外。",
+  "<b>逐条列特性清单</b>:把规格拆成互不重叠、可独立判对错的条目:矩阵乘正确性 / 各精度尺寸 / 溢出·饱和 / 握手不死锁 / 指令序列 / CDC。漏一条就是漏一片验证盲区。",
+  "<b>定参考模型(golden)</b>:为算术正确性准备一个 bit-精确的参考(高级语言写的矩阵乘 + 定点累加模型),scoreboard 拿它逐元素对照 DUT 输出——验证的「对错」由它定义。",
+  "<b>定激励策略</b>:每条特性配方法——有黄金答案的用定向+约束随机,边界类专打角点,握手/指令类构造合法与非法序列;并约定随机种子可复现。",
+  "<b>定完成判据</b>:把「验完」量化成功能覆盖率/代码覆盖率目标、assert 零违例、bug 收敛、回归全绿——开工前写死,作为签核依据。"
+ ],
+ "during": [
+  "<b>铁律:无判据不立项</b>。任何一条特性进计划,必须同时写全「激励 + 覆盖 + 完成判据」三件套;只写「测一下矩阵乘」而不写怎么证明覆盖、何时算完,等于没有计划。",
+  "<b>覆盖要可度量,不靠跑了多少向量</b>。为关键维度建 covergroup(示意:cp_size: coverpoint mat_k { bins b[]={1,64,128,256}; },示意写法非 TPU 私有代码),用功能覆盖率而非向量条数衡量进度。",
+  "<b>边界/角点单独立条</b>。32-bit 累加器的溢出与饱和不靠随机撞,要定向构造最大正/负、刚好溢出、恰好饱和的输入;weight-stationary 下满阵 256 与非满阵部分块都要覆盖。",
+  "<b>控制类用断言而非只看输出</b>。握手/反压用 SVA 表达不变式(示意:assert property(@(posedge clk) req |-> ##[1:N] ack);),证明永不死锁、永不丢拍;指令序列覆盖合法、非法、背靠背、乱序到达。",
+  "<b>CDC 当独立特性对待</b>。PCIe host 域与阵列核心域之间的跨时钟路径,计划里要包含同步器结构检查 + 形式化 CDC + 亚稳态注入仿真,覆盖各时钟相位关系。",
+  "<b>诚实声明方法学来源</b>:UVM 平台、SVA 断言、covergroup、形式化、仿真/仿真加速(emulation)是这类大规模加速器的通行验证实践;TPU 不公开其私有验证环境与数字,本节用其已知结构作为被验对象讲计划,不臆造其内部测试细节。"
+ ],
+ "result": [
+  {
+   "label": "计划核心产出",
+   "value": "特性 → 激励/覆盖/判据 对照表(verification plan)"
+  },
+  {
+   "label": "特性条目(示例)",
+   "value": "矩阵乘·精度尺寸·溢出饱和·握手·指令序列·CDC"
+  },
+  {
+   "label": "覆盖点(示意)",
+   "value": "cp_size: coverpoint mat_k { bins b[]={1,64,128,256}; }"
+  },
+  {
+   "label": "握手断言(示意)",
+   "value": "assert property(@(posedge clk) req |-> ##[1:N] ack);"
+  },
+  {
+   "label": "参考模型",
+   "value": "bit-精确矩阵乘+定点累加 golden,供 scoreboard 对照"
+  },
+  {
+   "label": "完成判据",
+   "value": "功能+代码覆盖闭合 · assert 零违例 · 回归全绿"
+  }
+ ],
+ "after": [
+  "<b>计划评审</b>:拉架构/设计/验证三方过一遍特性清单,确认无遗漏、无重叠、每条都有激励+覆盖+判据,评审通过才据此搭环境。",
+  "<b>覆盖收敛追踪</b>:开跑后按计划里的 covergroup/代码覆盖逐周看曲线,未命中 bin 要么补激励、要么写书面豁免,直至闭合。",
+  "<b>bug 收敛与回归</b>:缺陷按特性归类入库,修一个回归一轮,直到 bug 发现率趋零、整套回归在冻结 RTL 上全绿。",
+  "<b>按判据签核</b>:逐条核对完成判据(覆盖率、assert 违例、回归),全部满足才在功能验证签核单上放行。",
+  "<b>交综合/后续流程</b>:把已签核的功能正确 RTL 连同覆盖报告交给逻辑综合,并把 CDC 等约束信息传给后端。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(功能验证计划/方法学部分为业界通行验证实践,非 TPU 公开的私有验证环境)"
+}

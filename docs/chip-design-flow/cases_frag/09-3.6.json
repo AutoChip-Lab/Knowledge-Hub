@@ -1,0 +1,122 @@
+{
+ "secNum": "3.6",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 信号完整性(SI)签核:确认阵列密集连线与长总线的串扰,不把 700MHz 时序/功能拖垮",
+ "oneLine": "本案例落到「信号完整性(SI)签核」小节:TPU 的 256×256 脉动阵列里成片并行走线、外加贯穿全 die 的 24 MiB Unified Buffer 长总线,相邻线之间的耦合电容会让信号互相『串扰』——攻击线(aggressor)一翻转,就给受害线(victim)注入额外延迟变化(可能变快/变慢)和噪声毛刺(glitch)。SI 签核就是用 crosstalk-aware STA(如 PrimeTime SI)把这份串扰折进 setup/hold 时序、并对静态网做噪声分析,判定在 700MHz 下既不破坏时序、毛刺也不会被误锁存成功能错。先进节点上 SI 越来越主导,必须显式签核,不能只算单网 RC。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 380\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"24\">SI 签核：aggressor 翻转 → 耦合电容 Cc 注入 victim → 延迟变化(±)/噪声毛刺 → 交给 crosstalk-aware STA 判定不破坏 700MHz</text><g class=\"cs-part\" data-k=\"agg\" data-g=\"agg\"><rect class=\"cs-box\" x=\"24\" y=\"56\" width=\"172\" height=\"48\" rx=\"8\" fill=\"#fef2f2\" stroke=\"#fecaca\"/><text class=\"cs-t\" x=\"110\" y=\"78\">Aggressor 攻击线</text><text class=\"cs-sub\" x=\"110\" y=\"94\">阵列密集并行连线 / 长总线</text></g><g class=\"cs-part\" data-k=\"vic\" data-g=\"vic\"><rect class=\"cs-box\" x=\"24\" y=\"150\" width=\"172\" height=\"48\" rx=\"8\" fill=\"#eff6ff\" stroke=\"#bfdbfe\"/><text class=\"cs-t\" x=\"110\" y=\"172\">Victim 受害线</text><text class=\"cs-sub\" x=\"110\" y=\"188\">700MHz 时序路径上的网</text></g><g class=\"cs-part\" data-k=\"cc\" data-g=\"cc\"><line class=\"cs-arr\" x1=\"110\" y1=\"104\" x2=\"110\" y2=\"148\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><rect class=\"cs-cell\" x=\"118\" y=\"112\" width=\"120\" height=\"34\" rx=\"4\" fill=\"#fffbeb\" stroke=\"#fde68a\"/><text class=\"cs-note\" x=\"128\" y=\"133\">耦合电容 Cc(串扰)</text></g><line class=\"cs-arr\" x1=\"196\" y1=\"174\" x2=\"252\" y2=\"150\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"196\" y1=\"174\" x2=\"252\" y2=\"210\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"delta\" data-g=\"delta\"><rect class=\"cs-box\" x=\"256\" y=\"124\" width=\"160\" height=\"52\" rx=\"8\" fill=\"#f5f3ff\" stroke=\"#ddd6fe\"/><text class=\"cs-t\" x=\"336\" y=\"146\">延迟变化 Δd</text><text class=\"cs-sub\" x=\"336\" y=\"164\">同向→变快 / 反向→变慢</text></g><g class=\"cs-part\" data-k=\"glitch\" data-g=\"glitch\"><rect class=\"cs-box\" x=\"256\" y=\"186\" width=\"160\" height=\"52\" rx=\"8\" fill=\"#fef2f2\" stroke=\"#fecaca\"/><text class=\"cs-t\" x=\"336\" y=\"208\">噪声毛刺 glitch</text><text class=\"cs-sub\" x=\"336\" y=\"226\">静态网被顶起→误锁存</text></g><line class=\"cs-arr\" x1=\"416\" y1=\"150\" x2=\"472\" y2=\"156\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"416\" y1=\"212\" x2=\"472\" y2=\"186\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"sta\" data-g=\"sta\"><rect class=\"cs-box\" x=\"476\" y=\"120\" width=\"220\" height=\"72\" rx=\"8\" fill=\"#ecfdf5\" stroke=\"#a7f3d0\"/><text class=\"cs-t\" x=\"586\" y=\"146\">crosstalk-aware STA</text><text class=\"cs-sub\" x=\"586\" y=\"166\">PrimeTime SI · 把 Δd 折进</text><text class=\"cs-sub\" x=\"586\" y=\"182\">setup/hold;毛刺做噪声分析</text></g><line class=\"cs-arr\" x1=\"586\" y1=\"192\" x2=\"586\" y2=\"232\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"gate\" data-g=\"gate\"><rect class=\"cs-box\" x=\"476\" y=\"236\" width=\"220\" height=\"64\" rx=\"8\" fill=\"#f8fafc\" stroke=\"#cbd5e1\"/><text class=\"cs-t\" x=\"586\" y=\"262\">SI 签核判据</text><text class=\"cs-sub\" x=\"586\" y=\"280\">含串扰后 slack≥0 且</text><text class=\"cs-sub\" x=\"586\" y=\"296\">毛刺&lt;噪声门限(示意)</text></g><text class=\"cs-note\" x=\"24\" y=\"246\">先进节点(本例 28nm 起,越往下越主导)：线间距收窄、耦合占比升,SI 必须显式进 STA,不能只算单网 RC。</text><text class=\"cs-note\" x=\"24\" y=\"270\">违例→回 ⑧ECO：加间距/插屏蔽地线(shield)/换层/降驱动,改完重抽 SPEF 再签。</text></svg>",
+ "legend": [
+  {
+   "k": "agg",
+   "name": "Aggressor(攻击线)",
+   "desc": "正在翻转、向邻线注入耦合电流的那根网。在 TPU 这类设计里,脉动阵列内部成片同步翻转的数据/权重线、以及连向 24 MiB Unified Buffer 的宽长总线,都是典型 aggressor 群——多根攻击线同时同向翻转会叠加,是 SI 签核里最坏的『耦合切换组合』。一根网既可能是别人的 aggressor,也可能是自己的 victim。"
+  },
+  {
+   "k": "vic",
+   "name": "Victim(受害线)",
+   "desc": "被邻线串扰注入了额外延迟/噪声的那根网。签核关心两种受害:① 它在某条 700MHz 时序路径上,串扰把它的传播延迟改了,可能吃掉 setup/hold 余量;② 它本应保持静态(如使能、控制、保持不变的总线位),却被顶出一个毛刺。SI 工具会枚举哪些网作为 victim、其上有哪些 aggressor 耦合。"
+  },
+  {
+   "k": "cc",
+   "name": "耦合电容 Cc / 串扰机理",
+   "desc": "相邻金属线之间的侧壁耦合电容,是串扰的物理根源。aggressor 跳变时通过 Cc 把电荷耦合到 victim:同向翻转→帮 victim 变快(可能造 hold/min 违例),反向翻转→拖 victim 变慢(造 setup/max 违例)。线间距越窄、平行走线越长,Cc 占总电容比越高——这正是先进节点 SI 主导的原因。耦合量来自带 Cc 的真实寄生提取(SPEF)。"
+  },
+  {
+   "k": "delta",
+   "name": "串扰两面:延迟变化 Δd / 噪声毛刺 glitch",
+   "desc": "串扰对 victim 有两类后果,SI 签核两面都要核。① 延迟变化 Δd(进时序,图中 delta):victim 传播延迟的增量,有正有负——同向翻转使其变快(min/hold 风险)、反向使其变慢(max/setup 风险),取最坏对齐窗,折进 STA 变成可判的余量数字。② 噪声毛刺 glitch(进功能,图中 glitch):本应静态的 victim 被 aggressor 顶起的尖峰,若幅度/宽度够大就可能被下游误锁存成 1/0 或向前传播——这是功能性破坏,由静态噪声分析专门核,判据是峰值低于接收门限、不传播。"
+  },
+  {
+   "k": "sta",
+   "name": "crosstalk-aware STA + SI 签核闸门",
+   "desc": "把上面两路汇进静态时序分析:工具(如 PrimeTime SI)在 MMMC 多角下,既算含串扰延迟的 setup/hold slack,又做静态噪声分析查毛刺。SI 签核判据(示意):计入串扰后所有路径 slack≥0,且所有静态网毛刺峰值<接收噪声门限、无功能性误锁存。全过才放行,违例回 ⑧ECO。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "agg",
+    "cc",
+    "vic"
+   ],
+   "cap": "① 抓串扰来源:aggressor(阵列并行连线 / UB 长总线)翻转,经耦合电容 Cc 注入 victim——SI 工具据真实寄生(带 Cc 的 SPEF)枚举每根 victim 上的 aggressor 与最坏切换组合。"
+  },
+  {
+   "keys": [
+    "cc",
+    "delta"
+   ],
+   "cap": "② 折成延迟变化 Δd:同向翻转使 victim 变快(hold/min 风险)、反向使其变慢(setup/max 风险),取最坏对齐窗——把模拟级串扰量化为 STA 能吃的延迟增量。"
+  },
+  {
+   "keys": [
+    "cc",
+    "glitch"
+   ],
+   "cap": "③ 折成噪声毛刺:对本应静态的 victim 做噪声分析,看 aggressor 顶起的尖峰会不会高到被误锁存或向前传播——这是功能性核查,与延迟分开判。"
+  },
+  {
+   "keys": [
+    "delta",
+    "glitch",
+    "sta"
+   ],
+   "cap": "④ 一起进 crosstalk-aware STA:含串扰的 Δd 进 setup/hold 余量,毛刺进静态噪声分析;在 MMMC 多角下统一跑,标记为 crosstalk-aware,确认 700MHz 不被拖垮。"
+  },
+  {
+   "keys": [
+    "sta",
+    "gate"
+   ],
+   "cap": "⑤ 过 SI 签核闸门:计入串扰后 slack≥0 且毛刺<噪声门限(示意判据)——全绿才放行 tape-out,任一违例回 ⑧ECO 修线再签。"
+  }
+ ],
+ "before": [
+  "<b>用带耦合的真实寄生(SPEF),而非单网 RC</b>:SI 签核的输入必须是提取了线间耦合电容 Cc 的寄生(coupled SPEF),否则根本看不到串扰。先定提取工具/精度、确认阵列区与 UB 长总线的耦合电容被如实抽出——签核结论只和这份寄生一样可信。",
+  "<b>定 corner 集 / MMMC 场景</b>:SI 与工艺-电压-温度强相关,需在 MMMC 多角下签核——setup 用慢角(串扰拖慢叠加最坏 setup)、hold 用快角(串扰加速叠加最坏 hold)。先把要签的 corner×mode 矩阵和对应 SI 设置定下来。",
+  "<b>定 aggressor 对齐与并发模型</b>:约定 victim 的时序窗内允许哪些 aggressor 同时切换、是否考虑多 aggressor 同向叠加、切换概率/时间窗如何收紧——太松会过度悲观(假违例淹没真违例),太紧会漏真问题;这是 SI 签核最关键的设置之一。",
+  "<b>定判据与门限</b>:延迟侧判据=计入串扰后 setup/hold slack≥0;噪声侧判据=静态网毛刺峰值/宽度低于接收器噪声门限、不向下游传播。门限取自工艺库/IP 规格;本案写的具体阈值为示意,TPU 不公开其私有 SI 报告与角值。",
+  "<b>定豁免规则</b>:对已知误报(如 victim 实为常驻静态又有强保持、或 aggressor 时序上不可能与 victim 窗对齐)预先约定可豁免/降级的条件与签字流程,避免被海量低风险噪声违例淹没真正危险项。"
+ ],
+ "during": [
+  "<b>延迟与噪声两路都要签,缺一不可</b>:串扰既改时序(Δd 进 setup/hold)又能造功能错(毛刺误锁存)。只看时序余量、不做静态噪声分析,会放过那种『时序还够但毛刺把静态控制线顶翻』的功能性问题——TPU 阵列里大量使能/控制网正属此类,必须双路核。",
+  "<b>setup 用慢角、hold 用快角,串扰按最坏方向叠</b>:setup 验最大延迟(慢角 + 反向串扰拖慢),hold 验最小延迟(快角 + 同向串扰加速)。两个方向的最坏串扰分别叠到对应角上,不能用一个角混判——这是 crosstalk-aware STA 的铁律。",
+  "<b>重点盯阵列密集并行连线与 UB 长总线</b>:256×256 脉动阵列内成片同步翻转的数据/权重线,是多 aggressor 同向叠加的高发区;连向 24 MiB Unified Buffer(约占 die 29%)的宽总线则平行走线长、耦合积累大。这两处是 700MHz 下 SI 最可能咬人的地方,要作为重点 victim 集核查。",
+  "<b>区分真违例与悲观假报</b>:SI 工具默认会做最坏对齐假设,容易报出大量本不可能同时切换的悲观违例。结合时序窗、逻辑相关性、aggressor 实际可达性逐项甄别,把工程精力集中在真能在 700MHz 下发生的串扰上,而非和工具的默认悲观较劲。",
+  "<b>noise-on-delay 与 delay-on-noise 一起收敛</b>:串扰延迟会改变 victim 的到达时间,从而改变下一轮 aggressor 的对齐窗,SI 分析需迭代收敛;签核前确认工具已收敛、不是在两种假设间跳。",
+  "<b>诚实标注边界</b>:crosstalk-aware STA(PrimeTime SI)、coupled SPEF、MMMC 多角、静态噪声分析、aggressor/victim 模型——均为先进节点通行的 SI 签核实践;TPU v1(28nm、die≤331mm²、24 MiB UB、700MHz、weight-stationary)不会公开其私有 SI 角集与报告。本案以 TPU 已知结构作为『被签核对象』讲 SI 概念,图中 slack≥0、毛刺门限等具体判据为示意,非 TPU 私有数字。"
+ ],
+ "result": [
+  {
+   "label": "串扰延迟·setup(示意)",
+   "value": "慢角下计入反向串扰后,关键路径 setup slack ≥ 0(含 crosstalk Δd;示意,非 TPU 私有值)"
+  },
+  {
+   "label": "串扰延迟·hold(示意)",
+   "value": "快角下计入同向串扰加速后,hold slack ≥ 0(串扰使 victim 变快不致 min 路径违例;示意)"
+  },
+  {
+   "label": "静态噪声/毛刺(示意)",
+   "value": "所有静态 victim 网毛刺峰值 < 接收器噪声门限,毛刺不被锁存、不向下游传播(示意门限)"
+  },
+  {
+   "label": "重点 victim 区",
+   "value": "脉动阵列并行翻转线 + 24 MiB UB 长总线:多 aggressor 同向叠加 / 长平行耦合,已逐网核过"
+  },
+  {
+   "label": "分析模式",
+   "value": "crosstalk-aware STA(PrimeTime SI),MMMC 多角:setup@慢角 / hold@快角,coupled SPEF,noise-on-delay 已收敛"
+  },
+  {
+   "label": "SI 签核状态(示意)",
+   "value": "计入串扰后全角 slack≥0 且无功能性毛刺 → 700MHz 不被拖垮 → SI 维度 PASS,放行 tape-out"
+  }
+ ],
+ "after": [
+  "<b>违例回 ⑧ECO 修线再签</b>:串扰违例的修法是物理性的——加大 aggressor/victim 间距、在二者间插屏蔽地线(shield)、把 victim 换层或改走向、降 aggressor 驱动强度或加缓冲。改完版图后必须重抽 coupled SPEF、重跑 crosstalk-aware STA 再签,不能只看局部。",
+  "<b>守住『改一处别破坏别处』</b>:SI ECO 动的是连线和驱动,极易改了一根 victim 又把它变成新的 aggressor、或扰动相邻网的时序。再签时要全角增量复核受影响区,确认没有按下葫芦浮起瓢。",
+  "<b>把 SI 结果汇入多维签核闸门</b>:SI(串扰延迟+噪声)只是 signoff 多个维度之一,需与 STA(基础时序)、功耗/IR-EM、DRC/LVS、LEC 等一并汇入 tape-out 闸门——SI 那一格全绿,才是这一维度放行的条件。",
+  "<b>留存可追溯的签核报告</b>:归档本次 SI 签核用的寄生版本、corner×mode 矩阵、aggressor 对齐设置、违例清单与豁免签字、修复后复核结果,作为 tape-out 评审的证据链;任何豁免都要有明确理由与责任人。",
+  "<b>全维度全绿才 tape-out</b>:确认 SI 与其余签核维度在所有签核角下均无未决违例(违例项要么修掉、要么有授权豁免),多维闸门全绿后,版图方可送 tape-out。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(256×256 脉动阵列、24 MiB Unified Buffer、700MHz、28nm、die≤331mm²、weight-stationary 为已知结构事实;信号完整性签核方法——crosstalk-aware STA / PrimeTime SI、coupled SPEF 寄生、MMMC 多角、aggressor·victim 串扰延迟 Δd 与静态噪声/毛刺分析——为通行签核实践,图中 slack≥0、毛刺门限等判据为示意,非 TPU 私有 SI 报告/角值)"
+}

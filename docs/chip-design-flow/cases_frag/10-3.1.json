@@ -1,0 +1,119 @@
+{
+ "secNum": "3.1",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 流片与交付数据:把签核版图打包成 GDSII/OASIS 正式提交 Foundry",
+ "oneLine": "流片(tape-out)的「交付」那一刻,做的不是改电路,而是把已签核的整版版图(256×256 阵列、24 MiB UB、片上 SRAM 全在内的 ≤331mm² die)流出(stream-out)成 GDSII/OASIS 几何数据库,连同层映射表、fill/密度/对位标记和工艺/版本信息打成一个完整技术包,一次性正式提交给晶圆厂——核对层、密度、填充、对位是这一步的全部功夫,因为提交一旦进了掩模,改一个错的代价就是一套新掩模和数周时间。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 360\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><g class=\"cs-part\" data-k=\"layout\" data-g=\"layout\"><rect class=\"cs-box\" x=\"28\" y=\"120\" width=\"150\" height=\"96\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"103\" y=\"150\">签核版图</text><text class=\"cs-sub\" x=\"103\" y=\"168\">signoff layout</text><text class=\"cs-sub\" x=\"103\" y=\"186\">256×256阵列·UB·SRAM</text><text class=\"cs-sub\" x=\"103\" y=\"204\">≤331mm² die · 28nm</text></g><line class=\"cs-arr\" x1=\"178\" y1=\"168\" x2=\"226\" y2=\"168\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"184\" y=\"158\">打包</text><g class=\"cs-part\" data-k=\"stream\" data-g=\"stream\"><rect class=\"cs-box\" x=\"230\" y=\"86\" width=\"200\" height=\"164\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"330\" y=\"112\">流出 GDSII / OASIS</text><text class=\"cs-sub\" x=\"330\" y=\"130\">stream-out 几何数据库</text><g class=\"cs-part\" data-k=\"lmap\" data-g=\"check\"><rect class=\"cs-cell\" x=\"246\" y=\"146\" width=\"168\" height=\"24\" rx=\"4\"/><text class=\"cs-cellt\" x=\"330\" y=\"162\">层映射 layer map(GDS号↔层名)</text></g><g class=\"cs-part\" data-k=\"fill\" data-g=\"check\"><rect class=\"cs-cell\" x=\"246\" y=\"176\" width=\"168\" height=\"24\" rx=\"4\"/><text class=\"cs-cellt\" x=\"330\" y=\"192\">金属填充 fill · 密度均匀</text></g><g class=\"cs-part\" data-k=\"mark\" data-g=\"check\"><rect class=\"cs-cell\" x=\"246\" y=\"206\" width=\"168\" height=\"24\" rx=\"4\"/><text class=\"cs-cellt\" x=\"330\" y=\"222\">对位标记 · 划片道 · 工艺测key</text></g></g><line class=\"cs-arr\" x1=\"430\" y1=\"168\" x2=\"486\" y2=\"168\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"436\" y=\"158\">正式提交</text><g class=\"cs-part\" data-k=\"foundry\" data-g=\"foundry\"><rect class=\"cs-box\" x=\"490\" y=\"120\" width=\"200\" height=\"96\" rx=\"8\" fill=\"#fefce8\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"590\" y=\"150\">提交 Foundry</text><text class=\"cs-sub\" x=\"590\" y=\"168\">tape-out 移交</text><text class=\"cs-sub\" x=\"590\" y=\"186\">GDS+文档+技术包</text><text class=\"cs-sub\" x=\"590\" y=\"204\">→ 掩模/制造</text></g><text class=\"cs-note\" x=\"28\" y=\"248\">提交清单(GDS/OASIS · 层映射表 ·</text><text class=\"cs-note\" x=\"28\" y=\"266\">fill/天线/密度签核 · 对位/划片信息 ·</text><text class=\"cs-note\" x=\"28\" y=\"284\">版本/校验和 · 工艺/PDK 版本号)</text><text class=\"cs-note\" x=\"28\" y=\"312\">注:GDSII/OASIS 格式与 tape-out 移交流程、</text><text class=\"cs-note\" x=\"28\" y=\"330\">fill/对位/掩模等均为业界通行实践;TPU 不</text><text class=\"cs-note\" x=\"28\" y=\"348\">公开其私有制造数据,亦未公布代工厂。</text></svg>",
+ "legend": [
+  {
+   "k": "layout",
+   "name": "签核版图(被打包的对象)",
+   "desc": "经过 DRC/LVS/天线/时序/功耗全部签核、冻结下来的整版物理版图:256×256 个 8-bit MAC 的脉动阵列、24 MiB 软件管理 Unified Buffer、4 MiB 累加器及周边逻辑,全部落成 28nm、面积 ≤331mm² 的一颗 die 的多边形几何。它是 tape-out 要交付的本体——这一步不再动电路,只负责把它无损、完整、可被掩模厂读懂地搬出去。"
+  },
+  {
+   "k": "stream",
+   "name": "流出 GDSII / OASIS(几何数据库)",
+   "desc": "把版图工具里的设计 stream-out 成业界通行的版图交换格式:GDSII 是几十年的事实标准,OASIS 是其压缩后继(同样几何、文件更小,适合大芯片)。它只记录「每层有哪些多边形、在哪里」,是掩模厂唯一认的几何输入。流出时层、单元层级、坐标必须与签核库逐比特一致。"
+  },
+  {
+   "k": "check",
+   "name": "提交前自检三件套(层/fill/标记)",
+   "desc": "提交不是直接丢文件,而是先核三类东西:层映射(GDS 层号↔工艺层名一一对得上、无杂层漏层)、金属填充 fill 与密度(满足各层密度窗口、均匀,保 CMP 平整)、对位/划片信息(对位标记、划片道、工艺监测结构齐全)。这三类是「机器能不能正确制造」的前提,错一处就可能整批报废。"
+  },
+  {
+   "k": "fill",
+   "name": "填充与密度(fill / density)",
+   "desc": "大芯片各金属层必须满足代工厂的密度窗口,空旷处补上 fill 图形,使密度均匀——否则 CMP 抛光高低不平、刻蚀/光刻出偏差。fill 在签核阶段加好,流片打包时要确认它已在 GDS 里、且不破坏天线/DRC 规则。"
+  },
+  {
+   "k": "foundry",
+   "name": "正式提交 Foundry(tape-out 移交)",
+   "desc": "把 GDSII/OASIS 主数据库,连同层映射表、签核报告摘要、对位/划片信息、工艺与 PDK 版本号、文件校验和等打成完整交付包,按代工厂规定的格式和通道一次性正式提交。提交即「定版」:进了掩模制作就不再随意改,所以提交前要把所有自检全部走完。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "layout",
+    "stream"
+   ],
+   "cap": "① 把已签核冻结的整版版图(阵列+UB+SRAM,≤331mm² die)stream-out 成 GDSII/OASIS,要求与签核库逐比特一致。"
+  },
+  {
+   "keys": [
+    "stream",
+    "lmap"
+   ],
+   "cap": "② 核层映射:GDS 层号与 28nm 工艺各层名一一对应,无漏层、无杂层、无错号——掩模厂据此把每层做成一张掩模。"
+  },
+  {
+   "keys": [
+    "fill",
+    "check"
+   ],
+   "cap": "③ 核填充与密度:确认各金属层 fill 已在 GDS 内、密度落在工艺窗口且均匀,保 CMP 平整与良率,且不破坏天线/DRC。"
+  },
+  {
+   "keys": [
+    "mark",
+    "check"
+   ],
+   "cap": "④ 核对位与划片信息:对位标记、划片道、工艺监测 key(PCM/测试结构)齐全且位置正确,后续光刻对位与切割才有依据。"
+  },
+  {
+   "keys": [
+    "foundry"
+   ],
+   "cap": "⑤ 打包正式提交 Foundry:GDS/OASIS + 层映射 + 签核摘要 + 工艺/版本/校验和成完整技术包,一次提交即定版进掩模。"
+  }
+ ],
+ "before": [
+  "<b>确认版图真已签核冻结</b>:DRC、LVS、天线、ERC、时序与功耗签核全部通过并冻结,版本号锁定;tape-out 交付的是这一份,不接受「边交边改」。",
+  "<b>对齐代工厂交付规范</b>:按目标 28nm 工艺的 PDK/规则手册确认要交什么格式(GDSII 还是 OASIS)、需要哪些层、层号约定、命名规则、命名层与文本层要求——交付规范由 foundry 给定。",
+  "<b>备齐层映射表</b>:把设计层名映射到工艺 GDS 层号/datatype 的对照表(layer map)整理好,确保流出后每层都能被掩模厂正确解读。",
+  "<b>确认 fill 与密度已在版图内</b>:金属/通孔 fill、各层密度调整在签核阶段已做完并通过密度检查,流片步骤只核对、不新增电路改动。",
+  "<b>准备随附文档与校验</b>:签核报告摘要、对位/划片信息、工艺与 PDK 版本号、文件 MD5/校验和、联系与版本说明,凑成一个可追溯的交付包。"
+ ],
+ "during": [
+  "<b>stream-out 要无损</b>:把签核库流出成 GDSII/OASIS 时,层级单元(cell hierarchy)、坐标、层、文本必须与签核版图逐比特一致;流出后再跑一次 DRC/LVS 在 GDS 上复核,确认「交付件」本身干净,而不是只信工具里的版图。",
+  "<b>层映射逐层对死</b>:GDS 层号/datatype ↔ 工艺层名一一对应,核对无漏层(少做一张掩模)、无杂层(多一张废掩模)、无错号(层做错位置)。大芯片层数多,这里一处错就是一套掩模的钱和数周。",
+  "<b>填充与密度按窗口核</b>:各金属层 fill 已在 GDS 内、密度落在代工厂窗口且均匀(保 CMP 平整),并确认 fill 没有触发天线或 DRC 违例;空旷区与密集区都要满足,否则抛光/刻蚀偏差影响良率。",
+  "<b>对位标记与划片信息齐全</b>:对位/套刻标记(alignment/overlay marks)、划片道(scribe line)、工艺监测结构(PCM 测试 key)位置正确——它们让后续每层光刻对得准、晶圆能切开、制程能被量测。",
+  "<b>校验文件完整性与版本</b>:核对文件能被独立读回、cell 名不冲突、坐标无溢出,记录校验和与工艺/PDK 版本号;一次提交对应一个明确版本,杜绝「交了哪一版说不清」。",
+  "<b>诚实声明来源</b>:GDSII/OASIS 格式、tape-out 移交流程、fill/对位/掩模/PCM 等均为业界通行实践;TPU v1 不公开其私有制造数据、亦未公布代工厂,本节用其已知结构(256×256 阵列、24 MiB UB、≤331mm² die、28nm)作为「被打包提交」的对象讲概念,不臆造其私有工艺/良率/封装数字。"
+ ],
+ "result": [
+  {
+   "label": "核心交付件",
+   "value": "整版 GDSII / OASIS 几何数据库(stream-out 自签核版图)"
+  },
+  {
+   "label": "随附:层映射",
+   "value": "layer map 表:GDS 层号/datatype ↔ 28nm 工艺层名"
+  },
+  {
+   "label": "随附:填充/密度",
+   "value": "各金属层 fill 已嵌入、密度落窗口、CMP 平整"
+  },
+  {
+   "label": "随附:对位/划片",
+   "value": "对位/套刻标记 · 划片道 · PCM 工艺监测结构"
+  },
+  {
+   "label": "随附:版本/校验",
+   "value": "工艺/PDK 版本号 · 文件校验和 · 签核报告摘要"
+  },
+  {
+   "label": "提交动作",
+   "value": "完整技术包一次性正式提交 Foundry,即定版进掩模"
+  }
+ ],
+ "after": [
+  "<b>foundry 收件核验</b>:晶圆厂做 incoming/DRC 复核,核对格式、层、密度、对位是否符合其规则;有问题会退回,需重新打包提交(一次往返就是时间)。",
+  "<b>tape-out 留档与冻结</b>:把已提交的 GDS/OASIS、层映射、校验和、版本号正式归档,标记为「已流片版本」,后续任何改动都另起 ECO/版本,不污染已交付件。",
+  "<b>交掩模制作</b>:foundry 据 GDSII/OASIS 逐层制掩模(mask/reticle),进入下一步流程——制造(光刻/刻蚀/沉积)的输入就是这套交付数据。",
+  "<b>准备 bring-up 物料</b>:同步把测试程序、PCIe 加速卡板级设计、首批样片点亮(bring-up)计划备好,等首批晶圆/裸 die 回来即可衔接封测与点亮。",
+  "<b>评估首次提交质量</b>:复盘提交前自检是否充分(层/fill/对位有无侥幸过关),把经验沉淀成 checklist——这类大芯片一次提交出错代价大,务求「一次交对」。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(GDSII/OASIS 流出与 tape-out 移交、层映射、fill/密度、对位标记、掩模/PCM 等流程与数字为业界通行制造/交付实践,非 TPU 公开的私有制造数据,TPU 亦未公布其代工厂)"
+}

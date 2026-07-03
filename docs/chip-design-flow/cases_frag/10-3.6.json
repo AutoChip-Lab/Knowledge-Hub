@@ -1,0 +1,119 @@
+{
+ "secNum": "3.6",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 交接、签字与流片后等待:把 ⑨ 签核放行的那套版本锁定 28nm GDSII,经一份移交 checklist + 负责人签字正式 tape-out release 交付给 foundry;foundry 把它排进产线档期、制掩膜、投首批 wafer,设计团队随即进入数周到数月的 turnaround 等待——这段时间不空等,而是并行把 TensorFlow/XLA 软件栈、PCIe 加速卡 bring-up 脚本、量产测试程序备齐,只待 first silicon 到手就能立刻点亮",
+ "oneLine": "本案例落到「交接、签字与流片后等待」小节:流片在 tape-out 评审签字放行(那是 9.3.10 那道闸门的事)之后,真正发生的是一次『正式交付 + 漫长等待 + 等待期并行备战』。它和签核闸门的区别在于:闸门讲的是『判定能不能流片、谁签字放行』;本节讲的是放行之后——这套数据怎么打包成一份 tape-out release 交出去、走什么 checklist、签字交给谁负责;foundry 接到后怎么把它排进产线、制掩膜、投首批 wafer;团队随后进入一段从数周到数月、期间无法再改设计(改即动掩膜、代价极高)的 turnaround 等待;以及这段等待期为什么不空等、团队转去并行准备软件栈/bring-up/测试程序,只待首批硅到手就能立刻接力。把 TPU 已知的 256×256 脉动阵列、24 MiB Unified Buffer、700 MHz、28nm/≤331mm²、28–40W、做成经 PCIe 3.0 收十几条 CISC 指令的加速卡、跑 TensorFlow/XLA 这颗芯片,当作『被交付、被排程、被等待、被准备点亮』的对象。交付/排程/制掩膜/turnaround 周期/首批 wafer/封测/bring-up 的具体工艺、设备、时长均为这类 28nm 大芯片与 PCIe 加速卡的通行制造交付实践;绝不编造 TPU 私有的制造/良率/封测数字,也不指定其代工厂(资料未公开)。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 380\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"24\">流片交接:tape-out release(签字交付包)→ foundry 排程开工跑首批 wafer →等 turnaround(数周到数月)→ first silicon 到手;虚线=等待期团队并行备软件栈/bring-up,不空等</text><g class=\"cs-part\" data-k=\"release\" data-g=\"release\"><rect class=\"cs-box\" x=\"24\" y=\"56\" width=\"174\" height=\"120\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"111\" y=\"82\">tape-out release</text><text class=\"cs-sub\" x=\"111\" y=\"104\">交付包 + 签字</text><text class=\"cs-sub\" x=\"111\" y=\"124\">最终 GDSII(版本锁定)</text><text class=\"cs-sub\" x=\"111\" y=\"142\">+ 移交 checklist</text><text class=\"cs-sub\" x=\"111\" y=\"160\">+ 负责人签字担责</text></g><line class=\"cs-arr\" x1=\"198\" y1=\"116\" x2=\"262\" y2=\"116\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"foundry\" data-g=\"foundry\"><rect class=\"cs-box\" x=\"266\" y=\"56\" width=\"174\" height=\"120\" rx=\"8\" fill=\"#fefce8\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"353\" y=\"82\">foundry 排程开工</text><text class=\"cs-sub\" x=\"353\" y=\"104\">排进产线档期</text><text class=\"cs-sub\" x=\"353\" y=\"124\">制掩膜(mask set)</text><text class=\"cs-sub\" x=\"353\" y=\"142\">投 28nm 首批 wafer</text><text class=\"cs-sub\" x=\"353\" y=\"160\">这类大芯片通行实践</text></g><line class=\"cs-arr\" x1=\"440\" y1=\"116\" x2=\"504\" y2=\"116\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"wait\" data-g=\"wait\"><rect class=\"cs-box\" x=\"508\" y=\"56\" width=\"188\" height=\"120\" rx=\"8\" fill=\"none\" stroke=\"#cbd5e1\"/><text class=\"cs-t\" x=\"602\" y=\"82\">等 turnaround</text><text class=\"cs-sub\" x=\"602\" y=\"104\">数周 ~ 数月</text><text class=\"cs-sub\" x=\"602\" y=\"124\">流片后无法再改</text><text class=\"cs-sub\" x=\"602\" y=\"142\">(改即动掩膜,代价极高)</text><text class=\"cs-sub\" x=\"602\" y=\"160\">团队不空等</text></g><line class=\"cs-arr\" x1=\"602\" y1=\"176\" x2=\"602\" y2=\"222\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"silicon\" data-g=\"silicon\"><rect class=\"cs-box\" x=\"508\" y=\"226\" width=\"188\" height=\"56\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"602\" y=\"250\">first silicon 到手</text><text class=\"cs-sub\" x=\"602\" y=\"268\">⑪ 制造/⑫ 封测/bring-up</text></g><g class=\"cs-part\" data-k=\"prep\" data-g=\"prep\"><rect class=\"cs-box\" x=\"24\" y=\"226\" width=\"416\" height=\"120\" rx=\"8\" fill=\"#fff7ed\" stroke=\"#fdba74\" stroke-dasharray=\"5 4\"/><text class=\"cs-t\" x=\"232\" y=\"250\">等待期并行准备(虚线:与 foundry 同步进行)</text><g class=\"cs-part\" data-k=\"sw\" data-g=\"sw\"><rect class=\"cs-cell\" x=\"40\" y=\"266\" width=\"190\" height=\"32\"/><text class=\"cs-cellt\" x=\"135\" y=\"286\">软件栈:TF/XLA 编译路径、十几条 CISC 指令</text></g><g class=\"cs-part\" data-k=\"bringup\" data-g=\"bringup\"><rect class=\"cs-cell\" x=\"40\" y=\"304\" width=\"190\" height=\"32\"/><text class=\"cs-cellt\" x=\"135\" y=\"324\">bring-up 准备:点亮脚本、PCIe 加速卡板级</text></g><g class=\"cs-part\" data-k=\"test\" data-g=\"test\"><rect class=\"cs-cell\" x=\"238\" y=\"266\" width=\"186\" height=\"32\"/><text class=\"cs-cellt\" x=\"331\" y=\"286\">测试程序:ATE 向量、量产测试 pattern</text></g><g class=\"cs-part\" data-k=\"board\" data-g=\"board\"><rect class=\"cs-cell\" x=\"238\" y=\"304\" width=\"186\" height=\"32\"/><text class=\"cs-cellt\" x=\"331\" y=\"324\">系统:服务器/PCIe 整机、24MiB UB 用例</text></g></g><polyline class=\"cs-arr\" points=\"602,176 602,200 462,200 462,290 440,290\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"24\" y=\"368\">注:制掩膜/排程/turnaround/首批 wafer 周期/封测/bring-up 的工艺、设备、时长、良率均为这类 28nm 大芯片与 PCIe 加速卡的通行制造交付实践;TPU v1 不公开其私有数据与代工厂,图为示意</text></svg>",
+ "legend": [
+  {
+   "k": "release",
+   "name": "tape-out release(签字交付包)",
+   "desc": "流片交接的第一动作:把 ⑨ 签核放行、版本锁定的最终 28nm GDSII 连同一套移交清单打包成一份正式 tape-out release 交给 foundry。交付包不只是一个版图文件——通常含版本锁定的 GDSII、层映射/工艺接口信息、签核通过的证据、以及一份逐项核对的移交 checklist,最后由负责人正式签字、对『交出去的就是这一版、可以投片』担责。这是把『闸门放行的决定』兑现成『真的把数据交到代工厂手上』的一步。交付包构成与 checklist 为这类大芯片的通行交付实践;TPU 不公开其实际交付内容与代工厂。"
+  },
+  {
+   "k": "foundry",
+   "name": "foundry 排程开工(制掩膜、投首批 wafer)",
+   "desc": "代工厂接到 release 后做的事:把这颗芯片排进它的产线档期(排程),据 GDSII 制作整套光掩膜(mask set),然后在 28nm 产线上投下第一批晶圆开跑。对 TPU v1 这样 die ≤331mm² 的大芯片,掩膜与首批投片是一笔不小的固定投入,所以前面闸门才必须『全绿才放行』——一旦开工,纠错代价极高。排程时长、掩膜套数、首批片数、产线参数都按 foundry 与工艺而定;TPU 不公开其代工厂、掩膜版次与投片时间表,这里为通行实践示意。"
+  },
+  {
+   "k": "wait",
+   "name": "等 turnaround(数周到数月的等待期)",
+   "desc": "从投片到拿到首批硅,中间有一段制造周期(turnaround time):一片晶圆要走完几百道工序(沉积/光刻/刻蚀等),通常要数周到数月。这段时间的关键性质是『设计已冻结、无法再改』——任何改动都要改掩膜、重投片,代价以掩膜费和数月周期计。所以这是设计团队最焦灼也最该利用的窗口:不是干等,而是为硅片到手后的接力做满准备。具体 turnaround 时长随工艺/产能波动;TPU 不公开其实际制造周期。"
+  },
+  {
+   "k": "prep",
+   "name": "等待期并行准备(软件栈 / bring-up / 测试,虚线并行)",
+   "desc": "等待期团队转去做的并行工作——图中虚线表示它与 foundry 制造同时进行、互不阻塞:把 TensorFlow/XLA 到 TPU 的编译路径、主机经 PCIe 3.0 下发那十几条 CISC 指令的运行时打磨好;写好首批硅到手要用的 bring-up(点亮)脚本与 PCIe 加速卡板级/整机环境;备齐 ATE 测试向量与量产测试 pattern。目标是让 first silicon 一到手就能立刻上电、跑通、量产测,而不是『硅到了才开始写软件』。这正是 Jouppi 团队约 15 个月就完成从立项到部署、并在公开发布前已运行一年多的底气之一:软件与点亮准备和制造高度并行。准备项的具体内容/时序为通行实践示意。"
+  },
+  {
+   "k": "silicon",
+   "name": "first silicon 到手(交棒 ⑪ 制造 / ⑫ 封测 / bring-up)",
+   "desc": "等待的终点:foundry 跑完首批 wafer、(经划片/封装/初测后)把第一批裸片或封装样片交到团队手上,即 first silicon。它标志流片交接闭环、设计正式有了实物,后面接力进入 ⑪ 制造放量、⑫ 封测,以及把这颗芯片在 PCIe 加速卡上真正上电点亮(bring-up)、用前面备好的软件栈与测试程序验证功能/性能。首批硅的具体形态(裸片/已封装、片数)与到手时间随交付安排而定;TPU 不公开其封测/良率/首批数据,这里为通行实践示意。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "release"
+   ],
+   "cap": "① 打包交付 + 签字:把 ⑨ 闸门放行、版本锁定的最终 28nm GDSII 连同移交 checklist 打包成正式 tape-out release,负责人签字对『交出去的就是这一版、可投片』担责——交付的就是 TPU 那颗 256×256 阵列/24MiB UB/700MHz/PCIe 卡的芯片数据"
+  },
+  {
+   "keys": [
+    "foundry"
+   ],
+   "cap": "② foundry 排程开工:代工厂把这颗 die ≤331mm² 的 28nm 大芯片排进产线档期,据 GDSII 制整套光掩膜,投下首批 wafer 开跑——掩膜与首批投片是不小的固定投入,故前面必须全绿才放行(周期/工艺为通行实践示意)"
+  },
+  {
+   "keys": [
+    "wait"
+   ],
+   "cap": "③ 进入 turnaround 等待:从投片到首批硅要走完几百道工序,通常数周到数月;这段时间设计已冻结、无法再改(改即动掩膜、代价极高),是团队最该善用的窗口"
+  },
+  {
+   "keys": [
+    "prep",
+    "sw",
+    "bringup"
+   ],
+   "cap": "④ 等待期不空等、并行备战(虚线并行):团队转去打磨 TF/XLA 编译路径与 PCIe CISC 指令运行时、写 bring-up 点亮脚本与加速卡板级环境、备 ATE 与量产测试 pattern——目标是首批硅一到手就能立刻点亮、跑通、测试"
+  },
+  {
+   "keys": [
+    "silicon",
+    "test",
+    "board"
+   ],
+   "cap": "⑤ first silicon 到手、接力下一步:foundry 交出首批硅,流片交接闭环;用备好的软件栈与测试程序立刻上电 bring-up,接力进入 ⑪ 制造放量 / ⑫ 封测——软件与制造高度并行,正是约 15 个月走完立项到部署的底气"
+  }
+ ],
+ "before": [
+  "<b>定交付包的内容清单与版本锁定规则</b>:在交付前钉死 tape-out release 里要打包哪些东西——版本锁定的最终 GDSII、层映射/工艺接口信息、签核通过证据、移交 checklist 等,并约定这一切必须同属 ⑨ 闸门放行的那一版、字节级对得上,绝不允许『签的是 A 版、交出去的是 B 版』。交付包构成为这类大芯片通行交付实践,TPU 不公开其实际交付内容。",
+  "<b>定移交 checklist 与签字负责人</b>:约定移交时要逐项核对哪些事(数据完整性、版本号、工艺/掩膜接口要求、与 foundry 约定的交付格式等),以及由谁签字对『交付正确、可投片』负最终责任。流片交接靠 checklist + 签字把『交对了』落到具体的人,而不是把一堆文件一发了之。问责机制为通行实践,TPU 不公开其交付流程。",
+  "<b>对齐 foundry 的工艺/掩膜/交付接口要求</b>:提前和代工厂对清这颗 28nm 芯片要用的 PDK/runset 版本、掩膜层定义、数据格式与交付通道,确保交出去的数据 foundry 能直接排程开工、不会因接口不符卡在门口。具体接口要求随 foundry 与工艺而定;TPU 不公开其代工厂与工艺接口,这里为通行实践。",
+  "<b>排好等待期的并行准备计划</b>:在投片前就规划好 turnaround 这段窗口要并行推进什么——TF/XLA 软件栈与 PCIe CISC 指令运行时打磨、bring-up 点亮脚本、PCIe 加速卡板级/整机环境、ATE 与量产测试 pattern。把『等硅』变成『备战』,让首批硅一到就能接力,是大芯片项目压缩总周期的关键。准备项为通行实践示意。",
+  "<b>认清『流片后不可再改』这条硬约束</b>:交付前就要清醒——一旦投片,设计就冻结了,任何改动都要重制掩膜、重投片,代价以掩膜费和数月周期计。所以交付包必须是真正确认无误的那一版(这也是 ⑨ 闸门『全绿才放行』的意义所在),交接这一步容不得『先交了再说,有问题回头改』。"
+ ],
+ "during": [
+  "<b>铁律:交付的必须是闸门放行的那一版,签字担责</b>。tape-out release 不是随手发个文件,而是把版本锁定、签核确认过的那一版 GDSII 连同 checklist 正式交出,由负责人签字对『交出去的就是这一版、可以投片』负责。交错版本、交未签核版本,是流片交接最致命、也最不可挽回的错——投下去几百万掩膜费才发现交错,代价极高。",
+  "<b>foundry 排程开工后,纠错代价骤升</b>。代工厂一旦据 GDSII 制掩膜、投首批 wafer,设计就进入冻结期:再发现问题,要么忍着用、要么改掩膜重投片(掩膜费 + 数月周期)。这就是为什么前面要有那道『全绿才放行』的签核闸门——交接这一步把『慎重』兑现成『不可逆的投入』,所以交付前的每一次核对都值得。",
+  "<b>turnaround 是数周到数月的等待,但团队绝不空等</b>。从投片到首批硅,要走完几百道制造工序,周期长。聪明的团队把这段窗口当作并行备战期:制造在 foundry 跑,软件/点亮/测试在自己手里同步推进——图中虚线正表示这种『与制造并行、互不阻塞』。等硅期不空等,是大芯片项目能把总周期压到 Jouppi 团队那种约 15 个月节奏的关键。",
+  "<b>等待期重点之一:把软件栈打磨到『硅一到就能跑』</b>。趁等硅,把 TensorFlow/XLA 到 TPU 的编译路径、主机经 PCIe 3.0 下发那十几条 CISC 指令的运行时、weight-stationary 数据流的调度都调通,让首批硅上电后能立刻加载模型跑通——而不是硅到手了才开始写软件、白白浪费宝贵的点亮窗口。",
+  "<b>等待期重点之二:备好 bring-up 与测试程序,只待硅到</b>。同步写好首批硅到手要用的 bring-up(点亮)脚本、PCIe 加速卡板级与整机环境、以及量产要用的 ATE 测试向量/测试 pattern。准备越充分,first silicon 到手后从『上电』到『跑通』到『可量产测』的接力就越快,问题也越早暴露。这些准备项为通行实践示意,非 TPU 私有内容。",
+  "<b>诚实声明方法学来源(贯穿)</b>:tape-out release 交付包、移交 checklist 与签字问责、foundry 排程/制掩膜/投首批 wafer、turnaround 等待周期、等待期并行准备软件栈/bring-up/测试程序、first silicon 到手接力——其中制造/掩膜/排程/周期时长/封测的具体工艺、设备、数字均为这类 28nm 大芯片与 PCIe 加速卡的通行制造与交付实践。TPU v1 不公开其私有的制造/掩膜/封测/良率/bring-up 数据,也不公开其代工厂;本节以 TPU 已知结构(256×256 脉动阵列、24 MiB UB、700 MHz、28nm、≤331mm²、28–40W、PCIe 3.0 加速卡、十几条 CISC 指令、TensorFlow/XLA、weight-stationary)作为被交付、被排程、被等待、被准备点亮的那颗芯片来讲流片交接怎么做,文中所有周期/时长/工序数均为示意。仅『TPU v1 为 28nm 流片、约 15 个月从立项到部署、公开发布前已在数据中心运行一年多』为该文披露的公开事实。"
+ ],
+ "result": [
+  {
+   "label": "交接形态",
+   "value": "版本锁定 GDSII + 移交 checklist 打包成 tape-out release,负责人签字交付 → foundry 排程开工 → 等 turnaround → first silicon 到手"
+  },
+  {
+   "label": "交付包(签字)",
+   "value": "版本锁定的最终 28nm GDSII + 工艺/掩膜接口信息 + 签核证据 + 逐项 checklist;负责人签字对『交的就是这一版、可投片』担责"
+  },
+  {
+   "label": "foundry 动作",
+   "value": "排进产线档期 → 据 GDSII 制整套光掩膜 → 在 28nm 产线投首批 wafer 开跑(die ≤331mm² 大芯片,固定投入不小;周期/工艺为通行实践)"
+  },
+  {
+   "label": "等待期性质",
+   "value": "turnaround 数周到数月,设计已冻结、无法再改(改即动掩膜、代价极高);团队不空等,转去并行备战(时长为示意)"
+  },
+  {
+   "label": "等待期并行产出",
+   "value": "TF/XLA 编译路径 + PCIe CISC 指令运行时打磨好;bring-up 点亮脚本 + 加速卡板级/整机环境;ATE 与量产测试 pattern 备齐"
+  },
+  {
+   "label": "交棒下一步",
+   "value": "first silicon 到手、交接闭环 → 立刻上电 bring-up、用备好软件栈/测试程序验证 → 接力 ⑪ 制造放量 / ⑫ 封测"
+  }
+ ],
+ "after": [
+  "<b>release 交出后,跟踪 foundry 排程与里程碑</b>:交付不是终点——要和代工厂确认数据已接收、已排进档期、掩膜制作与首批投片的关键里程碑,保持沟通以便及时得知 turnaround 进展。这段时间设计已冻结,团队对制造本身只能等待与跟踪,无法再插手改设计。",
+  "<b>把等待期排满并行准备,只待硅到</b>:turnaround 期间集中把 TF/XLA 软件栈、PCIe CISC 指令运行时、bring-up 点亮脚本、加速卡整机环境、ATE/量产测试 pattern 全部备齐调通——目标是 first silicon 一到手就能立刻点亮、跑通、测试,而不是硅到了才开始准备,白白拖长总周期。",
+  "<b>守住『流片后不再改设计』的纪律</b>:等待期里即便想到某处还能优化,也不能动这一版——它已经在产线上跑了,改动只能等下一版重新走签核、重新流片。要把改进想法记录归档、留给后续版本,而不是在已投片的版本上『临时加塞』。",
+  "<b>first silicon 到手即接力,启动 bring-up 与封测</b>:foundry 交出首批硅后,流片交接闭环,立刻用备好的软件栈与测试程序上电点亮(bring-up)、跑通基本功能,并接力进入 ⑪ 制造放量与 ⑫ 封测;软件与制造高度并行,正是约 15 个月走完立项到部署、公开发布前已运行一年多的底气。",
+  "<b>归档交付包、签字记录与版本号</b>:把这一版的 tape-out release 交付内容、移交 checklist、签字记录、交付的 GDSII 版本号一并归档锁定,作为『这颗硅片是凭哪一版、由谁签字交付投片的』可追溯证据——硅后若出问题,这是回溯到底投了哪一版的第一手依据。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(TPU v1 的 256×256 8-bit MAC 脉动阵列、24 MiB Unified Buffer、700 MHz、28nm、≤331mm²、28–40W、weight-stationary、经 PCIe 3.0 收十几条 CISC 指令的加速卡形态、TensorFlow/XLA 软件栈,以及『28nm 流片、约 15 个月从立项到部署、公开发布前已在数据中心运行一年多』为该文披露的已知结构与事实,作为被交付、被排程、被等待、被准备点亮的对象;tape-out release 交付包与移交 checklist、签字问责、foundry 排程/制掩膜/投首批 wafer、turnaround 等待周期、等待期并行准备软件栈/bring-up/测试程序、first silicon 接力等制造与交付实践,以及其中制造/掩膜/排程/周期时长/封测/良率/bring-up 的具体工艺、设备、数字,均为这类 28nm 大芯片与 PCIe 加速卡的通行制造与交付实践,图与所有周期/时长/工序数均为示意,非 TPU v1 公开的私有制造、掩膜、封测、良率或 bring-up 数据;TPU v1 的具体代工厂资料未公开,本节不予指定)"
+}

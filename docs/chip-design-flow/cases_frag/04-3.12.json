@@ -1,0 +1,115 @@
+{
+ "secNum": "3.12",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · scan 链穿阵列 + MBIST 包 UB + 性能计数器的可测/可调试钩子",
+ "oneLine": "一块 65,536 个 MAC 的脉动阵列 + 28 MiB 片上 SRAM,流片后既要「测得出坏」也要「看得见跑得好不好」:scan 链把全阵列触发器串起来可移入移出做制造测试,MBIST 自动遍历 Unified Buffer/累加器查坏位,性能计数器实时吐出阵列利用率与 stall 数——这正是微架构阶段就要预埋的可测性(DFT)与可调试钩子。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 410\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"30\" y=\"26\">微架构级 DFT/debug 钩子(以 TPU 这类大阵列+大 SRAM 为例,机制为通行做法)</text><g class=\"cs-part\" data-k=\"mbist\" data-g=\"mbist\"><rect class=\"cs-box\" x=\"30\" y=\"44\" width=\"200\" height=\"150\" rx=\"8\" fill=\"#fff7ed\" stroke=\"#fdba74\"/><text class=\"cs-t\" x=\"130\" y=\"64\">MBIST 控制器</text><text class=\"cs-sub\" x=\"130\" y=\"80\">自动写/读回·查 SRAM 坏位</text><g class=\"cs-part\" data-k=\"ub\" data-g=\"ub\"><rect class=\"cs-cell\" x=\"50\" y=\"96\" width=\"160\" height=\"36\" rx=\"4\"/><text class=\"cs-cellt\" x=\"130\" y=\"118\">Unified Buffer 24 MiB</text></g><g class=\"cs-part\" data-k=\"acc\" data-g=\"acc\"><rect class=\"cs-cell\" x=\"50\" y=\"142\" width=\"160\" height=\"36\" rx=\"4\"/><text class=\"cs-cellt\" x=\"130\" y=\"164\">累加器 4 MiB</text></g></g><g class=\"cs-part\" data-k=\"mxu\" data-g=\"mxu\"><rect class=\"cs-box\" x=\"300\" y=\"44\" width=\"190\" height=\"190\" rx=\"8\"/><text class=\"cs-t\" x=\"395\" y=\"64\">MXU 256×256 阵列</text><rect class=\"cs-cell\" x=\"320\" y=\"80\" width=\"34\" height=\"30\" rx=\"3\"/><rect class=\"cs-cell\" x=\"360\" y=\"80\" width=\"34\" height=\"30\" rx=\"3\"/><rect class=\"cs-cell\" x=\"400\" y=\"80\" width=\"34\" height=\"30\" rx=\"3\"/><rect class=\"cs-cell\" x=\"440\" y=\"80\" width=\"34\" height=\"30\" rx=\"3\"/><rect class=\"cs-cell\" x=\"320\" y=\"116\" width=\"34\" height=\"30\" rx=\"3\"/><rect class=\"cs-cell\" x=\"360\" y=\"116\" width=\"34\" height=\"30\" rx=\"3\"/><rect class=\"cs-cell\" x=\"400\" y=\"116\" width=\"34\" height=\"30\" rx=\"3\"/><rect class=\"cs-cell\" x=\"440\" y=\"116\" width=\"34\" height=\"30\" rx=\"3\"/><rect class=\"cs-cell\" x=\"320\" y=\"152\" width=\"34\" height=\"30\" rx=\"3\"/><rect class=\"cs-cell\" x=\"360\" y=\"152\" width=\"34\" height=\"30\" rx=\"3\"/><rect class=\"cs-cell\" x=\"400\" y=\"152\" width=\"34\" height=\"30\" rx=\"3\"/><rect class=\"cs-cell\" x=\"440\" y=\"152\" width=\"34\" height=\"30\" rx=\"3\"/><text class=\"cs-sub\" x=\"395\" y=\"206\">每个 PE 的触发器串成 scan</text><text class=\"cs-sub\" x=\"395\" y=\"222\">↘ 全阵列状态可移入移出</text></g><g class=\"cs-part\" data-k=\"scan\" data-g=\"scan\"><polyline class=\"cs-arr\" points=\"306,95 337,95 337,131 377,131 377,95 417,95 417,131 457,131 457,167 337,167 337,167\" fill=\"none\" stroke=\"#c026d3\" stroke-dasharray=\"5 4\"/><text class=\"cs-note\" x=\"300\" y=\"252\" fill=\"#a21caf\">scan-in →</text><text class=\"cs-note\" x=\"430\" y=\"252\" fill=\"#a21caf\">→ scan-out</text></g><g class=\"cs-part\" data-k=\"perf\" data-g=\"perf\"><rect class=\"cs-box\" x=\"560\" y=\"44\" width=\"140\" height=\"190\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#c7d2fe\"/><text class=\"cs-t\" x=\"630\" y=\"64\">性能计数器</text><rect class=\"cs-cell\" x=\"574\" y=\"80\" width=\"112\" height=\"26\" rx=\"4\"/><text class=\"cs-cellt\" x=\"630\" y=\"98\">阵列利用率</text><rect class=\"cs-cell\" x=\"574\" y=\"112\" width=\"112\" height=\"26\" rx=\"4\"/><text class=\"cs-cellt\" x=\"630\" y=\"130\">stall / 空转拍数</text><rect class=\"cs-cell\" x=\"574\" y=\"144\" width=\"112\" height=\"26\" rx=\"4\"/><text class=\"cs-cellt\" x=\"630\" y=\"162\">UB 读写次数</text><rect class=\"cs-cell\" x=\"574\" y=\"176\" width=\"112\" height=\"26\" rx=\"4\"/><text class=\"cs-cellt\" x=\"630\" y=\"194\">指令/DMA 计数</text></g><line class=\"cs-arr\" x1=\"490\" y1=\"120\" x2=\"558\" y2=\"120\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"496\" y=\"112\">事件采样 →</text><g class=\"cs-part\" data-k=\"host\" data-g=\"host\"><rect class=\"cs-box\" x=\"240\" y=\"300\" width=\"240\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"326\">主机 / 调试端口</text><text class=\"cs-sub\" x=\"360\" y=\"344\">JTAG·PCIe 读出 → bring-up / 调优</text></g><line class=\"cs-arr\" x1=\"130\" y1=\"194\" x2=\"280\" y2=\"305\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><line class=\"cs-arr\" x1=\"395\" y1=\"234\" x2=\"380\" y2=\"298\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><line class=\"cs-arr\" x1=\"630\" y1=\"234\" x2=\"450\" y2=\"305\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><text class=\"cs-note\" x=\"30\" y=\"392\">注:scan/MBIST/性能计数器是大阵列+大 SRAM ASIC 的通行 DFT/debug 做法;TPU v1 未逐项公开链结构与计数器清单,此处为概念示意</text></svg>",
+ "legend": [
+  {
+   "k": "scan",
+   "name": "scan 链(贯穿 PE 阵列)",
+   "desc": "把阵列里成千上万个 PE 的触发器在测试模式下串成一条(或多条)移位链:从 scan-in 移入已知图样、跑一拍、从 scan-out 移出结果,就能定位是哪个 MAC/触发器坏了。这是大规模阵列制造测试(ATPG)的通行钩子——TPU v1 未公开其具体链数与缝合顺序,此处为概念示意。"
+  },
+  {
+   "k": "mbist",
+   "name": "MBIST(包住大 SRAM)",
+   "desc": "片上的内建自测控制器,对 24 MiB Unified Buffer 与 4 MiB 累加器自动跑 march 类算法(全 0/全 1/棋盘格写读回),无需从外部逐字节灌测试向量就能查出 SRAM 的固定型/耦合型坏位。大容量 SRAM 几乎都靠 MBIST 测,是通行做法。"
+  },
+  {
+   "k": "perf",
+   "name": "性能计数器",
+   "desc": "一组硬件计数器,实时累计阵列利用率(MAC 真正在算的占比)、stall/空转拍数、UB 读写次数、指令与 DMA 数等可观测事件。它不为「测坏」而为「调优」:bring-up 时看芯片到底卡在哪、稳态时看离峰值算力差多少。"
+  },
+  {
+   "k": "host",
+   "name": "主机 / 调试读出口",
+   "desc": "测试与调试结果的出口:制造测试经 JTAG/TAP 控制扫描与 MBIST 并读结果;性能计数器经 PCIe/寄存器接口被主机软件读走,喂给编译器(XLA)与性能工程师做迭代。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "scan",
+    "mxu"
+   ],
+   "cap": "① 制造测试·测阵列:把全阵列 PE 的触发器串成 scan 链,从 scan-in 移入测试图样、跑一拍、scan-out 移出比对——定位坏的 MAC,这是 ATPG 能覆盖大阵列的前提"
+  },
+  {
+   "keys": [
+    "mbist",
+    "ub",
+    "acc"
+   ],
+   "cap": "② 制造测试·测 SRAM:MBIST 控制器自动对 24 MiB Unified Buffer 和 4 MiB 累加器跑 march 算法写读回,查固定型/耦合型坏位,无需外部逐字节灌向量"
+  },
+  {
+   "keys": [
+    "perf"
+   ],
+   "cap": "③ 上电调试·看跑得怎样:性能计数器实时累计阵列利用率、stall/空转拍数、UB 读写与指令数——bring-up 时这是「芯片活没活、卡在哪」的眼睛"
+  },
+  {
+   "keys": [
+    "perf",
+    "host"
+   ],
+   "cap": "④ 读出·喂回调优:主机经 PCIe 读走计数器,算出离 ~92 TOPS 峰值还差多少、瓶颈在供数还是在指令,交给 XLA / 性能工程师迭代"
+  },
+  {
+   "keys": [
+    "scan",
+    "mbist",
+    "host"
+   ],
+   "cap": "⑤ 出口收口:扫描与 MBIST 结果经 JTAG/TAP 读出判良率与 binning,性能数据经 PCIe 读出做调优——「测坏」与「调优」两类钩子在主机端汇合"
+  }
+ ],
+ "before": [
+  "<b>先分清两类钩子,目标不同</b>:① 可测性(DFT,scan/MBIST)服务于「流片后能不能测出制造缺陷」,目标是测试覆盖率与可定位性;② 可调试/可观测(性能计数器)服务于「bring-up 与性能调优时能不能看见内部状态」,目标是低开销地暴露利用率/stall 等事件。两者都得在微架构阶段就预埋,事后加不进去。",
+  "<b>要拍板的设计量</b>:阵列切几条 scan 链、链怎么缝合(影响测试时间与布线)、哪些 SRAM 用 MBIST 及用哪种 march 算法、放哪些性能计数器、每个计数器多少位、采样/读出接口(JTAG vs PCIe 寄存器)。",
+  "<b>必备输入</b>:微架构给的阵列规模(256×256=65,536 个 PE)、片上 SRAM 清单与容量(UB 24 MiB + 累加器 4 MiB)、目标频率(700 MHz)与面积/功耗预算(28nm、die ≤331mm²、28–40W),以及主机侧已有的 PCIe/JTAG 通路。",
+  "<b>必须想清的取舍方向</b>:DFT 钩子是「面积/时序/功耗 vs 测试覆盖与可调试性」的取舍——scan 触发器、MBIST 控制器、计数器都吃面积、可能压时序;但少了它们,坏片测不出、性能问题盲调。先按良率与 bring-up 风险定「必须有」的覆盖目标,再在面积预算里配平。"
+ ],
+ "during": [
+  "<b>scan 链穿阵列:规整反而好测</b>:脉动阵列每个 PE 结构相同、布局规整,正适合把触发器统一串成 scan 链做 ATPG;链分多条可并行移位、缩短测试时间,但缝合顺序与时钟门控的扫描使能要协同,避免移位时阵列误算或链断。",
+  "<b>大 SRAM 必用 MBIST 而非外部向量</b>:24 MiB+4 MiB 这种容量,靠外部逐字节灌测试向量既慢又测不全;改用片上 MBIST 自跑 march 算法(写 0/写 1/棋盘/读回比对),控制器面积换来对固定型、地址译码、相邻位耦合等故障的高覆盖。",
+  "<b>性能计数器要测「对的事」</b>:对 weight-stationary 大阵列,最该量的是「阵列有没有被喂满」——所以利用率与 stall/空转拍数是头等计数器;再加 UB 读写次数、指令/DMA 数,才能区分瓶颈在供数带宽、在主机发指令、还是在阵列本身。计数器选错,bring-up 时照样盲。",
+  "<b>开销要压到可常开</b>:性能计数器若太重(太宽、读出干扰主流水)就不敢在真实负载下开。做法是窄计数器 + 周期性采样/快照、读出走旁路寄存器不打断数据通路,让它在稳态也能常开观测——这是这类推理 ASIC 的通行权衡。",
+  "<b>读出口复用已有通路</b>:scan/MBIST 经标准 JTAG/TAP 串行控制与读结果;性能计数器则映射成寄存器经 host 的 PCIe 3.0 读走——TPU v1 本就 host-driven、有 PCIe 与少量 CISC 指令通路,复用它做调试读出最省,无需另开高速调试总线。",
+  "<b>诚实边界:机制是通行做法,数字别编</b>:scan 链条数、MBIST 算法选型、性能计数器的具体清单与位宽,TPU v1 公开资料并未逐项披露。这里讲的是大阵列+大 SRAM 数据中心推理 ASIC 的通行 DFT/debug 实践,只把阵列规模、SRAM 容量、频率、PCIe/host-driven 这些已披露硬事实当背景,不臆造 TPU 专属的链长或计数器编号。"
+ ],
+ "result": [
+  {
+   "label": "阵列测试钩子",
+   "value": "scan 链穿全 65,536 PE,ATPG 定位坏 MAC(通行做法)"
+  },
+  {
+   "label": "SRAM 测试钩子",
+   "value": "MBIST 自测 UB 24 MiB + 累加器 4 MiB(march 算法)"
+  },
+  {
+   "label": "可观测钩子",
+   "value": "性能计数器:利用率 / stall / UB 读写 / 指令数"
+  },
+  {
+   "label": "调优目标",
+   "value": "看离 ~92 TOPS 峰值差多少、定位供数 vs 指令瓶颈"
+  },
+  {
+   "label": "读出接口",
+   "value": "JTAG/TAP(测试)+ PCIe 寄存器(性能),复用 host 通路"
+  },
+  {
+   "label": "诚实标注",
+   "value": "链数/算法/计数器清单 v1 未逐项公开,机制为通行实践"
+  }
+ ],
+ "after": [
+  "<b>验 DFT 覆盖率</b>:对 scan + ATPG 跑故障覆盖率,确认阵列与逻辑的卡滞/跳变故障覆盖达标;对 MBIST 确认 march 算法覆盖目标 SRAM 故障模型,并预留坏位修复(冗余行/列)的判定。",
+  "<b>bring-up 用计数器验「活没活」</b>:首颗硅上电时,先用性能计数器确认时钟、指令流、DMA、阵列利用率都动起来,再用计数器把第一处 stall/瓶颈点定位出来——这是硅前仿真到硅后调试的衔接。",
+  "<b>把计数器数据喂回调优环</b>:稳态负载下读出利用率/stall,交给 XLA 与性能工程师调 tiling、调度与供数,迭代逼近峰值算力;这条「测量→调优」闭环是 DFT/debug 钩子的最终价值。",
+  "<b>交接测试与调试文档</b>:把 scan 缝合顺序、MBIST 调用序列、计数器地址映射与含义,交给 ATE 测试程序、bring-up 团队与软件栈;链/计数器的接口契约写清,避免「钩子在、却没人会读」。",
+  "<b>守诚实红线再交付</b>:对外材料中,凡未经 v1 公开披露的链长、算法、计数器编号一律标注为通行实践或概念示意,只引用已披露的阵列规模、SRAM 容量、频率、PCIe/host-driven 等硬事实。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(阵列规模、UB/累加器容量、频率、host-driven/PCIe 为论文披露;scan 链结构、MBIST 算法、性能计数器具体清单未逐项公开,为大阵列+大 SRAM 数据中心推理 ASIC 的通行 DFT/debug 实践)"
+}

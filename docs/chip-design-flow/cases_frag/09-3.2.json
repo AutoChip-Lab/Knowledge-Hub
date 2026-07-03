@@ -1,0 +1,118 @@
+{
+ "secNum": "3.2",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 静态时序分析(STA)签核:用真实寄生 SPEF,在 700MHz 下穷举脉动阵列与全局所有时序路径,逐条查 setup(够快)/hold(别太快)",
+ "oneLine": "签核 STA 是给「700MHz 这个数到底成不成立」盖最终图章的一步:它不靠仿真跑激励,而是基于版图反提的真实寄生(SPEF),把 256×256 阵列内的每条 PE 间路径、控制逻辑路径、UB→阵列→累加器的全局路径,在最坏工艺/电压/温度角下逐条静态求解——每条路径既查 setup(数据在捕获沿前够不够快到)、又查 hold(数据有没有快到把上一拍冲掉);只有当所有路径在 700MHz 下 setup 与 hold 全部满足(slack ≥ 0,示意),700MHz 才是经得起签核、可以写进规格的最终主频。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-t\" x=\"360\" y=\"26\">签核 STA:用真实寄生,穷举所有时序路径,逐条查 setup / hold</text><g class=\"cs-part\" data-k=\"launch\" data-g=\"launch\"><rect class=\"cs-box\" x=\"40\" y=\"120\" width=\"120\" height=\"74\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"100\" y=\"150\">发起 FF</text><text class=\"cs-sub\" x=\"100\" y=\"170\">D Q · 上升沿</text><text class=\"cs-sub\" x=\"100\" y=\"186\">700MHz clk</text></g><g class=\"cs-part\" data-k=\"logic\" data-g=\"logic\"><rect class=\"cs-box\" x=\"250\" y=\"120\" width=\"200\" height=\"74\" rx=\"8\" fill=\"#dcfce7\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"350\" y=\"150\">组合逻辑路径</text><text class=\"cs-sub\" x=\"350\" y=\"170\">真实寄生 RC(SPEF)</text><text class=\"cs-sub\" x=\"350\" y=\"186\">阵列 PE / 控制 / 全局</text></g><g class=\"cs-part\" data-k=\"capture\" data-g=\"capture\"><rect class=\"cs-box\" x=\"540\" y=\"120\" width=\"120\" height=\"74\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"600\" y=\"150\">捕获 FF</text><text class=\"cs-sub\" x=\"600\" y=\"170\">D Q · 下一拍</text><text class=\"cs-sub\" x=\"600\" y=\"186\">setup/hold 窗</text></g><line class=\"cs-arr\" x1=\"160\" y1=\"157\" x2=\"248\" y2=\"157\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"450\" y1=\"157\" x2=\"538\" y2=\"157\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"clk\" data-g=\"clk\"><rect class=\"cs-box\" x=\"250\" y=\"226\" width=\"200\" height=\"50\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"350\" y=\"252\">时钟到达(含偏斜)</text><text class=\"cs-sub\" x=\"350\" y=\"270\">clk → 发起 / 捕获 FF</text></g><line class=\"cs-arr\" x1=\"300\" y1=\"226\" x2=\"120\" y2=\"196\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><line class=\"cs-arr\" x1=\"400\" y1=\"226\" x2=\"580\" y2=\"196\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><g class=\"cs-part\" data-k=\"setup\" data-g=\"setup\"><rect class=\"cs-box\" x=\"40\" y=\"300\" width=\"300\" height=\"76\" rx=\"8\" fill=\"#eef2ff\"/><text class=\"cs-t\" x=\"190\" y=\"326\">setup 检查(够快吗)</text><text class=\"cs-sub\" x=\"190\" y=\"346\">数据须在捕获沿前 ≥ setup 到</text><text class=\"cs-sub\" x=\"190\" y=\"364\">slack ≥ 0(示意);不过→可降频救</text></g><g class=\"cs-part\" data-k=\"hold\" data-g=\"hold\"><rect class=\"cs-box\" x=\"360\" y=\"300\" width=\"320\" height=\"76\" rx=\"8\" fill=\"#fef2f2\" stroke=\"#fca5a5\"/><text class=\"cs-t\" x=\"520\" y=\"326\">hold 检查(别太快吗)</text><text class=\"cs-sub\" x=\"520\" y=\"346\">数据须在捕获沿后 ≥ hold 才变</text><text class=\"cs-sub\" x=\"520\" y=\"364\">hold 是硬伤·必须全清(示意)</text></g><g class=\"cs-part\" data-k=\"exhaust\" data-g=\"exhaust\"><rect class=\"cs-box\" x=\"500\" y=\"60\" width=\"200\" height=\"44\" rx=\"8\" fill=\"#f1f5f9\" stroke=\"#94a3b8\"/><text class=\"cs-t\" x=\"600\" y=\"84\">穷举所有路径</text><text class=\"cs-sub\" x=\"600\" y=\"100\">vectorless · 无需激励</text></g></svg>",
+ "legend": [
+  {
+   "k": "launch",
+   "name": "发起 FF / 捕获 FF(一条时序路径的两端)",
+   "desc": "STA 把整颗 TPU 拆成无数条「发起触发器 → 组合逻辑 → 捕获触发器」的时序路径。发起 FF 在一个 700MHz 时钟沿把数据送出,数据穿过中间组合逻辑,必须在下一拍捕获 FF 的时钟沿来临时已经稳定。STA 的本质,就是对每一条这样的两端路径,核对数据到达时刻与时钟到达时刻的关系——这正是「时序能不能在 700MHz 收敛」的最小判定单元。"
+  },
+  {
+   "k": "logic",
+   "name": "组合逻辑路径 + 真实寄生(SPEF)",
+   "desc": "两个 FF 之间的组合逻辑(可能是阵列里一个 PE 的乘加级、控制 FSM 的一段译码、或 UB 到阵列的一段数据通路)。签核 STA 用的延迟不是估算,而是基于版图寄生反提(SPEF:每根线的真实 R、C)算出的导线 + 单元延迟——这让 STA 反映的是「这块硅真正会跑出的延迟」,而非布局前的乐观值;延迟算准,setup/hold 的判定才作数。"
+  },
+  {
+   "k": "setup",
+   "name": "setup 检查(够快吗 → 可降频救)",
+   "desc": "setup 问的是:数据有没有在捕获时钟沿到来前、提前至少一个 setup 时间稳定下来?它对应「这条路太慢」。setup 余量(slack)= 要求时间 − 到达时间,签核判据是 slack ≥ 0(示意)。setup 违例不是死刑——它和时钟周期挂钩,实在收不住可以靠降频(放长周期)把余量找回来,所以 setup 失败时 700MHz 这个数可能要打折。"
+  },
+  {
+   "k": "hold",
+   "name": "hold 检查(别太快吗 → 硬伤必须全清)",
+   "desc": "hold 问的是:数据有没有在捕获时钟沿之后、保持至少一个 hold 时间才变化?它对应「这条路太快」,新数据抢跑把本该被捕获的旧数据冲掉。hold 违例与时钟周期无关——降频救不了,只能靠插延迟单元(buffer)把快路径拖慢。因此 hold 是硬伤,签核铁律是必须 100% 全清,一条都不能漏,否则芯片在任何频率下都可能功能错。"
+  },
+  {
+   "k": "exhaust",
+   "name": "穷举所有路径(vectorless,无需激励)",
+   "desc": "STA 相对仿真的杀手锏:它是静态、无需测试激励的——不靠某组输入向量去「碰」时序,而是从图论上枚举设计里的每一条时序路径逐条求解。对 256×256 这种规整大阵列,路径数极多,仿真不可能覆盖全,而 STA 一次扫描就能把所有路径的最坏 setup/hold 全查到、且快得多。这种「穷举覆盖」正是签核敢用 STA 而非仿真来给 700MHz 背书的根本原因。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "launch",
+    "logic",
+    "capture"
+   ],
+   "cap": "① 把设计拆成无数条「发起 FF → 组合逻辑 → 捕获 FF」时序路径——阵列内 PE 间路径、控制逻辑路径、UB→阵列→累加器全局路径,都是被逐条检查的对象。"
+  },
+  {
+   "keys": [
+    "logic",
+    "clk"
+   ],
+   "cap": "② 灌入真实数据:基于版图反提的寄生 SPEF 算出每条路径的真实导线 + 单元延迟,再把真实时钟树的延迟与偏斜算进发起/捕获两端的时钟到达时刻。"
+  },
+  {
+   "keys": [
+    "exhaust"
+   ],
+   "cap": "③ 不跑激励、穷举所有路径(vectorless):从图上枚举设计中每一条时序路径,这种全覆盖是仿真做不到的,也是签核敢用 STA 给 700MHz 背书的根本。"
+  },
+  {
+   "keys": [
+    "setup"
+   ],
+   "cap": "④ 逐条查 setup(够快吗):数据须在捕获沿前提前 ≥ setup 稳定,判据 slack ≥ 0(示意);setup 收不住可靠降频救,但那意味 700MHz 要打折。"
+  },
+  {
+   "keys": [
+    "hold"
+   ],
+   "cap": "⑤ 逐条查 hold(别太快吗):数据须在捕获沿后保持 ≥ hold 才变;hold 是与频率无关的硬伤,降频救不了,签核铁律是必须全清、一条不漏。"
+  }
+ ],
+ "before": [
+  "<b>备真实寄生 SPEF</b>:从布线后的版图做寄生反提(RC extraction),拿到每根线的真实 R、C(SPEF)。签核 STA 的延迟必须建立在这份真实寄生上,而非布局前的估算——这是「STA 反映的是这块硅真会跑出的延迟」的前提。",
+  "<b>定 corner 集(MMMC/工艺角)</b>:列出要签核的工艺-电压-温度角与 RC 角组合——通常是慢角(慢工艺/低压/高温)管 setup、快角(快工艺/高压/低温)管 hold。多模多角(MMMC)一次把所有角和工作模式装进同一次签核,逐角逐模式都要全过。",
+  "<b>定模式与约束 SDC</b>:确认要签核的工作模式(功能模式、各测试/扫描模式等)与时序约束 SDC——700MHz 主时钟、IO 时序、多周期/伪路径(multicycle/false path)例外标注。约束错(比如漏标伪路径)会让 STA 报一堆假违例或漏掉真违例。",
+  "<b>定判据与签核工具</b>:定下 STA 签核的金标准判据——所有真实路径在所有角、所有模式下 setup slack ≥ 0 且 hold slack ≥ 0(示意),且 hold 须 100% 干净。签核 STA 的通行金标准工具是 PrimeTime;它给出的结论才算数。",
+  "<b>定豁免与 OCV/降额规则</b>:定好片上偏差(OCV / AOCV / POCV)与降额(derating)规则,给路径延迟留制造波动余量;同时定清哪些路径是合法例外(伪路径/多周期),需带依据签字豁免,而不是随手 set_false_path 把真违例藏掉。"
+ ],
+ "during": [
+  "<b>铁律:STA 不跑激励,靠穷举覆盖所有路径</b>。它是静态分析——从图论上枚举每一条「发起 FF → 组合逻辑 → 捕获 FF」路径逐条求最坏延迟,不依赖某组输入向量去碰。对 256×256 阵列这种路径海量的规整结构,仿真不可能覆盖全,而 STA 一次扫描就把所有路径的最坏 setup/hold 全查到,这正是它比仿真彻底、也快得多的根本。",
+  "<b>setup 与 hold 一起查,但性质不同要分开对待</b>。setup 查「够不够快」(慢角),hold 查「会不会太快」(快角);每条路径两边都要核。两者来自相反的工艺角,所以必须在各自最坏角下分别签核,不能只看一个角就放心。",
+  "<b>setup 违例可降频救,但代价是 700MHz 打折</b>。setup slack 与时钟周期挂钩——周期放长,余量回来。所以个别 setup 路收不住,理论上能靠降频救活;但 TPU 的卖点正是 700MHz/~92 TOPS,降频等于削性能,因此签核要尽量在 700MHz 下把 setup 全收住,降频是不得已的退路。",
+  "<b>hold 是硬伤,必须 100% 全清</b>。hold 违例与时钟周期无关——降频丝毫救不了,只能在快路径上插延迟 buffer 把它拖慢。哪怕只剩一条 hold 路没清,芯片在任何频率下都可能在真实硅上功能出错。所以签核对 hold 是零容忍:必须每条、每角、每模式全部 slack ≥ 0。",
+  "<b>延迟与时钟都用真实数据</b>。路径延迟来自 SPEF 真实寄生,时钟到达时刻来自真实时钟树(含偏斜),并叠加 OCV/降额留制造余量——只有输入都真,setup/hold 的判定才作数;用乐观估算签核等于自欺。",
+  "<b>诚实声明边界</b>:STA 签核流程、SPEF 反提、MMMC 多角多模式、OCV/降额、PrimeTime 金标准与 setup/hold 判据均为通行签核 EDA 实践;TPU v1 不公开其真实 SPEF、corner 集、时序报告与 slack 数字。本节仅以其已知结构(256×256 脉动阵列、24MiB UB、700MHz、28nm、示意 ≤331mm²、weight-stationary)作为被签核对象,文中 slack ≥ 0、setup/hold 余量等均为示意判据,非 TPU 私有签核数据。"
+ ],
+ "result": [
+  {
+   "label": "签核对象",
+   "value": "256×256 阵列内 PE 间路径 + 控制逻辑路径 + UB→阵列→累加器全局路径(穷举,vectorless)"
+  },
+  {
+   "label": "延迟/时钟来源",
+   "value": "版图反提真实寄生 SPEF + 真实时钟树(含偏斜)+ OCV/降额余量"
+  },
+  {
+   "label": "setup 判据(示意)",
+   "value": "所有路径 · 慢角 · setup slack ≥ 0(够快);收不住可降频,但 700MHz 打折"
+  },
+  {
+   "label": "hold 判据(示意)",
+   "value": "所有路径 · 快角 · hold slack ≥ 0(别太快);硬伤,必须 100% 全清"
+  },
+  {
+   "label": "覆盖范围",
+   "value": "MMMC 全部工艺-电压-温度角 × 全部工作模式,逐角逐模式全过才算签核通过"
+  },
+  {
+   "label": "主结论",
+   "value": "700MHz 下 setup/hold 全满足 → 700MHz 作为最终主频可写进规格;PrimeTime 报告为金标准凭据"
+  }
+ ],
+ "after": [
+  "<b>setup 违例 → 回 ⑧ ECO 修</b>:把失败路径交给时序 ECO——换更快单元(上 size)、加 buffer 重构路径、或调整时钟偏斜;实在收不住才考虑降频,并据此重定可签核的最高主频。",
+  "<b>hold 违例 → 必须 ECO 插延迟全清</b>:对每条 hold 失败路径插延迟单元(buffer)拖慢,清完再签;hold 是零容忍硬伤,绝不能带着任何一条 hold 违例往下走。",
+  "<b>ECO 后回真实寄生再签核</b>:任何 ECO 改了版图,就要对改动区域重做寄生反提、重跑 STA,确认新插的 buffer 没把别的路径推成新的 setup/hold 违例——签核必须基于改后的真实寄生,不能拿旧 SPEF 蒙混。",
+  "<b>汇总进 tape-out 闸门</b>:把 STA 签核结论(所有角、所有模式 setup/hold 全绿)作为一项,连同 IR/EM、DRC/LVS、LEC 等其它签核维度一起汇入 tape-out 闸门;唯有 STA 这一格变绿,700MHz 才被允许写进最终规格。",
+  "<b>STA 全绿才放行</b>:只有当签核 STA 证明脉动阵列与全局所有路径在 700MHz 下 setup/hold 全部满足,这颗 TPU 的 700MHz/~92 TOPS 才有了最终的时序背书,可以进入 tape-out。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(STA 签核流程、SPEF 寄生反提、MMMC 多角多模式、OCV/降额、PrimeTime 金标准与 setup/hold 判据为通行签核实践;TPU 不公开私有 SPEF/corner/时序报告,文中 slack ≥ 0、setup/hold 余量、降频策略均为示意,非 TPU 私有签核数据)"
+}

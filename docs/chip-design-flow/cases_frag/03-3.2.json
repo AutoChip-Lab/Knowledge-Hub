@@ -1,0 +1,122 @@
+{
+ "secNum": "3.2",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 软硬划分:把矩阵乘硬化,把复杂控制甩给主机",
+ "oneLine": "TPU 是「功能划分」最干脆的样板——只把推理里最值钱、最规整的几件事(矩阵乘、激活、归一化)硬化成固定功能块,其余复杂控制/调度全部留给主机软件。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"24\">虚线框 = 交给主机软件做的「复杂控制/调度」 · 实线框 = 硬化进芯片的「固定功能」</text><g class=\"cs-part\" data-k=\"host\" data-g=\"soft\"><rect class=\"cs-box\" x=\"40\" y=\"150\" width=\"140\" height=\"78\" rx=\"8\" stroke-dasharray=\"5 4\"/><text class=\"cs-t\" x=\"110\" y=\"180\">主机 Host</text><text class=\"cs-sub\" x=\"110\" y=\"198\">控制 / 调度 / 编排</text><text class=\"cs-sub\" x=\"110\" y=\"214\">TensorFlow / XLA</text></g><line class=\"cs-arr\" x1=\"180\" y1=\"189\" x2=\"232\" y2=\"189\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"182\" y=\"178\">PCIe 3.0</text><text class=\"cs-note\" x=\"182\" y=\"226\">~十几条 CISC 指令</text><rect x=\"236\" y=\"44\" width=\"450\" height=\"328\" rx=\"10\" fill=\"none\" stroke=\"#cbd5e1\" stroke-dasharray=\"2 4\"/><text class=\"cs-note\" x=\"246\" y=\"62\">TPU v1 芯片(固定功能数据通路)</text><g class=\"cs-part\" data-k=\"ddr3\" data-g=\"hard\"><rect class=\"cs-box\" x=\"252\" y=\"78\" width=\"120\" height=\"48\" rx=\"8\"/><text class=\"cs-t\" x=\"312\" y=\"100\">DDR3</text><text class=\"cs-sub\" x=\"312\" y=\"116\">8 GiB · ~30 GB/s 权重</text></g><g class=\"cs-part\" data-k=\"wfifo\" data-g=\"hard\"><rect class=\"cs-box\" x=\"252\" y=\"150\" width=\"120\" height=\"42\" rx=\"8\"/><text class=\"cs-t\" x=\"312\" y=\"170\">Weight FIFO</text><text class=\"cs-sub\" x=\"312\" y=\"185\">权重预取</text></g><line class=\"cs-arr\" x1=\"312\" y1=\"126\" x2=\"312\" y2=\"148\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"mxu\" data-g=\"hard\"><rect class=\"cs-box\" x=\"416\" y=\"150\" width=\"150\" height=\"92\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#818cf8\"/><text class=\"cs-t\" x=\"491\" y=\"184\">MXU 矩阵单元</text><text class=\"cs-sub\" x=\"491\" y=\"202\">256×256 脉动阵列</text><text class=\"cs-sub\" x=\"491\" y=\"218\">8-bit MAC · ~92 TOPS</text></g><line class=\"cs-arr\" x1=\"372\" y1=\"171\" x2=\"414\" y2=\"186\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"acc\" data-g=\"hard\"><rect class=\"cs-box\" x=\"416\" y=\"262\" width=\"150\" height=\"40\" rx=\"8\"/><text class=\"cs-t\" x=\"491\" y=\"282\">Accumulators</text><text class=\"cs-sub\" x=\"491\" y=\"296\">4 MiB · INT32 部分和</text></g><line class=\"cs-arr\" x1=\"491\" y1=\"242\" x2=\"491\" y2=\"260\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"act\" data-g=\"hard\"><rect class=\"cs-box\" x=\"592\" y=\"262\" width=\"94\" height=\"40\" rx=\"8\"/><text class=\"cs-t\" x=\"639\" y=\"282\">激活/池化</text><text class=\"cs-sub\" x=\"639\" y=\"296\">归一化</text></g><line class=\"cs-arr\" x1=\"566\" y1=\"282\" x2=\"590\" y2=\"282\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"ub\" data-g=\"hard\"><rect class=\"cs-box\" x=\"252\" y=\"262\" width=\"120\" height=\"92\" rx=\"8\"/><text class=\"cs-t\" x=\"312\" y=\"296\">Unified Buffer</text><text class=\"cs-sub\" x=\"312\" y=\"314\">24 MiB scratchpad</text><text class=\"cs-sub\" x=\"312\" y=\"330\">激活/中间结果</text></g><line class=\"cs-arr\" x1=\"372\" y1=\"280\" x2=\"414\" y2=\"200\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"639,302 639,344 312,344 312,356\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"396\" y=\"362\">结果写回 Unified Buffer →</text></svg>",
+ "legend": [
+  {
+   "k": "soft",
+   "name": "交给主机软件(虚线)",
+   "desc": "控制流、调度、算子编排、循环/分支这些「复杂但不在性能热点上」的事,全留给 CPU 主机和 TensorFlow/XLA——芯片里干脆不放这套电路。"
+  },
+  {
+   "k": "mxu",
+   "name": "MXU 矩阵单元(硬化核心)",
+   "desc": "推理的性能热点 = 矩阵乘。把它整块硬化成 256×256 脉动阵列,是整个划分的「主刀」:面积/功耗优先全给它。"
+  },
+  {
+   "k": "act",
+   "name": "激活/池化/归一化(专用单元)",
+   "desc": "矩阵乘之外少数几个高频、规整的逐元素算子,也值得各做一个固定功能单元,贴在阵列输出端就近处理。"
+  },
+  {
+   "k": "ub",
+   "name": "Unified Buffer(片上数据中枢)",
+   "desc": "24 MiB 软件管理的 scratchpad,把激活/中间结果留在片上,让各固定功能块之间「就近接力」,不必反复回 DDR3。"
+  },
+  {
+   "k": "wfifo",
+   "name": "Weight FIFO / DDR3(供数边界)",
+   "desc": "权重通路单独切出来:DDR3 存权重,Weight FIFO 预取喂进阵列——把「取权重」从计算块里解耦出去。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "soft",
+    "mxu",
+    "act"
+   ],
+   "cap": "① 划线:先把功能分成「值得硬化的固定功能」(MXU/激活/归一化,实线)和「留给软件的复杂控制」(虚线)两堆"
+  },
+  {
+   "keys": [
+    "soft"
+   ],
+   "cap": "② 定接口:主机经 PCIe 只下发约十几条 CISC 指令(读权重、做矩阵乘、激活、写回…),芯片不自己跑复杂控制流"
+  },
+  {
+   "keys": [
+    "wfifo",
+    "ddr3",
+    "mxu"
+   ],
+   "cap": "③ 切供数:权重通路单独成块——DDR3→Weight FIFO 预取→阵列,把「取权重」和「算矩阵乘」解耦"
+  },
+  {
+   "keys": [
+    "mxu",
+    "acc",
+    "act"
+   ],
+   "cap": "④ 串数据通路:阵列算→累加器接部分和→激活/池化/归一化各做一段,模块间用清晰单向接口接力"
+  },
+  {
+   "keys": [
+    "act",
+    "ub",
+    "mxu"
+   ],
+   "cap": "⑤ 闭环:结果写回 Unified Buffer,作为下一层的输入——所有数据在片上中枢周转,模块各司其职"
+  }
+ ],
+ "before": [
+  "<b>先确定要回答的问题</b>:这颗芯片到底「硬化哪些功能、软化哪些功能」?——哪几件事值得做成专用电路,哪些事留给主机软件去做。TPU 的答案:只硬化推理的性能热点,其余甩给 host。",
+  "<b>要拍板的设计量(旋钮)</b>:硬/软分界线放哪、要切出哪几个固定功能块、块与块之间的接口/数据格式、指令集抽象层级(细粒度 RISC 还是粗粒度 CISC)、控制权放在片上还是主机。",
+  "<b>必备输入</b>:负载画像(§3.1——哪些算子占了绝大多数时间,矩阵乘占压倒性比例)、算子的规整程度(越规整越值得硬化)、目标生态(要能被 TensorFlow/XLA 编译下来)。",
+  "<b>必须卡住的约束</b>:面积/功耗预算(硬化越多越贵,只能硬化最值钱的)、灵活性需求(模型会变,过度硬化会变砖)、与主机的带宽/延迟(决定能不能把控制甩出去)。"
+ ],
+ "during": [
+  "<b>定划分原则</b>:按「热点 + 规整度」下刀——只把又热又规整的功能硬化(矩阵乘最典型),其余越复杂越易变的越要留给软件。这是功能划分的核心权衡:专用性换效率,通用性换灵活。",
+  "<b>主刀矩阵乘</b>:推理时间几乎全耗在 GEMM 上 → 把它整块硬化成 MXU(256×256 阵列),面积/功耗预算优先满足它,其余块都围着它转。",
+  "<b>少数专用单元</b>:矩阵乘之外,激活函数/池化/归一化也是高频且规整的逐元素算子 → 各做一个小的固定功能单元,贴在阵列输出端就近处理,省得来回搬数。",
+  "<b>把复杂控制甩给主机</b>:循环、分支、算子调度、张量编排这些「复杂但不在性能热点上」的逻辑,TPU 干脆不做电路,改由主机经 PCIe 下发约十几条 CISC 指令来驱动(host-driven)——省下大量控制逻辑面积,全让给 MAC。",
+  "<b>选指令抽象</b>:既然控制在主机、一条指令要驱动一大片阵列干很久,就用粗粒度 CISC(如「做一次矩阵乘」「读权重」)而非细粒度 RISC,让指令带宽和主机开销都更省。",
+  "<b>定模块间接口</b>:DDR3/Weight FIFO(供权重)、Unified Buffer(供激活/存中间结果)、Accumulators(接部分和)各自切清边界,块与块之间用简单单向数据流接口接力,避免互相纠缠。"
+ ],
+ "result": [
+  {
+   "label": "硬化的固定功能",
+   "value": "MXU + 激活/池化/归一化"
+  },
+  {
+   "label": "软化(交主机)",
+   "value": "控制流/调度/算子编排"
+  },
+  {
+   "label": "主机接口",
+   "value": "PCIe 3.0 · CISC 指令"
+  },
+  {
+   "label": "指令规模",
+   "value": "仅约十几条 CISC 指令"
+  },
+  {
+   "label": "片上数据中枢",
+   "value": "24 MiB Unified Buffer"
+  },
+  {
+   "label": "供数边界",
+   "value": "DDR3 8 GiB → Weight FIFO"
+  }
+ ],
+ "after": [
+  "<b>验证划分合理</b>:用真实负载在模型上跑一遍,确认硬化的块确实吃掉了绝大多数时间、留给软件的部分没成为瓶颈(主机/PCIe 别反而拖后腿)——不达标就重新挪硬软分界线。",
+  "<b>把各块需求往下游传</b>:给计算核心(§3.3)定 MXU 规格、给存储层次(§3.4)提 Unified Buffer 容量、给数据流(§3.6)定供数节奏、给指令/控制定 CISC 指令集草案。",
+  "<b>冻结模块间接口</b>:把块与块之间的数据格式、握手、时序边界写成接口契约,作为各模块并行往微架构(④)推进的合同。",
+  "<b>评估灵活性留量</b>:复盘「甩给软件」的边界够不够灵活——模型若演进(新算子),靠主机软件还是得加专用单元?为后续产品家族留判断。",
+  "<b>定块级验证与交接</b>:每个固定功能块各自的验证计划、性能计数器埋点,以及与主机软件栈(TensorFlow/XLA)的协同验证。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017"
+}

@@ -1,0 +1,120 @@
+{
+ "secNum": "3.5",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 面积/时序/功耗权衡(PPA 铁三角):时序满足后,回收非关键路径的面积与漏电",
+ "oneLine": "综合不是只追一个目标,而是在 PPA 铁三角(Power 功耗 / Performance 时序 / Area 面积)里找平衡点——三者互相拉扯,压时序往往换来更大面积和更高功耗。本案例的钥匙是『TPU 脉动阵列时序宽裕』:65,536 个 8-bit MAC 排成规则短路径,在 700MHz(周期 1.43ns)下普遍有正 slack。综合便顺势把这些非关键路径上的单元 downsize、或从标准 Vt 换成高 Vt(HVT),在不破 700MHz 的前提下回收面积、压住漏电——这正是『先满足时序、再回收冗余』的 PPA 取舍范式。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">PPA 铁三角:动一角必牵动另两角;综合就是在 700MHz 约束下找平衡点</text><g class=\"cs-part\" data-k=\"timing\" data-g=\"timing\"><rect class=\"cs-box\" x=\"280\" y=\"44\" width=\"160\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"72\">时序(Timing)</text><text class=\"cs-sub\" x=\"360\" y=\"90\">700MHz → period 1.43ns</text></g><g class=\"cs-part\" data-k=\"area\" data-g=\"area\"><rect class=\"cs-box\" x=\"40\" y=\"232\" width=\"190\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"135\" y=\"260\">面积(Area)</text><text class=\"cs-sub\" x=\"135\" y=\"278\">单元数 / die 成本 / 331mm²</text></g><g class=\"cs-part\" data-k=\"power\" data-g=\"power\"><rect class=\"cs-box\" x=\"490\" y=\"232\" width=\"190\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"585\" y=\"260\">功耗(Power)</text><text class=\"cs-sub\" x=\"585\" y=\"278\">动态+漏电 / 28–40W</text></g><line class=\"cs-arr\" x1=\"320\" y1=\"108\" x2=\"150\" y2=\"228\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"150\" y1=\"228\" x2=\"320\" y2=\"108\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"400\" y1=\"108\" x2=\"572\" y2=\"228\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"572\" y1=\"228\" x2=\"400\" y2=\"108\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"230\" y1=\"264\" x2=\"486\" y2=\"264\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"490\" y1=\"270\" x2=\"234\" y2=\"270\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"218\" y=\"172\">压时序↑</text><text class=\"cs-note\" x=\"218\" y=\"188\">→面积/功耗常↑</text><text class=\"cs-note\" x=\"470\" y=\"172\">省面积/功耗</text><text class=\"cs-note\" x=\"470\" y=\"188\">→可能挤时序</text><g class=\"cs-part\" data-k=\"slack\" data-g=\"slack\"><rect class=\"cs-box\" x=\"245\" y=\"318\" width=\"230\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"344\">阵列时序宽裕(正 slack)</text><text class=\"cs-sub\" x=\"360\" y=\"364\">短规则路径,非关键路径多</text></g><polyline class=\"cs-arr\" points=\"360,318 360,114\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"reclaim\" data-g=\"reclaim\"><rect class=\"cs-box\" x=\"30\" y=\"318\" width=\"200\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"130\" y=\"342\">回收非关键路径</text><text class=\"cs-sub\" x=\"130\" y=\"362\">downsize / 换 HVT(高Vt)</text></g><polyline class=\"cs-arr\" points=\"130,318 130,300\" fill=\"none\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"save\" data-g=\"save\"><rect class=\"cs-box\" x=\"490\" y=\"318\" width=\"200\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"590\" y=\"342\">省面积+省漏电</text><text class=\"cs-sub\" x=\"590\" y=\"362\">保 700MHz 不破时序</text></g><polyline class=\"cs-arr\" points=\"590,318 590,300\" fill=\"none\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"230,350 245,350\" fill=\"none\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"475,350 490,350\" fill=\"none\" marker-end=\"url(#csar)\"/></svg>",
+ "legend": [
+  {
+   "k": "timing",
+   "name": "时序(Performance)——硬约束",
+   "desc": "TPU v1 跑 700MHz,综合时钟周期约 1.43ns(示意 create_clock -period 1.43)。时序是不可让步的硬约束:任何一条路径的建立(setup)裕量为负(负 slack),700MHz 就跑不动、92 TOPS 算力就拿不到。所以综合先保时序,再谈面积和功耗——这是 PPA 三角里优先级最高的一角。"
+  },
+  {
+   "k": "area",
+   "name": "面积(Area)——成本一角",
+   "desc": "门级网表占用的标准单元总面积,直接决定 die 尺寸(TPU v1 为 331mm²)与单片成本、良率。压时序常用『换更大驱动的单元』来加速,会把面积顶上去;反过来,时序有富余时把大单元换小(downsize),就能把面积省回来。面积与时序是典型的此消彼长。"
+  },
+  {
+   "k": "power",
+   "name": "功耗(Power)——动态+漏电",
+   "desc": "功耗分两块:动态功耗(随翻转活动)和漏电功耗(随单元一直耗,标准 Vt 单元快但漏电大)。TPU v1 整卡功耗 28–40W。大驱动单元和低 Vt 单元都更费电,所以压时序也常推高功耗;而把非关键路径换成高 Vt(HVT)单元,能在不影响其速度需求的前提下显著压低漏电。"
+  },
+  {
+   "k": "slack",
+   "name": "阵列时序宽裕(正 slack)",
+   "desc": "脉动阵列是高度规则的近邻互连结构,每个 PE 只与相邻 PE 短线相连,逻辑级数浅、走线短,在 700MHz 下这些路径普遍有较大正 slack(裕量)。这意味着阵列内大量路径『跑得比要求还快』——这部分速度过剩,正是可以拿去换面积和功耗的本钱。"
+  },
+  {
+   "k": "reclaim",
+   "name": "回收非关键路径(downsize / 换 HVT)",
+   "desc": "对正 slack 的非关键路径做面积/功耗回收:把驱动过强的单元换成更小的(downsize)以省面积,把对速度不敏感的单元从标准 Vt 换成高 Vt(HVT)以压漏电。综合工具按多 Vt(multi-Vt)库自动在『够快就行』的路径上做这种替换,前提是替换后该路径 slack 仍≥0、不把 700MHz 顶破。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "timing",
+    "area",
+    "power"
+   ],
+   "cap": "① 认清 PPA 铁三角:时序、面积、功耗三角互相牵制——压时序(换大单元、低 Vt)往往抬高面积和功耗,综合不是单目标优化,而是在三者间找可签核的平衡点"
+  },
+  {
+   "keys": [
+    "timing"
+   ],
+   "cap": "② 钉死硬约束:700MHz(示意 create_clock -period 1.43)是不可让步的一角,综合第一优先级是把所有路径 slack 修到 ≥0,先保住性能再谈省"
+  },
+  {
+   "keys": [
+    "slack"
+   ],
+   "cap": "③ 识别富余:脉动阵列规则短路径多,在 700MHz 下普遍正 slack——这些『跑得比要求快』的路径是面积/功耗回收的本钱"
+  },
+  {
+   "keys": [
+    "slack",
+    "reclaim"
+   ],
+   "cap": "④ 顺势回收:在正 slack 的非关键路径上 downsize 单元、把对速度不敏感的单元换高 Vt(HVT),用工具按多 Vt 库自动替换,换面积和漏电的双重收益"
+  },
+  {
+   "keys": [
+    "reclaim",
+    "area",
+    "power"
+   ],
+   "cap": "⑤ 守住底线:每次回收后复算时序,确保替换后路径 slack 仍≥0、700MHz 不破——在保性能前提下兑现省面积、省漏电,完成一轮 PPA 取舍"
+  }
+ ],
+ "before": [
+  "<b>先定 PPA 优先级与目标</b>:写清三角里谁是硬约束、谁是优化目标。TPU 这类高吞吐设计里,700MHz(性能)通常是不可让步的硬约束,面积和功耗是『在满足时序前提下尽量优化』的目标。优先级不明,综合就会在三者间反复打架、收敛不下来。",
+  "<b>备齐多 Vt 标准单元库</b>:要做面积/功耗回收,库里必须同时有标准 Vt(SVT,快但漏电大)、高 Vt(HVT,慢但漏电小)、有时还有低 Vt(LVT,最快但最漏)等多个 Vt 版本的同功能单元。综合才能在不同路径上各取所需。没有多 Vt 库,『换 HVT 省漏电』这条路就不存在。",
+  "<b>用 SDC 把时序约束写全</b>:create_clock 定义 700MHz 时钟、set_input_delay/set_output_delay 定义边界时序、必要的 false_path/multicycle_path 排除假路径。约束必须完整且真实——约束太松会让工具误判 slack 为正而过度回收,埋下后端修不回来的时序坑。",
+  "<b>设面积与功耗目标/预算</b>:给综合 set_max_area、定义漏电/动态功耗的优化意图(如启用 leakage 优化),让工具知道在时序满足后该往哪个方向回收。目标缺失时工具只会保时序、不会主动省,白白浪费阵列的正 slack。",
+  "<b>诚实边界</b>:Design Compiler/Genus/Yosys、SDC 约束、Liberty/多 Vt 库、downsize 与 Vt-swap 都是通行 EDA 综合实践;TPU v1 不会公开其约束脚本、单元库或 PPA/QoR 数字。这里用 TPU 的已知结构(256×256 脉动阵列、24 MiB UB、700MHz、28nm、weight-stationary)作为被综合对象来讲 PPA 取舍,所有 SDC 片段和数字均为示意。"
+ ],
+ "during": [
+  "<b>先收时序,后回收面积功耗</b>:综合按优先级走——第一轮全力把所有路径 slack 修到 ≥0(必要时换大驱动单元、抬 Vt 加速),把 700MHz 兜住;时序干净后,工具才在有富余的路径上做面积/功耗回收。次序反了(先省再修)往往两头落空。",
+  "<b>分清关键路径与非关键路径</b>:综合的优化是『按 slack 分别对待』:关键路径(slack 接近 0)动不得,甚至要花面积/功耗去保;非关键路径(slack 有富余,脉动阵列里很多)才是回收对象。阵列规则短路径多、正 slack 多,正是这类设计能省面积/功耗的物理本钱。",
+  "<b>downsize 省面积</b>:对正 slack 路径上驱动过强的单元,换成更小驱动版本——速度够用就好,省下的就是面积。示意:工具在 sizing 阶段对 slack>阈值的 cell 自动选更小尺寸,直到把 slack 削到接近(但不破)约束。",
+  "<b>换 HVT 压漏电</b>:对速度不敏感的路径,把标准 Vt 单元替换成高 Vt(HVT)同功能单元——HVT 慢一点但漏电低得多,在富余路径上这点变慢吃得下。multi-Vt 优化让大量非关键单元用 HVT、只在关键路径保留快的 SVT/LVT,整体漏电显著下降,这是漏电主导工艺(28nm)上省功耗的主力手段。",
+  "<b>每次回收都要复算时序、留安全裕量</b>:downsize 和换 HVT 都会让该路径变慢,把正 slack『吃掉一部分』。铁律是替换后 slack 仍须 ≥0,且最好留一点裕量给后端布线寄生和 OCV(片上偏差),否则综合看着达标、布线后却变负 slack,前功尽弃。",
+  "<b>铁律:三角联动,不能单看一角</b>。任何为省面积/功耗的动作都可能蚕食时序,任何为压时序的动作都可能抬面积/功耗。综合是在三角内找联合最优,而非把某一角优化到极致——只盯一角往往把另两角逼爆。"
+ ],
+ "result": [
+  {
+   "label": "时序约束(示意 SDC)",
+   "value": "create_clock -period 1.43 [get_ports clk]   // 700MHz,示意"
+  },
+  {
+   "label": "面积目标(示意)",
+   "value": "set_max_area 0   // 在满足时序前提下尽量小,工具据此回收面积"
+  },
+  {
+   "label": "多 Vt 库选项(示意)",
+   "value": "target_library = {svt.db, hvt.db}   // 关键路径用 SVT,非关键路径换 HVT"
+  },
+  {
+   "label": "回收手段",
+   "value": "正 slack 路径:downsize 单元省面积 + 换 HVT 压漏电(保 slack≥0)"
+  },
+  {
+   "label": "网表产物",
+   "value": "门级网表中关键路径多 SVT/大驱动、非关键路径多 HVT/小驱动的混合结果"
+  },
+  {
+   "label": "QoR 报告(示意)",
+   "value": "report_timing(WNS/TNS)+ report_area + report_power(动态/漏电),三表一起看权衡"
+  }
+ ],
+ "after": [
+  "<b>三张报告一起读,别只看一张</b>:report_timing 看 WNS/TNS(最差/总负裕量)确认时序无负 slack,report_area 看单元面积,report_power 看动态+漏电——三者要联合判读。只看面积省了多少而不核时序是否还干净,极易把后端逼进死角。",
+  "<b>核对回收没把关键路径逼负</b>:重点检查 downsize/换 HVT 之后,原本宽裕的路径有没有被削过头变成新的关键路径,或把别的路径连带顶破时序。若出现负 slack,要回滚那部分替换或重设 slack 阈值,再综合一轮。",
+  "<b>留足后端裕量,迭代收敛</b>:综合阶段的 slack 不是终点——布线寄生、时钟树偏差、OCV 都会在后端进一步吃掉裕量。要确认综合留的安全裕量够后端消化;若后端 STA 报出新违例,带着实际寄生回综合迭代(downsize 收一点、或把个别 HVT 换回 SVT)。",
+  "<b>做形式等价检查(LEC)</b>:综合改了单元尺寸和 Vt,但逻辑功能必须与 RTL 完全一致。用 LEC(逻辑等价检查,如 Conformal/Formality)证明门级网表与 RTL 等价,确认 downsize/Vt-swap 这些 PPA 优化只动了实现、没动功能,才能放心交后端。",
+  "<b>冻结并交后端</b>:形成本轮 PPA 签核结论(时序无违例、面积/功耗达标、LEC 通过),把门级网表连同 SDC 约束一起交布局布线;后端会在真实寄生下复核 PPA,必要时把权衡结果再带回综合微调,直至时序、面积、功耗三角联合收敛。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(256×256 8-bit MAC 脉动阵列、700MHz/~92 TOPS、24 MiB Unified Buffer、weight-stationary、28nm/331mm²/28–40W 为 v1 披露,作为被综合对象与 PPA 量级参照;Design Compiler/Genus、SDC 约束、Liberty/多 Vt 库、downsize 与 HVT 替换、LEC 及所有约束片段/QoR 数字为通行 EDA 综合实践与示意,非 TPU v1 私有披露)"
+}

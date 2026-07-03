@@ -1,0 +1,118 @@
+{
+ "secNum": "3.4",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 24 MiB Unified Buffer 扁平存储层次",
+ "oneLine": "存储层次不一定要「多层 cache」——TPU 反其道而行:用一块巨大的软件管理片上 SRAM 加片外 DDR3 的扁平两层结构,刻意砍掉硬件 cache 换确定性与面积,正是「存储层次为负载量身定制」的极端样本。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"44\" y=\"34\">近 / 快 / 小 ───────────────────────────────► 远 / 慢 / 大</text><text class=\"cs-note\" x=\"556\" y=\"62\">片上 SRAM</text><g class=\"cs-part\" data-k=\"acc\" data-g=\"acc\"><rect class=\"cs-box\" x=\"44\" y=\"70\" width=\"612\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"350\" y=\"94\">Accumulators 累加器 · 4 MiB</text><text class=\"cs-sub\" x=\"350\" y=\"113\">32-bit 部分和缓冲 · 紧贴 MXU 列出口 · 接住 65,536 路乘累加结果</text></g><g class=\"cs-part\" data-k=\"ub\" data-g=\"ub\"><rect class=\"cs-box\" x=\"44\" y=\"150\" width=\"612\" height=\"78\" rx=\"8\"/><text class=\"cs-t\" x=\"350\" y=\"178\">Unified Buffer 统一缓冲 · 24 MiB</text><text class=\"cs-sub\" x=\"350\" y=\"198\">软件管理 scratchpad(非硬件 cache)· 存激活 / 中间结果</text><text class=\"cs-sub\" x=\"350\" y=\"216\">读写带宽充裕 · 喂饱阵列各行 · 编译器静态调度搬运</text></g><text class=\"cs-note\" x=\"556\" y=\"262\">片外内存</text><g class=\"cs-part\" data-k=\"ddr\" data-g=\"ddr\"><rect class=\"cs-box\" x=\"44\" y=\"270\" width=\"612\" height=\"78\" rx=\"8\"/><text class=\"cs-t\" x=\"350\" y=\"298\">片外 DDR3 · 8 GiB</text><text class=\"cs-sub\" x=\"350\" y=\"318\">仅 ~30 GB/s · 主要存模型权重 · 经 Weight FIFO 流入阵列</text><text class=\"cs-sub\" x=\"350\" y=\"336\">带宽瓶颈所在 · 权重一次载入后 weight-stationary 复用,摊薄访存</text></g><g class=\"cs-part\" data-k=\"mxu\" data-g=\"mxu\"><rect class=\"cs-box\" x=\"44\" y=\"362\" width=\"300\" height=\"32\" rx=\"8\"/><text class=\"cs-t\" x=\"194\" y=\"384\">MXU 256×256 脉动阵列(计算核心)</text></g><g class=\"cs-part\" data-k=\"nocache\" data-g=\"nocache\"><rect class=\"cs-box\" x=\"372\" y=\"362\" width=\"284\" height=\"32\" rx=\"8\" stroke-dasharray=\"5 4\"/><text class=\"cs-t\" x=\"514\" y=\"384\">✗ 无硬件 Cache / 无预取器</text></g><line class=\"cs-arr\" x1=\"120\" y1=\"270\" x2=\"120\" y2=\"232\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"160\" y1=\"232\" x2=\"160\" y2=\"270\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"176\" y=\"252\">权重 ↑ / 调度搬运 ↓</text><line class=\"cs-arr\" x1=\"120\" y1=\"150\" x2=\"120\" y2=\"132\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"160\" y1=\"132\" x2=\"160\" y2=\"150\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"176\" y=\"146\">激活 ↑ / 结果回写 ↓</text></svg>",
+ "legend": [
+  {
+   "k": "acc",
+   "name": "Accumulators 累加器",
+   "desc": "4 MiB、32-bit,是层次中「最近、最快、最小」的一层,紧贴 MXU 各列出口,专门接住 65,536 路乘累加的高精度部分和。"
+  },
+  {
+   "k": "ub",
+   "name": "Unified Buffer 统一缓冲",
+   "desc": "24 MiB 片上 SRAM,是 TPU 存储层次的主体。它是软件管理的 scratchpad(不是硬件 cache),存激活与中间结果,搬进搬出全由编译器静态调度。"
+  },
+  {
+   "k": "ddr",
+   "name": "片外 DDR3",
+   "desc": "8 GiB、仅 ~30 GB/s,「最远、最慢、最大」的一层,主要存模型权重,经 Weight FIFO 流入阵列。带宽瓶颈即在此(v2+ 才换 HBM 缓解)。"
+  },
+  {
+   "k": "mxu",
+   "name": "MXU(消费方)",
+   "desc": "256×256 脉动阵列,是这套存储层次服务的对象:权重要 weight-stationary 地常驻、激活要按拍稳定供给,层次的每个尺寸都是为「喂饱它」反推的。"
+  },
+  {
+   "k": "nocache",
+   "name": "被砍掉的硬件 Cache",
+   "desc": "TPU 没有数据 cache、没有预取器、没有 cache 一致性逻辑——这块面积全让给了 SRAM 与 MAC,代价是搬运完全交给软件。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "ddr",
+    "ub"
+   ],
+   "cap": "① 权重从片外 8 GiB DDR3 取出,激活/中间结果驻留在 24 MiB Unified Buffer——「大而慢」放权重、「快而中」放激活"
+  },
+  {
+   "keys": [
+    "ub",
+    "mxu"
+   ],
+   "cap": "② Unified Buffer 按拍把激活泵进阵列各行;因为是 scratchpad,什么时候搬、搬多少全由编译器静态算好,没有 cache miss 这回事"
+  },
+  {
+   "keys": [
+    "mxu",
+    "acc"
+   ],
+   "cap": "③ 阵列算出的部分和落入最近的一层——4 MiB 32-bit 累加器(近大远小:越靠近计算越小越快)"
+  },
+  {
+   "keys": [
+    "acc",
+    "ub"
+   ],
+   "cap": "④ 过激活/归一化后结果写回 Unified Buffer,留作下一层的输入,尽量不再下到 DDR3"
+  },
+  {
+   "keys": [
+    "nocache"
+   ],
+   "cap": "⑤ 全程没有硬件 cache 介入:省下的面积与功耗换成更大的 SRAM、更确定的延迟"
+  }
+ ],
+ "before": [
+  "<b>先确定要回答的问题</b>:这颗芯片要不要传统的「多层 cache」金字塔?数据放哪、谁来决定搬运?TPU 的答案是:不要硬件 cache,改用一块超大的软件管理 SRAM。",
+  "<b>要拍板的设计量(旋钮)</b>:片上 SRAM 总容量、分给「激活」与「累加器」各多少、片外内存类型(DDR3/HBM)与带宽、缓冲到底做成 cache 还是 scratchpad、各层的读写口宽。",
+  "<b>必备输入</b>:负载画像(§3.1)给的工作集大小——一层激活/中间结果有多大、权重总量多少;计算核心(§3.3)对供数带宽与「权重常驻」的要求;工艺库里 SRAM 的密度/面积/功耗。",
+  "<b>必须卡住的约束</b>:面积/功耗预算(SRAM 很吃面积,和 MAC 抢)、片外带宽上限(决定权重喂得多快)、延迟确定性要求(数据中心 SLA 关心尾延迟,不想要 cache 抖动)。"
+ ],
+ "during": [
+  "<b>认定数据局部性</b>:推理的访存高度规整、可预测——一层的激活/权重在编译期就完全已知。这种负载下,硬件 cache 那套「动态发现局部性」的机制纯属浪费。",
+  "<b>cache vs scratchpad</b>:既然访问模式静态可知,就把缓冲做成软件管理的 scratchpad,由编译器/XLA 显式调度搬运 → 省掉 tag 阵列、比较逻辑、一致性与预取器,换来确定性延迟和更高的有效容量。",
+  "<b>定容量与切分</b>:24 MiB 给 Unified Buffer(装得下一层激活与中间结果,尽量让计算「不外溢」到 DDR3),4 MiB 给累加器(够接住 256 列的 32-bit 部分和)——近大远小,越靠近计算越小越快。",
+  "<b>定片外内存</b>:权重总量大、但每个权重在 weight-stationary 下会被复用很多次,对带宽要求被摊薄 → v1 用便宜的 8 GiB DDR3(~30 GB/s)就够(这也成了 v1 的主要瓶颈,v2+ 才上 HBM)。",
+  "<b>权衡带宽 vs 容量</b>:Unified Buffer 要能按拍喂饱阵列各行,读写口必须够宽;它的「大」首先是为带宽与「不外溢」服务,而非单纯堆容量。",
+  "<b>做减法的代价</b>:砍掉 cache 把复杂度甩给了软件——编译器必须把每一次数据搬运排得严丝合缝,排不好就让阵列饿着(利用率掉)。这是 TPU 用「软件难度」换「硬件确定性 + 面积」的核心取舍。"
+ ],
+ "result": [
+  {
+   "label": "片上主缓冲",
+   "value": "24 MiB Unified Buffer(软件管理 scratchpad)"
+  },
+  {
+   "label": "累加器",
+   "value": "4 MiB · 32-bit"
+  },
+  {
+   "label": "片外内存",
+   "value": "8 GiB DDR3 · ~30 GB/s"
+  },
+  {
+   "label": "层次形态",
+   "value": "扁平两层 + 无硬件 cache / 预取"
+  },
+  {
+   "label": "搬运决策方",
+   "value": "编译器静态调度(XLA)"
+  },
+  {
+   "label": "主瓶颈",
+   "value": "片外带宽(v2+ 换 HBM 缓解)"
+  }
+ ],
+ "after": [
+  "<b>验证达标</b>:用 roofline / cycle 级模型看阵列是被算力卡还是被「Unified Buffer 喂数」卡;统计 DDR3 实际带宽占用,确认权重复用是否真把片外访存摊薄到位——不达标就回去调 SRAM 容量切分或片外内存选型。",
+  "<b>把需求往下游传</b>:给片上互连(§3.5)提 Unified Buffer↔MXU 的对分带宽要求;给数据流(§3.6)交「编译器负责所有搬运」这条契约;把「片外只有 ~30 GB/s」作为硬约束钉给软件栈。",
+  "<b>交给软件/编译器</b>:scratchpad 不会替你藏延迟,XLA 必须把权重预载、激活泵送、结果回写排成确定的时间表——这条「软件管搬运」的难度要在交接时讲清。",
+  "<b>定可测性钩子</b>:埋带宽/占用率性能计数器(Unified Buffer 读写、DDR3 占用、阵列因等数据的 stall),并为大块片上 SRAM 安排 MBIST。",
+  "<b>留演进路径</b>:记录 v1 的片外带宽瓶颈作为下一代的首要改进项——这正是 TPU v2/v3 改用 HBM 的直接动因。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017"
+}

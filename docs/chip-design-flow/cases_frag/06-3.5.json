@@ -1,0 +1,121 @@
+{
+ "secNum": "3.5",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 覆盖率(coverage):代码覆盖自动收、功能覆盖手写 covergroup,用 CDV 把空洞补满",
+ "oneLine": "覆盖率是回答「验够了没」的唯一客观尺子——但它分两层:代码覆盖(行/分支/翻转/FSM)由仿真器自动收,只问「RTL 哪几行被跑到」;功能覆盖要人手写 covergroup,把 TPU 的各矩阵尺寸、是否溢出、每条 CISC 指令、FIFO 满空、各条 CDC 路径都列成 bin,问「该测的场景测到没」。两者都满也只证明「跑到了」,不等于「结果对了」——覆盖到 ≠ 检查对,这是覆盖率最致命的误读。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"28\">两类覆盖率:左=工具自动收(代码),右=手写定义(功能)</text><g class=\"cs-part\" data-k=\"dut\" data-g=\"dut\"><rect class=\"cs-box\" x=\"280\" y=\"44\" width=\"160\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"72\">DUT:TPU 子模块</text><text class=\"cs-sub\" x=\"360\" y=\"90\">阵列 / UB / CISC 指令 / CDC</text></g><line class=\"cs-arr\" x1=\"300\" y1=\"108\" x2=\"170\" y2=\"148\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"420\" y1=\"108\" x2=\"552\" y2=\"148\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"code\" data-g=\"code\"><rect class=\"cs-box\" x=\"40\" y=\"150\" width=\"260\" height=\"118\" rx=\"8\"/><text class=\"cs-t\" x=\"170\" y=\"176\">代码覆盖(自动收)</text><text class=\"cs-sub\" x=\"170\" y=\"198\">行 / 分支 / 翻转(toggle)</text><text class=\"cs-sub\" x=\"170\" y=\"216\">条件 / FSM 状态·跳转</text><text class=\"cs-note\" x=\"60\" y=\"240\" text-anchor=\"start\">仿真器自动埋点统计</text><text class=\"cs-note\" x=\"60\" y=\"256\" text-anchor=\"start\">答:RTL 哪些代码被跑到了?</text></g><g class=\"cs-part\" data-k=\"func\" data-g=\"func\"><rect class=\"cs-box\" x=\"420\" y=\"150\" width=\"262\" height=\"118\" rx=\"8\"/><text class=\"cs-t\" x=\"551\" y=\"176\">功能覆盖(手写 covergroup)</text><text class=\"cs-sub\" x=\"551\" y=\"198\">矩阵尺寸 / 是否溢出 / 各指令</text><text class=\"cs-sub\" x=\"551\" y=\"216\">FIFO 满空 / 各 CDC 路径</text><text class=\"cs-note\" x=\"440\" y=\"240\" text-anchor=\"start\">人按验证计划定义 bin</text><text class=\"cs-note\" x=\"440\" y=\"256\" text-anchor=\"start\">答:该测的场景测到了吗?</text></g><line class=\"cs-arr\" x1=\"170\" y1=\"268\" x2=\"300\" y2=\"300\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"551\" y1=\"268\" x2=\"420\" y2=\"300\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"cov\" data-g=\"cov\"><rect class=\"cs-box\" x=\"280\" y=\"302\" width=\"160\" height=\"62\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"328\">覆盖率报告</text><text class=\"cs-sub\" x=\"360\" y=\"346\">收敛进度:何处仍空(hole)</text></g><g class=\"cs-part\" data-k=\"cdv\" data-g=\"cdv\"><rect class=\"cs-box\" x=\"500\" y=\"306\" width=\"190\" height=\"54\" rx=\"8\"/><text class=\"cs-t\" x=\"595\" y=\"330\">CDV:盯空洞补激励</text><text class=\"cs-sub\" x=\"595\" y=\"348\">覆盖驱动验证(闭环)</text></g><polyline class=\"cs-arr\" points=\"440,326 470,326 470,333 500,333\" fill=\"none\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"660,306 700,306 700,76 440,76\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"600\" y=\"290\">回写:补/改激励</text><g class=\"cs-part\" data-k=\"warn\" data-g=\"warn\"><rect class=\"cs-box\" x=\"40\" y=\"306\" width=\"200\" height=\"62\" rx=\"8\"/><text class=\"cs-t\" x=\"140\" y=\"330\">警示</text><text class=\"cs-sub\" x=\"140\" y=\"348\">覆盖到 ≠ 检查对</text></g></svg>",
+ "legend": [
+  {
+   "k": "code",
+   "name": "代码覆盖(工具自动收)",
+   "desc": "仿真器对 RTL 自动埋点,统计哪些行(line)、分支(branch)、信号翻转(toggle 0↔1)、条件组合、FSM 状态与状态跳转被激励跑到过。无需手写,是「结构性」覆盖——回答『代码有没有被执行到』。代码覆盖 100% 也只说明没有死代码被漏跑,不代表功能验全。"
+  },
+  {
+   "k": "func",
+   "name": "功能覆盖(手写 covergroup)",
+   "desc": "验证工程师按验证计划手写 covergroup/coverpoint,把『有意义的场景』显式列成 bin:各矩阵尺寸、累加器是否溢出、每一条主机下发的 CISC 指令、Weight FIFO/UB 的满与空、每一条跨时钟域(CDC)路径……回答『我想验的情形到底有没有发生过』。它是验证计划的可量化镜像——没写进 covergroup 的场景,工具永远不会提醒你漏了。"
+  },
+  {
+   "k": "cov",
+   "name": "覆盖率报告(收敛进度 / 空洞)",
+   "desc": "把两类覆盖汇总成百分比与 bin 命中表,直观看出收敛到哪、哪些 bin 仍为 0(coverage hole)。它是签核前『验够了没』的客观证据,也是 CDV 循环每轮要盯的输入。"
+  },
+  {
+   "k": "cdv",
+   "name": "CDV:覆盖驱动验证(闭环补洞)",
+   "desc": "Coverage-Driven Verification:看报告里哪些 bin 还空,反过来定向补/改激励(加约束、写定向用例、调随机权重)去打那些空洞,再跑、再看报告,循环到覆盖收敛。让『验证去哪』由数据(覆盖空洞)而非工程师感觉来驱动。"
+  },
+  {
+   "k": "warn",
+   "name": "警示:覆盖到 ≠ 检查对",
+   "desc": "覆盖率只证明『某场景被激励触发过』,不证明『DUT 在该场景下行为正确』——判对错是 scoreboard/参考模型/断言的活。100% 覆盖 + 没接对照检查 = 跑得很全但一个 bug 都抓不到。这是覆盖率最容易被误读、也最危险的一条红线。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "dut",
+    "code"
+   ],
+   "cap": "① 自动收代码覆盖:对 TPU 子模块(阵列 PE、UB 控制、CISC 指令译码、CDC 边界)开仿真器埋点,自动统计行/分支/翻转/FSM 被跑到的比例——不用写一行覆盖代码"
+  },
+  {
+   "keys": [
+    "dut",
+    "func"
+   ],
+   "cap": "② 手写功能覆盖:按验证计划写 covergroup,把各矩阵尺寸、是否溢出、每条 CISC 指令、FIFO 满空、各 CDC 路径列成 bin,工具据此统计『想验的场景命中没』"
+  },
+  {
+   "keys": [
+    "code",
+    "func",
+    "cov"
+   ],
+   "cap": "③ 汇总报告:两类覆盖合并出收敛进度,标出仍为 0 的 bin(coverage hole)——这就是『验证还差哪』的客观清单"
+  },
+  {
+   "keys": [
+    "cov",
+    "cdv",
+    "dut"
+   ],
+   "cap": "④ CDV 闭环:盯着空洞反推激励——加约束、写定向用例、调随机权重去打那些 bin,回灌 DUT 再跑,循环直到覆盖收敛到目标"
+  },
+  {
+   "keys": [
+    "warn"
+   ],
+   "cap": "⑤ 牢记红线:覆盖到 ≠ 检查对。覆盖率只说『跑到了』,对错要靠 scoreboard/参考模型/断言去判——两条腿都得有,缺一覆盖率就是假安全感"
+  }
+ ],
+ "before": [
+  "<b>先定覆盖目标与签核门槛</b>:在验证计划里写清各类覆盖的收敛标准——例如代码覆盖(行/分支/翻转/FSM)目标 100%、关键 FSM 跳转 100%、功能覆盖按 bin 列表要求 100% 命中,并约定『允许豁免(waiver)的 bin』及其书面理由。没有量化门槛,覆盖率就只是个好看的数字。",
+  "<b>把功能覆盖点从规格反推出来</b>:覆盖什么不能拍脑袋,要从 TPU 已知结构逐项映射成 coverpoint——矩阵尺寸取值、累加器溢出/不溢出、每一条 CISC 指令类型、Weight FIFO/UB 的满/空/半满、每一条跨时钟域路径。规格里每个『可变维度』都该在 covergroup 里有对应 bin。",
+  "<b>定交叉覆盖(cross)清单</b>:很多 bug 藏在维度组合处——如『大矩阵 × 累加器接近溢出』『FIFO 满 × 同时来新指令』『某 CDC 路径 × 复位』。提前定好哪些 coverpoint 需要 cross,避免单维都 100% 而组合从未发生。",
+  "<b>明确激励策略与完成判据</b>:约束随机为主、定向用例补角落;完成判据写成可验证句:『所有 covergroup 达标 + 代码覆盖达标 + 回归零失败 + 剩余 hole 均有书面 waiver』,而非模糊的『差不多了』。",
+  "<b>诚实边界</b>:代码/功能覆盖、covergroup、CDV 都是数字 IC 的通行验证实践;TPU v1 不会公开其覆盖率数字或 covergroup 细节。这里以 TPU 的已知结构(脉动阵列、Unified Buffer、CISC 指令接口、多时钟域)作为被覆盖的对象来讲覆盖率方法,所有片段均为示意。"
+ ],
+ "during": [
+  "<b>代码覆盖让工具自动收、不要手工干预</b>:开启仿真器的 line/branch/toggle/FSM 覆盖收集,跑回归时自动累积。它便宜、零编写成本,先用它快速暴露『从没被跑到的代码块』——比如某条永远走不到的指令分支、某个 FSM 死状态。",
+  "<b>功能覆盖必须手写、且要写得『有意义』</b>:示意 covergroup —— covergroup cg_mxu; matrix_sz: coverpoint sz { bins small={...}; bins large={...}; } overflow: coverpoint acc_ovf { bins yes; bins no; } endgroup(示意)。bin 划分要对应真实风险点(溢出边界、尺寸极值),而不是机械地把数值范围等分。",
+  "<b>把 TPU 各被验对象逐一映射成 coverpoint</b>:CISC 指令——每条指令类型一个 bin,确认主机下发的那十几条指令全被覆盖;FIFO/UB——满、空、半满、满时来写/空时来读各一个 bin;CDC——每条跨时钟域路径一个 bin,确认每条都在不同相位关系下被激励过。漏列一项,该项就成了覆盖盲区。",
+  "<b>用 CDV 闭环驱动激励,而非盲跑</b>:每轮回归后看覆盖报告找空 bin,反推为什么没打到——是约束太窄?随机种子不够?还是需要专门的定向用例?针对性补激励再跑。让覆盖空洞而不是工程师直觉来指挥『下一步验哪』,效率远高于无脑加随机。",
+  "<b>区分『代码覆盖满』与『功能覆盖满』</b>:代码覆盖 100% 只说明每行 RTL 被执行过,但同一行在不同数据/时序下可能行为迥异;功能覆盖才管这些场景。两者互补、缺一不可——只看代码覆盖会高估验证完成度。",
+  "<b>铁律:覆盖到 ≠ 检查对</b>。覆盖率统计的是『激励触发了某场景』,对错由 scoreboard/参考模型/断言判定。绝不能因为覆盖率漂亮就放松检查端——必须保证每个被覆盖的场景同时有对照在判结果;否则就是『跑得全、抓不到』的假安全感。"
+ ],
+ "result": [
+  {
+   "label": "代码覆盖(自动)",
+   "value": "行 / 分支 / 翻转(toggle)/ 条件 / FSM 状态·跳转"
+  },
+  {
+   "label": "功能覆盖(手写)",
+   "value": "矩阵尺寸 / 是否溢出 / 各 CISC 指令 / FIFO 满空 / 各 CDC 路径"
+  },
+  {
+   "label": "covergroup(示意)",
+   "value": "coverpoint acc_ovf { bins yes; bins no; }  // 累加器溢出与否各一 bin"
+  },
+  {
+   "label": "交叉覆盖(示意)",
+   "value": "cross matrix_sz, acc_ovf;  // 大矩阵×接近溢出的组合是否触发过"
+  },
+  {
+   "label": "CDV 闭环",
+   "value": "看空 bin → 补/改激励 → 重跑 → 直到覆盖收敛"
+  },
+  {
+   "label": "签核判据",
+   "value": "覆盖达标 + 回归零失败 + 剩余 hole 均有书面 waiver"
+  }
+ ],
+ "after": [
+  "<b>跟踪覆盖收敛曲线</b>:把每轮回归的代码/功能覆盖率画成随时间上升的曲线,观察是否还在涨、在哪条 bin 上卡住;曲线趋平且仍有空 bin,说明现有激励已挖不动,需要新的定向用例或调约束,而不是继续盲跑随机。",
+  "<b>逐一清空 coverage hole 或写 waiver</b>:对每个仍为 0 的 bin,要么补激励打到它,要么给出书面豁免理由(如该组合物理上不可能发生)。绝不允许『无解释的空洞』进签核——这是事后被追责最常见的口子。",
+  "<b>把覆盖纳入回归,防『修着修着覆盖掉了』</b>:覆盖率随 RTL/激励改动会波动,要在持续回归里固化覆盖收集,确保新改动不会让原本命中的 bin 重新变空、也不会引入新的未覆盖代码。",
+  "<b>覆盖率连同 bug 收敛一起看才算数</b>:覆盖收敛只是必要条件,还要确认 bug 发现率已经压平(长时间随机跑不出新 bug)、且每个被覆盖场景都有检查端在判对错——再次落实『覆盖到 ≠ 检查对』,两个收敛都达到才够签核底气。",
+  "<b>签核并交综合</b>:形成覆盖率签核报告(各类覆盖达标、回归全绿、waiver 列表、bug 收敛证据),作为功能验证关闭的客观依据;随后把已验证、覆盖达标的 RTL 冻结、交后端综合,并把 covergroup 与回归套件留作后续改动的回归基线。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(256×256 8-bit MAC 脉动阵列、24 MiB Unified Buffer、片外 8 GiB DDR3、约十几条 CISC 指令、多时钟域结构为 v1 披露,作为被覆盖对象;代码/功能覆盖、covergroup、CDV 及所有覆盖率数字/片段为数字 IC 通行验证实践与示意,非 TPU v1 私有披露)"
+}

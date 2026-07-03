@@ -1,0 +1,149 @@
+{
+ "secNum": "3.1",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 脉动阵列 = 一条 256 级的二维流水线",
+ "oneLine": "脉动阵列本质就是一条二维流水线:数据每拍前进一个 PE,这是 TPU 用「延迟换吞吐」的经典样板。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 380\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><g class=\"cs-part\" data-g=\"preg\"><rect x=\"253\" y=\"77\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"307\" y=\"77\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"361\" y=\"77\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"415\" y=\"77\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"253\" y=\"131\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"307\" y=\"131\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"361\" y=\"131\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"415\" y=\"131\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"253\" y=\"185\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"307\" y=\"185\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"361\" y=\"185\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"415\" y=\"185\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"253\" y=\"239\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"307\" y=\"239\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"361\" y=\"239\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"415\" y=\"239\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"253\" y=\"293\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"307\" y=\"293\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"361\" y=\"293\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"415\" y=\"293\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-k=\"0-0\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"210\" y=\"64\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"231\" y=\"89\">PE</text></g><g class=\"cs-part\" data-k=\"0-1\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"264\" y=\"64\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"285\" y=\"89\">PE</text></g><g class=\"cs-part\" data-k=\"0-2\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"318\" y=\"64\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"339\" y=\"89\">PE</text></g><g class=\"cs-part\" data-k=\"0-3\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"372\" y=\"64\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"393\" y=\"89\">PE</text></g><g class=\"cs-part\" data-k=\"0-4\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"426\" y=\"64\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"447\" y=\"89\">PE</text></g><g class=\"cs-part\" data-k=\"1-0\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"210\" y=\"118\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"231\" y=\"143\">PE</text></g><g class=\"cs-part\" data-k=\"1-1\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"264\" y=\"118\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"285\" y=\"143\">PE</text></g><g class=\"cs-part\" data-k=\"1-2\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"318\" y=\"118\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"339\" y=\"143\">PE</text></g><g class=\"cs-part\" data-k=\"1-3\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"372\" y=\"118\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"393\" y=\"143\">PE</text></g><g class=\"cs-part\" data-k=\"1-4\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"426\" y=\"118\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"447\" y=\"143\">PE</text></g><g class=\"cs-part\" data-k=\"2-0\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"210\" y=\"172\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"231\" y=\"197\">PE</text></g><g class=\"cs-part\" data-k=\"2-1\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"264\" y=\"172\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"285\" y=\"197\">PE</text></g><g class=\"cs-part\" data-k=\"2-2\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"318\" y=\"172\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"339\" y=\"197\">PE</text></g><g class=\"cs-part\" data-k=\"2-3\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"372\" y=\"172\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"393\" y=\"197\">PE</text></g><g class=\"cs-part\" data-k=\"2-4\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"426\" y=\"172\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"447\" y=\"197\">PE</text></g><g class=\"cs-part\" data-k=\"3-0\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"210\" y=\"226\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"231\" y=\"251\">PE</text></g><g class=\"cs-part\" data-k=\"3-1\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"264\" y=\"226\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"285\" y=\"251\">PE</text></g><g class=\"cs-part\" data-k=\"3-2\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"318\" y=\"226\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"339\" y=\"251\">PE</text></g><g class=\"cs-part\" data-k=\"3-3\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"372\" y=\"226\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"393\" y=\"251\">PE</text></g><g class=\"cs-part\" data-k=\"3-4\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"426\" y=\"226\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"447\" y=\"251\">PE</text></g><g class=\"cs-part\" data-k=\"4-0\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"210\" y=\"280\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"231\" y=\"305\">PE</text></g><g class=\"cs-part\" data-k=\"4-1\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"264\" y=\"280\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"285\" y=\"305\">PE</text></g><g class=\"cs-part\" data-k=\"4-2\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"318\" y=\"280\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"339\" y=\"305\">PE</text></g><g class=\"cs-part\" data-k=\"4-3\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"372\" y=\"280\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"393\" y=\"305\">PE</text></g><g class=\"cs-part\" data-k=\"4-4\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"426\" y=\"280\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"447\" y=\"305\">PE</text></g><g class=\"cs-part\" data-g=\"in\"><line class=\"cs-arr\" x1=\"150\" y1=\"85\" x2=\"206\" y2=\"85\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-g=\"in\"><line class=\"cs-arr\" x1=\"150\" y1=\"139\" x2=\"206\" y2=\"139\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-g=\"in\"><line class=\"cs-arr\" x1=\"150\" y1=\"193\" x2=\"206\" y2=\"193\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-g=\"in\"><line class=\"cs-arr\" x1=\"150\" y1=\"247\" x2=\"206\" y2=\"247\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-g=\"in\"><line class=\"cs-arr\" x1=\"150\" y1=\"301\" x2=\"206\" y2=\"301\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"120\" y=\"52\">激活</text><text class=\"cs-note\" x=\"120\" y=\"66\">输入</text><g class=\"cs-part\" data-g=\"out\"><line class=\"cs-arr\" x1=\"231\" y1=\"322\" x2=\"231\" y2=\"352\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-g=\"out\"><line class=\"cs-arr\" x1=\"285\" y1=\"322\" x2=\"285\" y2=\"352\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-g=\"out\"><line class=\"cs-arr\" x1=\"339\" y1=\"322\" x2=\"339\" y2=\"352\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-g=\"out\"><line class=\"cs-arr\" x1=\"393\" y1=\"322\" x2=\"393\" y2=\"352\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-g=\"out\"><line class=\"cs-arr\" x1=\"447\" y1=\"322\" x2=\"447\" y2=\"352\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"210\" y=\"370\">部分和输出 ↓(向下逐级累加)</text><text class=\"cs-note\" x=\"488\" y=\"82\">每拍吐出一列</text><text class=\"cs-note\" x=\"488\" y=\"97\">结果 = 吞吐</text><text class=\"cs-note\" x=\"488\" y=\"184\">一个输入要穿过</text><text class=\"cs-note\" x=\"488\" y=\"199\">整列 PE 才出结果</text><text class=\"cs-note\" x=\"488\" y=\"214\">= 延迟≈阵列深度</text></svg>",
+ "legend": [
+  {
+   "k": "pe",
+   "name": "PE = 流水线的一级",
+   "desc": "每个 PE 每拍只做 1 次乘 + 1 次累加,逻辑极浅,所以单级延迟很小、能跑到 700 MHz。"
+  },
+  {
+   "k": "preg",
+   "name": "PE 间流水寄存器",
+   "desc": "相邻 PE 之间的 staging 寄存器,每拍锁存一次数据,把长组合逻辑切成一级一级——这正是「流水」的物理本体。"
+  },
+  {
+   "k": "in",
+   "name": "激活输入(从左泵入)",
+   "desc": "激活沿行从左侧逐拍泵入,像水波一样推进。"
+  },
+  {
+   "k": "out",
+   "name": "部分和输出(向下)",
+   "desc": "部分和沿列方向逐级累加、从底部流出。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "0-0",
+    "0-1",
+    "1-0"
+   ],
+   "cap": "① 启动·装填:头几拍只有左上角少数 PE 在算,流水线在「装填(fill)」"
+  },
+  {
+   "keys": [
+    "0-0",
+    "0-1",
+    "1-0",
+    "0-2",
+    "1-1",
+    "2-0",
+    "0-3",
+    "1-2",
+    "2-1",
+    "3-0"
+   ],
+   "cap": "② 装填中:激活波沿对角线推进,越来越多 PE 投入计算"
+  },
+  {
+   "keys": [
+    "0-0",
+    "0-1",
+    "0-2",
+    "0-3",
+    "0-4",
+    "1-0",
+    "1-1",
+    "1-2",
+    "1-3",
+    "1-4",
+    "2-0",
+    "2-1",
+    "2-2",
+    "2-3",
+    "2-4",
+    "3-0",
+    "3-1",
+    "3-2",
+    "3-3",
+    "3-4",
+    "4-0",
+    "4-1",
+    "4-2",
+    "4-3",
+    "4-4"
+   ],
+   "cap": "③ 满流水:整个阵列都在算,每一拍吐出一整列结果(吞吐 = 1 列/拍)"
+  },
+  {
+   "keys": [
+    "0-0",
+    "1-1",
+    "2-2",
+    "3-3",
+    "4-4"
+   ],
+   "cap": "④ 延迟 vs 吞吐:单个输入要依次穿过整列 PE 才出结果(延迟≈阵列深度 256),但稳态每拍出一列"
+  },
+  {
+   "keys": [
+    "3-4",
+    "4-3",
+    "4-4"
+   ],
+   "cap": "⑤ 排空(drain):最后一波数据走完、流水线清空——大矩阵/大 batch 才能摊薄装填+排空的开销"
+  }
+ ],
+ "before": [
+  "<b>先确定要回答的问题</b>:这个块要不要做成流水线?切几级?——本质由「目标频率 vs 关键路径」决定。脉动阵列天生就是把矩阵乘流水成一排排 PE。",
+  "<b>要拍板的设计量</b>:流水级数(深度)、每一级放多少逻辑(单级延迟/逻辑级数预算)、PE 间 staging 寄存器、要不要冒险处理(forwarding/stall)。",
+  "<b>必备输入</b>:架构(③)给的目标频率与吞吐、该块的关键路径估计、负载是「延迟敏感」还是「吞吐敏感」。",
+  "<b>必须想清的考量</b>:延迟 vs 吞吐取向;装填/排空开销能否被负载摊薄;数据流是否有数据/控制相关(决定要不要那套 forwarding/stall/分支预测)。"
+ ],
+ "during": [
+  "<b>目标</b>:用「重叠执行」提吞吐——脉动阵列把一次大矩阵乘摊成一排排 PE,数据每拍前进一级,像流水线一样每级只做一点点活。",
+  "<b>定级数/深度</b>:每个 PE 内部只做 1 次 8-bit 乘 + 1 次累加,逻辑极浅 → 单级延迟很小 → 能跑到 700 MHz;流水级数 = 阵列边长(256),由吞吐与供数带宽定。",
+  "<b>天然配平</b>:所有 PE 完全同构、每拍做同样的事,没有「最慢一级」拖后腿——比通用 CPU 流水线省心得多(CPU 要费力均衡 IF/ID/EX/MEM/WB 各级)。",
+  "<b>砍掉经典冒险</b>:数据流是静态、确定的(无分支、无写回相关)→ 不需要 forwarding/stall/分支预测那一整套;TPU 正是靠这点把面积全让给 MAC。",
+  "<b>代价是延迟</b>:一个输入要穿过整列 PE 才出结果(延迟≈256 拍),但满流水后每拍出一列 → 所以 TPU 偏爱大矩阵 / 大 batch 来摊薄装填与排空。"
+ ],
+ "result": [
+  {
+   "label": "流水级数",
+   "value": "≈ 阵列边长 256"
+  },
+  {
+   "label": "每级工作",
+   "value": "1× 8-bit 乘 + 1× 累加"
+  },
+  {
+   "label": "稳态吞吐",
+   "value": "每拍吐出一整列"
+  },
+  {
+   "label": "启动/排空",
+   "value": "~256 拍装填 + ~256 拍排空"
+  },
+  {
+   "label": "冒险处理",
+   "value": "静态数据流,免 forwarding/stall"
+  },
+  {
+   "label": "时钟",
+   "value": "700 MHz"
+  }
+ ],
+ "after": [
+  "<b>试综合验时序</b>:把这条流水的关键路径快速过一遍逻辑综合,确认真能到 700 MHz;不到就回去加流水级 / retiming(注意:改级数 = 改时序行为 = 验证要重来)。",
+  "<b>建 cycle 模型</b>:确认满流水利用率达标、装填+排空开销在目标矩阵尺寸下可接受(否则要回去调阵列大小或 batch 策略)。",
+  "<b>定块级验证计划</b>:流水冒险/边界的覆盖点与激励(装填、满流水、排空、反压)。",
+  "<b>交给 ⑤ RTL</b>:把每一级流水、staging 寄存器、控制 FSM 写成可综合的 Verilog。",
+  "<b>留低功耗钩子</b>:decode 阶段 PE 常空转 → 预留细粒度时钟门控,空闲就不耗动态功耗。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017"
+}

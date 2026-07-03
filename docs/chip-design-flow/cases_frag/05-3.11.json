@@ -1,0 +1,118 @@
+{
+ "secNum": "3.11",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 一个参数化 PE 写一次，用 parameter+generate 双重循环拉出 256×256 阵列——改 N 即裁出整条产品家族",
+ "oneLine": "参数化与模块复用是把「写一遍、用千万遍」落进 RTL 的手段：把位宽/深度/阵列边长做成 parameter，用 generate 的 for 循环把同一个 PE 模块例化 N×N 次，就长出 TPU v1 那块 65,536 个 MAC 的脉动阵列；改一个 N，同一份源码就能裁出不同算力的产品,无需手抄六万个实例（注:TPU 不公开其 RTL,这里用其已知结构作载体讲 parameter/generate 的通行写法）。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">左:一个参数化 PE 模块（写一次，留 parameter 旋钮）</text><g class=\"cs-part\" data-k=\"param\" data-g=\"param\"><rect class=\"cs-box\" x=\"40\" y=\"44\" width=\"248\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"164\" y=\"68\">parameter 旋钮</text><text class=\"cs-sub\" x=\"164\" y=\"86\">N=256 · DW_A=8 · DW_ACC=32</text></g><line class=\"cs-arr\" x1=\"164\" y1=\"102\" x2=\"164\" y2=\"128\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-box\" x=\"40\" y=\"132\" width=\"248\" height=\"116\" rx=\"8\"/><path d=\"M40,248 L40,230 L58,248 Z\" fill=\"#8b5cf6\"/><text class=\"cs-t\" x=\"164\" y=\"158\">module pe #(参数化)</text><text class=\"cs-sub\" x=\"164\" y=\"180\">logic [DW_A-1:0] a, w;</text><text class=\"cs-sub\" x=\"164\" y=\"198\">logic [DW_ACC-1:0] acc;</text><text class=\"cs-sub\" x=\"164\" y=\"216\">acc &lt;= acc + a*w; // 位宽随参数</text><text class=\"cs-note\" x=\"164\" y=\"238\">复用积木：只写这一个</text></g><text class=\"cs-note\" x=\"316\" y=\"92\">generate 双重 for 循环</text><text class=\"cs-note\" x=\"316\" y=\"110\">把同一个 pe 例化 N×N 次</text><g class=\"cs-part\" data-k=\"gen\" data-g=\"gen\"><rect class=\"cs-box\" x=\"316\" y=\"124\" width=\"120\" height=\"92\" rx=\"8\"/><text class=\"cs-sub\" x=\"376\" y=\"150\">genvar i,j;</text><text class=\"cs-sub\" x=\"376\" y=\"170\">for(i..N)</text><text class=\"cs-sub\" x=\"376\" y=\"188\"> for(j..N)</text><text class=\"cs-sub\" x=\"376\" y=\"206\">  pe u(...);</text></g><line class=\"cs-arr\" x1=\"288\" y1=\"190\" x2=\"312\" y2=\"170\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"436\" y1=\"170\" x2=\"470\" y2=\"170\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"470\" y=\"40\">右:展开成 N×N 脉动阵列（格子同 cell）</text><g class=\"cs-part\" data-k=\"cell\" data-g=\"array\"><rect class=\"cs-cell\" x=\"478\" y=\"56\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"498\" y=\"80\">pe</text><rect class=\"cs-cell\" x=\"522\" y=\"56\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"542\" y=\"80\">pe</text><rect class=\"cs-cell\" x=\"566\" y=\"56\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"586\" y=\"80\">pe</text><rect class=\"cs-cell\" x=\"638\" y=\"56\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"658\" y=\"80\">pe</text><rect class=\"cs-cell\" x=\"478\" y=\"100\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"498\" y=\"124\">pe</text><rect class=\"cs-cell\" x=\"522\" y=\"100\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"542\" y=\"124\">pe</text><rect class=\"cs-cell\" x=\"566\" y=\"100\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"586\" y=\"124\">pe</text><rect class=\"cs-cell\" x=\"638\" y=\"100\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"658\" y=\"124\">pe</text><rect class=\"cs-cell\" x=\"478\" y=\"144\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"498\" y=\"168\">pe</text><rect class=\"cs-cell\" x=\"522\" y=\"144\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"542\" y=\"168\">pe</text><rect class=\"cs-cell\" x=\"566\" y=\"144\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"586\" y=\"168\">pe</text><rect class=\"cs-cell\" x=\"638\" y=\"144\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"658\" y=\"168\">pe</text><rect class=\"cs-cell\" x=\"478\" y=\"216\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"498\" y=\"240\">pe</text><rect class=\"cs-cell\" x=\"522\" y=\"216\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"542\" y=\"240\">pe</text><rect class=\"cs-cell\" x=\"566\" y=\"216\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"586\" y=\"240\">pe</text><rect class=\"cs-cell\" x=\"638\" y=\"216\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"658\" y=\"240\">pe</text></g><text class=\"cs-note\" x=\"614\" y=\"84\">···</text><text class=\"cs-note\" x=\"614\" y=\"128\">···</text><text class=\"cs-note\" x=\"498\" y=\"206\">⋮</text><text class=\"cs-note\" x=\"658\" y=\"206\">⋮</text><text class=\"cs-sub\" x=\"578\" y=\"278\">N×N = 256×256 = 65,536 个 MAC</text><line x1=\"40\" y1=\"296\" x2=\"708\" y2=\"296\" stroke=\"#e2e8f0\" stroke-dasharray=\"5 4\"/><text class=\"cs-note\" x=\"40\" y=\"318\">改一个 N，就裁出不同算力的产品（同一份源码、不重写）</text><g class=\"cs-part\" data-k=\"family\" data-g=\"family\"><rect class=\"cs-box\" x=\"40\" y=\"330\" width=\"200\" height=\"54\" rx=\"8\"/><text class=\"cs-t\" x=\"140\" y=\"354\">N=256 → 旗舰</text><text class=\"cs-sub\" x=\"140\" y=\"372\">65,536 MAC · ~92 TOPS</text></g><g class=\"cs-part\" data-k=\"family2\" data-g=\"family\"><rect class=\"cs-box\" x=\"260\" y=\"330\" width=\"200\" height=\"54\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"354\">N=128 → 小核</text><text class=\"cs-sub\" x=\"360\" y=\"372\">16,384 MAC · 1/4 面积</text></g><g class=\"cs-part\" data-k=\"family3\" data-g=\"family\"><rect class=\"cs-box\" x=\"480\" y=\"330\" width=\"228\" height=\"54\" rx=\"8\"/><text class=\"cs-t\" x=\"594\" y=\"354\">同源码 · 改参数即可</text><text class=\"cs-sub\" x=\"594\" y=\"372\">elaboration 期定形，0 行手抄</text></g></svg>",
+ "legend": [
+  {
+   "k": "param",
+   "name": "parameter 旋钮（编译期常量）",
+   "desc": "把会变的东西——阵列边长 N、激活/权重位宽 DW_A、累加器位宽 DW_ACC——声明成 parameter（或 localparam）。它们是 elaboration（例化展开）期就定死的编译期常量,不是运行时信号:综合前就把电路规模、位宽全部确定下来。留这几个旋钮,模块才谈得上「可配置」。"
+  },
+  {
+   "k": "pe",
+   "name": "参数化 PE 模块（只写这一个的复用积木）",
+   "desc": "module pe #(parameter DW_A=8, DW_ACC=32) 内部所有位宽都写成 [DW_A-1:0]/[DW_ACC-1:0] 而非硬编码的 [7:0]/[31:0]。这是整张设计里唯一手写的乘累加单元;它必须自洽、可独立验证。一旦写对,后面六万个实例都是它的拷贝,改一处即改全部。"
+  },
+  {
+   "k": "gen",
+   "name": "generate 双重 for 循环（例化展开）",
+   "desc": "genvar i,j; generate for(i=0;i<N;i++) for(j=0;j<N;j++) begin:cell ... pe u_pe(...); end ——这不是运行时循环,而是综合器在 elaboration 期把循环体「复制 N×N 份」,生成 N×N 个 PE 实例并按 i,j 接好邻居连线。它是「写一次、铺满阵列」的关键句法。"
+  },
+  {
+   "k": "array",
+   "name": "展开后的 N×N 脉动阵列",
+   "desc": "generate 跑完,就得到 256×256 = 65,536 个 PE 平铺成的脉动阵列——TPU v1 那块 8-bit MAC 矩阵。每个 cell 都是同一个 pe 模块的实例（图中所有格子同 data-k=cell）,激活横向流、部分和纵向累,边长正是 parameter N。"
+  },
+  {
+   "k": "family",
+   "name": "改参数裁出的产品家族",
+   "desc": "因为规模全由 parameter 决定,改 N=256→128 就把 65,536 个 MAC 缩成 16,384、面积约 1/4;改位宽就换数制。同一份源码、改几个参数即可流出不同算力/面积的衍生产品,零行手抄、零拷贝粘贴漂移——这正是参数化复用对一个产品线的真正价值。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "param",
+    "pe"
+   ],
+   "cap": "① 先把「会变的」抽成 parameter:阵列边长 N、激活位宽 DW_A=8、累加器位宽 DW_ACC=32 都做成旋钮;PE 模块内部位宽全写成 [DW_A-1:0] 而非 [7:0],模块从此与具体规模解耦。"
+  },
+  {
+   "keys": [
+    "pe"
+   ],
+   "cap": "② 只手写并验证这一个 pe 模块——8-bit 乘 + 32-bit 累加那一拍逻辑。它是复用积木:写对一次,后面所有实例都正确;这一步把验证工作量从 65,536 个降到 1 个。"
+  },
+  {
+   "keys": [
+    "gen",
+    "array"
+   ],
+   "cap": "③ 用 generate 双重 for（genvar i,j）把 pe 例化 N×N 次,并按 i,j 把每个 PE 的输出接到右/下邻居,展开成 256×256 脉动阵列。手写 0 个重复实例,综合器在 elaboration 期替你复制六万份。"
+  },
+  {
+   "keys": [
+    "array",
+    "param"
+   ],
+   "cap": "④ 阵列规模、邻接连线、各处位宽全由 parameter 在例化期定形:N 决定有多少行列、DW_* 决定每根线多宽。源码里看不到「256」这个硬数字,只有 N。"
+  },
+  {
+   "keys": [
+    "family"
+   ],
+   "cap": "⑤ 留了旋钮,产品家族随之而来:N=256 是旗舰(~92 TOPS)、N=128 是 1/4 面积的小核,同一份 RTL 改一个参数即出衍生型号,不重写、不拷贝、不引入手抄漂移。"
+  }
+ ],
+ "before": [
+  "<b>先圈定「哪些该参数化」</b>:把会随版本/产品变的量列清——阵列边长 N、激活/权重位宽、累加器位宽、UB/FIFO 深度。只参数化真会变的东西;给永不变的常量也加旋钮只是无谓复杂度,违背「最小代价」原则。",
+  "<b>定参数命名与默认值规范</b>:parameter 全大写(N、DW_A、DW_ACC)、给合理默认值(N=256、DW_A=8、DW_ACC=32),并约定哪些是对外可配的顶层 parameter、哪些是内部派生的 localparam(如乘积位宽 DW_P = 2*DW_A,不应让外部乱改)。",
+  "<b>定模块层次与接口</b>:先拍定「单 PE → 一行/一列 → N×N 阵列」的层次,画出每层端口表(位宽也写成参数表达式如 [DW_ACC-1:0]);generate 连线依赖这套接口,接口不稳后面循环全得返工。",
+  "<b>定可综合约束</b>:generate 用的循环边界、位宽表达式必须是编译期常量(parameter/localparam),不能依赖运行时信号;genvar 只用于 generate。把「generate 边界须为常量、位宽用参数表达式、不得硬编码 magic number」写进编码规范。",
+  "<b>定成功判据</b>:写成可验证的——「单 pe 模块独立通过功能验证」「N 取 2/4/256 都能正确 elaborate 出 N×N 个实例且连线正确」「全设计无硬编码位宽/规模数字,改 N 一处即改全部」,而非笼统说「做成可配置」。"
+ ],
+ "during": [
+  "<b>位宽一律写成参数表达式,杜绝 magic number</b>:声明用 logic [DW_A-1:0] a, w; logic [DW_ACC-1:0] acc;,绝不写死 [7:0]/[31:0]。派生位宽用 localparam 算出(如乘积 localparam DW_P = 2*DW_A)。一旦某处偷懒硬编码 8 或 32,改 N/改位宽时它就成了对不齐的隐患——这是参数化最常翻车的点。",
+  "<b>用 generate + genvar 展开重复结构,别复制粘贴</b>:genvar i,j; generate for(i=0;i<N;i++) for(j=0;j<N;j++) begin: cell pe #(.DW_A(DW_A),.DW_ACC(DW_ACC)) u_pe(...); end endgenerate;(示意)。给 begin 起名字(begin: cell)以便层次化引用与波形定位。手抄/复制实例既易错又无法随 N 缩放,严禁。",
+  "<b>例化时显式按名连接参数与端口</b>:pe #(.DW_A(DW_A), .DW_ACC(DW_ACC)) u_pe(.a(...),.w(...),.acc_o(...));——参数和端口都用 .名字(信号) 的具名连接,不用位置连接。具名连接在端口增删、参数改名时不会静默错位,是大规模例化的安全底线。",
+  "<b>邻接连线用 genvar 索引算,边界单独处理</b>:阵列内部 PE 把激活传右邻 [i][j+1]、部分和传下邻 [i+1][j],这些连线用 i,j 索引在 generate 里成批生成;第一行/第一列(喂入)与最后一行/列(输出)是边界,要么用 if(generate-if)分支单独接,要么靠数组两端的「虚拟环」吸收,别让索引越界。",
+  "<b>派生量集中算一次,保持单一事实源</b>:乘积位宽、地址位宽($clog2(深度))、行列数等都从顶层 parameter 用 localparam 推导,只在一处定义。改顶层 N 或位宽,所有派生量自动跟着变——这才是「改一个参数裁出整条家族」成立的前提:全设计只有一个真值源头。",
+  "<b>诚实标注边界</b>:TPU v1 论文给了 256×256=65,536 个 8-bit MAC、weight-stationary、32-bit 累加器这些结构事实,但未公开其 RTL。上面的 parameter 名、generate 写法、HDL 片段是「这类阵列加速器的通行参数化实践」示意,用来讲 parameter/generate/复用概念,不是 TPU 披露的私有代码;N=128 衍生型号属示意,非 TPU 实际发布型号。"
+ ],
+ "result": [
+  {
+   "label": "参数化模块（示意 HDL）",
+   "value": "module pe #(parameter DW_A=8, DW_ACC=32) ( ... ); 内部位宽全用 [DW_A-1:0]/[DW_ACC-1:0]"
+  },
+  {
+   "label": "展开循环（示意 HDL）",
+   "value": "genvar i,j; generate for(i..N) for(j..N) begin: cell pe #(.DW_A,.DW_ACC) u_pe(...); end endgenerate"
+  },
+  {
+   "label": "顶层旋钮",
+   "value": "parameter N=256, DW_A=8, DW_ACC=32（编译期常量）"
+  },
+  {
+   "label": "展开规模",
+   "value": "N×N = 256×256 = 65,536 个 PE 实例（手写实例数 = 1）"
+  },
+  {
+   "label": "派生量来源",
+   "value": "localparam DW_P=2*DW_A 等,单一事实源,改 N/位宽自动跟随"
+  },
+  {
+   "label": "复用收益",
+   "value": "改 N=128 → 16,384 MAC、约 1/4 面积;同源码裁产品家族,0 行手抄"
+  }
+ ],
+ "after": [
+  "<b>先独立验证单 pe,再验阵列</b>:把那一个参数化 PE 模块单独拉 testbench,在几组位宽参数下都验过功能与边界(进位、溢出、有符号);积木对了,六万个实例才可信。这是参数化复用「验一次、用千万次」的兑现方式。",
+  "<b>小 N 跑 elaboration 与仿真,确认展开正确</b>:先用 N=2、N=4 这类小参数 elaborate,在波形/层次树里数清实例个数(N×N)与邻接连线是否如预期(右传/下传、边界正确),再切回 N=256。小 N 暴露 generate 索引/边界 bug 又快又省资源。",
+  "<b>跑 lint 抓硬编码与位宽不一致</b>:用 lint 专扫「硬编码 magic number(残留的 8/32/256)」「位宽不匹配截断」「generate 边界非常量」「位置连接/隐式端口」——参数化最常见的 bug 是某处没改成参数,lint 能批量揪出。",
+  "<b>试综合查规模与频率随参数缩放</b>:对 N=256 与一个小 N 各试综合,确认实例数、面积随 N² 缩放、关键路径(单 PE 乘+加)仍满足 700 MHz 量级且不随 N 退化(脉动阵列局部连线使其可扩展);确认无意外锁存器。",
+  "<b>固化参数表交验证</b>:把对外 parameter 清单、合法取值范围、派生 localparam 关系连同 RTL 一并移交验证;验证团队按参数矩阵(不同 N/位宽)做回归,确保整条产品家族都建立在同一份经验证的源码上。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(256×256=65,536 个 8-bit MAC、weight-stationary、32-bit 累加器、~92 TOPS 等结构数据为该文披露;parameter/generate/具名例化等参数化写法与 HDL 片段为通行 RTL 实践,TPU 的 RTL 未公开,N=128 衍生型号为示意)"
+}

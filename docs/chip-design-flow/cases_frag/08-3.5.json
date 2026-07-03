@@ -1,0 +1,126 @@
+{
+ "secNum": "3.5",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 时钟树综合(CTS):把 700MHz 低偏差时钟送进 65,536 个 MAC 触发器的每一个",
+ "oneLine": "CTS 之前,后端一直把时钟当作『理想』——零延迟、所有触发器同一瞬间翻转;但真实芯片里时钟要靠一棵庞大的缓冲器树(H-tree)从根逐级分发,到达每个触发器的时刻并不一致,这个差异就是偏差(skew)。本案例的钥匙是『TPU 脉动阵列把数万个触发器铺满整块 die』:256×256=65,536 个 8-bit MAC 加上 UB/累加器寄存器,构成成千上万个时钟终点(sink),还要在 700MHz(周期 1.43ns)下统一翻拍。CTS 的活就是搭一棵 skew 尽量小、插入延迟合理、并整合时钟门控的时钟树,把同一拍时钟均匀送到这片巨大阵列的每一个触发器——skew 一大,既跑不到 700MHz(吃掉 setup 裕量),又会凭空诱发 hold 违例。这正是后端『把理想时钟落成真实分发网络』的关键一步。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"30\" y=\"24\">CTS:从时钟根经 buffer 逐级 H-tree 分发,把 700MHz 低偏差送到整块阵列所有触发器(skew 越小越好)</text><g class=\"cs-part\" data-k=\"root\" data-g=\"root\"><rect class=\"cs-box\" x=\"290\" y=\"42\" width=\"140\" height=\"52\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"66\">时钟根(clock root)</text><text class=\"cs-sub\" x=\"360\" y=\"84\">PLL 出来的 700MHz</text></g><line class=\"cs-arr\" x1=\"360\" y1=\"94\" x2=\"360\" y2=\"120\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"buf\" data-g=\"buf\"><rect class=\"cs-box\" x=\"285\" y=\"120\" width=\"150\" height=\"48\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"142\">缓冲器树(buffer/H-tree)</text><text class=\"cs-sub\" x=\"360\" y=\"159\">逐级 1→2→4… 平衡分发</text></g><line class=\"cs-arr\" x1=\"330\" y1=\"168\" x2=\"200\" y2=\"206\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"390\" y1=\"168\" x2=\"520\" y2=\"206\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"350\" y1=\"168\" x2=\"300\" y2=\"206\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"370\" y1=\"168\" x2=\"420\" y2=\"206\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"gate\" data-g=\"gate\"><rect class=\"cs-box\" x=\"40\" y=\"206\" width=\"150\" height=\"48\" rx=\"8\"/><text class=\"cs-t\" x=\"115\" y=\"228\">整合时钟门控(ICG)</text><text class=\"cs-sub\" x=\"115\" y=\"245\">空闲块关时钟·省功耗</text></g><g class=\"cs-part\" data-k=\"leaf\" data-g=\"leaf\"><rect class=\"cs-box\" x=\"250\" y=\"206\" width=\"220\" height=\"48\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"228\">叶级缓冲(leaf buffer)</text><text class=\"cs-sub\" x=\"360\" y=\"245\">把时钟带到触发器时钟脚</text></g><g class=\"cs-part\" data-k=\"ff\" data-g=\"ff\"><rect class=\"cs-box\" x=\"250\" y=\"290\" width=\"430\" height=\"84\" rx=\"8\"/><text class=\"cs-t\" x=\"465\" y=\"314\">脉动阵列触发器(数万个 sink)</text><text class=\"cs-sub\" x=\"465\" y=\"334\">256×256=65,536 MAC + UB/累加器寄存器</text><text class=\"cs-sub\" x=\"465\" y=\"354\">每个 sink 的时钟到达时刻要尽量一致</text></g><line class=\"cs-arr\" x1=\"115\" y1=\"254\" x2=\"258\" y2=\"318\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"360\" y1=\"254\" x2=\"360\" y2=\"286\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"skew\" data-g=\"skew\"><rect class=\"cs-box\" x=\"500\" y=\"120\" width=\"190\" height=\"64\" rx=\"8\" stroke-dasharray=\"5 4\"/><text class=\"cs-t\" x=\"595\" y=\"146\">目标:低 skew(偏差)</text><text class=\"cs-sub\" x=\"595\" y=\"164\">+ 合理插入延迟(latency)</text><text class=\"cs-sub\" x=\"595\" y=\"180\">skew 大 → 跑不到频率/出 hold</text></g></svg>",
+ "legend": [
+  {
+   "k": "root",
+   "name": "时钟根(clock root)",
+   "desc": "整棵时钟树的源头,通常是片上 PLL 输出、稳定的 700MHz 时钟。CTS 之前这个时钟被工具当作『理想』:零延迟、零偏差,假设它同一瞬间到达所有触发器。CTS 要做的,就是把这个理想根真实地分发出去——而真实分发一定有延迟和偏差,所以 CTS 后时序才第一次『接近真实』。"
+  },
+  {
+   "k": "buf",
+   "name": "缓冲器树 / H-tree(buffer tree)",
+   "desc": "时钟扇出极大(TPU 这类设计有成千上万个触发器),一个驱动带不动,必须像树一样逐级插缓冲器:根→几个→几十个→……层层放大。H-tree 是常见拓扑——走线做成对称的『H』套『H』,让从根到每个叶子的物理路径长度尽量相等,从而到达时刻尽量一致。规则铺满的脉动阵列正适合这种对称分发。"
+  },
+  {
+   "k": "leaf",
+   "name": "叶级缓冲(leaf buffer)",
+   "desc": "时钟树最末一级缓冲,直接把时钟驱动到一簇触发器的时钟脚(sink pin)。叶级要兼顾驱动能力(带得动这一簇 sink)和到达时刻一致(本簇内 skew 要小)。CTS 工具会按 sink 的位置聚类、就近放叶级缓冲,这是控制局部 skew 的关键一环。"
+  },
+  {
+   "k": "ff",
+   "name": "阵列触发器(数万个 sink)",
+   "desc": "时钟树的终点。TPU v1 的 256×256=65,536 个 MAC 单元、24 MiB Unified Buffer 与 4 MiB 累加器相关的寄存器,贡献出极多的时钟终点(sink),还铺满了整块 ≤331mm² 的 die。CTS 的难点正在于此:终点又多又散,却都要在 700MHz 这一拍里被同步翻拍——到达时刻越齐,可用的时序裕量越大。"
+  },
+  {
+   "k": "skew",
+   "name": "目标:低 skew + 合理插入延迟",
+   "desc": "CTS 的两个核心质量指标。skew(偏差)= 时钟到达不同触发器的最大时刻差,越小越好:skew 吃掉 setup 裕量,让 700MHz 跑不动;还会让本不该出问题的相邻触发器之间冒出 hold 违例。插入延迟(latency)= 从根到叶子的总延迟,不必为零,但要『合理且均衡』——latency 太大放大 OCV 影响,各分支 latency 不齐则直接变成 skew。"
+  },
+  {
+   "k": "gate",
+   "name": "整合时钟门控(ICG)",
+   "desc": "时钟功耗常占大芯片总功耗的很大一块,空闲的块若还在翻时钟就是白耗电。整合时钟门控单元(ICG)在时钟树里就地把空闲分支的时钟关掉以省动态功耗。CTS 必须把这些 ICG 一并纳入树里平衡——门控会改变下游 latency,处理不好就成了新的 skew 来源,所以 CTS 与时钟门控要协同综合。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "root"
+   ],
+   "cap": "① 起点是『理想时钟』:CTS 之前后端把 700MHz 时钟根当作零延迟、零偏差,假设它同一瞬间到达所有触发器——这只是占位假设,真实分发还没搭"
+  },
+  {
+   "keys": [
+    "root",
+    "buf",
+    "leaf"
+   ],
+   "cap": "② 搭分发树:从时钟根逐级插缓冲器、做成对称 H-tree,层层放大扇出,最后用叶级缓冲就近驱动每一簇触发器——把一个根变成覆盖全 die 的时钟网络"
+  },
+  {
+   "keys": [
+    "buf",
+    "leaf",
+    "ff"
+   ],
+   "cap": "③ 喂满整块阵列:把同一拍时钟均匀送到 65,536 个 MAC 加 UB/累加器寄存器贡献的数万个 sink——终点又多又散,平衡分发是难点所在"
+  },
+  {
+   "keys": [
+    "buf",
+    "gate"
+   ],
+   "cap": "④ 整合时钟门控:把 ICG 单元纳入树里,空闲分支就地关时钟省功耗;同时要平衡门控带来的 latency 变化,别让它变成新的 skew 来源"
+  },
+  {
+   "keys": [
+    "skew",
+    "ff"
+   ],
+   "cap": "⑤ 收敛到目标:把全树 skew 压到尽量小、插入延迟做均衡——skew 大则吃掉 700MHz 的 setup 裕量、还诱发 hold;CTS 收敛后时序才第一次接近真实"
+  }
+ ],
+ "before": [
+  "<b>先冻结布局与电源网络</b>:CTS 要按触发器的真实位置去布树、就近放缓冲器,所以必须在布局(placement)基本稳定、电源网格(PDN)已就位之后做。位置还在动就搭树,树搭完又要推翻重来;缓冲器也要落在合法的标准单元行里、避开 PDN 和宏单元(如 24 MiB UB 的大 SRAM 块)。",
+  "<b>定义时钟规格与约束(SDC)</b>:写清 create_clock 的 700MHz(示意 period 1.43ns)、时钟的不确定性(set_clock_uncertainty,给 skew/jitter 留预算)、目标 skew 与最大插入延迟、最大转换时间(transition)等。约束不全,CTS 不知道要把树修到多好,容易过度堆缓冲器或留下违例。",
+  "<b>备好时钟专用单元与 NDR 规则</b>:库里要有专门的时钟缓冲器/反相器(对称、低偏差敏感),以及时钟网络的非默认布线规则(NDR:加宽线、加间距、必要时屏蔽),保证时钟线低延迟、抗串扰。CTS 还要知道哪些是时钟门控单元(ICG),以便纳入树中。",
+  "<b>规划拓扑与例外</b>:决定主拓扑(H-tree / mesh / 混合)、是否对脉动阵列这种规则结构用更对称的分发;标好不需要平衡的例外(如跨时钟域、生成时钟、被门控的子树),用 set_clock_groups / 例外约束告诉工具,避免它在不该平衡的地方硬凑 skew。",
+  "<b>诚实边界</b>:Innovus/ICC2、H-tree/mesh 拓扑、时钟缓冲器与 ICG、NDR、skew/insertion-delay 指标都是通行后端 CTS 实践;TPU v1 不会公开其时钟树拓扑、缓冲器数量、实测 skew 或插入延迟。这里把 TPU 已知结构(256×256 脉动阵列、24 MiB UB、700MHz、28nm、≤331mm²)当作被实现对象来讲 CTS 概念,所有约束片段与数字均为示意。"
+ ],
+ "during": [
+  "<b>从理想时钟切到传播时钟</b>:CTS 的本质是把『时钟瞬间到达所有触发器』这个理想假设,换成一棵真实的、有延迟和偏差的分发网络(set_propagated_clock)。一旦改成传播时钟,STA 看到的就是真实到达时刻——很多原本『干净』的路径会第一次暴露 skew 带来的 setup/hold 影响。",
+  "<b>聚类 sink、逐级插缓冲器</b>:工具按触发器位置就近聚类,先放叶级缓冲带动每簇 sink,再往上一级级合并、插缓冲器平衡,直到收口到根。对脉动阵列这种规则铺满的结构,对称 H-tree 能让各分支物理长度接近,从根到任意叶子的延迟尽量相等——这是把 skew 压小的物理基础。",
+  "<b>主攻 skew、兼顾插入延迟</b>:核心目标是把全局/局部 skew 修到约束之内(示意:全局 skew 目标几十 ps 量级,具体值因工艺而定,仅示意)。同时插入延迟要『合理且均衡』——不必追零,但各分支 latency 要齐,某分支偏长就是 skew;latency 整体过大又会放大 OCV(片上偏差),所以是在两者间找平衡。",
+  "<b>把时钟门控织进树里平衡</b>:ICG 会改变其下游子树的 latency,CTS 必须把 ICG 当树上的一个节点一起平衡,而不是事后硬塞。处理不好,被门控分支与未门控分支之间就冒出额外 skew。CTS 与时钟门控要协同:既省功耗,又不破坏全树偏差。",
+  "<b>给时钟线特殊待遇,防串扰</b>:时钟线套用 NDR(加宽、加间距),关键时钟干线可加屏蔽线(shielding)隔离邻线噪声;控制缓冲器的最大转换时间,避免边沿太缓引入额外延迟与抖动。时钟是全芯片最敏感的网络,串扰一旦让到达时刻抖动,等效就是 skew。",
+  "<b>铁律:skew 同时打 setup 和 hold,且 hold 更隐蔽</b>。skew 让发起与接收触发器的有效时钟错位:正向 skew 吃掉 setup 裕量(700MHz 跑不动),反向 skew 直接制造 hold 违例——而 hold 是『加延迟才能修』、降频也救不了的硬伤。所以 CTS 不是把 skew 压到零就行,而是要让它在每条路径上都不把 setup/hold 顶破。"
+ ],
+ "result": [
+  {
+   "label": "时钟约束(示意 SDC)",
+   "value": "create_clock -period 1.43 [get_ports clk]; set_clock_uncertainty 0.05 [get_clocks clk]  // 700MHz,留 skew/jitter 预算,示意"
+  },
+  {
+   "label": "切换到传播时钟",
+   "value": "set_propagated_clock [get_clocks clk]  // CTS 后时钟不再理想,STA 看真实到达时刻"
+  },
+  {
+   "label": "时钟树拓扑(示意)",
+   "value": "对称 H-tree:根 → 多级时钟缓冲器 → 叶级缓冲 → 数万个触发器 sink(脉动阵列规则铺满,利于对称分发)"
+  },
+  {
+   "label": "质量指标(示意目标)",
+   "value": "全局 skew 目标几十 ps 量级、插入延迟均衡、最大 transition 受限;具体值因工艺而定,仅示意"
+  },
+  {
+   "label": "时钟门控",
+   "value": "ICG 单元已织入树并平衡:空闲块关时钟省功耗,且不引入额外 skew"
+  },
+  {
+   "label": "CTS 报告(示意)",
+   "value": "report_clock_tree:各时钟的 skew / insertion delay / 缓冲器数 / transition 违例数——这是判断树好坏的主表"
+  }
+ ],
+ "after": [
+  "<b>带传播时钟复跑 STA</b>:CTS 后立刻在传播时钟下重做静态时序分析,看 setup 与 hold 两侧的 WNS/TNS。重点是 hold——CTS 引入的真实 skew 常会冒出之前理想时钟下看不见的 hold 违例;setup 侧也要确认 skew 没把 700MHz 的裕量吃光。",
+  "<b>看 CTS 质量报告</b>:核对每个时钟的 skew 是否在约束内、插入延迟是否均衡、有没有 transition/电容超标的时钟节点、缓冲器数量是否合理(过多说明树没收敛好,徒增功耗)。skew 超标或某分支 latency 偏离,就要调聚类/拓扑重做这一段。",
+  "<b>修 hold、用 useful skew</b>:对 CTS 暴露的 hold 违例,通常在数据路径插延迟单元修补;对卡 setup 的关键路径,可有意调整时钟到达时刻(useful skew)——让接收端时钟早/晚一点,把裕量在路径间挪匀。这些都属于 CTS 后、布线前的增量时序修复。",
+  "<b>检查门控与功耗、迭代</b>:确认 ICG 真的关掉了空闲分支(功耗如预期下降)、且门控没破坏平衡;若 skew、hold 或功耗任一不达标,带着实际情况回 CTS 迭代(改拓扑、挪缓冲器、重平衡门控)——CTS 是高度迭代的一步,很少一次过。",
+  "<b>冻结时钟树、交布线</b>:形成本步结论(skew/insertion 达标、hold 可控、门控正常、传播时钟下时序基本干净)后,锁定时钟树连同 NDR/屏蔽,交给布线(routing)。布线会进一步引入真实寄生与串扰,可能再吃掉一点裕量,后端会带实际 SPEF 回来复核时序、必要时再迭代。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(256×256 8-bit MAC 脉动阵列、700MHz/~92 TOPS、24 MiB Unified Buffer、4 MiB 累加器、weight-stationary、28nm/≤331mm²/28–40W 为 v1 披露,作为被实现对象与规模参照;Innovus/ICC2、H-tree/mesh 拓扑、时钟缓冲器与整合时钟门控 ICG、NDR/屏蔽、skew 与插入延迟指标、useful skew 及所有 SDC 片段/示意数字为通行后端 CTS 实践,非 TPU v1 私有披露)"
+}

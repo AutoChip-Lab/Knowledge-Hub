@@ -1,0 +1,121 @@
+{
+ "secNum": "3.5",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 电源完整性签核:出全 die IR-drop 热图 + EM 电流密度核查,判 256×256 阵列的 PDN『压得住、用得久』(热图为示意)",
+ "oneLine": "本案例映射『⑨ 签核 · 电源完整性(IR-drop / EM)』:⑧ 已经把电源网络(环+条网格)铺成了版图,但『铺了』不等于『够用』——签核要在流片前用金标准电源完整性工具,对全 die 做最终核算,回答两个问题:满负荷瞬时电流流过 PDN 时,各处电压会不会被电阻压低到单元欠压(IR-drop),进而让 700MHz 跑不到甚至算错?以及电源金属长期承载大电流,会不会因电迁移(EM)被电子流推着迁移、日久变细直至开路(缩寿命)?灵魂来自 TPU 自身结构:256×256=65,536 个 8-bit MAC 在 700MHz 同拍翻转,瞬时电流极大且集中在阵列那一块,是动态 IR-drop 和 EM 的双重重灾区。签核不是再去规划 PDN(那是 ⑧ 的活),而是拿 ⑧ 的成品对着金标准判据做体检:出一张电压热图、一份 EM 报告,全绿才放行 tape-out,有红区就连同坐标退回 ⑧ 做 ECO 加强后重签——这是 PDN 在流片前最后一道『压得住、用得久』的电源铁律。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"30\" y=\"24\">电源完整性签核:用金标准工具对全 die 出 IR-drop 热图 + EM 电流密度核查,判 ⑧ 的 PDN 压不压得住、用不用得久(版图/热图为示意)</text><g class=\"cs-part\" data-k=\"hot\" data-g=\"hot\"><rect class=\"cs-box\" x=\"46\" y=\"64\" width=\"300\" height=\"300\" rx=\"10\" fill=\"none\"/><text class=\"cs-sub\" x=\"196\" y=\"58\">die 上 IR-drop 热图(颜色越深=压降越大,示意)</text><rect x=\"64\" y=\"84\" width=\"264\" height=\"40\" fill=\"#bbf7d0\"/><rect x=\"64\" y=\"124\" width=\"264\" height=\"40\" fill=\"#fde68a\"/><rect x=\"64\" y=\"164\" width=\"120\" height=\"120\" fill=\"#fca5a5\"/><rect x=\"184\" y=\"164\" width=\"60\" height=\"120\" fill=\"#f87171\"/><rect x=\"244\" y=\"164\" width=\"84\" height=\"120\" fill=\"#fde68a\"/><rect x=\"64\" y=\"284\" width=\"264\" height=\"40\" fill=\"#fde68a\"/><rect x=\"64\" y=\"324\" width=\"264\" height=\"20\" fill=\"#bbf7d0\"/><line x1=\"100\" y1=\"84\" x2=\"100\" y2=\"344\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"3 3\"/><line x1=\"156\" y1=\"84\" x2=\"156\" y2=\"344\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"3 3\"/><line x1=\"212\" y1=\"84\" x2=\"212\" y2=\"344\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"3 3\"/><line x1=\"268\" y1=\"84\" x2=\"268\" y2=\"344\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"3 3\"/><line x1=\"64\" y1=\"144\" x2=\"328\" y2=\"144\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"3 3\"/><line x1=\"64\" y1=\"224\" x2=\"328\" y2=\"224\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"3 3\"/><line x1=\"64\" y1=\"304\" x2=\"328\" y2=\"304\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"3 3\"/></g><g class=\"cs-part\" data-k=\"mxu\" data-g=\"mxu\"><rect class=\"cs-box\" x=\"64\" y=\"164\" width=\"180\" height=\"120\" rx=\"0\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"2.5\"/><text class=\"cs-t\" x=\"154\" y=\"214\" fill=\"#7f1d1d\">256×256 阵列</text><text class=\"cs-sub\" x=\"154\" y=\"234\" fill=\"#7f1d1d\">同拍翻转·动态 IR 重灾区</text></g><g class=\"cs-part\" data-k=\"ub\" data-g=\"ub\"><rect class=\"cs-box\" x=\"244\" y=\"84\" width=\"84\" height=\"40\" rx=\"0\" fill=\"#e0e7ff\" fill-opacity=\"0.7\" stroke=\"#6366f1\"/><text class=\"cs-sub\" x=\"286\" y=\"108\">24MiB UB</text></g><line class=\"cs-arr\" x1=\"346\" y1=\"160\" x2=\"408\" y2=\"120\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"346\" y1=\"240\" x2=\"408\" y2=\"240\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"ir\" data-g=\"ir\"><rect class=\"cs-box\" x=\"412\" y=\"92\" width=\"276\" height=\"100\" rx=\"8\"/><text class=\"cs-t\" x=\"550\" y=\"118\">IR-drop 签核(静态+动态)</text><text class=\"cs-sub\" x=\"550\" y=\"140\">PrimeShield/Voltus/RedHawk 出热图</text><text class=\"cs-sub\" x=\"550\" y=\"158\">判据(示意):压降 ≤ VDD 的 X%</text><text class=\"cs-sub\" x=\"550\" y=\"176\">压降→单元欠压→慢/错</text></g><g class=\"cs-part\" data-k=\"em\" data-g=\"em\"><rect class=\"cs-box\" x=\"412\" y=\"204\" width=\"276\" height=\"100\" rx=\"8\"/><text class=\"cs-t\" x=\"550\" y=\"230\">电迁移 EM 签核</text><text class=\"cs-sub\" x=\"550\" y=\"252\">每段金属/via 电流密度 vs 工艺限</text><text class=\"cs-sub\" x=\"550\" y=\"270\">判据(示意):J ≤ Jmax(寿命限)</text><text class=\"cs-sub\" x=\"550\" y=\"288\">超标→长期迁断·缩寿命</text></g><line class=\"cs-arr\" x1=\"550\" y1=\"304\" x2=\"550\" y2=\"332\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"550\" y1=\"192\" x2=\"550\" y2=\"204\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><g class=\"cs-part\" data-k=\"gate\" data-g=\"gate\"><rect class=\"cs-box\" x=\"412\" y=\"332\" width=\"276\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"550\" y=\"356\">电源完整性签核闸门</text><text class=\"cs-sub\" x=\"550\" y=\"374\">IR + EM 全绿才放行,否则回 ⑧ ECO</text></g></svg>",
+ "legend": [
+  {
+   "k": "hot",
+   "name": "die IR-drop 热图(电压签核的主视图)",
+   "desc": "电源完整性签核最直观的产物:把整片 die 划成网格,用电源完整性工具在真实功耗/翻转场景下算出每一格相对标称 VDD 的压降,再用颜色画成热力图——绿=压降小、黄=偏大、红=超标。签核工程师靠它一眼定位『电压洼地』在哪。这里热图为示意:把已知结构(脉动阵列居中、UB 在侧)摆上去演示『热点在阵列』这一物理规律,具体颜色分布与数值并非 TPU 实测。"
+  },
+  {
+   "k": "mxu",
+   "name": "256×256 阵列——动态 IR / EM 双重重灾区",
+   "desc": "65,536 个 8-bit MAC 在 700MHz 满负荷推理时几乎同拍翻转,是全片瞬时电流密度最高、最集中的区域,因此既是动态 IR-drop(大量单元同时抽电造成的瞬时压降)最容易超标的地方,也是电源金属长期载流最大、EM 最先逼近寿命限的地方。签核时这块红框区域要被重点盯:热图上它若飘红,或其上方主供电金属 EM 超限,就是 PDN 不达标最典型的信号。"
+  },
+  {
+   "k": "ir",
+   "name": "IR-drop 签核(静态 + 动态)",
+   "desc": "用金标准电源完整性工具(PrimeShield/Voltus/RedHawk 类)算两类压降:静态 IR-drop(平均电流下的稳态压降)和动态 IR-drop(大量单元同拍翻转的瞬时压降,叠加封装电感效应)。判据是示意性的『压降 ≤ VDD 的 X%』。压降过大→单元有效电压不足→延时变大,700MHz 跑不到,极端时直接功能出错。这是电源完整性签核里『压得住』的那一半。"
+  },
+  {
+   "k": "em",
+   "name": "电迁移 EM 签核(可靠性/寿命)",
+   "desc": "对每段电源金属和每个 via 核算电流密度,与工艺 PDK 给出的电迁移寿命限(Jmax)逐段比对。电流密度长期超限,金属原子会被电子流『推』着迁移,导线日久变细直至开路——这是慢性失效:流片当下查不出来,用一两年才暴露。EM 是签核里『用得久』的那一半,签核前必须把所有超限点(尤其阵列上方主供电)清干净。"
+  },
+  {
+   "k": "gate",
+   "name": "电源完整性签核闸门",
+   "desc": "本小节的放行判据:IR-drop(静态+动态)处处在预算内、EM 全段在寿命限内,两项全绿,这一维度才算签核通过、可汇入总 tape-out 闸门。任一项有红区/超限点,就不放行——带着坐标和超限金属退回 ⑧ 做电源 ECO(加宽/加密 straps、加 via、补 decap),改完再回本闸门重签,直到全绿。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "mxu",
+    "hot"
+   ],
+   "cap": "① 锁定被签核对象与重灾区:⑧ 交来铺好 PDN 的版图,签核先认清 256×256 阵列是同拍翻转的大电流热点,后面 IR/EM 核算都要重点盯这块。"
+  },
+  {
+   "keys": [
+    "ir",
+    "hot"
+   ],
+   "cap": "② 出 IR-drop 热图:用金标准工具在真实翻转场景下算静态+动态压降,画成全 die 电压热图——绿黄红一眼看出哪里是电压洼地。"
+  },
+  {
+   "keys": [
+    "mxu",
+    "ir"
+   ],
+   "cap": "③ 判『压得住』:核对阵列等热点处压降是否 ≤ VDD 的 X%(示意判据);压降超标→单元欠压→700MHz 跑不到甚至算错,该格判 fail。"
+  },
+  {
+   "keys": [
+    "em",
+    "mxu"
+   ],
+   "cap": "④ 判『用得久』:对每段电源金属/via 核电流密度是否 ≤ 工艺 Jmax;阵列上方主供电载流最大,EM 最先逼近寿命限,超限即判 fail。"
+  },
+  {
+   "keys": [
+    "gate",
+    "ir",
+    "em"
+   ],
+   "cap": "⑤ 过闸门或退回:IR + EM 全绿才放行汇入 tape-out 闸门;有红区/超限点则连坐标退回 ⑧ 做电源 ECO 加强,改完回本闸门重签。"
+  }
+ ],
+ "before": [
+  "<b>先冻结真实寄生与电源视图</b>:电源完整性签核要拿『真实的』PDN 来算,不是估算——需要布线后提取的电源网络寄生(金属电阻、via 电阻,来自寄生提取/SPEF 与 PDK 的方块电阻表)、各金属层的电流密度上限(EM 限 Jmax)、via 载流能力,以及标称 VDD 与允许的 IR-drop 预算(示意:如压降 ≤ VDD 的某百分比)。这些是判据的硬边界,签核只对照、不重定。",
+  "<b>定好功耗/翻转场景(矢量 vs 无矢量)</b>:动态 IR-drop 取决于『哪些单元在同一拍翻转』,所以要先约定签核场景——是用真实工作负载的翻转矢量(vectorless 统计翻转率,或典型推理激励),还是最坏同拍翻转假设。对 256×256 阵列这种规则满负荷结构,通常要覆盖『阵列几乎同拍全翻』的高电流场景,这才是动态 IR 的最坏角落。",
+  "<b>选定金标准工具与签核 corner</b>:IR/EM 签核用专门的电源完整性工具(PrimeShield/Voltus/RedHawk 类),且要和 MMMC 多角度签核对齐——在哪些 PVT 角(如低压、高温)算 IR、在哪些温度下查 EM(EM 寿命强温度相关)。corner 选不全,某个最坏组合下的超标会漏签。",
+  "<b>定豁免与判据细则</b>:写清哪些网络/区域走特殊判据(如模拟/IO 供电单列、已知保守余量区可放宽),哪些必须零容忍(如阵列主供电的 EM);约定 IR 报告按格/按 instance 的判读口径、EM 按段/按 via 的统计口径。规则先白纸黑字,签核结论才不被『这算不算违例』的口水拖住。",
+  "<b>诚实边界</b>:IR-drop(静态/动态)与 EM 签核、PrimeShield/Voltus/RedHawk 类电源完整性工具、MMMC/OCV/PVT 角、SPEF 寄生、PDK 的 Jmax/EM 寿命模型,都是通行签核 EDA 实践。TPU v1 不公开其 PDN 结构、金属栈、签核 corner、IR-drop/EM 报告或任何压降/电流密度数字。本案例把 TPU 已知结构(256×256 脉动阵列、24 MiB UB、700MHz、28nm、≤331mm²、28–40W、weight-stationary)当作『被签核对象』来讲电源完整性签核概念;热图配色、压降百分比、判据数值等全为示意,非 TPU 私有披露。"
+ ],
+ "during": [
+  "<b>静态、动态都要签,动态是阵列的真考验</b>:静态 IR-drop 看平均电流下的稳态压降,相对温和;动态 IR-drop 看大量单元同拍翻转的瞬时压降(还要叠加封装电感的 di/dt 效应),才是 256×256 阵列满负荷时的真正考验。签核必须两类都出报告——只过静态、放过动态,等于没签住阵列最危险的工况。",
+  "<b>铁律一:IR-drop 直接关联时序,不是独立检查</b>。局部压降让单元有效电压不足、延时变大,所以电压洼地往往就是时序裕量被偷偷吃掉的地方。规范签核要做『IR-drop 感知的时序复核』——把热图算出的实际电压回灌给 STA,确认阵列在真实供电下仍满足 700MHz;标称电压下时序干净,不代表压降后还干净。",
+  "<b>铁律二:EM 是慢性失效,签核是唯一的拦截点</b>。电流密度超 Jmax 的金属/via 在流片当下完全正常,要用一两年才迁移变细直至开路——下线后没有任何在线测试能提前发现。所以 EM 必须在签核这一关、对每段电源金属和每个 via 全部核到寿命限内,尤其阵列上方那几条载流最大的主供电干线,一段都不能放过。",
+  "<b>读热图先看热点,再看洼地</b>:签核工程师拿到全 die 热图,第一眼盯 256×256 阵列这类高翻转区是否飘红,第二眼找远离供电入口(bump/C4)的角落是否出现局部压降洼地。红区与洼地的坐标,就是后面退回 ⑧ 做电源 ECO 的精确打击点。",
+  "<b>多 corner / 多场景取最坏,不取平均</b>:IR 在最坏 PVT 角(常是低压高温)、EM 在高温寿命角分别取最坏,翻转场景取阵列同拍高电流的极端工况。签核的逻辑是『最坏角落都过得去才算过』——任一被签 corner 下有超标,就整体判 fail,不能用其它角的余量来抵。",
+  "<b>把违例归因清楚再退回,别只甩报告</b>:对每个 IR 红区/EM 超限点,签核应一并给出位置、超标量、所属电源网络与最可能的成因(网格太疏/via 不够/decap 不足/入口太远),这样 ⑧ 的电源 ECO 才能精准加强,而不是大面积返工——签核不只判通过与否,还要给可执行的修复线索。"
+ ],
+ "result": [
+  {
+   "label": "IR-drop 报告(示意)",
+   "value": "全 die 静态+动态压降热图;判据(示意):各处压降 ≤ VDD 的 X%;按格/按 instance 列出超标点 worst IR-drop 与坐标"
+  },
+  {
+   "label": "动态 IR 最坏工况(示意)",
+   "value": "场景=256×256 阵列同拍高翻转;关注阵列区峰值动态压降是否仍在预算内(数值示意,非 TPU 实测)"
+  },
+  {
+   "label": "EM 报告(示意)",
+   "value": "逐段金属/via 电流密度 J vs 工艺寿命限 Jmax;判据(示意):J ≤ Jmax;列出超限段、超限倍数与位置(阵列上方主供电零容忍)"
+  },
+  {
+   "label": "IR 感知时序复核(示意)",
+   "value": "把热图实际电压回灌 STA:确认阵列在压降后仍满足 700MHz(示意 setup slack ≥ 0);若 IR 吃掉 slack 则该路径连带 fail"
+  },
+  {
+   "label": "签核 corner/场景(示意)",
+   "value": "IR 取最坏 PVT(如低压高温)、EM 取高温寿命角;翻转场景覆盖阵列满负荷;最坏角落全过才算过"
+  },
+  {
+   "label": "本维度结论",
+   "value": "IR(静态+动态)+ EM 全绿 → 该维度签核 PASS,汇入 tape-out 闸门;任一红区/超限 → FAIL,带坐标退回 ⑧ ECO"
+  }
+ ],
+ "after": [
+  "<b>违例回 ⑧ 做电源 ECO</b>:对热图红区/EM 超限点,带坐标退回物理实现做有针对性的电源 ECO——加宽或加密该处 straps、补 via 增大载流、就近补 decap 压动态 IR、必要时调供电入口。改的是 PDN 局部,不是推翻重铺,务求最小改动消违例。",
+  "<b>ECO 后增量重签,别只看改的那块</b>:电源 ECO 可能挪动金属、占走布线资源,要重跑 IR/EM 确认:既验原红区已转绿,也确认加强没在别处挤出新的电压洼地或 EM 热点。电源完整性是全局耦合的,局部一动要做增量全检,不能只盯改点。",
+  "<b>连带复核 IR 感知时序与 DRC</b>:PDN 一改,实际电压分布变,要重做 IR-drop 感知的时序复核,确认阵列仍满足 700MHz;加宽/加 via 还可能触碰金属间距规则,需回过 DRC。电源、时序、物理验证三者在签核阶段相互牵动,改一项要顺手验另两项。",
+  "<b>全绿后汇入总 tape-out 闸门</b>:IR(静态+动态)与 EM 两项判据全部达标,本维度结论才能并入总签核闸门,与 STA、DRC/LVS、LEC、其它可靠性签核等一道汇总——按系列既定规则,所有维度全绿才放行流片,电源完整性是其中绕不开的一格。",
+  "<b>留签核留痕,供复盘与下一代</b>:归档本次 IR/EM 的工具版本、签核 corner/场景、判据阈值与最终报告(含曾经的红区与 ECO 记录)。这既是 tape-out 决策的证据链,也是 TPU 这类大芯片迭代时调 PDN 余量、定下一代签核口径的依据。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(256×256 8-bit MAC 脉动阵列、700MHz/~92 TOPS、24 MiB Unified Buffer、weight-stationary、28nm/≤331mm²/28–40W 为 v1 披露,作为被签核对象与电流量级参照;电源完整性签核流程——IR-drop 静态/动态分析、电迁移 EM 核查、PrimeShield/Voltus/RedHawk 类工具、MMMC/OCV/PVT 角、SPEF 寄生、IR 感知时序复核、tape-out 闸门——以及热图配色、压降百分比、Jmax 比对、setup slack 等判据数值,均为通行签核 EDA 实践与示意,非 TPU v1 私有签核披露)"
+}

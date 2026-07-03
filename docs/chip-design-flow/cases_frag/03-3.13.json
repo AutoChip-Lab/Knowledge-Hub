@@ -1,0 +1,118 @@
+{
+ "secNum": "3.13",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 可测性架构(DFT):scan 链测阵列 · MBIST 测 24 MiB SRAM · JTAG 总入口",
+ "oneLine": "331mm² 的大 ASIC 里塞了 65,536 个 MAC 和近 30 MiB 片上 SRAM——这么大一块硅,不在设计阶段就埋好测试电路(scan/MBIST/JTAG),流片回来根本算不清良率、坏片会漏到机房;DFT 是「为可制造、可筛选」而生的架构。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 410\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"24\">DFT 三件套(通行实践):JTAG 入口 · scan 链测逻辑 · MBIST 测大块 SRAM</text><g class=\"cs-part\" data-k=\"jtag\" data-g=\"jtag\"><rect class=\"cs-box\" x=\"40\" y=\"44\" width=\"150\" height=\"62\" rx=\"8\"/><text class=\"cs-t\" x=\"115\" y=\"68\">JTAG / TAP</text><text class=\"cs-sub\" x=\"115\" y=\"86\">IEEE 1149.1 测试入口</text><text class=\"cs-sub\" x=\"115\" y=\"100\">边界扫描 · 控制各引擎</text></g><line class=\"cs-arr\" x1=\"115\" y1=\"106\" x2=\"115\" y2=\"150\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"124\" y=\"132\">下发测试向量 / 控制</text><rect x=\"40\" y=\"150\" width=\"640\" height=\"158\" rx=\"10\" fill=\"none\" stroke=\"#cbd5e1\" stroke-dasharray=\"2 4\"/><text class=\"cs-note\" x=\"50\" y=\"168\">TPU v1 芯片(被测对象)</text><g class=\"cs-part\" data-k=\"mxu\" data-g=\"scan\"><rect class=\"cs-box\" x=\"64\" y=\"182\" width=\"300\" height=\"110\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#818cf8\"/><text class=\"cs-t\" x=\"214\" y=\"204\">MXU 256×256 脉动阵列</text><rect class=\"cs-cell\" x=\"84\" y=\"220\" width=\"22\" height=\"22\"/><rect class=\"cs-cell\" x=\"110\" y=\"220\" width=\"22\" height=\"22\"/><rect class=\"cs-cell\" x=\"136\" y=\"220\" width=\"22\" height=\"22\"/><rect class=\"cs-cell\" x=\"162\" y=\"220\" width=\"22\" height=\"22\"/><rect class=\"cs-cell\" x=\"84\" y=\"246\" width=\"22\" height=\"22\"/><rect class=\"cs-cell\" x=\"110\" y=\"246\" width=\"22\" height=\"22\"/><rect class=\"cs-cell\" x=\"136\" y=\"246\" width=\"22\" height=\"22\"/><rect class=\"cs-cell\" x=\"162\" y=\"246\" width=\"22\" height=\"22\"/><polyline class=\"cs-arr\" points=\"84,231 200,231 200,257 340,257\" fill=\"none\" stroke=\"#f97316\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"200\" y=\"284\">scan 链穿过每个 PE 的触发器 →</text></g><g class=\"cs-part\" data-k=\"ub\" data-g=\"mbist\"><rect class=\"cs-box\" x=\"384\" y=\"182\" width=\"174\" height=\"110\" rx=\"8\" stroke=\"#10b981\" stroke-dasharray=\"6 4\"/><text class=\"cs-t\" x=\"471\" y=\"222\">Unified Buffer</text><text class=\"cs-sub\" x=\"471\" y=\"240\">24 MiB SRAM</text><text class=\"cs-sub\" x=\"471\" y=\"258\">被 MBIST 包住</text></g><g class=\"cs-part\" data-k=\"mbist\" data-g=\"mbist\"><rect class=\"cs-box\" x=\"384\" y=\"182\" width=\"50\" height=\"26\" rx=\"6\" fill=\"#ecfdf5\" stroke=\"#10b981\"/><text class=\"cs-sub\" x=\"409\" y=\"199\">MBIST</text></g><g class=\"cs-part\" data-k=\"acc\" data-g=\"mbist2\"><rect class=\"cs-box\" x=\"576\" y=\"182\" width=\"88\" height=\"110\" rx=\"8\" stroke=\"#10b981\" stroke-dasharray=\"6 4\"/><text class=\"cs-t\" x=\"620\" y=\"222\">累加器</text><text class=\"cs-sub\" x=\"620\" y=\"240\">4 MiB SRAM</text><text class=\"cs-sub\" x=\"620\" y=\"258\">MBIST 自测</text></g><line class=\"cs-arr\" x1=\"364\" y1=\"237\" x2=\"382\" y2=\"237\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"558\" y1=\"237\" x2=\"574\" y2=\"237\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"cov\" data-g=\"cov\"><rect class=\"cs-box\" x=\"40\" y=\"330\" width=\"640\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"354\">良率判据:覆盖率达标 才放行</text><text class=\"cs-sub\" x=\"360\" y=\"374\">逻辑 stuck-at/transition 覆盖率目标 · SRAM 全单元 march 测 → 漏测=坏片漏出现场</text></g><line class=\"cs-arr\" x1=\"214\" y1=\"292\" x2=\"300\" y2=\"328\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"471\" y1=\"292\" x2=\"420\" y2=\"328\" marker-end=\"url(#csar)\"/></svg>",
+ "legend": [
+  {
+   "k": "jtag",
+   "name": "JTAG / TAP(测试总入口)",
+   "desc": "IEEE 1149.1 标准测试访问口:ATE 测试机通过它下发测试向量、启动 scan 与 MBIST、做边界扫描查管脚/封装连接。是芯片对外的统一「测试门」。这是大 ASIC 的通行做法,非 TPU v1 专属披露。"
+  },
+  {
+   "k": "scan",
+   "name": "scan 链(测逻辑)",
+   "desc": "把阵列里每个 PE 的触发器串成移位链,测试时灌入已知向量、捕获响应、再移出比对,从而覆盖 MXU 这类海量规整逻辑的固定型(stuck-at)/翻转(transition)故障。穿过整块阵列。"
+  },
+  {
+   "k": "mbist",
+   "name": "MBIST(测大块 SRAM)",
+   "desc": "存储器内建自测:在 24 MiB Unified Buffer、4 MiB 累加器旁放一小块自测引擎,自动跑 march 算法读写每个单元,查 SRAM 位翻转/邻扰故障。SRAM 不能用 scan 测,必须 MBIST。"
+  },
+  {
+   "k": "ub",
+   "name": "被测的大块存储",
+   "desc": "近 30 MiB 片上 SRAM 是缺陷的高发区(单元多、面积大),也是 DFT 的重点照顾对象——每一块都得被一个 MBIST 包住,否则坏单元无从发现。"
+  },
+  {
+   "k": "cov",
+   "name": "覆盖率判据",
+   "desc": "DFT 的成败用故障覆盖率衡量:逻辑要达到设定的 stuck-at/transition 覆盖率目标,SRAM 要全单元 march 通过。覆盖率不够 = 坏片漏出现场,良率也无从估算。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "mxu",
+    "scan"
+   ],
+   "cap": "① 测海量逻辑:把 MXU 阵列里每个 PE 的触发器串成 scan 链,移入向量、移出响应,覆盖固定型/翻转故障"
+  },
+  {
+   "keys": [
+    "ub",
+    "mbist",
+    "acc"
+   ],
+   "cap": "② 测大块 SRAM:给 24 MiB Unified Buffer 和 4 MiB 累加器各配 MBIST,自动 march 读写查坏单元(SRAM 没法用 scan 测)"
+  },
+  {
+   "keys": [
+    "jtag"
+   ],
+   "cap": "③ 统一入口:ATE 经 JTAG/TAP 下发并启动 scan、MBIST,还做边界扫描查封装/管脚连接"
+  },
+  {
+   "keys": [
+    "cov"
+   ],
+   "cap": "④ 看覆盖率:逻辑覆盖率达标、SRAM 全单元通过,才算「测得清」——这是放行与良率核算的判据"
+  },
+  {
+   "keys": [
+    "cov",
+    "mxu",
+    "ub"
+   ],
+   "cap": "⑤ 收口:覆盖率不达标就回去补 scan 点/MBIST,否则坏片漏到机房、良率算不准"
+  }
+ ],
+ "before": [
+  "<b>先认清「不做 DFT 的代价」</b>:331mm² 大 ASIC + 近 30 MiB 片上 SRAM,缺陷必然存在;没有专门测试电路,流片回来的芯片良率算不清、坏片会漏到数据中心——所以 DFT 必须在架构期就规划,不是事后补。",
+  "<b>要拍板的设计量(旋钮)</b>:目标故障覆盖率、scan 链怎么划分与数量、哪些块上 MBIST、测试入口(JTAG/TAP)规格、测试模式与功能模式的隔离、测试引脚预算、ATE 测试时间上限。",
+  "<b>必备输入</b>:工艺/库的 DFT 单元(scan flop、MBIST 控制器、TAP 控制器都来自工艺库)、缺陷模型与目标故障类型、各块面积与 SRAM 容量清单、量产 ATE 的能力与节拍。",
+  "<b>必须卡住的约束</b>:DFT 会占面积、加时序负担(scan 多路选择插在数据路径上)、要额外引脚——这些都要和 §3.3 算力、§3.9 功耗预算抢资源,得权衡。注:这些是大 ASIC 的通行约束,TPU v1 并未公开其 scan/MBIST 的具体数字,不杜撰 TPU 专属覆盖率或链数。"
+ ],
+ "during": [
+  "<b>分而治之:逻辑用 scan,存储用 MBIST</b>:海量规整组合逻辑(MXU 的 65,536 个 MAC)适合 scan 链——把触发器串起来灌向量;而 SRAM 单元阵列没法靠 scan 一个个验,必须给每块配 MBIST 跑 march 算法自测。两类电路、两套方法,分头覆盖。",
+  "<b>大 SRAM 是重点</b>:24 MiB Unified Buffer + 4 MiB 累加器是缺陷高发区,每一块都用一个 MBIST 包住,自动遍历读写、查位翻转与邻扰;不这样做,坏单元就成了「测不到的盲区」。",
+  "<b>设一个统一测试入口</b>:用 JTAG/TAP 把所有 scan 链和 MBIST 引擎挂到一个标准口上,ATE 经它下发向量、启动自测、回收结果,还能做边界扫描查封装连接——避免每块各开一套接口。",
+  "<b>覆盖率定目标、控成本</b>:覆盖率越高越能筛出坏片,但 scan 点越多、测试向量越长、ATE 时间越贵 → 要在「漏测风险」和「测试成本/面积/时序代价」之间定一个达标线(通行做法是给逻辑设 stuck-at/transition 覆盖率目标、给 SRAM 要求全单元 march 通过)。",
+  "<b>隔离测试模式与功能模式</b>:测试时 scan 链会扰动内部状态,必须保证测试模式不会在功能运行时被误触发,功能路径也不被 DFT 逻辑拖慢太多——这是 DFT 插入的基本纪律。",
+  "<b>诚实边界</b>:以上 scan/MBIST/JTAG/覆盖率目标都是数据中心大 ASIC 的通行 DFT 实践,用来背景化 TPU 这类芯片;TPU v1 公开资料未披露其 DFT 的具体结构与数字,本案例不编造任何 TPU 专属的覆盖率、链数或 MBIST 配置。"
+ ],
+ "result": [
+  {
+   "label": "逻辑测试",
+   "value": "scan 链穿过 MXU 阵列触发器(通行实践)"
+  },
+  {
+   "label": "存储测试",
+   "value": "MBIST 自测 24 MiB UB + 4 MiB 累加器(通行)"
+  },
+  {
+   "label": "测试入口",
+   "value": "JTAG/TAP + 边界扫描(通行实践)"
+  },
+  {
+   "label": "覆盖率判据",
+   "value": "逻辑 stuck-at/transition 达标 + SRAM 全单元 march(定性)"
+  },
+  {
+   "label": "代价",
+   "value": "占面积/加时序/多引脚——与算力、功耗抢预算"
+  },
+  {
+   "label": "TPU v1 专属数字",
+   "value": "未公开,不杜撰(诚实留空)"
+  }
+ ],
+ "after": [
+  "<b>验证 DFT 自身有效</b>:用故障仿真核对实际覆盖率是否达到目标、MBIST 能否查出注入的故障;不达标就回去补 scan 点或调 MBIST 算法,再迭代。",
+  "<b>生成量产测试程序并对接 ATE</b>:把 scan 向量、MBIST 序列打包成 ATE 测试程序,定测试节拍与时间预算,确保单颗芯片的测试成本可控。",
+  "<b>把约束往下游传</b>:给物理实现(§3 后续/⑥)交 scan 链布线、TAP 位置、DFT 单元面积与时序约束;给封装/板级交边界扫描的管脚连接测试要求。",
+  "<b>支撑良率核算与失效分析</b>:测试结果回流给良率统计与失效分析,定位是哪块(逻辑/某块 SRAM)缺陷高,反馈给工艺与设计;这部分 TPU v1 未公开,按数据中心 ASIC 通行实践处理,不编造专属数据。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(scan/MBIST/JTAG/覆盖率等 DFT 细节为大 ASIC 通行实践,非 TPU v1 公开披露,文中已注明)"
+}

@@ -1,0 +1,112 @@
+{
+ "secNum": "3.3",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 两类寄存器、两种复位:控制寄存器复位到确定态,海量累加器省掉复位",
+ "oneLine": "同一颗 TPU 里,FSM/计数器这类控制寄存器必须复位到已知态,而 65k+ MAC 和 4 MiB 累加器靠「流程清零」不接复位——一张图说清「该复位什么、不该复位什么」这条 RTL 取舍。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"34\">同一颗 TPU 内,两类寄存器、两种复位策略</text><line class=\"cs-arr\" x1=\"60\" y1=\"120\" x2=\"150\" y2=\"120\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"46\" y=\"104\">clk</text><line class=\"cs-arr\" x1=\"60\" y1=\"150\" x2=\"150\" y2=\"150\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"40\" y=\"170\">rst_n</text><g class=\"cs-part\" data-k=\"ctrl\" data-g=\"ctrl\"><rect class=\"cs-box\" x=\"154\" y=\"78\" width=\"210\" height=\"116\" rx=\"8\"/><path d=\"M154 178 L168 178 L154 194 Z\" fill=\"#8b5cf6\"/><text class=\"cs-t\" x=\"259\" y=\"108\">控制寄存器 · 带复位</text><text class=\"cs-sub\" x=\"259\" y=\"130\">FSM 状态 / 计数器 / 配置</text><text class=\"cs-sub\" x=\"259\" y=\"150\">if(!rst_n) st&lt;=IDLE;</text><text class=\"cs-note\" x=\"259\" y=\"170\">必须复位到确定态</text></g><line class=\"cs-arr\" x1=\"60\" y1=\"300\" x2=\"150\" y2=\"300\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"46\" y=\"284\">clk</text><text class=\"cs-note\" x=\"40\" y=\"332\">(无 rst)</text><g class=\"cs-part\" data-k=\"acc\" data-g=\"acc\"><rect class=\"cs-box\" x=\"154\" y=\"258\" width=\"210\" height=\"116\" rx=\"8\"/><path d=\"M154 358 L168 358 L154 374 Z\" fill=\"#8b5cf6\"/><text class=\"cs-t\" x=\"259\" y=\"288\">累加寄存器 · 不复位</text><text class=\"cs-sub\" x=\"259\" y=\"310\">4 MiB / 32-bit 累加器</text><text class=\"cs-sub\" x=\"259\" y=\"330\">acc&lt;=acc+a*b;</text><text class=\"cs-note\" x=\"259\" y=\"350\">靠流程「先清零再累加」</text></g><line class=\"cs-arr\" x1=\"364\" y1=\"120\" x2=\"430\" y2=\"120\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"364\" y1=\"300\" x2=\"430\" y2=\"300\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"net\" data-g=\"net\"><rect class=\"cs-box\" x=\"434\" y=\"98\" width=\"240\" height=\"80\" rx=\"8\"/><text class=\"cs-t\" x=\"554\" y=\"126\">复位网络(物理)</text><text class=\"cs-sub\" x=\"554\" y=\"148\">少量控制寄存器</text><text class=\"cs-note\" x=\"554\" y=\"166\">复位树小 · 易布线</text></g><g class=\"cs-part\" data-k=\"save\" data-g=\"save\"><rect class=\"cs-box\" x=\"434\" y=\"278\" width=\"240\" height=\"80\" rx=\"8\"/><text class=\"cs-t\" x=\"554\" y=\"306\">省下的复位网络</text><text class=\"cs-sub\" x=\"554\" y=\"328\">不连 65k+ MAC / 累加器</text><text class=\"cs-note\" x=\"554\" y=\"346\">省面积 · 省布线 · 缩时序</text></g><line class=\"cs-arr\" x1=\"554\" y1=\"178\" x2=\"554\" y2=\"206\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><g class=\"cs-part\" data-k=\"rel\" data-g=\"rel\"><rect class=\"cs-box\" x=\"434\" y=\"210\" width=\"240\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"554\" y=\"234\">复位释放(同步去抖)</text><text class=\"cs-note\" x=\"554\" y=\"252\">异步断言 · 同步释放,免亚稳态</text></g></svg>",
+ "legend": [
+  {
+   "k": "ctrl",
+   "name": "控制寄存器(带复位)",
+   "desc": "FSM 状态、计数器、配置寄存器:上电/复位后必须落到确定态(如 IDLE、计数=0),否则仿真出 X、芯片 bring-up 起不来。这类寄存器数量少,值得给复位。"
+  },
+  {
+   "k": "acc",
+   "name": "累加寄存器(不复位)",
+   "desc": "脉动阵列里 65k+ 个 MAC 和 4 MiB 32-bit 累加器:数量巨大且每轮计算前本就会被「清零→累加」流程覆盖,所以这类设计通常不接复位,省下天量复位网络。"
+  },
+  {
+   "k": "net",
+   "name": "复位网络(物理)",
+   "desc": "复位信号要像时钟一样布成一棵树扇出到每个被复位的触发器;只复位少量控制寄存器,这棵树就小、好布、对时序影响小。"
+  },
+  {
+   "k": "rel",
+   "name": "复位释放(同步去抖)",
+   "desc": "通行做法是「异步断言、同步释放」:复位拉低立刻生效,但松开时经两级触发器对齐 clk 再释放,避免释放沿落在时钟附近引发亚稳态。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "ctrl"
+   ],
+   "cap": "① 先圈出「必须确定态」的寄存器:控制 FSM、计数器、配置——复位后它们要稳稳停在 IDLE / 0,这是 bring-up 能起来的前提。"
+  },
+  {
+   "keys": [
+    "acc"
+   ],
+   "cap": "② 再圈出「不必复位」的数据路径寄存器:海量 MAC / 累加器,反正每轮算之前都被清零再累加,接复位纯属浪费。"
+  },
+  {
+   "keys": [
+    "net",
+    "save"
+   ],
+   "cap": "③ 这一刀的收益:复位网络只连控制寄存器,不连 65k+ MAC——省面积、省布线、复位树不拖关键路径。"
+  },
+  {
+   "keys": [
+    "rel"
+   ],
+   "cap": "④ 给真正接复位的那部分定释放策略:异步断言 + 同步释放,让复位松开时刻干净,不在时钟沿附近抖出亚稳态。"
+  },
+  {
+   "keys": [
+    "ctrl",
+    "acc"
+   ],
+   "cap": "⑤ 全设计统一复位风格:同步还是异步、低有效还是高有效,只能选一套并贯穿到底——风格混用是经典 bring-up 杀手。"
+  }
+ ],
+ "before": [
+  "<b>定复位风格(全局一套)</b>:同步复位还是异步复位、低有效(rst_n)还是高有效——必须全芯片统一,混用会让 CDC/综合/形式验证全部踩坑。",
+  "<b>定复位策略分区</b>:哪些寄存器「必须复位到确定态」(控制 FSM、计数器、配置),哪些「靠流程清零、不接复位」(海量数据路径寄存器);这条线决定复位网络多大。",
+  "<b>定时钟与位宽约定</b>:统一时钟沿(posedge clk)、PE 内乘法 8-bit、累加 32-bit、指令/配置寄存器位宽,写进编码规范。",
+  "<b>定复位释放方式</b>:约定「异步断言、同步释放」的复位同步器,跨时钟域的每个域各自做一份释放去抖。",
+  "<b>定可综合约束</b>:复位只走专用 rst/rst_n 端口、不可被数据逻辑驱动;时序寄存器一律 always_ff,禁止 latch。"
+ ],
+ "during": [
+  "<b>控制寄存器:写带复位的时序块</b>。示意:<code>always_ff @(posedge clk or negedge rst_n) if(!rst_n) st&lt;=IDLE; else st&lt;=nxt;</code>——FSM 状态与计数器必须有这条复位分支,值落在确定态。(代码为通行 RTL 示意,非 TPU 私有写法)",
+  "<b>累加/数据寄存器:写不带复位的时序块</b>。示意:<code>always_ff @(posedge clk) acc&lt;=acc+a*b;</code>——没有 rst 分支,初值由「计算前清零」这一步保证;65k+ 个这样的寄存器全省掉复位连线。",
+  "<b>复位风格不许混</b>:同一设计里要么全同步、要么全异步,低/高有效也只选一种;混用是最常见的 bring-up 故障源,也让综合工具难以推断。",
+  "<b>复位释放要去抖</b>:异步复位的「松开」沿必须经两级 FF 对齐到本域时钟再释放,否则释放点撞上时钟沿会产生亚稳态、让 FSM 随机进错态。",
+  "<b>漏复位的代价记心里</b>:该复位的寄存器忘了写复位分支 → RTL 仿真里它一直是 X、X 会顺着逻辑传播污染下游;硅上则表现为上电后状态不定、bring-up 起不来。",
+  "<b>不要给数据路径乱加复位「图保险」</b>:给本不需要复位的海量累加器接复位,会凭空长出庞大复位树、增面积、压频率——该省就省,是工程取舍不是偷懒。"
+ ],
+ "result": [
+  {
+   "label": "控制寄存器复位块(示意)",
+   "value": "always_ff @(posedge clk or negedge rst_n) if(!rst_n) st<=IDLE;"
+  },
+  {
+   "label": "累加寄存器无复位(示意)",
+   "value": "always_ff @(posedge clk) acc<=acc+a*b;  // 靠流程先清零"
+  },
+  {
+   "label": "复位风格",
+   "value": "全设计统一一种(同步/异步择一、低有效 rst_n)"
+  },
+  {
+   "label": "复位释放",
+   "value": "异步断言 + 两级 FF 同步释放,免亚稳态"
+  },
+  {
+   "label": "复位网络规模",
+   "value": "只连控制寄存器;65k+ MAC / 4 MiB 累加器不接 → 复位树小"
+  },
+  {
+   "label": "位宽约定",
+   "value": "PE 乘法 8-bit、累加 32-bit;时序逻辑一律 always_ff,禁 latch"
+  }
+ ],
+ "after": [
+  "<b>lint / RTL 规则检查</b>:扫复位风格是否统一、有无漏复位的控制寄存器、有无被意外推断出的 latch、复位是否被数据逻辑驱动。",
+  "<b>仿真查 X</b>:复位序列跑一遍,确认所有控制 FSM/计数器复位后无 X、停在确定态;再放复位看累加器被流程清零路径正确覆盖。",
+  "<b>CDC / 复位检查</b>:用 CDC 工具核每个时钟域的复位同步器(异步断言、同步释放)是否齐全,跨域复位没有未对齐的释放沿。",
+  "<b>试综合验时序</b>:确认复位网络不拖关键路径、能到 700 MHz;同时核对省掉复位的数据路径面积收益是否兑现。",
+  "<b>交验证</b>:把「复位到确定态」「复位释放无亚稳态」「漏复位即 X」列为验证覆盖点,连同激励一并交给 ⑥ 验证。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(RTL 复位/编码部分为通行 RTL 实践,非 TPU 私有写法)"
+}

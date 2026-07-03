@@ -1,0 +1,119 @@
+{
+ "secNum": "3.6",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 24 MiB Unified Buffer 的存储 RTL：小块推断 vs 大块例化 SRAM 宏",
+ "oneLine": "片上存储在 RTL 里有两种写法——「推断」是用一段特定 always 模板让综合器自己认出 RAM(适合小 regfile),「例化」是直接调内存编译器生成的 SRAM 物理宏(大块都走这条);TPU 的 24 MiB Unified Buffer 体量根本不可能用触发器推断,只能例化成多个 SRAM bank。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"30\" y=\"28\">同样是「片上存储」，RTL 有两种落法 ↓</text><g class=\"cs-part\" data-k=\"infer\" data-g=\"infer\"><rect class=\"cs-box\" x=\"30\" y=\"48\" width=\"300\" height=\"150\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#c7d2fe\"/><text class=\"cs-t\" x=\"180\" y=\"74\">推断（infer）</text><text class=\"cs-sub\" x=\"180\" y=\"94\">写「特定 always 模板」让综合器认出</text></g><g class=\"cs-part\" data-k=\"inferc\" data-g=\"infer\"><rect class=\"cs-cell\" x=\"48\" y=\"106\" width=\"264\" height=\"76\" rx=\"4\"/><text class=\"cs-note\" x=\"60\" y=\"124\">reg [7:0] mem [0:DEPTH-1];</text><text class=\"cs-note\" x=\"60\" y=\"142\">always_ff @(posedge clk) begin</text><text class=\"cs-note\" x=\"76\" y=\"158\">if(we) mem[wa]&lt;=din;  // 写</text><text class=\"cs-note\" x=\"76\" y=\"174\">dout&lt;=mem[ra];        // 同步读</text></g><g class=\"cs-part\" data-k=\"inst\" data-g=\"inst\"><rect class=\"cs-box\" x=\"390\" y=\"48\" width=\"300\" height=\"150\" rx=\"8\" fill=\"#fef3f2\" stroke=\"#fecaca\"/><text class=\"cs-t\" x=\"540\" y=\"74\">例化（instantiate）</text><text class=\"cs-sub\" x=\"540\" y=\"94\">直接调内存编译器生成的 SRAM 宏</text></g><g class=\"cs-part\" data-k=\"instc\" data-g=\"inst\"><rect class=\"cs-cell\" x=\"408\" y=\"106\" width=\"264\" height=\"76\" rx=\"4\"/><text class=\"cs-note\" x=\"420\" y=\"124\">sram_2048x256 u_bank (</text><text class=\"cs-note\" x=\"436\" y=\"142\">.clk(clk), .ce(ce), .we(we),</text><text class=\"cs-note\" x=\"436\" y=\"158\">.a(addr), .d(din), .q(dout) );</text><text class=\"cs-note\" x=\"420\" y=\"176\">// 厂商 .lib/.lef 黑盒</text></g><line class=\"cs-arr\" x1=\"180\" y1=\"198\" x2=\"180\" y2=\"232\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"540\" y1=\"198\" x2=\"540\" y2=\"232\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"small\" data-g=\"small\"><rect class=\"cs-box\" x=\"60\" y=\"236\" width=\"240\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"180\" y=\"260\">小块 → 综合成触发器/分布式 RAM</text><text class=\"cs-sub\" x=\"180\" y=\"278\">小 regfile · 计数器表 · 小 FIFO</text></g><g class=\"cs-part\" data-k=\"big\" data-g=\"big\"><rect class=\"cs-box\" x=\"420\" y=\"236\" width=\"240\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"540\" y=\"260\">大块 → 编译好的 SRAM 物理宏</text><text class=\"cs-sub\" x=\"540\" y=\"278\">密度/时序/功耗远胜触发器堆</text></g><line class=\"cs-arr\" x1=\"540\" y1=\"292\" x2=\"540\" y2=\"324\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"ub\" data-g=\"ub\"><rect class=\"cs-box\" x=\"180\" y=\"328\" width=\"360\" height=\"52\" rx=\"8\" fill=\"#ecfdf5\" stroke=\"#a7f3d0\"/><text class=\"cs-t\" x=\"360\" y=\"352\">TPU 24 MiB Unified Buffer = 多 bank 例化 SRAM 宏</text><text class=\"cs-sub\" x=\"360\" y=\"370\">24 MiB 绝不可能用触发器推断，必须例化大块 SRAM</text></g><text class=\"cs-note\" x=\"30\" y=\"312\">选谁的判据：容量 / 端口 / 工艺有没有现成宏</text></svg>",
+ "legend": [
+  {
+   "k": "infer",
+   "name": "推断(infer)写法",
+   "desc": "不实例化任何宏,只写一段综合器认得的模板:声明一个 reg 数组 + 时钟沿下「同步写 / 同步读」的 always 块,综合器看出这是 RAM,自动映射成触发器、分布式 RAM 或小 SRAM。优点是可移植、代码自含;缺点是写法必须严格踩中工具支持的模式,否则会被综合成一大堆离散触发器(面积/功耗爆炸)。"
+  },
+  {
+   "k": "inst",
+   "name": "例化(instantiate)宏",
+   "desc": "直接 instantiate 一个由内存编译器(memory compiler)按工艺、按容量/端口配置生成的 SRAM 宏:RTL 里它是带固定端口名(clk/ce/we/addr/d/q)的黑盒,综合器不看内部、只连线,物理实现由厂商的 .lib(时序)/.lef(版图)交付。大块存储几乎全走这条。"
+  },
+  {
+   "k": "small",
+   "name": "小块 → 推断更划算",
+   "desc": "几十~几百 entry 的小存储(小 regfile、状态/计数表、浅 FIFO)用推断写法即可:省去为每个小尺寸单独跑一次内存编译器的麻烦,综合成触发器或分布式 RAM 的代价也能接受。"
+  },
+  {
+   "k": "big",
+   "name": "大块 → 必须例化",
+   "desc": "几 KB 以上、尤其几 MB 级的存储必须例化 SRAM 宏:同样容量下,编译好的 6T-SRAM 阵列在面积密度、读写时序、漏电/动态功耗上都远胜「触发器堆」,且自带可预测的时序模型供布局布线收敛。"
+  },
+  {
+   "k": "ub",
+   "name": "TPU UB = 多 bank 例化",
+   "desc": "TPU v1 的 24 MiB Unified Buffer 是这条规则的极端样本:24 MiB 若用触发器推断,面积/功耗完全不可行,必然是切成多个 bank、每 bank 例化一块内存编译器生成的 SRAM 宏拼成——这正是「大容量片上 scratchpad 在 RTL 层怎么落地」的标准答案。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "infer",
+    "small"
+   ],
+   "cap": "① 先看推断:对小存储,写一段「reg 数组 + 时钟沿同步读写」的 always 模板,综合器自动认出是 RAM 并映射到触发器/分布式 RAM——代码自含、可移植"
+  },
+  {
+   "keys": [
+    "inst",
+    "big"
+   ],
+   "cap": "② 再看例化:对大存储,改成 instantiate 一个内存编译器生成的 SRAM 宏,RTL 里只是个带固定端口的黑盒,物理特性由厂商 .lib/.lef 交付"
+  },
+  {
+   "keys": [
+    "small",
+    "big"
+   ],
+   "cap": "③ 选谁看判据:容量、端口数、目标工艺有没有现成宏——小而散 → 推断;大而规整 → 例化,密度/时序/功耗都更优"
+  },
+  {
+   "keys": [
+    "big",
+    "ub"
+   ],
+   "cap": "④ 套到 TPU:24 MiB Unified Buffer 远超推断能承受的体量,只能走例化路线"
+  },
+  {
+   "keys": [
+    "ub"
+   ],
+   "cap": "⑤ 落地形态:UB 切成多个 bank,每 bank 例化一块 SRAM 宏并到一起,既给容量也给「同拍多 bank 凑宽口喂阵列」的能力"
+  }
+ ],
+ "before": [
+  "<b>先给每块存储分类</b>:把设计里所有片上存储按「容量 / 端口数(单口/双口/读写口)/ 访问带宽 / 是否要 ECC」列出来,逐块决定走推断还是例化——这是写存储 RTL 的第一步,不是写完再补。",
+  "<b>定推断的编码模板</b>:约定全队统一用哪种可综合 RAM 写法(reg 数组 + 时钟沿同步读 / 同步写),并明确禁用异步读、禁止在同一块里混写多种读时序——综合器只认特定模板,写歪了会被综合成离散触发器。",
+  "<b>定例化的接口契约</b>:确认目标工艺有可用的内存编译器,约好 SRAM 宏的端口命名/位宽/深度/时序假设,以及如何在 RTL 里用可配置参数(DEPTH/WIDTH)挂上对应配置的宏。",
+  "<b>定复位与位宽风格</b>:存储阵列本体通常不带复位(SRAM 宏无 reset 端,大 regfile 全复位代价高),靠初始化序列或有效位管理;周边控制逻辑则按全队复位风格写。位宽(如 UB 字节粒度 8-bit、累加 32-bit)在此一并钉死。",
+  "<b>定可综合约束</b>:存储 RTL 不得含不可综合写法(initial 仅限仿真、不可综合的延时);例化宏要保证综合/形式工具能把它当黑盒正确处理,避免把宏内部也拉进等价性检查。"
+ ],
+ "during": [
+  "<b>推断:严格踩中模板,别即兴发挥</b>:写「同步读 RAM」就老老实实把读也放进 always_ff、用寄存器输出 dout;一旦写成组合(异步)读、或读写时序混搭,综合器认不出 RAM、退化成触发器阵列。模板是契约,不是风格自由区。",
+  "<b>例化:把宏当纯黑盒,只连线</b>:instantiate 时只关心端口连接(clk/ce/we/addr/d/q)与时序假设(读延迟几拍),不去碰、也碰不到宏内部;读出有固定 latency,要在周边逻辑里用流水寄存器对齐,别假设「这拍给地址这拍就出数」。",
+  "<b>用参数化把『选哪种』收口到一处</b>:把存储块写成带 DEPTH/WIDTH 参数的模块,内部用条件(generate)在「小尺寸→推断写法」与「大尺寸→例化宏」之间切换,对上层暴露同一套读写接口——换工艺/换容量只动这一层。",
+  "<b>大块一律拆 bank 再例化</b>:像 UB 这种 MB 级存储不会例化成「一块巨型宏」,而是切成多个深度/宽度适中的 bank、每 bank 一个宏:一来内存编译器对单宏尺寸有上限,二来多 bank 才能并行供数、凑出喂阵列要的宽口。bank 划分是这一步的核心手艺。",
+  "<b>读写时序与端口冲突在 RTL 里就处理</b>:单口 SRAM 同拍不能又读又写,要在控制逻辑里仲裁或读写分 bank;同地址读写的转发(read-during-write)行为以宏的规格为准,不要自己脑补,必要时在外面加旁路寄存器。",
+  "<b>诚实标注边界</b>:推断/例化的取舍、模板写法、bank 化都是 RTL 通行工程实践;TPU v1 不会逐行公开 UB 的 RTL,本案以「24 MiB 必然例化、必然多 bank」这一结构事实为载体讲方法,具体宏配置/bank 数非论文披露。"
+ ],
+ "result": [
+  {
+   "label": "小块·推断写法(示意)",
+   "value": "reg [7:0] mem[0:DEPTH-1]; always_ff @(posedge clk) begin if(we) mem[wa]<=din; dout<=mem[ra]; end —— 综合器认出 → 触发器/分布式 RAM(示意,非 TPU 源码)"
+  },
+  {
+   "label": "大块·例化写法(示意)",
+   "value": "sram_2048x256 u_bank(.clk,.ce,.we,.a(addr),.d(din),.q(dout)); —— 内存编译器生成的 SRAM 宏黑盒(示意)"
+  },
+  {
+   "label": "选择判据",
+   "value": "容量小/端口少 → 推断;容量大/规整 → 例化(密度·时序·功耗更优)"
+  },
+  {
+   "label": "TPU Unified Buffer",
+   "value": "24 MiB → 必例化、必多 bank 拼成"
+  },
+  {
+   "label": "字/累加位宽",
+   "value": "UB 字节粒度(8-bit),累加器 32-bit"
+  },
+  {
+   "label": "阵列本体复位",
+   "value": "SRAM 宏无 reset 端,靠初始化/有效位管理"
+  }
+ ],
+ "after": [
+  "<b>lint + 试综合验「真被当成 RAM」</b>:跑 lint 检查推断模板是否合规,再做一次试综合,确认推断块映射成 RAM(而非一大片触发器)、例化宏被正确识别为黑盒;面积报告里看存储是否落在预期形态。",
+  "<b>仿真核读写时序与转发行为</b>:在 RTL 仿真里覆盖同步读 latency、连续读写、同地址 read-during-write、bank 边界等 case,确认行为与所选宏/模板的规格一致,周边流水对齐无误。",
+  "<b>挂存储 BIST / 可测性钩子</b>:大块 SRAM 出片要可测,需为例化宏接上 MBIST 或预留测试端口;在交付前确认测试逻辑接好、不破坏功能时序。",
+  "<b>把宏规格交给后端,确认面积/时序收敛</b>:将例化的 SRAM 宏 .lib/.lef 交布局布线,核 24 MiB 多 bank 摆放后面积落在 die 预算(≤331mm²)内、读口时序在 700 MHz 下收敛;不收敛则回去调 bank 划分或宏配置。",
+  "<b>交验证 + 等价性检查</b>:把存储模块交功能验证;做 RTL↔网表形式等价时,把 SRAM 宏设为黑盒/用其形式模型,避免把宏内部拉进比对导致误报。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(24 MiB Unified Buffer 为已知结构事实;推断 vs 例化的 RTL 写法、模板与 bank 化为通行 RTL 实践,非 TPU 逐行源码)"
+}

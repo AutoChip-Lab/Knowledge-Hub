@@ -1,0 +1,120 @@
+{
+ "secNum": "3.2",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 测试平台(testbench)架构:Driver→DUT(脉动阵列)→Monitor→Scoreboard←Reference Model 五件套怎么搭",
+ "oneLine": "验证一块 256×256 阵列 RTL,靠的不是「跑一遍看波形」,而是一套自检环境:Driver 灌矩阵和那十几条 CISC 指令,DUT(阵列 RTL)算出结果,Monitor 抓回输出,Scoreboard 拿它和一份「独立写的参考模型」算出的期望值逐元素比对、自动判 PASS/FAIL——这套 Driver/DUT/Monitor/Scoreboard/Reference Model 五件套,就是把「人盯波形」升级成「机器自动判错、上千用例无人值守」的关键。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 380\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"28\">TPU 阵列功能验证的 testbench:激励进 → DUT 算 → 抓输出 → 与参考模型对照判对错</text><g class=\"cs-part\" data-k=\"drv\" data-g=\"drv\"><rect class=\"cs-box\" x=\"36\" y=\"64\" width=\"156\" height=\"86\" rx=\"8\"/><text class=\"cs-t\" x=\"114\" y=\"92\">Driver / 激励</text><text class=\"cs-sub\" x=\"114\" y=\"112\">灌矩阵+权重</text><text class=\"cs-sub\" x=\"114\" y=\"130\">发约十几条 CISC 指令</text></g><line class=\"cs-arr\" x1=\"192\" y1=\"107\" x2=\"262\" y2=\"107\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"dut\" data-g=\"dut\"><rect class=\"cs-box\" x=\"266\" y=\"56\" width=\"184\" height=\"102\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"358\" y=\"84\">DUT</text><text class=\"cs-sub\" x=\"358\" y=\"104\">256×256 脉动阵列 RTL</text><text class=\"cs-sub\" x=\"358\" y=\"122\">+ Unified Buffer / 累加器</text><text class=\"cs-sub\" x=\"358\" y=\"140\">weight-stationary</text></g><line class=\"cs-arr\" x1=\"450\" y1=\"107\" x2=\"520\" y2=\"107\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"mon\" data-g=\"mon\"><rect class=\"cs-box\" x=\"524\" y=\"64\" width=\"160\" height=\"86\" rx=\"8\"/><text class=\"cs-t\" x=\"604\" y=\"92\">Monitor / 抓取</text><text class=\"cs-sub\" x=\"604\" y=\"112\">按协议采输出</text><text class=\"cs-sub\" x=\"604\" y=\"130\">打包成事务</text></g><polyline class=\"cs-arr\" points=\"604,150 604,210 472,210\" fill=\"none\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"sb\" data-g=\"sb\"><rect class=\"cs-box\" x=\"266\" y=\"184\" width=\"200\" height=\"76\" rx=\"8\" fill=\"#dcfce7\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"366\" y=\"210\">Scoreboard / 判对错</text><text class=\"cs-sub\" x=\"366\" y=\"230\">实测 vs 期望 → PASS/FAIL</text><text class=\"cs-sub\" x=\"366\" y=\"248\">逐元素比对累加结果</text></g><g class=\"cs-part\" data-k=\"ref\" data-g=\"ref\"><rect class=\"cs-box\" x=\"36\" y=\"184\" width=\"200\" height=\"76\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"136\" y=\"210\">Reference Model</text><text class=\"cs-sub\" x=\"136\" y=\"230\">独立金标准(C/Python)</text><text class=\"cs-sub\" x=\"136\" y=\"248\">算同一矩阵乘的期望值</text></g><line class=\"cs-arr\" x1=\"236\" y1=\"222\" x2=\"262\" y2=\"222\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"114,150 114,210 36,210 36,222\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"40\" y=\"178\">同一激励也喂给参考模型(期望值)↓</text><g class=\"cs-part\" data-k=\"cov\" data-g=\"cov\"><rect class=\"cs-box\" x=\"500\" y=\"184\" width=\"184\" height=\"76\" rx=\"8\"/><text class=\"cs-t\" x=\"592\" y=\"210\">Coverage</text><text class=\"cs-sub\" x=\"592\" y=\"230\">covergroup / 功能覆盖</text><text class=\"cs-sub\" x=\"592\" y=\"248\">收敛判据</text></g><line class=\"cs-arr\" x1=\"466\" y1=\"222\" x2=\"496\" y2=\"222\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"40\" y=\"296\">环境铁律:DUT 与 Reference Model 必须各自独立实现同一规格——绝不能让两者共用同一段代码,否则同错同对、查不出 bug</text><text class=\"cs-note\" x=\"40\" y=\"318\">自检式 testbench:Scoreboard 自动判 PASS/FAIL,不靠人眼看波形;回归里上千个用例无人值守一键跑</text><text class=\"cs-note\" x=\"40\" y=\"340\">诚实边界:Driver/Monitor/Scoreboard/Reference Model/Coverage 是这类设计的通行验证结构(如 UVM);TPU v1 不公开其私有验证环境,本图借其已知结构作被验证对象</text></svg>",
+ "legend": [
+  {
+   "k": "drv",
+   "name": "Driver(激励发生器)",
+   "desc": "按接口协议把测试激励灌进 DUT:对 TPU 这类设计就是喂输入矩阵、权重,以及主机经 PCIe 下来的约十几条 CISC 指令(装权重、做矩阵乘、读结果)。它只负责「按时序合法地驱动输入端口」,本身不判断对错。同一份激励还会同步喂给参考模型,保证两边算的是同一道题。"
+  },
+  {
+   "k": "dut",
+   "name": "DUT(被验证设计:脉动阵列 RTL)",
+   "desc": "Design Under Test——这里就是 256×256 weight-stationary 脉动阵列连同 Unified Buffer、32-bit 累加器的 RTL。它是「被考的学生」,验证环境包在它外面,只通过它的端口看进去/喂进去,内部实现对环境透明。"
+  },
+  {
+   "k": "mon",
+   "name": "Monitor(输出监视器)",
+   "desc": "被动地按协议从 DUT 输出端口采样,把零散的信号波形重组成「一笔输出事务」(比如一整块结果矩阵或一行累加和),再转交 Scoreboard。它不驱动任何信号,只观察——这样观测和激励互不干扰,职责单一。"
+  },
+  {
+   "k": "ref",
+   "name": "Reference Model(参考模型 / 金标准)",
+   "desc": "用高层语言(C/Python 等)独立实现同一份规格——同样的矩阵乘+累加,算出「应该是什么结果」。关键铁律:它必须和 DUT 各自独立实现,绝不共用代码,否则同一个理解错误会让 DUT 和参考模型一起错、Scoreboard 却比对通过,bug 被放过。"
+  },
+  {
+   "k": "sb",
+   "name": "Scoreboard(记分板 / 自动判对错)",
+   "desc": "把 Monitor 抓到的「实测输出」和参考模型给的「期望输出」逐元素比对,自动报 PASS/FAIL 并定位第一处不符。它让 testbench 变成「自检式」——回归里上千个用例可以无人值守跑,机器替你盯,而不是靠人眼看波形。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "drv",
+    "dut"
+   ],
+   "cap": "① Driver 按接口时序把输入矩阵、权重和那十几条 CISC 指令灌进 DUT;DUT(脉动阵列 RTL)据此做 weight-stationary 矩阵乘累加。"
+  },
+  {
+   "keys": [
+    "drv",
+    "ref"
+   ],
+   "cap": "② 同一份激励同步喂给 Reference Model——独立的 C/Python 实现算出「这道矩阵乘应得的期望结果」,作为金标准。"
+  },
+  {
+   "keys": [
+    "dut",
+    "mon"
+   ],
+   "cap": "③ Monitor 被动地从 DUT 输出端口按协议采样,把信号波形重组成一笔完整的输出事务,交给 Scoreboard。"
+  },
+  {
+   "keys": [
+    "mon",
+    "sb",
+    "ref"
+   ],
+   "cap": "④ Scoreboard 拿「实测输出」对「参考模型期望」逐元素比对:一致记 PASS、不符立刻 FAIL 并定位——全程自动,不靠人看波形。"
+  },
+  {
+   "keys": [
+    "dut",
+    "cov"
+   ],
+   "cap": "⑤ Coverage 同时统计这条激励命中了哪些场景(阵列填满/排空、各类指令、边界数值),用 covergroup 衡量「验到没」,作为收敛判据。"
+  }
+ ],
+ "before": [
+  "<b>定验证计划与 DUT 边界</b>:先圈清这一轮被验证的是「256×256 阵列 + Unified Buffer + 累加器 + 指令接口」这层,列出要覆盖的功能点(矩阵乘正确性、权重装载、阵列填充/排空时序、累加溢出处理、指令译码),作为 testbench 要打的靶子。",
+  "<b>定参考模型(金标准)从哪来</b>:用 C/Python 独立实现同一份矩阵乘+累加规格,作为 Scoreboard 的期望来源。开工就钉死一条:参考模型与 DUT 各自独立、绝不共用代码,否则同错同对、查不出 bug。",
+  "<b>定激励策略</b>:既要定向用例(单位阵、全零、特定权重做可手算的小例)坐实基本功能,也要约束随机(随机矩阵尺寸/数值,但满足 8-bit 数据、合法指令序列的约束),靠量去撞角落场景。",
+  "<b>定覆盖目标与完成判据</b>:用功能覆盖(covergroup)而不是「跑了多久」来衡量验到没;先写下「功能覆盖率达标 + 定向用例全过 + 随机回归连续 N 轮零失败」这样的签核门槛,避免「跑通几个例子就算完」。"
+ ],
+ "during": [
+  "<b>组件职责单一、互不越界</b>:Driver 只驱动、Monitor 只观察、Scoreboard 只判错、Reference Model 只算期望。这种分层(对应业界 UVM 的 driver/monitor/scoreboard/agent)让任一环节可单独替换、调试时责任清晰——别让一个 always 块既灌激励又顺手判对错。",
+  "<b>做成自检式,杜绝人眼看波形</b>:Scoreboard 自动报 PASS/FAIL,测试结果是一个布尔判定而非一张波形图。只有自检,回归里上千个随机用例才能无人值守一键跑;靠人看波形的 testbench 一上规模就废。",
+  "<b>参考模型与 DUT 必须独立实现</b>:这是整套环境的命门。两者各自照规格写,Scoreboard 比的是「两条独立路径是否一致」;若图省事让参考模型抄 DUT 的逻辑(或反过来),共有的理解错误会同时进两边,比对永远通过、bug 永远在。",
+  "<b>处理时序对齐与多时钟域</b>:脉动阵列有固定的填充/排空延迟(数据要逐拍流过阵列),Monitor 抓输出、Scoreboard 比对前要按这个延迟做事务对齐;DUT 又跨主机 PCIe 域与阵列核心域,Monitor 采样要落在正确时钟域、握手稳定后再采,否则采到亚稳/半成品数据。",
+  "<b>边比对边记覆盖</b>:每跑一条激励,既让 Scoreboard 判对错,也让 covergroup 记下命中了哪些场景(阵列是否填满、各类 CISC 指令是否都发过、累加是否触到饱和边界),好让后面知道「还差哪些没验」。",
+  "<b>诚实边界</b>:这套 Driver/Monitor/Scoreboard/Reference Model/Coverage 五件套是这类大规模阵列设计的通行验证实践(典型即 SystemVerilog/UVM 方法学);TPU v1 不公开其私有验证环境与验证数字,本节只借其已知结构(脉动阵列、Unified Buffer、握手、多时钟域、CISC 指令接口)作为被验证对象来讲 testbench 概念,不杜撰 TPU 私有的验证细节。"
+ ],
+ "result": [
+  {
+   "label": "环境拓扑",
+   "value": "Driver → DUT(阵列RTL)→ Monitor → Scoreboard ← Reference Model"
+  },
+  {
+   "label": "Scoreboard 判据(示意)",
+   "value": "assert(dut_out === ref_out) else $error(\"mismatch @%0d\", idx);"
+  },
+  {
+   "label": "功能覆盖(示意 covergroup)",
+   "value": "covergroup cg; cp_instr:coverpoint cisc_op; cp_full:coverpoint array_filled; endgroup"
+  },
+  {
+   "label": "参考模型",
+   "value": "C/Python 独立实现矩阵乘+累加,与 DUT 不共用代码"
+  },
+  {
+   "label": "判定形式",
+   "value": "自动 PASS/FAIL(自检),非人眼看波形"
+  },
+  {
+   "label": "完成判据",
+   "value": "功能覆盖达标 + 定向用例全过 + 随机回归连续多轮零失败"
+  }
+ ],
+ "after": [
+  "<b>看覆盖收敛</b>:汇总 covergroup,找出还没命中的场景(某类指令没发过、阵列某种填充模式没触发、累加边界没踩到),针对性补激励或调随机约束,把功能覆盖率推到签核门槛。",
+  "<b>建回归并自动化</b>:把所有定向+随机用例固化成回归套件,接进每日/每次提交自动跑;因为 Scoreboard 自检,上千用例可无人值守,结果只有「全 PASS」或「哪条 FAIL+定位」。",
+  "<b>跟 bug 收敛曲线</b>:统计每轮新发现/已修复 bug 数,直到曲线压平(连续多轮零新 bug);每修一个 bug 都补一条对应用例进回归,防止改坏复发。",
+  "<b>验证签核</b>:覆盖达标、回归全绿、bug 收敛三者齐了才签核;把验证计划、覆盖报告、参考模型、回归套件一并归档作为证据。",
+  "<b>交综合/后端</b>:签核后的 RTL 连同 testbench、覆盖与回归结果交给综合,确保进物理实现的是「功能已验、可回归复查」的版本(后续门级/形式验证还会复用同一套参考模型与用例)。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(testbench 架构与 UVM/covergroup/assert 等为通行验证实践,示意片段非 TPU v1 私有披露)"
+}

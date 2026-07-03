@@ -1,0 +1,123 @@
+{
+ "secNum": "3.6",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 用 UVM 方法学搭芯片级验证环境：阵列 / 内存 / 指令接口各一个可复用 Agent",
+ "oneLine": "本案例落到「UVM 方法学」小节：把 TPU 的三类接口——脉动阵列、Unified Buffer/累加器、host 的 CISC 指令——各封装成一个 UVM agent(sequencer→driver→monitor),由 env 组装成 chip-level 环境,test 只管选场景配旋钮;约束随机激励、功能覆盖、对照参考模型的自检全在这套标准框架里跑,组件可跨模块/跨项目复用。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"26\">UVM 环境层次：Test 配置 → Env 搭台 → 多个 Agent 各管一个接口 → Scoreboard 对参考模型判对错（可复用）</text><g class=\"cs-part\" data-k=\"test\" data-g=\"test\"><rect class=\"cs-box\" x=\"24\" y=\"44\" width=\"160\" height=\"48\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#c7d2fe\"/><text class=\"cs-t\" x=\"104\" y=\"66\">uvm_test</text><text class=\"cs-sub\" x=\"104\" y=\"82\">选场景·配旋钮</text></g><line class=\"cs-arr\" x1=\"104\" y1=\"92\" x2=\"104\" y2=\"116\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"env\" data-g=\"env\"><rect class=\"cs-box\" x=\"24\" y=\"120\" width=\"672\" height=\"216\" rx=\"10\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-dasharray=\"6 4\"/><text class=\"cs-t\" x=\"104\" y=\"142\">uvm_env</text><text class=\"cs-sub\" x=\"104\" y=\"158\">组装 agent + sb</text></g><g class=\"cs-part\" data-k=\"agarray\" data-g=\"agarr\"><rect class=\"cs-box\" x=\"48\" y=\"172\" width=\"180\" height=\"150\" rx=\"8\" fill=\"#ecfdf5\" stroke=\"#a7f3d0\"/><text class=\"cs-t\" x=\"138\" y=\"192\">Array Agent</text><text class=\"cs-sub\" x=\"138\" y=\"208\">脉动阵列接口</text></g><g class=\"cs-part\" data-k=\"amem\" data-g=\"agmem\"><rect class=\"cs-box\" x=\"240\" y=\"172\" width=\"180\" height=\"150\" rx=\"8\" fill=\"#ecfdf5\" stroke=\"#a7f3d0\"/><text class=\"cs-t\" x=\"330\" y=\"192\">Mem Agent</text><text class=\"cs-sub\" x=\"330\" y=\"208\">UB / 累加器接口</text></g><g class=\"cs-part\" data-k=\"ainst\" data-g=\"aginst\"><rect class=\"cs-box\" x=\"432\" y=\"172\" width=\"180\" height=\"150\" rx=\"8\" fill=\"#ecfdf5\" stroke=\"#a7f3d0\"/><text class=\"cs-t\" x=\"522\" y=\"192\">Instr Agent</text><text class=\"cs-sub\" x=\"522\" y=\"208\">CISC 指令接口</text></g><g class=\"cs-part\" data-k=\"seqr\" data-g=\"seqr\"><rect class=\"cs-cell\" x=\"60\" y=\"220\" width=\"76\" height=\"40\" rx=\"4\"/><text class=\"cs-note\" x=\"70\" y=\"237\">Sequencer</text><text class=\"cs-note\" x=\"70\" y=\"252\">约束随机</text></g><g class=\"cs-part\" data-k=\"drv\" data-g=\"drv\"><rect class=\"cs-cell\" x=\"144\" y=\"220\" width=\"72\" height=\"40\" rx=\"4\"/><text class=\"cs-note\" x=\"153\" y=\"237\">Driver</text><text class=\"cs-note\" x=\"153\" y=\"252\">→DUT针脚</text></g><g class=\"cs-part\" data-k=\"mon\" data-g=\"mon\"><rect class=\"cs-cell\" x=\"60\" y=\"272\" width=\"156\" height=\"38\" rx=\"4\"/><text class=\"cs-note\" x=\"70\" y=\"295\">Monitor → 采样 + covergroup</text></g><line class=\"cs-arr\" x1=\"138\" y1=\"240\" x2=\"144\" y2=\"240\" marker-end=\"url(#csar)\"/><rect class=\"cs-cell\" x=\"252\" y=\"220\" width=\"156\" height=\"40\" rx=\"4\"/><text class=\"cs-note\" x=\"262\" y=\"237\">Seqr→Drv→Mon</text><text class=\"cs-note\" x=\"262\" y=\"252\">（同结构·复用）</text><rect class=\"cs-cell\" x=\"252\" y=\"272\" width=\"156\" height=\"38\" rx=\"4\"/><text class=\"cs-note\" x=\"262\" y=\"295\">Monitor → covergroup</text><rect class=\"cs-cell\" x=\"444\" y=\"220\" width=\"156\" height=\"40\" rx=\"4\"/><text class=\"cs-note\" x=\"454\" y=\"237\">Seqr→Drv→Mon</text><text class=\"cs-note\" x=\"454\" y=\"252\">（同结构·复用）</text><rect class=\"cs-cell\" x=\"444\" y=\"272\" width=\"156\" height=\"38\" rx=\"4\"/><text class=\"cs-note\" x=\"454\" y=\"295\">Monitor → covergroup</text><line class=\"cs-arr\" x1=\"624\" y1=\"172\" x2=\"660\" y2=\"172\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"138\" y1=\"322\" x2=\"138\" y2=\"350\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"330\" y1=\"322\" x2=\"330\" y2=\"350\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"522\" y1=\"322\" x2=\"522\" y2=\"350\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"sb\" data-g=\"sb\"><rect class=\"cs-box\" x=\"624\" y=\"200\" width=\"72\" height=\"100\" rx=\"8\" fill=\"#fef3f2\" stroke=\"#fecaca\"/><text class=\"cs-t\" x=\"660\" y=\"244\">Score</text><text class=\"cs-t\" x=\"660\" y=\"262\">board</text><text class=\"cs-sub\" x=\"660\" y=\"282\">对参考</text></g><g class=\"cs-part\" data-k=\"ref\" data-g=\"ref\"><rect class=\"cs-box\" x=\"24\" y=\"354\" width=\"672\" height=\"40\" rx=\"8\" fill=\"#fffbeb\" stroke=\"#fde68a\"/><text class=\"cs-t\" x=\"360\" y=\"378\">三路 Monitor 采样 → Scoreboard 与「参考模型(TF/XLA 黄金结果)」逐拍/逐结果比对，错则报失败</text></g></svg>",
+ "legend": [
+  {
+   "k": "test",
+   "name": "uvm_test(顶层场景)",
+   "desc": "验证环境最顶层,本身不接触 DUT 信号:它通过 factory/config_db 配置 env,选择跑哪个场景(冒烟、阵列满载、UB 读写压力、指令边界…),设置随机种子与各路 sequence。换一个测试只换 test 类、env 结构原样复用——这是 UVM 把『结构』与『刺激意图』分开的关键。"
+  },
+  {
+   "k": "env",
+   "name": "uvm_env(组装台)",
+   "desc": "把多个 agent 和 scoreboard 实例化、并用 TLM 端口连起来,形成 chip-level 验证环境。env 是可层层嵌套的容器:块级验证时一个 env 可能只含一个 agent,芯片级则把阵列/内存/指令多个 agent 组进同一个 env——同一套 agent 在块级和芯片级都能复用。"
+  },
+  {
+   "k": "agarr",
+   "name": "Agent = Seqr→Drv→Mon(可复用积木)",
+   "desc": "UVM 的复用核心单元:每个被验证接口配一个 agent,内部三件套——Sequencer 产生约束随机的事务、Driver 把事务打成 DUT 引脚级时序、Monitor 被动采样接口并喂功能覆盖。Active agent 既驱动又监测,Passive agent 只监测(用于已验证过的子块)。TPU 三类接口 → 三个同构 agent。"
+  },
+  {
+   "k": "mon",
+   "name": "Monitor + covergroup(覆盖与采样)",
+   "desc": "Monitor 不驱动、只『听』接口,把观察到的事务广播给 scoreboard 和功能覆盖。覆盖目标(covergroup)挂在这里:阵列填充深度、UB bank 命中、指令类型/长度组合等都在 monitor 采样点 sample,衡量『验证到没到位』。"
+  },
+  {
+   "k": "sb",
+   "name": "Scoreboard(对参考模型自检)",
+   "desc": "收集三路 monitor 的事务,与『参考模型(reference/golden model)』产出的期望结果逐拍或逐结果比对——参考模型即 TPU 这类设计的高层行为模型(可由 TensorFlow/XLA 跑出的黄金结果充当),不一致即判失败。自检逻辑集中在此,而非散落各处。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "test",
+    "env"
+   ],
+   "cap": "① 顶层 test 通过 config_db 配置并 build 出 env;test 只决定『跑什么场景、怎么随机』,env 负责『把环境搭起来』——结构与意图解耦,换场景不动结构。"
+  },
+  {
+   "keys": [
+    "agarr",
+    "seqr",
+    "drv",
+    "mon"
+   ],
+   "cap": "② 一个 agent 内三件套:Sequencer 发约束随机事务 → Driver 翻成 DUT 引脚时序灌进去 → Monitor 被动采样接口。这是 UVM 最小可复用单元。"
+  },
+  {
+   "keys": [
+    "agarr",
+    "agmem",
+    "aginst"
+   ],
+   "cap": "③ TPU 三类接口各配一个同构 agent:阵列接口、UB/累加器内存接口、host 的 CISC 指令接口——三个 agent 结构相同、只换协议层,芯片级一并组进 env。"
+  },
+  {
+   "keys": [
+    "mon",
+    "sb"
+   ],
+   "cap": "④ 三路 Monitor 把采到的事务送进 Scoreboard,与参考模型比对判对错;covergroup 同样挂在 monitor 上,衡量覆盖。激励、检查、覆盖三件事都在框架内闭环。"
+  },
+  {
+   "keys": [
+    "env",
+    "ref"
+   ],
+   "cap": "⑤ 同一套 agent/env 可跨块级↔芯片级、跨项目复用;参考模型(TF/XLA 黄金结果)作为对照源贯穿所有比对——这正是 UVM 方法学的价值所在。"
+  }
+ ],
+ "before": [
+  "<b>先写验证计划,再写一行代码</b>:把 DUT 的功能点(脉动阵列装填/排空、UB 多 bank 并行读、4 MiB 累加器读改写、CISC 指令译码与边界)逐条列成 feature list,每条对应『要怎么激励、用什么覆盖点衡量、用什么判通过』——UVM 环境是照着计划搭的,不是边搭边想。",
+  "<b>定参考模型(reference model)</b>:确定每个接口/整芯片的期望行为从哪来——高层行为模型或由 TensorFlow/XLA 跑出的黄金结果充当 golden,scoreboard 拿它做对照。先把『对错的唯一裁判』定下来。",
+  "<b>定 agent 边界与复用粒度</b>:按 DUT 的物理接口切 agent(阵列接口 / UB·累加器内存接口 / host CISC 指令接口各一个),约定事务(uvm_sequence_item)字段与协议,使同一 agent 在块级与芯片级都能直接复用。",
+  "<b>定激励策略与约束</b>:哪些用定向(directed)测复位/边界、哪些用约束随机(constrained-random)铺面;在 sequence_item 上写好约束(指令类型分布、UB 地址范围、阵列尺寸 256×256 边界),让随机集中在合法且有意义的空间。",
+  "<b>定完成判据(coverage closure)</b>:开工前就把『验证算做完』量化成 功能覆盖 + 代码覆盖目标 + 必过回归 + 0 未决 bug,而不是事后才定——这是后面收敛的标尺。"
+ ],
+ "during": [
+  "<b>先一个 agent 一个接口,跑通再组芯片级</b>:每个接口的 agent(seqr→drv→mon)单独在块级 env 里验通过,再把阵列/内存/指令三个 agent 组进同一个芯片级 env——自底向上,避免一上来就在大环境里查问题难定位。",
+  "<b>Driver 只翻译、Sequencer 只生成、Monitor 只观察——职责不串台</b>:UVM 的复用性来自分工铁律。Driver 把抽象事务打成引脚时序、不决定发什么;Sequencer 决定发什么、不碰引脚;Monitor 被动采样、绝不驱动。混了职责,组件就没法跨场景复用。",
+  "<b>激励、检查、覆盖三件事都进框架,别散在 testbench 角落</b>:激励走 sequence、检查集中在 scoreboard+参考模型、覆盖挂在 monitor 的 covergroup——统一进 UVM 组件,才能复用、才能在回归里被自动统计;临时 $display 式检查不算数。",
+  "<b>用 factory + config_db 让结构可配</b>:agent 的 active/passive、是否例化、随机种子、各路 sequence 都由 test 经 config_db 注入,env 不硬编码——这样换一个 test 类就能从冒烟切到满载压力,无需改环境结构。",
+  "<b>自检必须自动:scoreboard 报失败,不靠人眼看波形</b>:每条激励的期望结果由参考模型算出、由 scoreboard 自动比对,失败即 uvm_error/uvm_fatal 报出。波形只在 debug 时看,通过/失败由环境自己判——这样几千条随机用例才能无人值守跑回归。",
+  "<b>诚实标注边界</b>:UVM(sequencer/driver/monitor/scoreboard、约束随机、覆盖)是业界标准验证方法学;TPU v1 不会公开其私有验证环境与覆盖数字。本案以 TPU 已知的接口结构(脉动阵列、UB/累加器、CISC 指令接口)作为『被验证对象』讲方法,图中 covergroup/比对均为示意,非 TPU 私有实现。"
+ ],
+ "result": [
+  {
+   "label": "环境层次",
+   "value": "uvm_test → uvm_env → uvm_agent{seqr→drv→mon} → scoreboard(标准四层)"
+  },
+  {
+   "label": "三个 Agent(对三类接口)",
+   "value": "Array Agent(脉动阵列)/ Mem Agent(UB+累加器)/ Instr Agent(CISC 指令),同构可复用"
+  },
+  {
+   "label": "约束随机(示意)",
+   "value": "class instr_item extends uvm_sequence_item; rand bit[3:0] op; constraint c{ op inside {LOAD_W,MATMUL,...}; } (示意,非 TPU 源码)"
+  },
+  {
+   "label": "功能覆盖(示意)",
+   "value": "covergroup cg @(mon.clk); cp_op: coverpoint tr.op; cp_len: coverpoint tr.len; cross cp_op,cp_len; endgroup(挂在 monitor,示意)"
+  },
+  {
+   "label": "自检/断言(示意)",
+   "value": "scoreboard: compare(dut_tr, ref_model.predict(stim)); 协议级 SVA: assert property(@(posedge clk) req |-> ##[1:N] ack);(示意)"
+  },
+  {
+   "label": "参考模型",
+   "value": "高层行为模型 / TensorFlow·XLA 黄金结果作 golden,scoreboard 据此判对错"
+  }
+ ],
+ "after": [
+  "<b>看覆盖收敛</b>:跑回归后统计功能覆盖(covergroup)+ 代码覆盖,对照验证计划找『覆盖空洞』——没覆盖到的功能点回去补定向用例或调随机约束,直到达成 coverage closure。",
+  "<b>建回归套件,无人值守跑</b>:把所有定向 + 约束随机用例(多随机种子)收进回归,scoreboard 自动判通过/失败;每次 RTL 改动后整套重跑,确保没引入回归。",
+  "<b>盯 bug 收敛曲线</b>:跟踪新发现 bug 的速率,从陡降到趋零;同时每个修复都补一条复现用例进回归,防止旧 bug 复活——直到达到 0 未决 bug 的签核判据。",
+  "<b>方法学产物复用 + 移交</b>:验证通过的 agent/sequence/scoreboard 沉淀为可复用 IP,块级 env 直接进芯片级 env、并供后续项目复用;把验证报告(覆盖/回归/bug 状态)交签核。",
+  "<b>签核后放行综合</b>:功能验证签核(覆盖达标 + 回归全绿 + bug 清零)通过后,RTL 才交综合;若综合/后端改动触及功能,回到本环境重跑回归确认。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(脉动阵列 / Unified Buffer / 累加器 / CISC 指令接口为已知结构事实;UVM 方法学——sequencer/driver/monitor/scoreboard、约束随机、功能覆盖、参考模型自检——为通行验证实践,图中 covergroup/assert/比对片段为示意,非 TPU 私有验证环境)"
+}

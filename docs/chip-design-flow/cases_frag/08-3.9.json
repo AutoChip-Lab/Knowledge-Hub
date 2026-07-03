@@ -1,0 +1,120 @@
+{
+ "secNum": "3.9",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 物理验证:让那 256×256 阵列的版图过 DRC / LVS / antenna 三关——不干净就不能流片",
+ "oneLine": "物理验证是后端交版图前的最后一道『硬体检』:DRC 查版图几何是否合工艺的线宽/间距/密度规则,LVS 查版图连出来的电路与门级网表是否一模一样,antenna 查布线时长金属段充电会不会击穿栅氧。这三项是 foundry 收版图、决定能不能流片的硬门槛——必须 100% 干净、零违规,差一条都不行。本案例把 TPU 那个 65,536-MAC 规整脉动阵列、占近三成面积的 24 MiB UB SRAM 当作『被检查的版图对象』,讲清楚后端怎么把它体检到能交去流片。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">物理验证:版图过 DRC + LVS + antenna 三关,必须 100% 干净才能交 foundry 流片(版图为示意)</text><g class=\"cs-part\" data-k=\"gds\" data-g=\"gds\"><rect class=\"cs-box\" x=\"24\" y=\"120\" width=\"150\" height=\"150\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"99\" y=\"150\">完成布线的版图</text><text class=\"cs-sub\" x=\"99\" y=\"172\">GDSII / OASIS</text><text class=\"cs-sub\" x=\"99\" y=\"192\">256×256 阵列</text><text class=\"cs-sub\" x=\"99\" y=\"210\">+24MiB UB SRAM</text><text class=\"cs-sub\" x=\"99\" y=\"230\">几何多边形 +</text><text class=\"cs-sub\" x=\"99\" y=\"248\">各金属层连线</text></g><g class=\"cs-part\" data-k=\"drc\" data-g=\"drc\"><rect class=\"cs-box\" x=\"250\" y=\"56\" width=\"210\" height=\"92\" rx=\"8\" fill=\"#fff7ed\" stroke=\"#fdba74\"/><text class=\"cs-t\" x=\"355\" y=\"82\">① DRC 设计规则检查</text><text class=\"cs-sub\" x=\"355\" y=\"104\">线宽/间距/密度/包围</text><text class=\"cs-sub\" x=\"355\" y=\"124\">几何是否合工艺规则</text><text class=\"cs-sub\" x=\"355\" y=\"142\">违规 ✗ 标红 → 逐条修</text></g><g class=\"cs-part\" data-k=\"lvs\" data-g=\"lvs\"><rect class=\"cs-box\" x=\"250\" y=\"160\" width=\"210\" height=\"92\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"355\" y=\"186\">② LVS 版图≡网表</text><text class=\"cs-sub\" x=\"355\" y=\"208\">从版图抽出器件/连接</text><text class=\"cs-sub\" x=\"355\" y=\"228\">与门级网表逐点比对</text><text class=\"cs-sub\" x=\"355\" y=\"246\">短路/断路/接错 ✗</text></g><g class=\"cs-part\" data-k=\"ant\" data-g=\"ant\"><rect class=\"cs-box\" x=\"250\" y=\"264\" width=\"210\" height=\"84\" rx=\"8\" fill=\"#fef2f2\" stroke=\"#fca5a5\"/><text class=\"cs-t\" x=\"355\" y=\"290\">③ antenna 天线规则</text><text class=\"cs-sub\" x=\"355\" y=\"312\">长金属充电伤栅氧</text><text class=\"cs-sub\" x=\"355\" y=\"330\">超比例 ✗ → 加二极管/跳层</text></g><line class=\"cs-arr\" x1=\"174\" y1=\"160\" x2=\"246\" y2=\"102\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"174\" y1=\"195\" x2=\"246\" y2=\"206\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"174\" y1=\"232\" x2=\"246\" y2=\"300\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"gate\" data-g=\"gate\"><rect class=\"cs-box\" x=\"528\" y=\"120\" width=\"168\" height=\"150\" rx=\"8\" fill=\"#ecfeff\" stroke=\"#67e8f9\"/><text class=\"cs-t\" x=\"612\" y=\"150\">流片硬门槛</text><text class=\"cs-sub\" x=\"612\" y=\"176\">三项全 ✓ 干净</text><text class=\"cs-sub\" x=\"612\" y=\"198\">→ 出签核版图</text><text class=\"cs-sub\" x=\"612\" y=\"222\">任一项 ✗</text><text class=\"cs-sub\" x=\"612\" y=\"244\">→ 不干净</text><text class=\"cs-sub\" x=\"612\" y=\"262\">→ 不能流片</text></g><line class=\"cs-arr\" x1=\"460\" y1=\"102\" x2=\"524\" y2=\"150\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"460\" y1=\"206\" x2=\"524\" y2=\"195\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"460\" y1=\"306\" x2=\"524\" y2=\"240\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"612\" y1=\"270\" x2=\"612\" y2=\"340\"/><line class=\"cs-arr\" x1=\"612\" y1=\"340\" x2=\"180\" y2=\"340\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><text class=\"cs-note\" x=\"300\" y=\"334\">违规则退回版图逐条修干净,再跑 → 收敛为零违规(签核迭代)</text></svg>",
+ "legend": [
+  {
+   "k": "gds",
+   "name": "完成布线的版图(GDSII/OASIS)——被检查的对象",
+   "desc": "经过 floorplan、PDN、布局、CTS、布线、收敛后得到的最终版图:把 256×256 脉动阵列、24 MiB Unified Buffer SRAM、累加器等都落成各金属层上密密麻麻的几何多边形与连线。物理验证就是对这堆几何做最后体检——此时它已经是『准备交去流片』的形态,任何一处不合规则或连错,都要在这里揪出来。"
+  },
+  {
+   "k": "drc",
+   "name": "① DRC 设计规则检查——几何合不合工艺规则",
+   "desc": "Design Rule Check:拿工艺厂给的 DRC 规则文件(runset),逐条核版图几何——金属最小线宽、最小间距、最小面积、层密度、via 包围(enclosure)、天线/填充等上千条规则。任何一处违规(如两根线靠太近、金属太细),工具都标红报错。28nm 这类工艺规则极多极严,DRC 必须一条不剩地清零,几何上不合法的版图厂里根本造不出。"
+  },
+  {
+   "k": "lvs",
+   "name": "② LVS 版图≡网表——连出来的电路对不对",
+   "desc": "Layout Versus Schematic:从版图几何里反向抽出器件(晶体管/电阻/电容)和它们的连接关系,得到一份『版图电路』,再和后端用的门级网表逐点比对。要求两者拓扑完全等价——器件类型/尺寸一致、节点连接一致。LVS 专抓短路、断路、接错线、漏接电源地这类致命错:几何过了 DRC 也可能连成了错的电路,LVS 保证『画的版图就是网表那个电路』。"
+  },
+  {
+   "k": "ant",
+   "name": "③ antenna 天线规则——长金属充电别击穿栅氧",
+   "desc": "制造时逐层刻蚀金属,某段长金属还没接到上层/扩散区时,会像天线一样在等离子刻蚀中积累电荷,电荷全压到与它相连的晶体管栅氧上,可能击穿、损伤器件。antenna 检查核每个栅极所连金属的面积比是否超限;超限则插『天线二极管』泄流或把布线跳到别层切断长段。这是布线后必查、且修法直接影响布线的一道工艺可制造性规则。"
+  },
+  {
+   "k": "gate",
+   "name": "流片硬门槛——三项全干净才放行",
+   "desc": "DRC、LVS、antenna 三项是 foundry 收版图的硬性准入:必须全部 100% 干净、零违规,才允许把版图交去签核与流片。任一项有哪怕一条违规,版图就是『不干净』,厂里不收、也不能流片。这是后端无法绕过、不能妥协的红线——前面时序/功耗再漂亮,物理验证不清零,芯片就造不出来。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "gds"
+   ],
+   "cap": "① 拿到完成布线、各项收敛的版图(256×256 阵列 + 24 MiB UB SRAM 等都已落成各金属层几何)——这是要送去体检、准备流片的对象。"
+  },
+  {
+   "keys": [
+    "gds",
+    "drc"
+   ],
+   "cap": "② 跑 DRC:用工艺厂的规则文件核版图几何——线宽/间距/面积/密度/包围等上千条规则,违规标红,逐条修到零。"
+  },
+  {
+   "keys": [
+    "gds",
+    "lvs"
+   ],
+   "cap": "③ 跑 LVS:从版图抽出器件与连接,与门级网表逐点比对,专抓短路/断路/接错/漏接电源地——保证『版图电路 ≡ 网表』。"
+  },
+  {
+   "keys": [
+    "gds",
+    "ant"
+   ],
+   "cap": "④ 跑 antenna:核每个栅极所连金属面积比,超限处插天线二极管泄流或把布线跳层切断长段,保护栅氧不被刻蚀充电击穿。"
+  },
+  {
+   "keys": [
+    "drc",
+    "lvs",
+    "ant",
+    "gate"
+   ],
+   "cap": "⑤ 三项全清零=干净→放行交签核/流片;任一条违规→退回版图逐条修、重跑,直到 DRC/LVS/antenna 全部零违规收敛——不干净绝不流片。"
+  }
+ ],
+ "before": [
+  "<b>先备齐工艺厂的验证文件(runset/规则卡)</b>:从 PDK 取目标 28nm 工艺的 DRC 规则文件、LVS 规则文件(含器件识别/比对规则)与 antenna 规则,以及对应工具版本(如 Calibre nmDRC/nmLVS 的 rule deck)。这些规则由 foundry 定义并签发,后端只能照着核——规则版本和流片用的工艺必须严格一致。",
+  "<b>备好被比对的『金标准』网表与器件源</b>:LVS 要拿后端实现用的、与流片一致的门级网表做参照,还要有标准单元/SRAM 宏/IP 的器件级模型或抽象(CDL/spice 或厂家提供的 LVS 抽象)。版图里的硬宏(24 MiB UB、累加器、PLL)通常以厂家黑盒模型参与 LVS,得确认这些抽象齐全且版本对得上。",
+  "<b>确认版图已是『准签核』形态</b>:物理验证应在布线完成、时序/拥塞/IR-drop 都收敛、填充(metal fill/dummy)与 IO/seal ring 等都摆好之后做——这些都会影响 DRC 密度规则。少了填充或封环,DRC 会报一堆密度/规则错,所以要在版图基本定型后再正式跑验证。",
+  "<b>诚实边界</b>:DRC、LVS、antenna,以及 Calibre / ICV / Pegasus 这类物理验证工具、rule deck/runset、天线二极管、metal fill 等都是通行后端 EDA 实践。TPU v1 不公开其版图、DRC/LVS 报告、违规数或天线修法等任何私有后端细节。本案例把 TPU 已知结构(256×256 脉动阵列、24 MiB UB SRAM、700MHz、28nm、≤331mm²、weight-stationary)当作『被验证的版图对象』来讲物理验证概念;文中所有工具名、规则项、流程均为通行实践示意,非 TPU 私有披露。"
+ ],
+ "during": [
+  "<b>铁律:三项必须 100% 干净、零违规</b>。DRC/LVS/antenna 不是『尽量少错』而是『一条都不能剩』——这是 foundry 收版图的硬性准入。哪怕一条 DRC 间距违规、一个 LVS 短路、一处 antenna 超限,版图都算不干净,不放行。物理验证的目标只有一个数字:违规计数归零。",
+  "<b>DRC 抓的是『几何造不出来』</b>。它只看版图多边形合不合工艺规则:线太细、间距太近、金属面积/密度不达标、via 包围不够、层叠错误等。28nm 规则上千条且彼此牵连,改一处常牵出另一处(挪线解了间距却踩了密度),所以要分层分类批量修、反复跑,直到规则全过。",
+  "<b>LVS 抓的是『连成了错的电路』</b>。几何合法 ≠ 电路正确:版图可能把两个本不该连的网短路、把该连的断开、电源地接错。LVS 从版图反抽器件与连接,与网表做图同构比对,报出 unmatched 的器件/网络。LVS 不过,说明你造出来的不是设计的那个芯片——必须定位到具体哪根线接错再改版图。",
+  "<b>antenna 是『布线惹的、得靠改布线/加二极管解』</b>。长金属段在刻蚀时充电会击穿栅氧,检查的是栅极所连金属面积比。修法两条:在该栅附近插天线二极管把电荷泄掉,或把长走线在中途跳到上层、打断连续长段。它和布线强耦合——修 antenna 可能动布线,动了布线又得回头重跑 DRC。",
+  "<b>验证—修复是一条收敛环路,不是一遍过</b>。跑 → 看违规报告 → 修版图 → 再跑,循环到零。修一类错常引入另一类(修 DRC 挪线诱发 antenna,修 antenna 跳层诱发 DRC/拥塞),所以要把三项联动着看、迭代收敛。大芯片(像 TPU 这种含巨型阵列+大 SRAM 的版图)首跑违规可能成千上万,靠批量化、分区域逐步清零。",
+  "<b>规整结构对验证是福音,但宏与边界是重点</b>。256×256 阵列由几乎一样的 PE 阵列化复制,单元内部 DRC/LVS 干净后大面积可批量过;真正易出问题的是宏(24 MiB UB SRAM、累加器、IO/seal ring)与模块拼接的边界、电源网格交叠处、以及 fill 与信号线的间距——验证精力要重点压在这些接缝上。"
+ ],
+ "result": [
+  {
+   "label": "三关与目标",
+   "value": "DRC(几何合规则)/ LVS(版图≡网表)/ antenna(护栅氧)—— 三项全部零违规才放行"
+  },
+  {
+   "label": "DRC 检查范围(示意)",
+   "value": "线宽/间距/最小面积/层密度/via 包围/天线/fill 等上千条工艺规则,逐条清零"
+  },
+  {
+   "label": "LVS 比对方式",
+   "value": "从版图反抽器件+连接 → 与门级网表图同构比对,抓短路/断路/接错/漏接电源地"
+  },
+  {
+   "label": "antenna 修法",
+   "value": "栅极所连金属面积比超限处:插天线二极管泄流 或 把长走线跳层打断"
+  },
+  {
+   "label": "工具/数据(通行实践)",
+   "value": "Calibre / ICV / Pegasus 类工具 + foundry rule deck;输入 GDSII/OASIS 版图 + 金标准网表"
+  },
+  {
+   "label": "签核判据",
+   "value": "DRC=0、LVS clean(fully matched)、antenna=0 —— 任一不为零 = 不干净 = 不能流片"
+  }
+ ],
+ "after": [
+  "<b>迭代到三项违规全部归零</b>:对 DRC/LVS/antenna 报告逐条定位、回版图修、重跑,直到三项计数都为零。修一类错可能诱发另一类(挪线/跳层/加二极管会反弹回 DRC 或拥塞),所以要联动着看、反复收敛——只有零违规才算通过,没有『差几条先放过』。",
+  "<b>LVS 干净后才有意义做寄生提取与签核 STA</b>:LVS 确认了『版图就是网表那个电路』,寄生提取(SPEF)抽出的 RC 才对得上设计;若 LVS 没干净就提参数、跑签核时序,等于在错的电路上算账。所以物理验证(尤其 LVS)是寄生提取与签核 STA 的前置门槛。",
+  "<b>antenna 修复后回归 DRC 与时序</b>:插二极管会占面积、跳层会改走线长度与层次,可能踩 DRC 或微动时序/拥塞。修完 antenna 要重跑 DRC 确认没引入新违规,必要时复核关键路径时序,确保 700MHz 余量没被布线改动吃掉。",
+  "<b>三项干净=拿到流片准入</b>:DRC/LVS/antenna 全部清零,版图才达到 foundry 收片的硬门槛,可连同 GDSII、SPEF、网表一起交去签核(STA/功耗/EM-IR/等价性)与最终流片(tape-out)。这是后端把版图『送得出去』的关键里程碑——前面再好,这关不过就造不出芯片。",
+  "<b>交付前再核版本与一致性</b>:确认跑验证用的 rule deck 版本、网表版本、版图(GDSII)版本与最终流片的工艺/数据一致,避免『验证过的不是要流片的那版』。版本对齐后冻结,把干净版图与验证报告一并归档交签核/流片。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(256×256 8-bit MAC 脉动阵列、700MHz/~92 TOPS、24 MiB Unified Buffer、weight-stationary、28nm/≤331mm² 为 v1 披露,作为被验证的版图对象;DRC/LVS/antenna 物理验证、Calibre/ICV/Pegasus 类工具、foundry rule deck、天线二极管、metal fill、GDSII/OASIS,以及上千条工艺规则、零违规判据等,均为通行后端 EDA 实践与示意,非 TPU v1 私有的版图/DRC/LVS/天线等后端细节)"
+}

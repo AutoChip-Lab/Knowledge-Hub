@@ -1,0 +1,120 @@
+{
+ "secNum": "3.7",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · PCIe + DDR3 的对外 IO 与连接",
+ "oneLine": "TPU 把「对外 IO」收敛成两条主干——PCIe 连主机(它是被 host 驱动的协处理器)、DDR3 PHY 连片外权重内存;再大的规模扩展(scale-out)留给后代 pod 的 ICI 光互连去做。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 360\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"36\">主机服务器(CPU 端)</text><g class=\"cs-part\" data-k=\"host\" data-g=\"host\"><rect class=\"cs-box\" x=\"40\" y=\"48\" width=\"150\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"115\" y=\"76\">Host CPU</text><text class=\"cs-sub\" x=\"115\" y=\"94\">发 CISC 指令 / 喂数据</text></g><line class=\"cs-arr\" x1=\"190\" y1=\"80\" x2=\"262\" y2=\"80\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"262\" y1=\"98\" x2=\"190\" y2=\"98\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"pcie\" data-g=\"pcie\"><rect class=\"cs-box\" x=\"266\" y=\"50\" width=\"120\" height=\"62\" rx=\"8\"/><text class=\"cs-t\" x=\"326\" y=\"76\">PCIe 3.0</text><text class=\"cs-sub\" x=\"326\" y=\"94\">×16 · ~16 GB/s</text></g><text class=\"cs-note\" x=\"222\" y=\"124\">协处理器,host-driven</text><g class=\"cs-part\" data-k=\"card\" data-g=\"card\"><rect class=\"cs-box\" x=\"430\" y=\"40\" width=\"262\" height=\"290\" rx=\"10\"/><text class=\"cs-t\" x=\"561\" y=\"62\">TPU v1 加速卡</text></g><line class=\"cs-arr\" x1=\"386\" y1=\"80\" x2=\"446\" y2=\"80\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"iface\" data-g=\"iface\"><rect class=\"cs-box\" x=\"452\" y=\"86\" width=\"218\" height=\"40\" rx=\"8\"/><text class=\"cs-t\" x=\"561\" y=\"111\">PCIe 接口 / 指令队列</text></g><line class=\"cs-arr\" x1=\"561\" y1=\"126\" x2=\"561\" y2=\"150\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"core\" data-g=\"core\"><rect class=\"cs-box\" x=\"452\" y=\"152\" width=\"218\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"561\" y=\"178\">MXU + 24 MiB UB</text><text class=\"cs-sub\" x=\"561\" y=\"196\">计算 / 片上存储</text></g><line class=\"cs-arr\" x1=\"500\" y1=\"210\" x2=\"500\" y2=\"236\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"540\" y1=\"236\" x2=\"540\" y2=\"210\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"phy\" data-g=\"phy\"><rect class=\"cs-box\" x=\"452\" y=\"238\" width=\"218\" height=\"40\" rx=\"8\"/><text class=\"cs-t\" x=\"561\" y=\"263\">DDR3 内存接口 PHY</text></g><line class=\"cs-arr\" x1=\"561\" y1=\"278\" x2=\"561\" y2=\"298\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"dram\" data-g=\"dram\"><rect class=\"cs-box\" x=\"452\" y=\"300\" width=\"218\" height=\"26\" rx=\"8\"/><text class=\"cs-t\" x=\"561\" y=\"318\">片外 8 GiB DDR3 · ~30 GB/s</text></g><g class=\"cs-part\" data-k=\"ici\" data-g=\"ici\"><rect class=\"cs-box\" x=\"40\" y=\"262\" width=\"350\" height=\"64\" rx=\"8\" stroke-dasharray=\"5 4\"/><text class=\"cs-t\" x=\"215\" y=\"288\">scale-out:看 v2/v3 pod</text><text class=\"cs-sub\" x=\"215\" y=\"308\">ICI 互连 + OCS 光交换(v1 无,单卡)</text></g><text class=\"cs-note\" x=\"40\" y=\"252\">规模扩展(超出 v1 单卡范围)</text></svg>",
+ "legend": [
+  {
+   "k": "pcie",
+   "name": "PCIe 3.0(到主机)",
+   "desc": "TPU v1 是插在服务器上的协处理器,经 PCIe 3.0 ×16(双向各 ~16 GB/s)接收主机发来的 CISC 指令与数据。指令很少(约十几条),复杂度都压在芯片内部。"
+  },
+  {
+   "k": "iface",
+   "name": "PCIe 接口 / 指令队列",
+   "desc": "卡上的 PCIe 端点与控制接口,把主机指令排进队列、交给计算核心执行。host-driven:芯片不主动取指,等主机喂。"
+  },
+  {
+   "k": "phy",
+   "name": "DDR3 内存接口 PHY",
+   "desc": "片上到片外 DRAM 的物理层接口,负责把权重从 8 GiB DDR3 搬进芯片。它的带宽(~30 GB/s,论文 Table 1)正是 v1 推理常被卡住的瓶颈。"
+  },
+  {
+   "k": "dram",
+   "name": "片外 8 GiB DDR3",
+   "desc": "存放模型权重的大容量片外内存。容量够大(装得下权重),但带宽相对算力偏低——这是 v1 IO 侧最关键的一对取舍。"
+  },
+  {
+   "k": "ici",
+   "name": "scale-out(v1 无)",
+   "desc": "v1 是单卡、无芯片间高速互连;跨芯片扩展靠后代 TPU v2/v3 的 ICI 链路 + OCS 光交换组成 pod。此处属 TPU 家族通行做法,非 v1 披露。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "host",
+    "pcie"
+   ],
+   "cap": "① 主机经 PCIe 3.0 把 CISC 指令和输入激活推给 TPU 卡——TPU 是被动协处理器,等 host 喂"
+  },
+  {
+   "keys": [
+    "iface",
+    "core"
+   ],
+   "cap": "② 卡上 PCIe 接口把指令排进队列,交给 MXU + Unified Buffer 执行"
+  },
+  {
+   "keys": [
+    "phy",
+    "dram"
+   ],
+   "cap": "③ 计算核心经 DDR3 PHY 从片外 8 GiB DDR3 取权重(~30 GB/s)——这条 IO 是常见瓶颈"
+  },
+  {
+   "keys": [
+    "core",
+    "iface",
+    "pcie",
+    "host"
+   ],
+   "cap": "④ 结果经 PCIe 回传主机,完成一次推理调用"
+  },
+  {
+   "keys": [
+    "ici"
+   ],
+   "cap": "⑤ 单卡之外的规模扩展:v1 不做芯片间互连,留给后代 pod 的 ICI + 光交换(OCS)"
+  }
+ ],
+ "before": [
+  "<b>先确定要回答的问题</b>:这颗芯片对外要连哪些东西、各用什么接口、各要多少带宽?TPU v1 的答案很克制——只连两样:主机(PCIe)和片外权重内存(DDR3)。",
+  "<b>要拍板的设计量(旋钮)</b>:主机接口标准与通道数(PCIe 几代 ×几)、内存接口类型与位宽(DDR3 PHY)、各 IO 的目标带宽、芯片在系统里的角色(独立 SoC 还是协处理器)、是否需要芯片间互连。",
+  "<b>必备输入</b>:负载画像(§3.1)给出的权重大小(决定片外内存容量)与供数节奏(决定带宽下限)、目标部署形态(插卡进现有服务器,而非自成系统)、host 软件栈(TensorFlow/XLA)能怎样下发任务。",
+  "<b>必须卡住的约束</b>:要能插进现有数据中心服务器 → 接口选成熟的 PCIe;权重容量大 → 片外必须用大容量 DRAM;封装/引脚/功耗预算限制了内存位宽与 PHY 数量。"
+ ],
+ "during": [
+  "<b>定角色</b>:把 TPU 做成协处理器而非独立系统——复用主机的 CPU、网络、存储,IO 只需一条 PCIe 接主机,大幅简化对外连接和部署(直接插进现成机房服务器)。",
+  "<b>定主机接口</b>:选 PCIe 3.0(成熟、生态广),配 host-driven 模型——主机发少量 CISC 指令,芯片不自取指。代价是受主机调度节奏约束,好处是芯片内部不必做复杂取指/调度逻辑。",
+  "<b>定内存接口</b>:权重太大放不下片上 → 必须挂片外 DRAM。选 DDR3 + 8 GiB,容量优先(装得下模型),用 DDR3 PHY 做物理层。",
+  "<b>正视带宽取舍</b>:DDR3 ~30 GB/s 相对 ~92 TOPS 的算力偏低——这正是 v1 的「内存墙」。设计上靠 24 MiB Unified Buffer 缓激活、weight-stationary 复用权重来缓解,但权重密集/批量小的负载仍会被这条 IO 卡住。",
+  "<b>scale-out 留白</b>:v1 明确只做单卡,不投资芯片间高速互连——扩规模靠多卡各自接主机。真正的「芯片直连组 pod」要到 v2/v3 才用 ICI + 光交换(OCS)实现,属后代演进而非 v1 范畴。",
+  "<b>诚实边界</b>:PCIe 端点、DDR PHY 的具体协议栈/IO 一致性/链路训练等细节,沿用业界数据中心 ASIC 的通行做法,v1 论文未逐一披露——这里只对带宽等已公开的硬数字负责。"
+ ],
+ "result": [
+  {
+   "label": "主机接口",
+   "value": "PCIe 3.0 ×16 · 双向 ~16 GB/s"
+  },
+  {
+   "label": "执行模型",
+   "value": "host-driven 协处理器(发 CISC 指令)"
+  },
+  {
+   "label": "内存接口",
+   "value": "DDR3 PHY → 片外 DRAM"
+  },
+  {
+   "label": "片外内存",
+   "value": "8 GiB DDR3 · ~30 GB/s"
+  },
+  {
+   "label": "scale 形态",
+   "value": "v1 单卡;pod 互连见 v2/v3 ICI+OCS"
+  },
+  {
+   "label": "IO 哲学",
+   "value": "接口最少化,复杂度压进芯片内部"
+  }
+ ],
+ "after": [
+  "<b>验证 IO 达标</b>:在真实负载上量 PCIe 与 DDR3 的实际利用率,确认到底是算力还是 IO 带宽卡住——v1 实测许多负载受限于内存/PCIe 带宽而非峰值算力。",
+  "<b>把需求往下游传</b>:给封装/引脚定 PHY 数量与位宽、给电源完整性定 IO 供电、给物理实现(⑤)定 PHY 摆位与走线约束。",
+  "<b>交给系统集成</b>:确认卡能插进目标服务器、PCIe 链路训练/枚举正常、host 软件栈(TensorFlow/XLA)能正确下发与回收任务。",
+  "<b>定可测性钩子</b>:埋 PCIe/DDR3 的带宽与 stall 性能计数器,便于上线后定位 IO 瓶颈;IO PHY 的 DFT/loopback 按数据中心 ASIC 通行做法处理(非 v1 披露细节)。",
+  "<b>规划下一代</b>:若要 scale-out,就要引入芯片间互连(ICI)与交换(OCS)——这正是 TPU v2/v3 组 pod 的演进方向,作为 v1 IO 设计的后续。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(PCIe/DDR3 带宽为公开硬数字,DDR3 权重内存带宽以论文 Table 1 的 ~30 GB/s 为准;PHY/链路训练等子系统采用数据中心 ASIC 通行实践,非 v1 逐项披露;ICI/OCS pod 互连属 TPU v2/v3)"
+}

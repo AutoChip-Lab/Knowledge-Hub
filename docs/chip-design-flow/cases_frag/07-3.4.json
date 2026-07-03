@@ -1,0 +1,114 @@
+{
+ "secNum": "3.4",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 时序驱动综合与 slack:把 700 MHz 翻译成「每条路径 slack ≥ 0」,综合优先保时序、盯关键路径",
+ "oneLine": "本案例把本小节的「时序驱动综合 / slack」落到 TPU 上:综合工具拿到 RTL 和约束(700 MHz → 1.43 ns 周期)后,逐条时序路径算 slack = required(要求时间) − arrival(到达时间)——正 slack 有余量、负 slack 是违例。综合以「让所有路径 slack ≥ 0」为首要目标,优先优化最紧(关键)路径。反直觉的一点:脉动阵列里单个 8-bit MAC 的路径很短、slack 充裕,700 MHz 轻松达标;真正吃紧的往往是横跨全片的长全局控制路径和 IO 路径。还有一条诚实边界:综合阶段的线延迟只是估计,真账要等布局布线后的签核⑨才算清。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 360\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">一条时序路径:起点 FF →（组合逻辑链）→ 终点 FF，综合按 slack = required − arrival 优化</text><text class=\"cs-note\" x=\"40\" y=\"46\">铁律:综合让所有路径 slack ≥ 0,任一负 slack = 时序违例</text><g class=\"cs-part\" data-k=\"launch\" data-g=\"launch\"><rect class=\"cs-box\" x=\"36\" y=\"120\" width=\"118\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"95\" y=\"146\">起点 FF</text><text class=\"cs-sub\" x=\"95\" y=\"164\">launch（clk↑发数据）</text></g><line class=\"cs-arr\" x1=\"154\" y1=\"152\" x2=\"226\" y2=\"152\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"comb\" data-g=\"comb\"><rect class=\"cs-box\" x=\"230\" y=\"108\" width=\"180\" height=\"88\" rx=\"8\"/><text class=\"cs-t\" x=\"320\" y=\"134\">组合逻辑链</text><text class=\"cs-sub\" x=\"320\" y=\"154\">门 + 连线（含估计线延迟）</text><text class=\"cs-sub\" x=\"320\" y=\"172\">阵列里:1 个 MAC,很短</text><text class=\"cs-sub\" x=\"320\" y=\"188\">全局控制/IO:很长</text></g><line class=\"cs-arr\" x1=\"410\" y1=\"152\" x2=\"486\" y2=\"152\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"capture\" data-g=\"capture\"><rect class=\"cs-box\" x=\"490\" y=\"120\" width=\"118\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"549\" y=\"146\">终点 FF</text><text class=\"cs-sub\" x=\"549\" y=\"164\">capture（下一 clk↑采样）</text></g><g class=\"cs-part\" data-k=\"clk\" data-g=\"clk\"><rect class=\"cs-box\" x=\"36\" y=\"240\" width=\"572\" height=\"44\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#c7d2fe\"/><text class=\"cs-t\" x=\"322\" y=\"262\">时钟 700 MHz → 周期 1.43 ns（required ≈ 周期 − setup − 不确定度）</text><text class=\"cs-sub\" x=\"322\" y=\"278\">create_clock -period 1.43 [get_ports clk]　（示意 SDC,非 TPU 私有）</text></g><line class=\"cs-arr\" x1=\"95\" y1=\"240\" x2=\"95\" y2=\"186\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"549\" y1=\"240\" x2=\"549\" y2=\"186\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"pos\" data-g=\"pos\"><rect class=\"cs-box\" x=\"36\" y=\"300\" width=\"280\" height=\"44\" rx=\"8\" fill=\"#dcfce7\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"176\" y=\"322\">正 slack ✓ 路径有余量</text><text class=\"cs-sub\" x=\"176\" y=\"338\">arrival &lt; required（如单个 MAC）</text></g><g class=\"cs-part\" data-k=\"neg\" data-g=\"neg\"><rect class=\"cs-box\" x=\"328\" y=\"300\" width=\"280\" height=\"44\" rx=\"8\" fill=\"#fee2e2\" stroke=\"#fca5a5\"/><text class=\"cs-t\" x=\"468\" y=\"322\">负 slack ✗ 时序违例</text><text class=\"cs-sub\" x=\"468\" y=\"338\">arrival &gt; required（如长控制/IO 路径）</text></g></svg>",
+ "legend": [
+  {
+   "k": "comb",
+   "name": "组合逻辑链(被算 slack 的对象)",
+   "desc": "起点 FF 与终点 FF 之间的一串组合门加连线。它的总延迟(门延迟+估计的线延迟)决定数据何时「到达」终点 FF——这就是 arrival。综合要么把它压短(选快单元、重组逻辑),要么确认它已经够快。TPU 里这条链可短(一个 MAC)可长(横跨全片的控制译码)。"
+  },
+  {
+   "k": "clk",
+   "name": "时钟周期 = required 的来源",
+   "desc": "700 MHz 对应 1.43 ns 周期,经 create_clock 在 SDC 里告诉工具。终点 FF 的「要求时间」required ≈ 一个周期 − 建立时间(setup) − 时钟不确定度。周期定得越紧,required 越小,留给组合逻辑的预算越少,slack 越容易变负。约束是综合优化的总指挥棒。"
+  },
+  {
+   "k": "pos",
+   "name": "正 slack ✓:有余量",
+   "desc": "slack = required − arrival > 0,表示数据到得比要求还早,这条路径满足时序、甚至还能再慢一点。TPU 脉动阵列中单个 MAC 的路径就属于这类——逻辑极浅,slack 大,综合不必为它费力,可以反过来用慢而省面积/省功耗的单元(见后端复用余量)。"
+  },
+  {
+   "k": "neg",
+   "name": "负 slack ✗:时序违例",
+   "desc": "slack < 0,数据到得比要求晚,终点 FF 来不及采样 → 功能在该频率下会错。这是综合必须消灭的违例。TPU 这类设计里,负 slack 通常出现在长全局控制路径、跨模块握手、IO 路径上,而不是密集但浅的 MAC 阵列里。综合优先盯住这些「关键路径」。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "clk"
+   ],
+   "cap": "① 把目标频率写成约束:700 MHz → create_clock -period 1.43(示意 SDC),工具据此为每个终点 FF 算出 required(要求时间)。"
+  },
+  {
+   "keys": [
+    "launch",
+    "comb",
+    "capture"
+   ],
+   "cap": "② 沿每条 起点FF→组合逻辑→终点FF 的路径,累加门延迟与(估计的)线延迟,得到 arrival(数据到达终点 FF 的时间)。"
+  },
+  {
+   "keys": [
+    "pos",
+    "neg"
+   ],
+   "cap": "③ 逐路径算 slack = required − arrival:正 slack 有余量(✓),负 slack 是违例(✗)。综合的首要目标是让所有路径 slack ≥ 0。"
+  },
+  {
+   "keys": [
+    "comb",
+    "neg"
+   ],
+   "cap": "④ 盯关键路径优化:对最负 slack 的路径换更快单元、重排逻辑、调结构,把它从负拉回非负;阵列里浅而快的 MAC 路径不是优化重点。"
+  },
+  {
+   "keys": [
+    "comb",
+    "clk"
+   ],
+   "cap": "⑤ 记住:此刻的线延迟只是综合的估计值。真正的 arrival/slack 要等布局布线拿到真实连线后,在签核⑨用 STA 重算才作数。"
+  }
+ ],
+ "before": [
+  "<b>定时钟约束(required 的根)</b>:在 SDC 里用 create_clock 把目标频率写死——TPU v1 跑 700 MHz,对应周期 1.43 ns(示意:create_clock -period 1.43 [get_ports clk])。再加时钟不确定度(uncertainty)预留抖动/偏斜余量,这一步直接决定每条路径的 required 有多紧。",
+  "<b>定 IO 时序约束</b>:用 set_input_delay / set_output_delay 描述芯片边界与外部器件(如片外 DDR3、PCIe 接口逻辑)的时序关系。TPU 的真正紧路径常落在 IO 上,这些约束不写清,综合就看不到 IO 路径的真实 required,会漏掉关键违例。",
+  "<b>定标准单元库(算 arrival 的依据)</b>:挂上 28nm 工艺的 Liberty(.lib)时序库,工具才知道每个门的延迟、每个 FF 的 setup/hold。库选错或角点不全,算出的 arrival 就是错的,slack 全盘失真。",
+  "<b>定 QoR 目标与例外</b>:明确首要目标是时序收敛(所有 slack ≥ 0),面积/功耗次之。同时用 set_false_path / set_multicycle_path 标出不该参与单周期时序检查的路径(如跨异步、配置寄存器),避免工具为「假违例」白费力气、甚至牺牲真路径。"
+ ],
+ "during": [
+  "<b>铁律:时序优先,slack ≥ 0 是硬指标</b>。时序驱动综合(timing-driven)以满足约束为第一目标——只要还有路径负 slack,工具就持续优化;面积、功耗在时序满足后才优化。对 TPU 这种要稳跑 700 MHz、~92 TOPS 的设计,时序不收敛等于这颗芯片做不到标称算力。",
+  "<b>盯关键路径(最负 slack)</b>。综合按 slack 排序,集中火力在最紧的几条路径:换更快(更大驱动/更低 Vt)的单元、重组逻辑深度、调整结构。一条路径修好,关键路径可能转移到下一条,如此迭代直到 WNS(最差负 slack)≥ 0。",
+  "<b>认清:阵列不是瓶颈,长路径才是</b>。脉动阵列虽有 256×256 = 65,536 个 MAC,但每个 MAC 是一次 8b×8b 乘加、逻辑极浅、路径极短,slack 充裕,700 MHz 对它很轻松。真正吃紧的是横跨全片的全局控制/译码路径、跨模块握手、以及到 Unified Buffer/IO 的长路径——综合的时序压力主要在这里。",
+  "<b>用好正 slack 路径换面积/功耗</b>。对 slack 充裕的路径(如海量 MAC),工具可以反向操作:换成更小、更慢、更省功耗的单元,只要别把 slack 吃成负。TPU 28nm/331mm²、功耗仅 28–40W 的密集阵列,正是靠「在不破坏时序的前提下回收余量」做到的。",
+  "<b>线延迟此刻只是估计(诚实边界)</b>。布局布线前没有真实连线,综合靠线负载模型(WLM)或物理感知估计来猜线延迟。所以这一步的 slack 是「预估账」,偏乐观或偏悲观都可能;别把综合报告的正 slack 当成最终承诺。",
+  "<b>诚实边界:方法通行,数字非 TPU 披露</b>。timing-driven 综合、slack = required − arrival、关键路径优化、SDC/Liberty 都是通行 EDA 综合实践;本案例把 TPU 已知结构(脉动阵列、700 MHz、28nm、weight-stationary)当作被综合对象来讲 slack 概念。TPU 不公开其约束脚本与 QoR 数字,文中 1.43 ns 等 SDC 片段均为示意,不代表 TPU 私有约束。"
+ ],
+ "result": [
+  {
+   "label": "时钟约束(示意 SDC)",
+   "value": "create_clock -period 1.43 [get_ports clk]  # 700 MHz"
+  },
+  {
+   "label": "slack 定义",
+   "value": "slack = required − arrival;≥0 满足,<0 违例"
+  },
+  {
+   "label": "required 来源",
+   "value": "≈ 周期 1.43ns − setup − 时钟不确定度"
+  },
+  {
+   "label": "关键路径(示意走向)",
+   "value": "瓶颈多在长全局控制/IO,非浅而快的 MAC 路径"
+  },
+  {
+   "label": "时序报告关注量",
+   "value": "WNS(最差负 slack)、TNS(负 slack 总和)、违例路径数"
+  },
+  {
+   "label": "线延迟性质",
+   "value": "综合阶段为估计值;真账留到签核⑨ STA 重算"
+  }
+ ],
+ "after": [
+  "<b>读时序报告(report_timing)</b>:先看 WNS/TNS 是否归零、还有多少违例路径;逐条看最负 slack 路径的 startpoint/endpoint 与延迟拆解,确认瓶颈确实落在预期的长控制/IO 路径上,而不是某处意外的逻辑深陷。",
+  "<b>对残留负 slack 迭代</b>:若仍有违例,回去优化关键路径(换单元、改逻辑层级、必要时回 RTL 调流水/分割长路径),重综合再看 slack,直到所有路径非负;切忌靠放宽约束「假装」收敛。",
+  "<b>核对约束是否真实而非掩盖</b>:检查 false_path/multicycle 是否被滥用——把真路径误标成例外会让 slack「虚高」,综合绿灯却埋下签核⑨翻车的雷。约束要能解释清楚每一条例外的理由。",
+  "<b>不把综合 slack 当终值</b>:综合的正 slack 基于估计线延迟,布局布线后真实连线变长可能反转为负。交给后端时附上约束(SDC)、关键路径清单与时序余量,提醒后端这些路径布线时要重点照顾。",
+  "<b>交后端并约定回签</b>:把门级网表、SDC、时序报告交给布局布线;约定在布局布线后用同一套约束做签核 STA(⑨),以含真实寄生的延迟重算 slack——那才是 700 MHz 能不能稳跑的最终判定。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(256×256 脉动阵列、700 MHz、~92 TOPS INT8、28nm/331mm²/28–40W、weight-stationary 为 v1 披露;timing-driven 综合、slack=required−arrival、关键路径优化、SDC/Liberty/WNS-TNS 为通行 EDA 综合实践,1.43 ns 等 SDC 片段为示意,非 v1 披露)"
+}

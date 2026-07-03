@@ -1,0 +1,114 @@
+{
+ "secNum": "3.10",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 核心阵列 / PCIe / DDR3 三时钟域的 CDC 与复位释放",
+ "oneLine": "一颗 TPU 至少跨 ~700MHz 核心阵列域、PCIe 主机接口域、DDR3 存储域三个独立时钟域——单比特控制信号用双触发器同步、多比特数据用异步 FIFO 安全跨域,复位则要按域有序释放,这正是「跨时钟域与复位」要解决的真实工程问题。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 380\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">三个独立时钟域(域划分为这类多接口数据中心 ASIC 的通行做法)</text><g class=\"cs-part\" data-k=\"pcie\" data-g=\"pcie\"><rect class=\"cs-box\" x=\"40\" y=\"50\" width=\"180\" height=\"80\" rx=\"8\"/><text class=\"cs-t\" x=\"130\" y=\"82\">PCIe 域</text><text class=\"cs-sub\" x=\"130\" y=\"100\">主机接口 / 指令收发</text><text class=\"cs-sub\" x=\"130\" y=\"118\">PCIe 3.0 链路时钟</text></g><g class=\"cs-part\" data-k=\"core\" data-g=\"core\"><rect class=\"cs-box\" x=\"270\" y=\"150\" width=\"180\" height=\"90\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"184\">核心阵列域</text><text class=\"cs-sub\" x=\"360\" y=\"202\">256×256 MXU + UB</text><text class=\"cs-sub\" x=\"360\" y=\"220\">~700 MHz</text></g><g class=\"cs-part\" data-k=\"ddr\" data-g=\"ddr\"><rect class=\"cs-box\" x=\"500\" y=\"50\" width=\"180\" height=\"80\" rx=\"8\"/><text class=\"cs-t\" x=\"590\" y=\"82\">DDR3 域</text><text class=\"cs-sub\" x=\"590\" y=\"100\">片外权重存储</text><text class=\"cs-sub\" x=\"590\" y=\"118\">DDR3 接口时钟 ~30GB/s</text></g><g class=\"cs-part\" data-k=\"fifo1\" data-g=\"cdc\"><rect class=\"cs-box\" x=\"170\" y=\"160\" width=\"80\" height=\"70\" rx=\"8\"/><text class=\"cs-t\" x=\"210\" y=\"190\">异步</text><text class=\"cs-t\" x=\"210\" y=\"210\">FIFO</text></g><g class=\"cs-part\" data-k=\"fifo2\" data-g=\"cdc\"><rect class=\"cs-box\" x=\"470\" y=\"160\" width=\"80\" height=\"70\" rx=\"8\"/><text class=\"cs-t\" x=\"510\" y=\"190\">异步</text><text class=\"cs-t\" x=\"510\" y=\"210\">FIFO</text></g><g class=\"cs-part\" data-g=\"a1\"><polyline class=\"cs-arr\" points=\"170,130 150,160 175,178\" fill=\"none\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"80\" y=\"152\">指令/数据(多比特)</text><g class=\"cs-part\" data-g=\"a2\"><line class=\"cs-arr\" x1=\"250\" y1=\"195\" x2=\"266\" y2=\"195\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-g=\"a3\"><line class=\"cs-arr\" x1=\"450\" y1=\"195\" x2=\"466\" y2=\"195\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-g=\"a4\"><polyline class=\"cs-arr\" points=\"550,178 575,160 575,130\" fill=\"none\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"560\" y=\"152\">权重突发(多比特)</text><g class=\"cs-part\" data-k=\"sync\" data-g=\"sync\"><rect class=\"cs-box\" x=\"270\" y=\"280\" width=\"180\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"308\">双触发器同步器</text><text class=\"cs-sub\" x=\"360\" y=\"326\">单比特控制/中断/done</text></g><g class=\"cs-part\" data-g=\"a5\"><polyline class=\"cs-arr\" points=\"130,130 130,312 266,312\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-g=\"a6\"><polyline class=\"cs-arr\" points=\"360,280 360,242\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"150\" y=\"360\">单比特跨域:打两拍消亚稳态</text></svg>",
+ "legend": [
+  {
+   "k": "core",
+   "name": "核心阵列域(~700 MHz)",
+   "desc": "256×256 脉动阵列 + 24 MiB Unified Buffer + 累加器跑在这条主频上,是芯片算力所在、跨域信号的汇聚中心。"
+  },
+  {
+   "k": "pcie",
+   "name": "PCIe 主机接口域",
+   "desc": "经 PCIe 3.0 与主机收发 CISC 指令和数据,跑在 PCIe 链路恢复出来的时钟上,频率/相位与核心域无关。"
+  },
+  {
+   "k": "ddr",
+   "name": "DDR3 存储域",
+   "desc": "片外 8 GiB DDR3(~30 GB/s)的接口时钟,负责把权重突发读进片内,又是一个独立异步域。"
+  },
+  {
+   "k": "cdc",
+   "name": "异步 FIFO(多比特跨域)",
+   "desc": "指令流、激活/权重数据等多比特总线跨域时,用双端口异步 FIFO 缓冲——读写指针各用格雷码同步,保证一次只翻一位、不会采到撕裂的中间值。"
+  },
+  {
+   "k": "sync",
+   "name": "双触发器同步器(单比特跨域)",
+   "desc": "done/中断/使能这类单比特电平或脉冲信号,在目的域用两级触发器「打两拍」吸收亚稳态,代价是 1~2 拍延迟、换来极低的失效概率。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "pcie",
+    "fifo1",
+    "core"
+   ],
+   "cap": "① 主机经 PCIe 域发来指令/激活(多比特),先写进异步 FIFO,再由核心阵列域按 ~700MHz 安全读出——两侧时钟无关,FIFO 吸收频率差与突发"
+  },
+  {
+   "keys": [
+    "ddr",
+    "fifo2",
+    "core"
+   ],
+   "cap": "② DDR3 域把权重突发读出后,同样经异步 FIFO 跨进核心域,喂给脉动阵列做 weight-stationary 装填"
+  },
+  {
+   "keys": [
+    "sync"
+   ],
+   "cap": "③ 单比特的「算完 done」「中断」「使能」等控制信号不走 FIFO,而是在目的域用双触发器同步器打两拍,消除亚稳态后再被状态机采样"
+  },
+  {
+   "keys": [
+    "pcie",
+    "core",
+    "ddr"
+   ],
+   "cap": "④ 复位时三个域各有自己的复位:用异步置位/同步释放,且按依赖顺序(先稳住存储与接口、最后放开核心阵列)分级释放,避免半复位状态下乱跑"
+  }
+ ],
+ "before": [
+  "<b>先列清有几个时钟域</b>:TPU 这类芯片把不同接口的时序解耦——核心阵列域(~700MHz,算力所在)、PCIe 主机接口域、片外 DDR3 存储域至少三个;每个域有自己的时钟源、频率与相位关系,域之间默认异步。(域的具体划分是这类多接口数据中心 ASIC 的通行做法,非 v1 逐项披露。)",
+  "<b>枚举每一条跨域信号并分类</b>:逐条登记穿越域边界的信号,分成「单比特控制/状态」(done、中断、握手电平)和「多比特数据/地址」(指令字、激活、权重总线)两类——两类的安全过法完全不同,混用是 CDC 头号 bug 源。",
+  "<b>定清频率与吞吐约束</b>:核心域 ~700MHz、PCIe 3.0 链路、DDR3 ~30 GB/s,跨域缓冲(FIFO)深度要按「源域突发 + 目的域消费速率 + 同步延迟」算,既不能太浅丢数据、也不必过深浪费 SRAM。",
+  "<b>明确复位的来源与作用域</b>:哪些复位来自上电/主机/看门狗,各自要复位哪些域;以及哪些状态(如 DDR3 已训练好的接口、已配置的链路)在软复位时应当保留、不能被一起冲掉。"
+ ],
+ "during": [
+  "<b>单比特怎么过</b>:用两级(必要时三级)触发器同步器打拍,吸收亚稳态;关键是要保证该信号在源域至少稳定两个目的域时钟周期,否则窄脉冲可能被「漏采」——脉冲跨慢域时要先在源域展宽或转成电平+握手。",
+  "<b>多比特怎么过</b>:绝不能让一条多比特总线各位各自打两拍(会采到不同拍、产生撕裂值)。数据流用异步 FIFO(读写指针走格雷码,一次只翻一位再同步);零散配置寄存器用「数据先稳、再同步一个 1-bit 使能脉冲去打拍」的握手协议。",
+  "<b>FIFO 深度与背压的取舍</b>:深一点能吸收更大突发、对上游更友好,但吃 SRAM 又增延迟;TPU 的权重/激活是高吞吐流,FIFO 要够深以跑满阵列,同时给出 almost-full 背压让源域及时停发。",
+  "<b>复位用「异步置位、同步释放」</b>:复位生效可以异步(立刻拉住,不依赖时钟到来),但释放必须在本域时钟上同步对齐(经复位同步器),否则多个触发器在不同瞬间脱离复位会让状态机进入非法态——这是复位环节最经典的坑。",
+  "<b>复位的释放顺序要分级</b>:按依赖关系排序释放——先让时钟/PLL 稳定、接口与存储域就绪,最后再放开核心阵列域开始干活;反过来会让核心域去访问还没复位完的 FIFO/接口而读到垃圾。",
+  "<b>诚实边界</b>:TPU v1 公开资料没有披露其同步器级数、FIFO 深度、复位树等具体参数;上面给的是这类数据中心推理 ASIC 处理多时钟域 CDC 与复位的通行实践,可硬挂的只有「至少三个独立域、~700MHz/PCIe/DDR3」这一层事实背景。"
+ ],
+ "result": [
+  {
+   "label": "时钟域数",
+   "value": "≥3(核心 ~700MHz / PCIe / DDR3)"
+  },
+  {
+   "label": "单比特跨域",
+   "value": "双触发器同步器,打 2 拍(通行实践)"
+  },
+  {
+   "label": "多比特跨域",
+   "value": "异步 FIFO(格雷码指针)/ 握手(通行实践)"
+  },
+  {
+   "label": "FIFO 深度",
+   "value": "按突发+消费速率定,带 almost-full 背压(v1 未披露)"
+  },
+  {
+   "label": "复位策略",
+   "value": "异步置位 + 同步释放(通行实践)"
+  },
+  {
+   "label": "复位释放顺序",
+   "value": "接口/存储先就绪,核心阵列域最后放开(通行实践)"
+  }
+ ],
+ "after": [
+  "<b>跑 CDC 静态检查</b>:用 CDC lint 工具扫描所有跨域路径,确认每条单比特都有同步器、每条多比特都走了 FIFO/握手且无「多比特各自同步」的违例,核对同步器没被综合优化掉。",
+  "<b>做亚稳态/MTBF 评估</b>:对关键单比特同步器估算平均无故障时间,确认在目标频率下失效概率足够低;必要时把两级加到三级。",
+  "<b>仿真覆盖跨域与复位场景</b>:用带随机相位/抖动的多时钟仿真,覆盖 FIFO 满/空背压、窄脉冲跨慢域、复位在不同相位释放等极端情形,确认无丢数、无非法态。",
+  "<b>验证复位序列</b>:逐条走「上电复位、主机软复位、看门狗复位」的释放顺序,确认核心阵列域总是最后脱离复位,且软复位不会冲掉已训练的 DDR3/已配置链路状态。",
+  "<b>交接给后端</b>:把跨域约束(set_clock_groups asynchronous、FIFO 两侧伪路径/最大延迟约束)写进 SDC,确保 STA 不会去给异步路径报错时序、也不会漏掉同步器内部的真实约束。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(论文披露多接口与 ~700MHz/PCIe/DDR3 等事实;同步器级数、FIFO 深度、复位树等 CDC 细节 v1 未公开,文中所述为这类数据中心推理 ASIC 的通行实践)"
+}

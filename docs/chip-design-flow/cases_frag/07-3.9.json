@@ -1,0 +1,119 @@
+{
+ "secNum": "3.9",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 形式等价检查(LEC):每次综合/ECO 后用 Formality/Conformal 数学证明门级网表 ≡ RTL,功能从⑥一路守到门级",
+ "oneLine": "本案例把本小节的「形式等价检查(LEC)」落到 TPU 上:综合/优化/ECO 都可能因约束误导、脚本失误或工具 bug 悄悄改掉功能,而仿真只能抽样、盖不全。LEC 不靠举例,而是把『参考 RTL』和『实现网表』各自端点处的布尔函数逐个锥(cone)做穷尽的形式比对——等价就出 ✓ 放行,不等价就吐一个反例向量(counterexample)指明哪个寄存器在什么输入下不一致。它是综合后不可省的签核兜底:把脉动阵列、Unified Buffer、CISC 指令控制器这些功能,从⑥的设计黄金一路守到 28nm 门级网表。诚实边界:Formality/Conformal、配对/比对/反例都是通行 EDA 签核实践,TPU 不公开其 LEC 脚本与结果。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 380\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">形式等价检查(LEC):用数学证明门级网表 ≡ RTL,功能从⑥设计意图一路守到门级——不靠仿真举例,靠穷尽证明</text><g class=\"cs-part\" data-k=\"rtl\" data-g=\"rtl\"><rect class=\"cs-box\" x=\"40\" y=\"120\" width=\"170\" height=\"80\" rx=\"8\"/><text class=\"cs-t\" x=\"125\" y=\"150\">参考(Golden)RTL</text><text class=\"cs-sub\" x=\"125\" y=\"170\">来自⑥的功能黄金</text><text class=\"cs-sub\" x=\"125\" y=\"188\">脉动阵列/UB/控制器</text></g><g class=\"cs-part\" data-k=\"net\" data-g=\"net\"><rect class=\"cs-box\" x=\"510\" y=\"120\" width=\"170\" height=\"80\" rx=\"8\"/><text class=\"cs-t\" x=\"595\" y=\"150\">实现(Impl)网表</text><text class=\"cs-sub\" x=\"595\" y=\"170\">综合/ECO 后门级</text><text class=\"cs-sub\" x=\"595\" y=\"188\">标准单元+连线</text></g><g class=\"cs-part\" data-k=\"lec\" data-g=\"lec\"><rect class=\"cs-box\" x=\"270\" y=\"112\" width=\"180\" height=\"96\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#c7d2fe\"/><text class=\"cs-t\" x=\"360\" y=\"142\">LEC 引擎</text><text class=\"cs-sub\" x=\"360\" y=\"162\">Formality / Conformal</text><text class=\"cs-sub\" x=\"360\" y=\"180\">配对寄存器/端点</text><text class=\"cs-sub\" x=\"360\" y=\"196\">逐锥比对布尔函数</text></g><line class=\"cs-arr\" x1=\"210\" y1=\"160\" x2=\"266\" y2=\"160\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"510\" y1=\"160\" x2=\"454\" y2=\"160\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"360\" y1=\"208\" x2=\"360\" y2=\"248\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"judge\" data-g=\"judge\"><rect class=\"cs-box\" x=\"250\" y=\"252\" width=\"220\" height=\"50\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"274\">≡ 逻辑等价?</text><text class=\"cs-sub\" x=\"360\" y=\"292\">穷尽所有输入,判每个端点</text></g><line class=\"cs-arr\" x1=\"300\" y1=\"302\" x2=\"190\" y2=\"334\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"420\" y1=\"302\" x2=\"530\" y2=\"334\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"pass\" data-g=\"pass\"><rect class=\"cs-box\" x=\"40\" y=\"332\" width=\"280\" height=\"42\" rx=\"8\" fill=\"#dcfce7\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"180\" y=\"358\">等价 ✓ 优化没改功能,放行签核</text></g><g class=\"cs-part\" data-k=\"fail\" data-g=\"fail\"><rect class=\"cs-box\" x=\"400\" y=\"332\" width=\"280\" height=\"42\" rx=\"8\" fill=\"#fee2e2\" stroke=\"#fca5a5\"/><text class=\"cs-t\" x=\"540\" y=\"358\">不等价 ✗ 给反例向量,回查 bug</text></g></svg>",
+ "legend": [
+  {
+   "k": "rtl",
+   "name": "参考(Golden)RTL——功能黄金",
+   "desc": "LEC 的『正确答案』一侧:来自⑥功能验证确认过的可综合 RTL,描述脉动阵列(256×256 8-bit MAC)、Unified Buffer、累加器、CISC 指令控制器等的预期功能。它被当作 golden 参考,网表的对错全以它为准。LEC 不验证 RTL 本身对不对(那是⑥的事),只验证综合后的网表有没有偏离这份黄金。"
+  },
+  {
+   "k": "net",
+   "name": "实现(Impl)网表——待证对象",
+   "desc": "LEC 的『待证』一侧:综合映射到 28nm 标准单元后的门级网表,或经过 ECO(工程变更)、面积/功耗回收、扫描链插入(DFT)之后的版本。这一侧经历过大量自动优化和手工改动,正是可能被悄悄改错功能的地方——LEC 要证明它在功能上仍与 RTL 完全一致。"
+  },
+  {
+   "k": "lec",
+   "name": "LEC 引擎(Formality / Conformal)",
+   "desc": "形式等价检查工具。它先在两侧之间做『配对(matching)』:把 RTL 与网表里对应的寄存器、主输入/输出、黑盒等映射成对;再以每对寄存器输入和每个主输出为端点,切出组合逻辑锥(cone),用形式方法(BDD/SAT)穷尽比较两侧锥的布尔函数是否恒等。是签核流程里专管『功能没被改动』的那道关。"
+  },
+  {
+   "k": "judge",
+   "name": "≡ 逻辑等价?——穷尽判定",
+   "desc": "对每个配对端点判定两侧布尔函数是否对『所有可能输入』都相等。这与仿真的根本区别在于:仿真只能跑有限激励、是抽样;LEC 是穷尽证明,等价就意味着没有任何输入能让两者不同。判定结果非黑即白:全部端点等价才算整体等价。"
+  },
+  {
+   "k": "fail",
+   "name": "不等价 ✗ → 反例向量",
+   "desc": "只要有一个端点不等价,LEC 就报失败并给出一个反例(counterexample):一组具体输入值,使该端点在 RTL 与网表上输出不同。反例把抽象的『功能被改了』变成可复现的现场,工程师据此定位是哪步优化/ECO/约束出的错,改完再重跑 LEC,直到全等价。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "rtl",
+    "net"
+   ],
+   "cap": "① 摆好两侧:左边载入来自⑥的参考 RTL(golden),右边载入综合/ECO 后的实现网表——LEC 的任务就是证明右边在功能上等于左边,而非重新验证左边对不对"
+  },
+  {
+   "keys": [
+    "lec"
+   ],
+   "cap": "② 配对:LEC 引擎(Formality/Conformal)把两侧的寄存器、主输入/输出、黑盒一一映射成对,建立比对的端点;配对不全或错配是 LEC 假阳/假阴的主要来源,要先排干净"
+  },
+  {
+   "keys": [
+    "lec",
+    "judge"
+   ],
+   "cap": "③ 逐锥穷尽比对:以每对寄存器输入、每个主输出为端点切出逻辑锥,用形式方法证明两侧布尔函数对所有输入恒等——不是抽样仿真,是穷尽证明"
+  },
+  {
+   "keys": [
+    "judge",
+    "pass"
+   ],
+   "cap": "④ 等价(✓):所有端点都恒等,说明综合/优化只改了实现、没改功能,功能从⑥的黄金守到了门级网表,可放行去后续签核"
+  },
+  {
+   "keys": [
+    "judge",
+    "fail"
+   ],
+   "cap": "⑤ 不等价(✗):LEC 吐出反例向量指明哪个端点在什么输入下不一致,据此回查是哪步优化/ECO/约束改错了功能,修好后重跑 LEC——这是综合器 bug 兜不住时唯一能拦住的关"
+  }
+ ],
+ "before": [
+  "<b>定 golden 参考与待证实现</b>:明确哪份是参考(来自⑥、功能已验过的 RTL),哪份是实现(综合/ECO 后的网表)。LEC 只保证『实现 ≡ 参考』,不保证参考本身对——参考选错(比如拿了未冻结的 RTL),LEC 全绿也没意义。",
+  "<b>备齐两侧读取所需的库与定义</b>:网表一侧要挂上 28nm 标准单元的功能模型(Liberty/Verilog 库),LEC 才知道每个标准单元的逻辑功能;两侧的黑盒(如 SRAM 编译宏代表的 Unified Buffer/累加器)要声明为 black box 或给等价模型,否则锥切不下去。",
+  "<b>约定配对规则与命名映射</b>:综合常改寄存器名、做寄存器重定时(retiming)或合并/复制,使两侧名字对不上。要预先给 LEC 命名映射、retiming/相位反转(phase inversion)等设置,保证寄存器能正确配对——配对是 LEC 成败的地基。",
+  "<b>定签核目标:LEC 必过且无未验端点</b>:把『LEC 全等价、零未配对端点、零未验证点』列为综合签核的硬性出口条件。不是『跑了 LEC』就算数,而是要求结果干净——任何端点失配或被无故 set 为等价都得有据可查。",
+  "<b>诚实边界</b>:Formality/Conformal、配对、逻辑锥比对、反例向量都是通行 EDA 签核实践;TPU v1 不公开其 LEC 脚本、配对设置或检查结果。本案例用 TPU 的已知结构(256×256 脉动阵列、24 MiB UB、CISC 指令控制器、700MHz、28nm、weight-stationary)作为『被证明等价的对象』来讲 LEC 概念,所有命令片段均为示意。"
+ ],
+ "during": [
+  "<b>铁律:每次综合/优化/ECO 后都要跑 LEC</b>。初次综合、面积/功耗回收、扫描链插入、时钟门控插入、手工 ECO……任何改动网表的动作都可能动到功能。LEC 是这些动作之后的标准兜底——综合器再成熟也可能因约束误导或 bug 改错功能,只有 LEC 能从数学上拦住。",
+  "<b>先把配对做干净,再看比对结果</b>。LEC 先报配对情况:有多少寄存器/端点成功配对、多少未配对(unmatched)。未配对若是因为综合的合法变换(重定时、常量传播、无用寄存器删除),要用对应设置让工具理解;若是真错配,先修配对——带着错配去比对,等价/不等价结论都不可信。",
+  "<b>穷尽证明,而非仿真抽样</b>。对每个配对端点,LEC 把两侧的组合逻辑锥转成布尔函数(BDD/SAT),证明它们对所有输入组合都相等。这覆盖了仿真永远跑不全的输入空间——所以即便⑥的仿真全过,综合后仍必须 LEC,因为综合引入的错误可能恰好落在仿真没采到的角落。",
+  "<b>不等价就抓反例、顺藤摸瓜</b>。报不等价时,拿 LEC 给的反例向量回到两侧波形/逻辑里复现,定位差异来自哪一步:是某条 false_path 约束写错让工具优化越界、retiming 配置不当、ECO 接错线,还是工具 bug。改在根因处,再重跑 LEC 确认归零。",
+  "<b>警惕『被人为设成等价』的端点</b>。LEC 允许对个别端点做 set-equivalent/turn-off 处理,但每一处都必须有充分理由并留痕。滥用这类豁免会把真不等价掩盖成『全绿』——这是 LEC 最危险的假阳性来源,签核时要逐条复核豁免清单。",
+  "<b>诚实边界:方法通行,数字非 TPU 披露</b>。LEC 流程、配对、锥比对、反例都是通行 EDA 签核实践;本案例把 TPU 已知结构当作被证明等价的对象。TPU 不公开其 LEC 脚本与结果,文中命令片段(set_reference_design 等)均为示意,不代表 TPU 私有签核设置。"
+ ],
+ "result": [
+  {
+   "label": "参考/实现设定(示意)",
+   "value": "set golden=RTL(来自⑥);set impl=综合/ECO 后网表;LEC 证 impl ≡ golden"
+  },
+  {
+   "label": "工具(通行实践)",
+   "value": "Synopsys Formality / Cadence Conformal LEC(示意,非 TPU 披露)"
+  },
+  {
+   "label": "比对粒度",
+   "value": "以每对寄存器输入、每个主输出为端点,逐逻辑锥穷尽比对布尔函数"
+  },
+  {
+   "label": "通过判据",
+   "value": "全部端点 Equivalent,零 Unmatched/未验证点,无可疑人为豁免"
+  },
+  {
+   "label": "失败产物",
+   "value": "报告 Non-equivalent 端点 + 反例向量(一组让两侧输出不同的输入)"
+  },
+  {
+   "label": "覆盖性质",
+   "value": "穷尽证明(覆盖全输入空间),不是仿真抽样——这是它能兜底的根本"
+  }
+ ],
+ "after": [
+  "<b>读 LEC 报告,先看配对再看结论</b>:确认 Unmatched 端点为 0(或每个未配对都有合法原因),再看比对结论是否全 Equivalent。配对没干净就下『等价』结论,等于在沙地上盖章——配对状态是 LEC 报告里第一要核的栏。",
+  "<b>逐条复核人为豁免</b>:把所有被 set-equivalent/turn-off 的端点单独列出,核对每处理由是否成立。豁免是 LEC 假阳性的主要藏身处,签核评审要能解释清每一条,杜绝用豁免把真不等价『刷绿』。",
+  "<b>不等价时定位根因并迭代</b>:用反例向量复现差异,判定是约束误导(如错误 false_path)、retiming/优化配置、ECO 接线错,还是工具 bug;改在根因处而非改 LEC 设置去回避,改完重跑直到全等价归零。",
+  "<b>把 LEC 通过钉进综合签核出口</b>:LEC 全等价是网表交后端前的硬门槛之一,与时序(WNS/TNS 归零)、面积/功耗达标并列。功能在此被数学地『锁』在门级——后端布局布线只改物理实现、不应再动逻辑,后端 ECO 后还要再跑一轮 LEC 守住这条线。",
+  "<b>留存等价记录,交付后端</b>:把通过的 LEC 报告、配对/豁免清单随门级网表与 SDC 一并交付;后续任何 ECO 都以这次的网表为新参考再做 LEC,形成『改一次、证一次』的链条,保证功能从⑥到流片始终未被悄悄改动。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(256×256 8-bit MAC 脉动阵列、24 MiB Unified Buffer、CISC 指令控制器、700MHz/~92 TOPS、weight-stationary、28nm/331mm² 为 v1 披露,作为被证明等价的对象;形式等价检查(LEC)、Formality/Conformal、配对/逻辑锥比对/反例向量、签核出口条件为通行 EDA 签核实践,文中命令片段与流程描述为示意,非 TPU v1 私有 LEC 脚本或结果披露)"
+}

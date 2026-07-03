@@ -1,0 +1,120 @@
+{
+ "secNum": "3.7",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 物理验证签核(DRC / LVS / antenna):把最终版图当纯几何送金标准检查器,逐条核对 foundry 设计规则、逐点核版图与网表等价、核刻蚀天线与电气规则——必须 100% 干净(违例修掉或 foundry 豁免)才算收版图、才被 28nm 产线接收",
+ "oneLine": "本案例落到「物理验证签核(DRC / LVS / antenna)」小节:TPU 的版图收敛完时序/功耗后,还要过最后一道硬体检——把整张版图当成『一堆多边形几何』,送签核级金标准检查器:DRC 逐条核它有没有违反 foundry 的设计规则(线宽/间距/密度/天线等),LVS 从版图反抽出器件与连接、逐点比对它是否真的等于签核网表(版图≡电路),antenna 核刻蚀工艺中悬空金属天线会不会击穿栅氧,ERC 核电源/衬底等电气规则;这一步是『能不能流片、产线收不收版图』的最终硬门槛:必须 100% 干净——每条违例要么真修掉(回 ⑧ECO 改版图),要么凭 foundry 批准的豁免单(waiver)放行,不存在『差不多就行』。对 TPU 这种 256×256=65,536 个 MAC、24 MiB UB、die ≤331mm² 的大芯片,版图巨大、规则海量,跑一轮全片 DRC/LVS 极耗时,但不全清,28nm 产线就不收这张版图、芯片造不出来。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 412\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"24\">物理验证签核:版图(GDSII 几何)送金标准 DRC/LVS/antenna/ERC 最终硬体检——必须 100% 干净才算收版图,不干净=产线不收=不能流片</text><g class=\"cs-part\" data-k=\"layout\" data-g=\"layout\"><rect class=\"cs-box\" x=\"24\" y=\"48\" width=\"170\" height=\"120\" rx=\"8\"/><text class=\"cs-t\" x=\"109\" y=\"74\">最终版图(GDSII)</text><text class=\"cs-sub\" x=\"109\" y=\"96\">256×256 阵列纯几何</text><text class=\"cs-sub\" x=\"109\" y=\"114\">24MiB UB / 累加器 / PDN</text><text class=\"cs-sub\" x=\"109\" y=\"132\">多层金属+过孔的多边形</text><text class=\"cs-sub\" x=\"109\" y=\"152\">28nm · die ≤331mm²</text></g><line class=\"cs-arr\" x1=\"194\" y1=\"108\" x2=\"252\" y2=\"80\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"194\" y1=\"108\" x2=\"252\" y2=\"140\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"194\" y1=\"108\" x2=\"252\" y2=\"200\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"drc\" data-g=\"drc\"><rect class=\"cs-box\" x=\"256\" y=\"50\" width=\"232\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"372\" y=\"74\">DRC 设计规则检查</text><text class=\"cs-sub\" x=\"372\" y=\"94\">间距/宽度/密度/天线…对 foundry runset</text></g><g class=\"cs-part\" data-k=\"lvs\" data-g=\"lvs\"><rect class=\"cs-box\" x=\"256\" y=\"116\" width=\"232\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"372\" y=\"140\">LVS 版图≡网表</text><text class=\"cs-sub\" x=\"372\" y=\"160\">从版图抽器件/连接,逐点比对原理图</text></g><g class=\"cs-part\" data-k=\"ant\" data-g=\"ant\"><rect class=\"cs-box\" x=\"256\" y=\"182\" width=\"232\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"372\" y=\"206\">antenna + ERC</text><text class=\"cs-sub\" x=\"372\" y=\"226\">刻蚀天线比 / 电气规则(衬底/电源)</text></g><line class=\"cs-arr\" x1=\"488\" y1=\"78\" x2=\"552\" y2=\"120\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"488\" y1=\"144\" x2=\"552\" y2=\"144\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"488\" y1=\"210\" x2=\"552\" y2=\"168\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"gate\" data-g=\"gate\"><rect class=\"cs-box\" x=\"556\" y=\"108\" width=\"140\" height=\"72\" rx=\"8\"/><text class=\"cs-t\" x=\"626\" y=\"136\">收版图闸门</text><text class=\"cs-sub\" x=\"626\" y=\"158\">三项全清 ✓</text><text class=\"cs-sub\" x=\"626\" y=\"174\">才放行</text></g><g class=\"cs-part\" data-k=\"clean\" data-g=\"clean\"><rect class=\"cs-box\" x=\"556\" y=\"232\" width=\"140\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"626\" y=\"258\">全清 ✓ → tape-out</text><text class=\"cs-sub\" x=\"626\" y=\"278\">交 GDSII 给 foundry</text></g><line class=\"cs-arr\" x1=\"626\" y1=\"180\" x2=\"626\" y2=\"230\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"viol\" data-g=\"viol\"><rect class=\"cs-box\" x=\"180\" y=\"288\" width=\"356\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"358\" y=\"314\">违例 ✗ → 修掉 或 走 foundry 豁免(waiver)</text><text class=\"cs-sub\" x=\"358\" y=\"336\">几何违例回 ⑧ECO 改版图;已知误报凭 foundry 批准的豁免单放行</text></g><line class=\"cs-arr\" x1=\"372\" y1=\"238\" x2=\"372\" y2=\"286\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"180,320 110,320 110,168 96,168\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"118\" y=\"372\">回灌:改完版图必须重跑全套 DRC/LVS/antenna,直到 0 违例(或全部有据豁免)——只要不干净,产线不收版图</text><text class=\"cs-note\" x=\"24\" y=\"394\">注:DRC/LVS/antenna/ERC、foundry runset/runset、豁免单为通行物理验证签核实践;TPU v1 不公开其规则集、违例数或签核报告,图为示意,借已知结构作被签核对象</text></svg>",
+ "legend": [
+  {
+   "k": "drc",
+   "name": "DRC(设计规则检查,核版图合不合工艺规矩)",
+   "desc": "签核第一关:把版图当纯几何,逐条核它有没有违反 foundry 给的设计规则集(design rule manual / runset)——最小线宽、最小间距(线与线、过孔与过孔)、金属密度上下限(太疏会塌、太密会过刻)、过孔/接触规则、天线规则、阱/注入间距、回填假图形(dummy fill)等成百上千条。任何一处不满足都是 DRC 违例,意味着这块几何在 28nm 工艺上做不出来或良率不可控。DRC 用的是 foundry 认证的金标准检查器+官方 runset,不是设计方自定;TPU 版图巨大,全片 DRC 是签核里最耗时的环节之一。这是通行物理验证签核实践,TPU v1 不公开其规则集或违例数。"
+  },
+  {
+   "k": "lvs",
+   "name": "LVS(版图 ≡ 网表,核画的电路对不对)",
+   "desc": "签核第二关,管『正确性』而非『可制造性』:从版图的几何里反向抽取(extraction)出真实的晶体管、电阻、电容和它们的连接关系,生成一张『版图网表』,再和签核用的原理图/门级网表逐器件、逐节点比对,确认两者拓扑完全等价——版图画的电路必须就是设计要的电路。LVS 能抓出短路(本不该连的两根线碰上了)、断路(该连的没连)、器件参数/数量对不上、电源地接错等致命错误。对 TPU 的 65,536 个 MAC 阵列+UB+累加器,LVS 要核对海量器件与连接,一处短路/断路就是废片。LVS 干净是收版图的硬条件。通行签核实践,TPU 不公开。"
+  },
+  {
+   "k": "ant",
+   "name": "antenna + ERC(刻蚀天线比 + 电气规则检查)",
+   "desc": "签核里两类专项硬体检:①antenna(天线效应)——芯片制造是逐层金属刻蚀的,某层金属在还没接到上层/没接到二极管泄放路径时,会像天线一样在等离子刻蚀中收集电荷,若这块悬空金属相对它所连栅极的面积比超标,积累的电荷会击穿薄栅氧、永久损坏晶体管;antenna 检查核每个栅的天线比是否在规则内,超标处要插泄放二极管或跳层(jumper)。②ERC(电气规则检查)——核电源/地连接、衬底/阱偏置、悬空节点等电气层面的规则。两者都属物理验证签核必过项,通行实践,TPU v1 不公开其天线/ERC 设置。"
+  },
+  {
+   "k": "gate",
+   "name": "收版图闸门(三项全清才放行)",
+   "desc": "物理验证签核的总闸门:DRC、LVS、antenna/ERC 三大类必须全部『干净』——0 违例,或所有残留违例都已有 foundry 批准的豁免单(waiver)——才算这张版图通过收尾、可以交付。这不是评分制而是通过制:不存在『90 分放行』,只要还有一条未修未豁免的 DRC/LVS/antenna 违例,版图就不干净,28nm 产线就不收。它是后端通往 tape-out 的最后一道门。这是通行签核流程,TPU 不公开其闸门记录。"
+  },
+  {
+   "k": "viol",
+   "name": "违例处理:修掉(回 ECO)或 foundry 豁免(waiver)",
+   "desc": "签核跑出违例后只有两条出路:①真修——把这条违例当成设计缺陷,回 ⑧ECO 阶段改版图(重摆/重连/插泄放二极管/补 dummy/挪间距),修完再重跑签核;②豁免(waiver)——某些『违例』其实是检查器对特殊结构(如 IP 黑盒、已知工艺允许的例外)的误报或可接受例外,经 foundry 评估批准后,凭一份正式豁免单连同理由归档放行。豁免不是设计方自己说了算,必须 foundry 认可。绝不允许的是『无视违例直接出片』。这是通行签核实践,TPU v1 不公开其违例或豁免记录。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "layout",
+    "drc"
+   ],
+   "cap": "① 跑 DRC:把收敛后的最终版图(256×256 阵列+24MiB UB+累加器+PDN 的纯几何)送金标准检查器,对 foundry 官方 runset 逐条核——线宽/间距/密度/过孔/天线规则等成百上千条,任何一处不满足都报违例"
+  },
+  {
+   "keys": [
+    "layout",
+    "lvs"
+   ],
+   "cap": "② 跑 LVS:从版图反抽出真实器件与连接生成版图网表,和签核网表逐器件逐节点比对,确认版图画的电路 ≡ 设计要的电路——抓短路/断路/器件错/电源地接错,对 65,536 个 MAC 的海量连接尤其要核净"
+  },
+  {
+   "keys": [
+    "layout",
+    "ant"
+   ],
+   "cap": "③ 跑 antenna + ERC:核每个栅的刻蚀天线比是否超标(悬空金属积电荷会击穿栅氧),超标处插泄放二极管/跳层;并核电源/衬底/悬空节点等电气规则——两类专项硬体检都要过"
+  },
+  {
+   "keys": [
+    "viol",
+    "layout"
+   ],
+   "cap": "④ 处理违例:每条违例要么回 ⑧ECO 真修版图(重摆/重连/插二极管/补 dummy),要么凭 foundry 批准的豁免单放行;改完版图必须重跑全套检查,绝不允许带未修未豁免的违例出片"
+  },
+  {
+   "keys": [
+    "gate",
+    "clean"
+   ],
+   "cap": "⑤ 过收版图闸门:DRC/LVS/antenna/ERC 三大类全部 0 违例(或全部有据豁免)才算干净、版图被收下——这是 28nm 产线接收、能否 tape-out 的最终硬门槛,全清✓后才把 GDSII 交给 foundry"
+  }
+ ],
+ "before": [
+  "<b>先备齐 foundry 的金标准签核套件</b>:DRC/LVS/antenna 不是设计方自定规则,而是用 foundry 认证、与产线对齐的签核级检查器+该工艺节点的官方规则文件——DRC runset(设计规则集)、LVS 比对规则与器件识别(layer map)、antenna 规则、ERC 规则。版本必须和将要流片的 28nm 工艺批次严格对应,用错版本=用错尺子。这是通行物理验证签核实践,TPU v1 不公开其规则集。",
+  "<b>钉死被签核的两份输入:最终版图 + 签核网表</b>:LVS 要拿『最终的、连 ECO 和 dummy fill 都已落地的版图(GDSII 几何)』去比对『经 LEC 确认与 RTL 等价的签核门级网表』——两端任一不是最终版,比对就没意义。要确认版图里所有手工 ECO、填充、IP 黑盒抽象、PDN 都已就位且冻结。",
+  "<b>定清违例的判据与豁免规则</b>:签核是通过制不是评分制——判据就是 DRC/LVS/antenna 各类违例计数必须为 0,或残留项全部有 foundry 批准的正式豁免单。要事先和 foundry 约定哪些结构(IP 黑盒、已知例外)可走豁免、豁免如何归档审批;绝不允许设计方自行『无视』违例。",
+  "<b>对大芯片预估签核工作量与分块策略</b>:TPU 这种 die ≤331mm²、含 65,536 个 MAC 的大版图,全片 DRC/LVS 跑一轮极耗内存与时间。通行做法是分层/分块(hierarchical)签核+先签核可复用单元再签核顶层,缩短迭代;但最终仍要做一次全片平坦(flat)或等效的全覆盖确认,不能只信分块结果。",
+  "<b>诚实标注边界</b>:DRC、LVS、antenna、ERC、foundry runset、豁免单(waiver)、分层签核都是通行物理验证签核 EDA 实践;TPU v1 不公开其规则集、违例数、豁免记录或任何签核报告。本案以 TPU 已知结构(256×256 脉动阵列、24 MiB UB、4 MiB 累加器、700MHz、28nm、die ≤331mm²、weight-stationary)作为被签核的对象来讲物理验证签核概念,所有判据/数字均为示意,未编造任何 TPU 私有签核数据。"
+ ],
+ "during": [
+  "<b>把版图当『纯几何』来检,与功能无关</b>:这一步签核器眼里没有『脉动阵列』『卷积』,只有多层金属、过孔、扩散区的多边形。DRC 只问这些几何合不合 28nm 工艺规则、LVS 只问这些几何抽出来的连接对不对、antenna 只问刻蚀时悬空金属会不会击穿栅氧——和芯片算得快不快、对不对完全是两码事(那是仿真/STA 的事)。",
+  "<b>LVS 干净是绝对前提:版图必须就是那张电路</b>:LVS 抓的是短路/断路/器件对不上/电源地接错这类致命错误——版图哪怕只有一处该连没连或不该连却碰上,造出来就是死片。所以 LVS 必须比对到完全 clean(器件全对、节点全对),不存在『差一两个无所谓』;对 TPU 的 65,536 个 MAC+UB+累加器的海量连接,要逐点核净。",
+  "<b>DRC 违例要分清『真错』与『可豁免例外』,但都不能放任</b>:DRC 会报出大量违例,有的是真做不出来的几何错(必修),有的是检查器对 IP 黑盒/特殊结构的误报或工艺允许的例外(可走 foundry 豁免)。判断要谨慎,但底线一致:每条违例都必须有归属——要么修、要么有正式豁免,不允许任何一条『悬着不管』。",
+  "<b>antenna 超标要靠插二极管/跳层修,不是改逻辑</b>(示意,通行实践):天线违例来自制造时悬空金属积电荷,修法是在违例栅附近插泄放二极管把电荷导走,或把长导线跳到上层金属(jumper)缩短单层天线面积——纯版图层面的修补,不动功能。修完要重核天线比是否落回规则内。",
+  "<b>每改一次版图,就要重跑全套签核</b>:为修 DRC 挪了间距可能碰坏 LVS 连接,为修天线插了二极管又可能引入新 DRC,为修 LVS 重连又可能违反间距——三类检查彼此耦合。所以任何 ECO 改动后都必须把 DRC/LVS/antenna 重跑一遍(至少受影响区域+最终全片确认),不能只看『这次改的那条好了』。",
+  "<b>铁律:不干净就不收版图——这是硬门槛,不是质量分</b>。物理验证签核是通过制:只要还剩一条未修未豁免的 DRC/LVS/antenna 违例,版图就不干净,28nm 产线就不接收,芯片造不出来。这里没有『差不多』『90% 干净先出片』的余地——必须 0 未决违例(残留项全部有据豁免)才放行 tape-out。"
+ ],
+ "result": [
+  {
+   "label": "DRC 判据",
+   "value": "对 foundry 28nm 官方 runset 逐条核,违例计数 = 0(或残留项全部有 foundry 批准豁免);线宽/间距/密度/天线等规则全满足(示意)"
+  },
+  {
+   "label": "LVS 判据",
+   "value": "版图反抽网表 ≡ 签核网表:器件全对、节点全对、无短路/断路/电源地接错;比对结果 100% clean,无未解释差异(示意)"
+  },
+  {
+   "label": "antenna / ERC 判据",
+   "value": "每个栅的刻蚀天线比 ≤ 规则上限(超标处已插泄放二极管/跳层);电源/衬底/悬空节点等电气规则全过(示意)"
+  },
+  {
+   "label": "违例处理记录",
+   "value": "每条违例有归属:真错已回 ⑧ECO 修掉并重核,可接受例外凭 foundry 正式豁免单归档;无任何『悬而未决』违例"
+  },
+  {
+   "label": "收版图闸门",
+   "value": "DRC/LVS/antenna/ERC 三大类全清✓(通过制,非评分制)——不干净=产线不收版图=不能流片,全清才放行"
+  },
+  {
+   "label": "签核产出",
+   "value": "一套干净的 DRC/LVS/antenna/ERC 签核报告 + 豁免清单,连同 GDSII 进 tape-out 交付包(报告内容为示意,非 TPU 公开)"
+  }
+ ],
+ "after": [
+  "<b>违例回 ⑧ECO 改版图、再回灌全套签核</b>:每条真违例都当设计缺陷处理——回 ECO 阶段在版图上重摆/重连/插泄放二极管/补 dummy fill/挪间距,改完必须把 DRC/LVS/antenna 重跑一遍(三类耦合,改一处可能伤另一处),直到这一轮不再产生新违例,签核才往前推进。",
+  "<b>残留违例走 foundry 豁免审批并归档</b>:确属检查器误报或工艺允许例外的违例,整理成豁免单(含违例位置、理由、影响评估)交 foundry 评审,获批后连同正式豁免文件归档随版图一起交付;未获批的豁免一律按真违例修——豁免权在 foundry 不在设计方。",
+  "<b>把物理验证签核结论汇入 tape-out 总闸门</b>:DRC/LVS/antenna/ERC 全清(或全豁免)只是 tape-out 闸门的一项,要和时序签核(STA/MMMC/OCV)、功耗/IR-EM 签核(RedHawk/Voltus)、形式验证(LEC)、DFM 等其它维度的签核结论一起汇入收尾闸门,全维度都绿才放行——任一维度红都不能出片。",
+  "<b>全清后冻结版图、生成 tape-out 交付包</b>:三大类签核全部干净(残留项全部有据豁免)后,冻结最终 GDSII,连同签核报告、豁免清单、工艺/掩膜信息打包成 tape-out 交付件交给 foundry——这是后端把 TPU 版图『收尾交出去』的终点,过了这道门 28nm 产线才开始做掩膜与流片。",
+  "<b>诚实记账:这里所有判据/数字为示意</b>:DRC/LVS/antenna/ERC 与豁免流程是通行物理验证签核实践,本案以 TPU 已知结构(256×256 阵列、24 MiB UB、28nm、die ≤331mm²)作被签核对象;TPU v1 从不公开其规则集、违例数、豁免记录或签核报告,文中违例为 0、天线比达标等均为示意判据,非 TPU 私有签核数据。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(256×256 8-bit MAC 脉动阵列、24 MiB Unified Buffer、4 MiB 累加器、700MHz、28nm、die ≤331mm²、weight-stationary 为该文披露的已知结构,作为被签核对象;DRC、LVS、antenna、ERC、foundry runset、豁免单与分层签核为通行物理验证签核 EDA 实践,图与所有判据/违例数/天线比/豁免均为示意,非 TPU v1 公开的规则集、签核报告或违例记录)"
+}

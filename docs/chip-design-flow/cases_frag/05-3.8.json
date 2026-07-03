@@ -1,0 +1,116 @@
+{
+ "secNum": "3.8",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 跨时钟域的 RTL:PCIe 域、核心阵列域、DDR3 域之间怎么安全传信号",
+ "oneLine": "TPU 主机经 PCIe 发指令(PCIe 域)、片上 256×256 阵列跑 700 MHz(核心域)、片外 DDR3 又是另一拍(存储域)——信号从一个时钟域进另一个时钟域,裸接就会撞上亚稳态;本案例讲「单比特用双触发器同步器、多比特用异步 FIFO/握手」这套跨时钟域 RTL 写法,以及为什么它是「仿真全过、流片后随机崩」的重灾区。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">裸信号跨时钟域 = 亚稳态:单比特用双触发器同步器,多比特用异步 FIFO</text><line class=\"cs-arr\" x1=\"290\" y1=\"70\" x2=\"290\" y2=\"372\" stroke-dasharray=\"6 5\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"200\" y=\"64\">PCIe 域 clk_pcie</text><text class=\"cs-note\" x=\"360\" y=\"64\">核心阵列域 clk_core 700MHz</text><g class=\"cs-part\" data-k=\"src\" data-g=\"src\"><rect class=\"cs-box\" x=\"40\" y=\"92\" width=\"150\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"115\" y=\"116\">源域寄存器</text><text class=\"cs-sub\" x=\"115\" y=\"134\">always_ff @clk_pcie</text></g><line class=\"cs-arr\" x1=\"190\" y1=\"121\" x2=\"346\" y2=\"121\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"200\" y=\"112\">单比特控制位</text><g class=\"cs-part\" data-k=\"ff1\" data-g=\"sync\"><rect class=\"cs-box\" x=\"350\" y=\"92\" width=\"118\" height=\"58\" rx=\"8\"/><path d=\"M350,150 L362,150 L350,138 Z\" fill=\"#8b5cf6\"/><text class=\"cs-t\" x=\"409\" y=\"114\">第一级 FF</text><text class=\"cs-sub\" x=\"409\" y=\"132\">吸收亚稳态</text></g><line class=\"cs-arr\" x1=\"468\" y1=\"121\" x2=\"512\" y2=\"121\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"ff2\" data-g=\"sync\"><rect class=\"cs-box\" x=\"516\" y=\"92\" width=\"118\" height=\"58\" rx=\"8\"/><path d=\"M516,150 L528,150 L516,138 Z\" fill=\"#8b5cf6\"/><text class=\"cs-t\" x=\"575\" y=\"114\">第二级 FF</text><text class=\"cs-sub\" x=\"575\" y=\"132\">输出已稳定</text></g><line class=\"cs-arr\" x1=\"634\" y1=\"121\" x2=\"690\" y2=\"121\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"638\" y=\"112\">入核心逻辑</text><text class=\"cs-note\" x=\"350\" y=\"174\">两级串联,均由 clk_core 打拍 → 第二级几乎不再亚稳</text><g class=\"cs-part\" data-k=\"meta\" data-g=\"meta\"><rect class=\"cs-box\" x=\"40\" y=\"210\" width=\"230\" height=\"70\" rx=\"8\"/><text class=\"cs-t\" x=\"155\" y=\"236\">裸信号直连(错误)</text><text class=\"cs-sub\" x=\"155\" y=\"256\">亚稳态:0/1 之间悬停</text><text class=\"cs-sub\" x=\"155\" y=\"272\">仿真过 · 流片后随机崩</text></g><g class=\"cs-part\" data-k=\"fifo\" data-g=\"fifo\"><rect class=\"cs-box\" x=\"350\" y=\"210\" width=\"300\" height=\"70\" rx=\"8\"/><text class=\"cs-t\" x=\"500\" y=\"236\">多比特跨域:异步 FIFO / 握手</text><text class=\"cs-sub\" x=\"500\" y=\"256\">双端口 RAM + 格雷码读/写指针</text><text class=\"cs-sub\" x=\"500\" y=\"272\">指针过双触发器同步,数据整组对齐</text></g><line class=\"cs-arr\" x1=\"155\" y1=\"150\" x2=\"155\" y2=\"206\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"lint\" data-g=\"lint\"><rect class=\"cs-box\" x=\"40\" y=\"312\" width=\"610\" height=\"50\" rx=\"8\"/><text class=\"cs-t\" x=\"345\" y=\"335\">CDC lint:扫描所有跨域路径,确认每条都过同步器/FIFO,无裸信号</text><text class=\"cs-sub\" x=\"345\" y=\"352\">功能仿真查不出亚稳态 → CDC 必须靠静态结构检查兜底</text></g></svg>",
+ "legend": [
+  {
+   "k": "src",
+   "name": "源域寄存器(发送侧)",
+   "desc": "在源时钟域(如 PCIe 域 clk_pcie)里打出来的信号。它相对目的域时钟是「异步」的——跳变可能正好落在目的域触发器的建立/保持窗口里,这是一切跨域问题的源头。"
+  },
+  {
+   "k": "sync",
+   "name": "双触发器同步器(单比特)",
+   "desc": "两个由目的域时钟(clk_core)驱动的触发器串联。第一级专门用来「吸收」亚稳态——它可能短暂悬停在 0/1 之间,但留一个完整时钟周期让它衰减;第二级几乎总是采到稳定值再送进核心逻辑。这是单比特跨域的标准且最小写法。"
+  },
+  {
+   "k": "meta",
+   "name": "亚稳态(裸信号直连的后果)",
+   "desc": "异步信号不过同步器直接喂给目的域逻辑,触发器输出可能卡在 0 与 1 之间一段不确定时间,下游各路径采到的值不一致 → 逻辑错乱。功能仿真按理想 0/1 跑,根本看不见它,所以「仿真全过、流片后偶发随机崩」。"
+  },
+  {
+   "k": "fifo",
+   "name": "异步 FIFO / 握手(多比特)",
+   "desc": "多比特总线绝不能逐位各过一个同步器——各位到达时刻会错开,拼出从未存在过的中间值。正确做法:用双端口 RAM 存数据,读/写指针用格雷码(相邻只变 1 位)再过双触发器同步,保证整组数据原子地、对齐地跨域。"
+  },
+  {
+   "k": "lint",
+   "name": "CDC lint(静态检查)",
+   "desc": "由于功能仿真查不出亚稳态,必须用专门的 CDC lint 工具静态扫描:列出每一条跨时钟域路径,确认它都经过了同步器或异步 FIFO,没有任何裸信号直接穿越域边界。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "src",
+    "ff1"
+   ],
+   "cap": "① 源域(PCIe 域)寄存器打出一个单比特控制位,送往核心域;它对核心域时钟是异步的,跳变随时可能撞进核心域触发器的采样窗口"
+  },
+  {
+   "keys": [
+    "ff1",
+    "ff2",
+    "sync"
+   ],
+   "cap": "② 进核心域先过双触发器同步器:第一级 FF 可能短暂亚稳,留一拍衰减;第二级 FF 采到的几乎总是干净的 0/1,再进核心阵列逻辑"
+  },
+  {
+   "keys": [
+    "meta"
+   ],
+   "cap": "③ 反例:若把异步信号裸接进核心逻辑,触发器会亚稳——悬停在 0/1 之间,下游各路径采值不一致;功能仿真看不见,流片后随机崩"
+  },
+  {
+   "keys": [
+    "fifo"
+   ],
+   "cap": "④ 要跨域的是多比特总线(如一条主机指令、一段地址)时,不能逐位同步,改用异步 FIFO/握手:数据进双端口 RAM,格雷码指针过同步器,整组对齐跨域"
+  },
+  {
+   "keys": [
+    "lint"
+   ],
+   "cap": "⑤ 写完跑 CDC lint:静态扫描每一条跨域路径,确认都过了同步器或 FIFO、无裸信号——这是仿真兜不住、必须靠结构检查把关的一步"
+  }
+ ],
+ "before": [
+  "<b>先把时钟域数清楚、画出域边界</b>:TPU 至少涉及主机 PCIe 接口域、片上 700 MHz 核心阵列域、片外 DDR3 存储接口域。动手前要明确有哪几个异步时钟、哪些信号要在它们之间传——每一条跨域信号都是潜在的亚稳态点。",
+  "<b>给每条跨域信号定「单比特还是多比特」</b>:单比特(一个 valid/ready、一个 enable)用双触发器同步器;多比特(地址、数据、整条指令字)必须走异步 FIFO 或带握手的整组传递。这个分类决定了写哪种 RTL 结构,必须在编码前就定死。",
+  "<b>定复位与同步器风格规范</b>:同步器用几级(通常 2 级,亚稳态裕量不够时 3 级)、复位是同步还是异步、命名约定(如 *_sync2 后缀)要统一,便于后续 CDC lint 按规则识别。这属于团队 RTL 编码规范,先约定好。",
+  "<b>明确「这是仿真兜不住的一类问题」</b>:亚稳态在理想 0/1 的功能仿真里不可见,门级仿真也只能在加了随机延迟/统计模型时部分体现。所以验证策略从一开始就要把 CDC 静态检查(lint)列为必过项,而不是指望仿真发现。"
+ ],
+ "during": [
+  "<b>单比特:老老实实写两级同步器</b>:在目的域写两个串联触发器,都用目的域时钟打拍:reg a_sync1, a_sync2; always_ff @(posedge clk_core) begin a_sync1 <= a_async; a_sync2 <= a_sync1; end(示意写法)。下游只准用 a_sync2,严禁碰 a_sync1——第一级是专门用来「挨亚稳态」的。",
+  "<b>铁律:多比特总线绝不逐位同步</b>:把一条 N 位总线拆成 N 个双触发器各自同步,是经典致命错误——各位的亚稳态衰减时刻不同,某拍会拼出一个源端从未出现过的「撕裂值」。多比特一律走异步 FIFO,或「数据先稳住、再用一个同步过来的 valid 选通整组」的握手。",
+  "<b>异步 FIFO 的关键是格雷码指针</b>:读/写指针要跨域比较空满,指针本身是多比特。用格雷码编码使指针每次只变 1 位,这样它过双触发器同步时即使采在跳变沿,也只会读到「旧值或新值」二者之一,不会读到错误的中间组合——这是异步 FIFO 能正确工作的核心技巧。",
+  "<b>取舍:延迟换安全,不要图省事</b>:同步器天然引入 1~2 拍延迟、FIFO 引入更多——这是为「不撞亚稳态」必须付的代价。任何「这条信号变化慢、应该来得及,就裸接吧」的侥幸都是埋雷;跨域路径一律按最坏情况上同步器/FIFO。",
+  "<b>把同步器隔离成独立模块、别让综合优化掉</b>:综合工具可能想合并/优化两级触发器,反而破坏亚稳态裕量。通行做法是把同步器封成专用单元(或加 don't-touch / 综合属性),并在约束里对这条跨域路径设 false path / max delay,让时序分析不去强对它收敛。",
+  "<b>诚实边界:TPU 的具体 CDC 实现未公开</b>:TPU v1 的多时钟域结构(PCIe、核心、DDR3)是其架构的客观需要,但「用几级同步器、FIFO 多深、走什么握手协议」属于未披露的工程细节。以上为这类多时钟域 ASIC 的通行 RTL 实践,用来承载 CDC 概念,非 TPU 专属披露。"
+ ],
+ "result": [
+  {
+   "label": "单比特跨域写法",
+   "value": "双触发器同步器(目的域时钟打两拍)"
+  },
+  {
+   "label": "同步器示意 HDL",
+   "value": "always_ff @(posedge clk_core): s1<=async; s2<=s1;(示意)"
+  },
+  {
+   "label": "多比特跨域写法",
+   "value": "异步 FIFO / 握手,绝不逐位同步"
+  },
+  {
+   "label": "FIFO 指针编码",
+   "value": "格雷码(相邻仅变 1 位)再过同步器"
+  },
+  {
+   "label": "涉及的时钟域",
+   "value": "PCIe 域 · 核心阵列域(700 MHz) · DDR3 存储域"
+  },
+  {
+   "label": "把关手段",
+   "value": "CDC lint 静态扫描(仿真兜不住)"
+  }
+ ],
+ "after": [
+  "<b>跑 CDC lint 静态检查</b>:用专门工具扫出所有跨时钟域路径,逐条确认都过了同步器或异步 FIFO、无裸信号穿越;并检查同步器是否被错误共享、多比特是否误用了单比特同步——这是 CDC 的主把关,优先级高于仿真。",
+  "<b>做带亚稳态注入的仿真</b>:在跨域触发器输出上注入随机延迟/亚稳态模型(metastability injection),让功能仿真也能暴露下游对亚稳态不鲁棒的逻辑;普通理想仿真过了不代表安全。",
+  "<b>检查时序约束与综合属性</b>:确认每条跨域路径已设 false path / max delay,同步器单元被标了 don't-touch 未被优化合并,综合后两级触发器仍然保留——CDC 安全不能被时序收敛或综合优化破坏。",
+  "<b>交验证团队复核多时钟域场景</b>:把复位顺序、时钟启停、跨域 valid/ready 握手等场景列成验证点交给验证;CDC 是「流片后才偶发」的高危项,必须在 RTL 阶段靠结构 + 工具 + 评审三重把关,而不是留到硅后调试。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(主机经 PCIe 发指令、700 MHz 核心阵列、片外 DDR3 等多时钟域结构为公开事实;双触发器同步器、异步 FIFO、CDC lint 等为通行 RTL 实践,TPU 未公开其具体 CDC 实现细节)"
+}

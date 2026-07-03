@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>芯片设计完整流程</title>
+<script src="assets/marked.min.js"></script>
+<script src="content.js"></script>
+<script src="cases.js"></script>
+<script src="secmaps.js"></script>
+<style>
+  :root{
+    --bg:#f5f7fb;
+    --surface:#ffffff;
+    --ink:#1c2330;
+    --ink-soft:#5a6473;
+    --ink-faint:#9aa3b2;
+    --line:#e6e9ef;
+    --line-soft:#eef1f5;
+    --brand:#2563eb;
+    --brand-soft:#eaf1ff;
+    --code-bg:#f4f6f9;
+    --p1:#3b82f6; --p1bg:#eaf1ff;
+    --p2:#8b5cf6; --p2bg:#f1ecfe;
+    --p3:#0ea5a4; --p3bg:#e3f7f6;
+    --p4:#f59e0b; --p4bg:#fdf2dc;
+    --p5:#ef4444; --p5bg:#fdeaea;
+    --topbar-h:58px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.7;font-size:15.5px;-webkit-font-smoothing:antialiased;
+  }
+  /* 柔和极光背景 */
+  body::before{
+    content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background:
+      radial-gradient(620px 420px at 12% -4%, rgba(59,130,246,.10), transparent 60%),
+      radial-gradient(680px 460px at 92% 2%, rgba(139,92,246,.10), transparent 60%),
+      radial-gradient(720px 520px at 70% 105%, rgba(14,165,164,.08), transparent 60%);
+  }
+  a{color:var(--brand);text-decoration:none;}
+
+  /* ---------- 顶栏 ---------- */
+  .topbar{
+    position:sticky;top:0;z-index:50;height:var(--topbar-h);
+    background:rgba(255,255,255,.82);backdrop-filter:saturate(180%) blur(12px);
+    border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;padding:0 18px;
+  }
+  .brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:15px;white-space:nowrap;cursor:pointer;color:var(--ink);}
+  .brand .dot{width:13px;height:13px;border-radius:4px;background:linear-gradient(135deg,var(--p1),var(--p2),var(--p3));background-size:200% 200%;animation:dotShift 6s ease infinite;}
+  @keyframes dotShift{0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;}}
+  .nav{display:flex;align-items:center;gap:3px;overflow-x:auto;flex:1;scrollbar-width:thin;}
+  .nav::-webkit-scrollbar{height:5px;}
+  .nav::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px;}
+  .chip{display:inline-flex;align-items:center;gap:5px;padding:6px 10px;border-radius:8px;white-space:nowrap;
+    font-size:13px;color:var(--ink-soft);cursor:pointer;border:1px solid transparent;transition:all .15s;}
+  .chip:hover{background:var(--line-soft);color:var(--ink);transform:translateY(-1px);}
+  .chip .n{font-size:13px;opacity:.8;}
+  .chip.active{background:var(--brand-soft);color:var(--brand);border-color:#d3e2ff;font-weight:600;}
+  .chip.disabled{color:var(--ink-faint);cursor:not-allowed;}
+  .chip.disabled:hover{background:transparent;color:var(--ink-faint);transform:none;}
+  .chip.disabled .n{opacity:.5;}
+
+  /* 阅读进度条 */
+  .readbar{position:fixed;top:var(--topbar-h);left:0;height:3px;width:0;z-index:49;
+    background:linear-gradient(90deg,var(--p1),var(--p2),var(--p3));transition:width .08s linear;opacity:0;}
+  .readbar.show{opacity:1;}
+
+  /* ---------- 布局 ---------- */
+  .layout{display:grid;grid-template-columns:272px minmax(0,1fr);max-width:1760px;margin:0 auto;padding:0 24px;}
+  .toc{position:sticky;top:var(--topbar-h);align-self:start;height:calc(100vh - var(--topbar-h));
+    overflow-y:auto;padding:26px 14px 60px 22px;border-right:1px solid var(--line);}
+  .toc-title{font-size:11px;font-weight:700;letter-spacing:.09em;color:var(--ink-faint);text-transform:uppercase;margin-bottom:12px;}
+  .toc a{display:block;color:var(--ink-soft);font-size:13.5px;padding:5px 10px;border-radius:7px;margin:1px 0;
+    border-left:2px solid transparent;line-height:1.45;transition:all .13s;}
+  .toc a:hover{background:var(--line-soft);color:var(--ink);}
+  .toc a.h3{padding-left:22px;font-size:12.8px;color:var(--ink-faint);}
+  .toc a.active{color:var(--brand);background:var(--brand-soft);font-weight:600;border-left-color:var(--brand);transform:translateX(2px);}
+  .toc .empty{color:var(--ink-faint);font-size:13px;padding:0 10px;}
+  .main{min-width:0;padding:34px 46px 120px;}
+
+  /* ---------- 文档排版 ---------- */
+  .doc{max-width:1180px;margin:0 auto;animation:fadeUp .4s ease both;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+  .doc h1{font-size:27px;line-height:1.35;margin:.2em 0 .6em;font-weight:750;letter-spacing:-.01em;}
+  .doc h2{font-size:21px;margin:2em 0 .7em;padding-top:.5em;font-weight:700;border-top:1px solid var(--line-soft);scroll-margin-top:74px;}
+  .doc h2:first-of-type{border-top:none;}
+  .doc h3{font-size:16.5px;margin:1.5em 0 .5em;font-weight:700;color:#2a3342;scroll-margin-top:74px;}
+  .doc h4{font-size:15px;margin:1.2em 0 .4em;font-weight:700;color:var(--ink-soft);}
+  .doc p{margin:.7em 0;}
+  .doc ul,.doc ol{padding-left:1.4em;margin:.6em 0;}
+  .doc li{margin:.32em 0;}
+  .doc li::marker{color:var(--ink-faint);}
+  .doc strong{color:#101725;font-weight:700;}
+  .doc blockquote{margin:1.1em 0;padding:.6em 1.1em;background:var(--brand-soft);border-left:3px solid var(--brand);
+    border-radius:0 8px 8px 0;color:#243043;}
+  .doc blockquote p{margin:.3em 0;}
+  .doc code{background:var(--code-bg);padding:.12em .42em;border-radius:5px;
+    font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:.88em;color:#b3406b;}
+  .doc pre{background:#f4f6f9;border:1px solid var(--line);padding:14px 16px;border-radius:10px;overflow-x:auto;margin:1em 0;line-height:1.55;}
+  .doc pre code{background:none;padding:0;color:#2a3342;font-size:13px;}
+  .doc table{border-collapse:collapse;width:100%;margin:1.1em 0;font-size:14px;display:block;overflow-x:auto;}
+  .doc th,.doc td{border:1px solid var(--line);padding:8px 12px;text-align:left;vertical-align:top;}
+  .doc th{background:var(--line-soft);font-weight:700;}
+  .doc tr:nth-child(even) td{background:#fafbfc;}
+  .doc hr{border:none;border-top:1px solid var(--line);margin:2em 0;}
+  .doc-foot{margin-top:50px;padding-top:22px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:14px;}
+  .foot-btn{display:inline-flex;flex-direction:column;gap:2px;padding:12px 18px;border:1px solid var(--line);
+    border-radius:11px;background:var(--surface);min-width:160px;cursor:pointer;transition:all .15s;}
+  .foot-btn:hover{border-color:var(--brand);box-shadow:0 6px 18px rgba(37,99,235,.10);transform:translateY(-2px);}
+  .foot-btn .lbl{font-size:11px;color:var(--ink-faint);}
+  .foot-btn .ttl{font-size:14.5px;font-weight:650;color:var(--ink);}
+  .foot-btn.next{text-align:right;align-items:flex-end;margin-left:auto;}
+  .foot-btn.disabled{opacity:.45;cursor:not-allowed;}
+  .foot-btn.disabled:hover{border-color:var(--line);box-shadow:none;transform:none;}
+
+  /* ---------- 首页 ---------- */
+  .hero{display:flex;align-items:center;gap:30px;flex-wrap:wrap;margin-bottom:12px;}
+  .hero-text{flex:1;min-width:300px;}
+  .hero h1{font-size:36px;font-weight:800;letter-spacing:-.02em;margin:.1em 0 .3em;
+    background:linear-gradient(100deg,#1c2330 30%,#3b82f6 55%,#8b5cf6 75%,#1c2330 95%);
+    background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:sheen 8s ease infinite;}
+  @keyframes sheen{0%,100%{background-position:0% 0;}50%{background-position:100% 0;}}
+  .hero p{font-size:16px;color:var(--ink-soft);max-width:720px;margin:.3em 0;}
+  .hero .sub{font-size:14px;color:var(--ink-faint);}
+
+  /* 进度环 */
+  .ring-wrap{display:flex;flex-direction:column;align-items:center;gap:6px;}
+  .ring{position:relative;width:118px;height:118px;}
+  .ring svg{transform:rotate(-90deg);}
+  .ring .track{fill:none;stroke:var(--line);stroke-width:9;}
+  .ring .fill{fill:none;stroke:url(#rg);stroke-width:9;stroke-linecap:round;transition:stroke-dashoffset 1.1s cubic-bezier(.2,.8,.2,1);}
+  .ring .ctr{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .ring .ctr b{font-size:27px;font-weight:800;color:var(--ink);line-height:1;}
+  .ring .ctr span{font-size:11px;color:var(--ink-faint);margin-top:3px;}
+  .ring-cap{font-size:12px;color:var(--ink-faint);}
+
+  /* 互动流程图 */
+  .flowmap-wrap{margin:26px 0 6px;}
+  .flowmap{position:relative;display:flex;justify-content:space-between;padding:42px 8px 8px;}
+  .flow-track{position:absolute;height:3px;background:var(--line);border-radius:3px;top:60px;}
+  .flow-fill{position:absolute;height:3px;border-radius:3px;top:60px;
+    background:linear-gradient(90deg,var(--p1),var(--p2),var(--p3));background-size:200% 100%;
+    animation:flow 2.4s linear infinite;box-shadow:0 0 10px rgba(59,130,246,.4);}
+  @keyframes flow{0%{background-position:0% 0;}100%{background-position:200% 0;}}
+  .flow-node{flex:1;display:flex;flex-direction:column;align-items:center;position:relative;z-index:1;}
+  .node-dot{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:15px;background:var(--surface);border:2px solid var(--line);color:var(--ink-faint);
+    transition:transform .18s,box-shadow .18s;cursor:default;}
+  .flow-node.ready .node-dot{color:#fff;border-color:transparent;background:linear-gradient(135deg,var(--accent),var(--accent2,var(--accent)));
+    box-shadow:0 4px 14px var(--glow);cursor:pointer;}
+  .flow-node.ready:hover .node-dot{transform:translateY(-4px) scale(1.12);box-shadow:0 9px 22px var(--glow);}
+  .flow-node.locked .node-dot{border-style:dashed;}
+  .flow-node.nextup .node-dot{animation:pulse 1.8s ease-in-out infinite;border-color:var(--accent);color:var(--accent);}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 var(--glow);}50%{box-shadow:0 0 0 7px transparent;}}
+  .node-label{margin-top:9px;font-size:11.5px;color:var(--ink-soft);text-align:center;max-width:74px;line-height:1.3;}
+  .flow-node.ready .node-label{color:var(--ink);font-weight:600;}
+  .node-pop{position:absolute;top:78px;left:50%;transform:translateX(-50%) translateY(6px);
+    width:208px;background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:11px 13px;
+    box-shadow:0 12px 30px rgba(20,30,50,.13);opacity:0;visibility:hidden;transition:all .16s;z-index:5;pointer-events:none;}
+  .node-pop::before{content:"";position:absolute;top:-6px;left:50%;transform:translateX(-50%) rotate(45deg);
+    width:10px;height:10px;background:var(--surface);border-left:1px solid var(--line);border-top:1px solid var(--line);}
+  .flow-node:hover .node-pop{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);}
+  .node-pop .pt{font-size:13px;font-weight:700;margin-bottom:4px;color:var(--ink);}
+  .node-pop .pd{font-size:12px;color:var(--ink-soft);line-height:1.5;}
+
+  /* 阶段卡片 */
+  .phase{margin-top:34px;}
+  .phase-head{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+  .phase-tag{font-size:12px;font-weight:700;padding:3px 11px;border-radius:7px;letter-spacing:.02em;}
+  .phase-line{flex:1;height:1px;background:var(--line);}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(228px,1fr));gap:14px;}
+  .card{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:14px;
+    padding:16px 16px 15px;cursor:pointer;transition:transform .16s,box-shadow .16s,border-color .16s;overflow:hidden;}
+  .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent,var(--brand));transform:scaleY(.55);transition:transform .16s;}
+  .card:hover::before{transform:scaleY(1);}
+  .card:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(20,30,50,.10);border-color:var(--accent,var(--brand));}
+  .card.locked{cursor:not-allowed;opacity:.7;}
+  .card.locked:hover{transform:none;box-shadow:none;border-color:var(--line);}
+  .card.locked::before{opacity:.4;}
+  .card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;}
+  .card-num{font-size:23px;font-weight:800;color:var(--accent,var(--brand));line-height:1;}
+  .badge{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:6px;}
+  .badge.ready{background:var(--p3bg);color:var(--p3);}
+  .badge.soon{background:var(--line-soft);color:var(--ink-faint);}
+  .card h3{font-size:16px;margin:0 0 6px;font-weight:700;color:var(--ink);}
+  .card p{font-size:13px;color:var(--ink-soft);margin:0;line-height:1.55;}
+
+  /* 滚动揭示 */
+  .reveal{opacity:0;transform:translateY(16px);transition:opacity .55s ease,transform .55s ease;}
+  .reveal.in{opacity:1;transform:none;}
+
+  /* 快捷键提示 */
+  .kbd-hint{position:fixed;bottom:16px;right:18px;font-size:12px;color:var(--ink-faint);
+    background:rgba(255,255,255,.8);border:1px solid var(--line);border-radius:8px;padding:6px 10px;
+    backdrop-filter:blur(6px);z-index:40;opacity:0;transition:opacity .3s;}
+  .kbd-hint.show{opacity:1;}
+  .kbd-hint kbd{background:var(--line-soft);border:1px solid var(--line);border-radius:4px;padding:1px 6px;font-size:11px;font-family:inherit;margin:0 1px;}
+
+  /* ========== 文档页:可视化增强 ========== */
+  /* 文档 hero */
+  .doc-hero{position:relative;border:1px solid var(--line);border-radius:18px;
+    padding:22px 24px 18px;margin:0 0 14px;overflow:hidden;
+    background:linear-gradient(120deg,var(--accentBg),#ffffff 72%);}
+  .doc-hero::after{content:"";position:absolute;right:-40px;top:-40px;width:160px;height:160px;border-radius:50%;
+    background:radial-gradient(circle,var(--glow),transparent 70%);opacity:.7;}
+  .dh-top{display:flex;align-items:center;gap:16px;position:relative;z-index:1;}
+  .dh-badge{width:54px;height:54px;border-radius:15px;display:grid;place-items:center;font-size:26px;font-weight:800;
+    color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 7px 18px var(--glow);flex:none;}
+  .dh-phase{font-size:12px;font-weight:700;color:var(--accent);letter-spacing:.03em;}
+  .dh-title{font-size:25px;font-weight:800;margin:3px 0 0;letter-spacing:-.01em;}
+  .dh-meta{display:flex;gap:16px;margin-top:13px;font-size:12.5px;color:var(--ink-soft);position:relative;z-index:1;}
+  .dh-stepper{display:flex;gap:5px;margin-top:15px;flex-wrap:wrap;position:relative;z-index:1;}
+  .dh-step{width:22px;height:8px;border-radius:5px;background:var(--line);transition:transform .15s;}
+  .dh-step.avail{cursor:pointer;}
+  .dh-step.avail:hover{transform:scaleY(1.5);}
+  .dh-step.cur{width:36px;box-shadow:0 0 0 3px var(--accentBg);}
+
+  /* 章节分块 + 标题序号片 */
+  .doc-lead{margin:0;}
+  .doc-lead hr{display:none;}
+  .doc blockquote.series-nav{display:none;}
+  .doc-section{margin-bottom:4px;}
+  .sec-chip{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:9px;
+    font-size:15px;margin-right:10px;background:var(--accentBg,#eef1f5);vertical-align:middle;line-height:1;
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,.04);}
+  .doc-section h3 .sec-chip{width:24px;height:24px;font-size:13px;border-radius:7px;margin-right:8px;}
+
+  /* callout 引用 */
+  .doc blockquote{position:relative;padding-left:2.7em;}
+  .doc blockquote::before{content:"💡";position:absolute;left:.85em;top:.5em;font-size:1.05em;}
+
+  /* 代码块 / 示意图 + 复制 */
+  .doc pre{position:relative;}
+  .doc pre.diagram{background:linear-gradient(135deg,#f3f7ff,#f7f4ff);border:1px dashed #c7d3ea;}
+  .doc pre.diagram::before{content:"流程示意";position:absolute;top:7px;left:12px;font-size:10px;
+    letter-spacing:.08em;color:var(--ink-faint);font-family:inherit;}
+  .doc pre.diagram code{display:block;padding-top:14px;text-align:center;}
+  .copy-btn{position:absolute;top:7px;right:8px;font-size:11px;color:var(--ink-soft);background:rgba(255,255,255,.85);
+    border:1px solid var(--line);border-radius:6px;padding:3px 9px;cursor:pointer;font-family:inherit;transition:all .13s;opacity:0;}
+  .doc pre:hover .copy-btn{opacity:1;}
+  .copy-btn:hover{color:var(--brand);border-color:var(--brand);}
+
+  /* 表格行悬停 */
+  .doc tbody tr{transition:background .12s;}
+  .doc tbody tr:hover td{background:#eef4ff !important;}
+
+  /* 「致命的坑」章节:列表变警示卡 */
+  .warn-section ol{list-style:none;padding-left:0;}
+  .warn-section ol>li{position:relative;background:var(--p5bg);border:1px solid #f7d4d4;border-radius:10px;
+    padding:10px 14px 10px 42px;margin:9px 0;}
+  .warn-section ol>li::before{content:"⚠️";position:absolute;left:13px;top:9px;font-size:14px;}
+  .warn-section ol>li strong{color:#c0392b;}
+
+  /* 正文列表 → 整组打包成一个小块(粒度:每个列表一块,而非每条一块) */
+  .doc-section:not(.warn-section) > ul,
+  .doc-section:not(.warn-section) > ol{
+    background:#fff;border:1px solid var(--line);border-left:3px solid var(--accent,var(--brand));
+    border-radius:12px;padding:13px 18px 13px 34px;margin:1.05em 0;
+    transition:box-shadow .15s,border-color .15s;}
+  .doc-section:not(.warn-section) > ul:hover,
+  .doc-section:not(.warn-section) > ol:hover{
+    box-shadow:0 4px 18px rgba(20,30,50,.07);border-color:var(--accent,var(--brand));}
+  .doc-section:not(.warn-section) > ul > li,
+  .doc-section:not(.warn-section) > ol > li{margin:.42em 0;padding-left:3px;}
+  .doc-section:not(.warn-section) > ul > li::marker,
+  .doc-section:not(.warn-section) > ol > li::marker{color:var(--accent,var(--brand));font-weight:700;}
+  /* 块内子列表:普通缩进 */
+  .doc-section > ul > li ul,.doc-section > ul > li ol,
+  .doc-section > ol > li ul,.doc-section > ol > li ol{margin:.4em 0 .15em;padding-left:1.3em;}
+
+  /* ========== 真实芯片案例(TPU)组件 ========== */
+  .case{margin:20px 0 10px;border:1px solid var(--line);border-radius:16px;overflow:hidden;
+    background:linear-gradient(180deg,var(--accentBg,#f1ecfe),#fff 76px);box-shadow:0 6px 22px rgba(20,30,50,.05);}
+  .case-hd{display:flex;align-items:center;gap:10px;padding:13px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap;}
+  .case-badge{font-size:11px;font-weight:800;color:#fff;letter-spacing:.02em;white-space:nowrap;
+    background:linear-gradient(135deg,var(--accent,#8b5cf6),var(--accent2,#a78bfa));padding:5px 11px;border-radius:8px;}
+  .case-ttl{font-weight:800;font-size:15.5px;color:var(--ink);}
+  .case-one{flex-basis:100%;font-size:13px;color:var(--ink-soft);line-height:1.6;margin-top:1px;}
+  .case-bd{padding:14px 16px 16px;}
+  .case-figure{background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px 10px;}
+  .cs-svg{display:block;width:100%;height:auto;font-family:inherit;}
+  .case-step{display:flex;align-items:center;gap:7px;margin-top:11px;flex-wrap:wrap;}
+  .case-btn{font-size:13px;border:1px solid var(--line);background:#fff;color:var(--ink-soft);
+    border-radius:8px;padding:5px 11px;cursor:pointer;transition:all .13s;white-space:nowrap;font-family:inherit;}
+  .case-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .case-cap{flex:1;min-width:200px;font-size:13px;color:var(--ink);background:var(--accentBg,#f1ecfe);
+    border-radius:8px;padding:7px 11px;line-height:1.5;}
+  .case-legend{display:flex;flex-wrap:wrap;gap:7px;margin-top:13px;}
+  .cs-leg{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:4px 11px;cursor:pointer;
+    background:#fff;display:inline-flex;gap:6px;align-items:center;transition:all .13s;}
+  .cs-leg:hover{border-color:var(--accent);color:var(--accent);background:var(--accentBg);}
+  .cs-leg .dot{width:8px;height:8px;border-radius:50%;background:var(--accent,#8b5cf6);flex:none;}
+  .case-desc{font-size:12.5px;color:var(--ink-soft);margin-top:9px;line-height:1.6;}
+  /* 设计生命周期 tab */
+  .case-life{margin-top:15px;border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+  .life-tabs{display:flex;flex-wrap:wrap;gap:3px;background:#f6f4fb;padding:5px;border-bottom:1px solid var(--line);}
+  .life-tab{flex:1;min-width:118px;font-size:12.5px;font-weight:600;color:var(--ink-soft);background:transparent;
+    border:none;border-radius:8px;padding:8px 9px;cursor:pointer;transition:all .13s;white-space:nowrap;font-family:inherit;}
+  .life-tab:hover{color:var(--accent);}
+  .life-tab.active{background:#fff;color:var(--accent);box-shadow:0 1px 5px rgba(20,30,50,.08);font-weight:700;}
+  .life-panel{display:none;padding:13px 16px;animation:fadeUp .25s ease both;}
+  .life-panel.active{display:block;}
+  .life-panel ul{margin:0;padding-left:1.25em;}
+  .life-panel li{margin:.55em 0;font-size:13.5px;line-height:1.62;color:var(--ink);}
+  .life-intro{font-size:12.5px;color:var(--ink-faint);margin-bottom:9px;}
+  .case-specs{display:grid;grid-template-columns:repeat(auto-fill,minmax(152px,1fr));gap:8px;}
+  .spec{background:#fff;border:1px solid var(--line);border-left:3px solid var(--accent,#8b5cf6);border-radius:9px;padding:8px 11px;}
+  .spec .k{font-size:11px;color:var(--ink-faint);}
+  .spec .v{font-size:13.5px;font-weight:700;color:var(--ink);margin-top:2px;}
+  .case-src{font-size:11px;color:var(--ink-faint);margin-top:12px;font-style:italic;}
+  /* SVG 基础与高亮态 */
+  .cs-box{fill:#fff;stroke:#cbd5e1;stroke-width:1.5;}
+  .cs-cell{fill:#faf7ff;stroke:#c4b5fd;stroke-width:1.2;}
+  .cs-cellt{fill:#7c5cce;font-size:11px;text-anchor:middle;font-weight:700;}
+  .cs-t{fill:#1c2330;font-size:12.5px;text-anchor:middle;font-weight:600;}
+  .cs-sub{fill:#5a6473;font-size:10px;text-anchor:middle;}
+  .cs-arr{stroke:#94a3b8;stroke-width:1.8;fill:none;}
+  .cs-note{fill:#64748b;font-size:10.5px;}
+  .cs-part{transition:opacity .22s,filter .22s;}
+  .cs-part.is-dim{opacity:.2;}
+  .cs-part.is-hl .cs-cell{stroke:var(--accent,#8b5cf6);stroke-width:2.4;fill:var(--accentBg,#f1ecfe);}
+  .cs-part.is-hl .cs-box{stroke:var(--accent,#8b5cf6);stroke-width:2.4;}
+  .cs-part.is-hl .cs-arr{stroke:var(--accent,#8b5cf6);stroke-width:2.4;}
+  .cs-part.is-hl rect{stroke:var(--accent,#8b5cf6);}
+
+  /* ========== 章节子节全景顺序图 ========== */
+  .secmap{margin:4px 0 24px;border:1px solid var(--line);border-radius:14px;
+    background:linear-gradient(180deg,var(--accentBg,#f1ecfe),#fff 64px);padding:14px 16px 12px;}
+  .secmap-hd{font-size:13.5px;font-weight:800;color:var(--ink);margin-bottom:4px;display:flex;align-items:center;gap:7px;}
+  .secmap-note{font-size:12px;color:var(--ink-soft);margin-bottom:13px;line-height:1.6;}
+  .secmap-flow{display:flex;align-items:stretch;gap:5px;overflow-x:auto;padding-bottom:6px;}
+  .smcol{display:flex;flex-direction:column;gap:7px;min-width:132px;flex:1;}
+  .smcol-lbl{font-size:11px;font-weight:700;color:var(--accent,#8b5cf6);background:var(--accentBg,#f1ecfe);
+    border:1px solid var(--line);border-radius:7px;padding:5px 8px;text-align:center;line-height:1.3;min-height:34px;
+    display:flex;align-items:center;justify-content:center;}
+  .smchip{background:#fff;border:1px solid var(--line);border-left:3px solid var(--accent,#8b5cf6);
+    border-radius:8px;padding:7px 10px;font-size:12.5px;color:var(--ink);cursor:pointer;transition:all .13s;line-height:1.35;}
+  .smchip:hover{border-color:var(--accent);box-shadow:0 3px 12px rgba(20,30,50,.10);transform:translateX(2px);}
+  .smchip b{color:var(--accent,#8b5cf6);margin-right:5px;font-variant-numeric:tabular-nums;}
+  .smarrow{display:flex;align-items:center;justify-content:center;color:var(--ink-faint);font-size:17px;flex:none;
+    width:16px;padding-top:30px;}
+  /* 贯穿全程的底带(平行于整条流程,非序列中的一步) */
+  .secmap-span{position:relative;margin-top:18px;border:1px dashed var(--accent,#8b5cf6);border-radius:11px;
+    background:repeating-linear-gradient(135deg,rgba(139,92,246,.05),rgba(139,92,246,.05) 7px,transparent 7px,transparent 14px);
+    padding:10px 13px 11px;}
+  .secmap-span::before{content:"⇡ 以上每一步都要同时顾及 ⇡";position:absolute;top:-9px;left:14px;
+    font-size:10px;font-weight:700;color:var(--accent,#8b5cf6);background:var(--surface);padding:0 7px;letter-spacing:.02em;}
+  .span-lbl{font-size:11.5px;font-weight:700;color:var(--accent,#8b5cf6);margin:2px 0 9px;line-height:1.5;}
+  .span-items{display:flex;flex-wrap:wrap;gap:7px;}
+  .span-items .smchip{flex:0 0 auto;}
+  @media (max-width:880px){ .smcol{min-width:120px;} }
+
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+  @media (max-width:880px){
+    .layout{grid-template-columns:1fr;}
+    .toc{display:none;}
+    .main{padding:24px 20px 90px;}
+    .flowmap{overflow-x:auto;}
+    .node-label{font-size:10px;}
+  }
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand" onclick="location.hash='#/overview'">
+      <span class="dot"></span><span>芯片设计完整流程</span>
+    </div>
+    <nav class="nav" id="nav"></nav>
+  </header>
+  <div class="readbar" id="readbar"></div>
+
+  <div class="layout">
+    <aside class="toc">
+      <div class="toc-title">本页目录</div>
+      <div id="toc"></div>
+    </aside>
+    <main class="main">
+      <div id="content" class="doc"></div>
+    </main>
+  </div>
+
+  <div class="kbd-hint" id="kbdhint"><kbd>←</kbd><kbd>→</kbd> 切换上一步 / 下一步</div>
+
+<script>
+const SITE = window.SITE || {stages:[], phaseOrder:[]};
+const STAGES = SITE.stages;
+const PHASE_COLOR = {
+  "定义":      {c:"var(--p1)", c2:"#60a5fa", bg:"var(--p1bg)", glow:"rgba(59,130,246,.35)"},
+  "设计":      {c:"var(--p2)", c2:"#a78bfa", bg:"var(--p2bg)", glow:"rgba(139,92,246,.35)"},
+  "验证与综合":{c:"var(--p3)", c2:"#2dd4bf", bg:"var(--p3bg)", glow:"rgba(14,165,164,.35)"},
+  "物理与签核":{c:"var(--p4)", c2:"#fbbf24", bg:"var(--p4bg)", glow:"rgba(245,158,11,.35)"},
+  "制造与交付":{c:"var(--p5)", c2:"#f87171", bg:"var(--p5bg)", glow:"rgba(239,68,68,.35)"},
+};
+marked.setOptions({gfm:true, breaks:false});
+let currentPrefix = null;
+
+/* ---------- 顶栏 ---------- */
+function buildNav(activePrefix){
+  const nav = document.getElementById('nav');
+  nav.innerHTML = '';
+  STAGES.forEach(s=>{
+    const el = document.createElement(s.available ? 'a' : 'span');
+    el.className = 'chip' + (s.available ? '' : ' disabled') + (s.prefix===activePrefix ? ' active' : '');
+    el.innerHTML = `<span class="n">${s.num}</span>${s.title}`;
+    if(s.available){ el.href = '#/'+s.prefix; el.title = s.file; }
+    else el.title = '尚未撰写';
+    nav.appendChild(el);
+  });
+}
+
+/* ---------- 目录 + 滚动高亮 ---------- */
+function slugify(t, used){
+  let base = t.trim().toLowerCase().replace(/[^\w一-龥]+/g,'-').replace(/^-+|-+$/g,'') || 'sec';
+  let s = base, i = 2;
+  while(used.has(s)){ s = base+'-'+i; i++; }
+  used.add(s); return s;
+}
+let spyObserver = null;
+function buildToc(container){
+  const toc = document.getElementById('toc');
+  toc.innerHTML = '';
+  const heads = container.querySelectorAll('h2, h3');
+  if(!heads.length){ toc.innerHTML = '<div class="empty">—</div>'; return; }
+  const used = new Set();
+  heads.forEach(h=>{
+    const label = h.dataset.title || h.textContent;
+    h.id = slugify(label, used);
+    const a = document.createElement('a');
+    a.href = '#'+h.id; a.textContent = label;
+    a.className = (h.tagName==='H3') ? 'h3' : '';
+    a.dataset.target = h.id;
+    a.addEventListener('click', e=>{ e.preventDefault();
+      document.getElementById(h.id).scrollIntoView({behavior:'smooth', block:'start'}); });
+    toc.appendChild(a);
+  });
+  if(spyObserver) spyObserver.disconnect();
+  const links = {};
+  document.querySelectorAll('#toc a').forEach(a=> links[a.dataset.target]=a);
+  const visible = new Set();
+  spyObserver = new IntersectionObserver(entries=>{
+    entries.forEach(en=> en.isIntersecting ? visible.add(en.target.id) : visible.delete(en.target.id));
+    let top=null, topY=Infinity;
+    visible.forEach(id=>{ const y=document.getElementById(id).getBoundingClientRect().top; if(y<topY){topY=y;top=id;} });
+    Object.values(links).forEach(a=>a.classList.remove('active'));
+    if(top && links[top]) links[top].classList.add('active');
+  }, {rootMargin:'-70px 0px -70% 0px', threshold:0});
+  heads.forEach(h=>spyObserver.observe(h));
+}
+
+/* ---------- 滚动揭示 ---------- */
+let revealObs = null;
+function setupReveal(){
+  if(revealObs) revealObs.disconnect();
+  revealObs = new IntersectionObserver(es=>{
+    es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); revealObs.unobserve(e.target);} });
+  }, {threshold:0, rootMargin:'0px 0px -8% 0px'});
+  document.querySelectorAll('.reveal').forEach(el=>revealObs.observe(el));
+}
+
+/* ---------- 阅读进度条 ---------- */
+const readbar = document.getElementById('readbar');
+function onScroll(){
+  if(!currentPrefix){ readbar.classList.remove('show'); return; }
+  readbar.classList.add('show');
+  const h = document.documentElement;
+  const max = h.scrollHeight - h.clientHeight;
+  readbar.style.width = (max>0 ? (h.scrollTop/max*100) : 0) + '%';
+}
+window.addEventListener('scroll', onScroll, {passive:true});
+
+/* ---------- 文档页 ---------- */
+function renderDoc(prefix){
+  const s = STAGES.find(x=>x.prefix===prefix);
+  if(!s || !s.available){ location.hash = '#/overview'; return; }
+  currentPrefix = prefix;
+  const content = document.getElementById('content');
+  content.className = 'doc';
+  content.innerHTML = marked.parse(s.raw);
+  try{ decorateDoc(content, s); }catch(err){ console.warn('decorate failed', err); }
+  buildNav(prefix); buildToc(content);
+  const idx = STAGES.indexOf(s);
+  const prev = STAGES.slice(0,idx).reverse().find(x=>x.available);
+  const next = STAGES.slice(idx+1).find(x=>x.available);
+  const foot = document.createElement('div');
+  foot.className='doc-foot';
+  foot.innerHTML = footBtn(prev,'prev','← 上一步') + footBtn(next,'next','下一步 →');
+  content.appendChild(foot);
+  setupReveal();
+  window.scrollTo(0,0); onScroll();
+  showHint();
+}
+function footBtn(stage, cls, lbl){
+  if(!stage) return `<span class="foot-btn ${cls} disabled"><span class="lbl">${lbl}</span><span class="ttl">—</span></span>`;
+  return `<a class="foot-btn ${cls}" href="#/${stage.prefix}"><span class="lbl">${lbl}</span><span class="ttl">${stage.num} ${stage.title}</span></a>`;
+}
+
+/* ---------- 首页概览 ---------- */
+function renderOverview(){
+  currentPrefix = null; readbar.classList.remove('show');
+  buildNav('overview');
+  document.getElementById('toc').innerHTML = '<div class="empty">概览页</div>';
+  const content = document.getElementById('content');
+  content.className = '';
+  const done = STAGES.filter(s=>s.available).length;
+  const total = STAGES.length;
+  const lastDone = STAGES.reduce((m,s,i)=> s.available ? i : m, -1);
+  const pct = Math.round(done/total*100);
+
+  // 进度环
+  const R=52, C=2*Math.PI*R;
+  const ringOff = C*(1-done/total);
+
+  let html = `
+    <div class="hero">
+      <div class="hero-text">
+        <h1>芯片设计完整流程</h1>
+        <p>从一个想法到量产芯片,要走完十三步。下面这条流水线把「市场要什么」一路翻译成硅片上的电路,再制造、封装、点亮、量产。</p>
+        <p class="sub">点亮的节点可点击进入章节;灰色虚线节点为后续待撰写。试试键盘 <b>←</b> / <b>→</b> 在章节间切换。</p>
+      </div>
+      <div class="ring-wrap">
+        <div class="ring">
+          <svg width="118" height="118" viewBox="0 0 118 118">
+            <defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#3b82f6"/><stop offset="50%" stop-color="#8b5cf6"/><stop offset="100%" stop-color="#0ea5a4"/>
+            </linearGradient></defs>
+            <circle class="track" cx="59" cy="59" r="${R}"/>
+            <circle class="fill" id="ringFill" cx="59" cy="59" r="${R}" stroke-dasharray="${C}" stroke-dashoffset="${C}"/>
+          </svg>
+          <div class="ctr"><b id="cnt">0</b><span>/ ${total} 步</span></div>
+        </div>
+        <div class="ring-cap">已完成 ${pct}%</div>
+      </div>
+    </div>
+
+    <div class="flowmap-wrap reveal">
+      <div class="flowmap" id="flowmap"></div>
+    </div>`;
+
+  // 阶段卡片
+  SITE.phaseOrder.forEach(phase=>{
+    const items = STAGES.filter(s=>s.phase===phase);
+    if(!items.length) return;
+    const col = PHASE_COLOR[phase] || {c:'var(--brand)',bg:'var(--brand-soft)'};
+    html += `<section class="phase reveal">
+      <div class="phase-head">
+        <span class="phase-tag" style="background:${col.bg};color:${col.c}">${phase}</span>
+        <span class="phase-line"></span>
+      </div><div class="cards">`;
+    items.forEach((s,i)=>{
+      const lock = s.available ? '' : ' locked';
+      const click = s.available ? `onclick="location.hash='#/${s.prefix}'"` : '';
+      const badge = s.available ? '<span class="badge ready">已就绪</span>' : '<span class="badge soon">待撰写</span>';
+      html += `<div class="card${lock} reveal" style="--accent:${col.c};transition-delay:${i*55}ms" ${click}>
+        <div class="card-top"><span class="card-num">${s.num}</span>${badge}</div>
+        <h3>${s.title}</h3><p>${s.summary}</p></div>`;
+    });
+    html += `</div></section>`;
+  });
+
+  content.innerHTML = html;
+  buildFlowmap(lastDone);
+  setupReveal();
+  window.scrollTo(0,0);
+  // 动画:进度环 + 数字
+  requestAnimationFrame(()=>{
+    document.getElementById('ringFill').style.strokeDashoffset = ringOff;
+    animateCount(document.getElementById('cnt'), done, 900);
+  });
+}
+
+function buildFlowmap(lastDone){
+  const fm = document.getElementById('flowmap');
+  fm.innerHTML = '';
+  STAGES.forEach(s=>{
+    const col = PHASE_COLOR[s.phase] || {c:'var(--brand)',c2:'var(--brand)',glow:'rgba(37,99,235,.3)'};
+    const ready = s.available;
+    const nextup = !ready && STAGES.filter(x=>x.available).length === STAGES.indexOf(s); // 第一个未写的
+    const node = document.createElement('div');
+    node.className = 'flow-node ' + (ready?'ready':'locked') + (nextup?' nextup':'');
+    node.style.cssText = `--accent:${col.c};--accent2:${col.c2};--glow:${col.glow}`;
+    node.innerHTML = `
+      <div class="node-dot">${s.num}</div>
+      <div class="node-label">${s.title}</div>
+      <div class="node-pop"><div class="pt">${s.num} ${s.title}</div><div class="pd">${s.summary}</div></div>`;
+    if(ready) node.querySelector('.node-dot').onclick = ()=> location.hash='#/'+s.prefix;
+    fm.appendChild(node);
+  });
+  // 连接线:覆盖首~尾节点中心;完成段用渐变流动
+  const n = STAGES.length;
+  const center = i => (i+0.5)/n*100;
+  const track = document.createElement('div');
+  track.className = 'flow-track';
+  track.style.left = center(0)+'%';
+  track.style.width = (center(n-1)-center(0))+'%';
+  fm.appendChild(track);
+  if(lastDone>0){
+    const fill = document.createElement('div');
+    fill.className = 'flow-fill';
+    fill.style.left = center(0)+'%';
+    fill.style.width = '0%';
+    fm.appendChild(fill);
+    requestAnimationFrame(()=>{ fill.style.transition='width 1s ease .2s'; fill.style.width=(center(lastDone)-center(0))+'%'; });
+  }
+}
+
+function animateCount(el, to, dur){
+  const start = performance.now();
+  function tick(now){
+    const p = Math.min((now-start)/dur, 1);
+    el.textContent = Math.round(p*to);
+    if(p<1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+/* ---------- 快捷键 ---------- */
+let hintTimer=null;
+function showHint(){
+  const h=document.getElementById('kbdhint');
+  h.classList.add('show');
+  clearTimeout(hintTimer);
+  hintTimer=setTimeout(()=>h.classList.remove('show'),2600);
+}
+document.addEventListener('keydown', e=>{
+  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
+  if(!currentPrefix) return;
+  const avail = STAGES.filter(s=>s.available);
+  const i = avail.findIndex(s=>s.prefix===currentPrefix);
+  if(e.key==='ArrowRight' && i<avail.length-1){ location.hash='#/'+avail[i+1].prefix; }
+  else if(e.key==='ArrowLeft' && i>0){ location.hash='#/'+avail[i-1].prefix; }
+  else if(e.key==='Escape'){ location.hash='#/overview'; }
+});
+
+/* ---------- 文档页可视化增强 ---------- */
+function docIcon(t){
+  if(/位置|全景/.test(t)) return '📍';
+  if(/输入|手里/.test(t)) return '📥';
+  if(/是什么|到底是|什么是/.test(t)) return '🎯';
+  if(/谁来|谁写|谁做|谁负责/.test(t)) return '👥';
+  if(/核心内容|内容/.test(t)) return '🧩';
+  if(/权衡|心态|标尺|张力|铁三角/.test(t)) return '⚖️';
+  if(/方法|工具|怎么做|如何/.test(t)) return '🛠️';
+  if(/交付|产出/.test(t)) return '📦';
+  if(/忽视|坑|致命|陷阱|误区/.test(t)) return '⚠️';
+  if(/小结|总结|下一步/.test(t)) return '✅';
+  if(/标准|好规格|好的/.test(t)) return '⭐';
+  if(/管理|实务/.test(t)) return '🗂️';
+  return '▸';
+}
+function decorateDoc(container, stage){
+  const col=PHASE_COLOR[stage.phase]||{c:'var(--brand)',c2:'var(--brand)',bg:'var(--brand-soft)',glow:'rgba(37,99,235,.3)'};
+  container.style.setProperty('--accent',col.c);
+  container.style.setProperty('--accent2',col.c2);
+  container.style.setProperty('--accentBg',col.bg);
+  container.style.setProperty('--glow',col.glow);
+  const h1 = container.querySelector('h1'); if(h1) h1.remove();
+  container.querySelectorAll('blockquote').forEach(bq=>{
+    if(/学习系列|全流程:/.test(bq.textContent)) bq.classList.add('series-nav');
+  });
+  container.querySelectorAll('h2,h3').forEach(h=>{
+    h.dataset.title = h.textContent;
+    const chip=document.createElement('span');
+    chip.className='sec-chip'; chip.textContent=docIcon(h.textContent);
+    h.insertBefore(chip, h.firstChild);
+  });
+  container.querySelectorAll('pre').forEach(pre=>{
+    const code=pre.textContent||'';
+    if(/[→←↑↓│└├┌┐┘─➜▸]/.test(code)) pre.classList.add('diagram');
+    const btn=document.createElement('button');
+    btn.className='copy-btn'; btn.textContent='复制';
+    btn.onclick=()=>navigator.clipboard.writeText(code).then(()=>{
+      btn.textContent='已复制 ✓'; setTimeout(()=>btn.textContent='复制',1400);
+    });
+    pre.appendChild(btn);
+  });
+  sectionize(container);
+  try{ injectSecMap(container, stage); }catch(err){ console.warn('injectSecMap failed', err); }
+  try{ injectCases(container, stage); }catch(err){ console.warn('injectCases failed', err); }
+  container.insertBefore(buildDocHero(stage), container.firstChild);
+}
+
+/* ---------- 「核心内容」小节全景顺序图 ---------- */
+function injectSecMap(container, stage){
+  const map = window.SECMAP && window.SECMAP[stage.prefix];
+  if(!map) return;
+  const sections = container.querySelectorAll('.doc-section');
+  for(const sec of sections){
+    const h2 = sec.querySelector('h2');
+    if(!h2) continue;
+    if(/^3\.\s/.test(h2.dataset.title || h2.textContent)){
+      const el = renderSecMap(map);
+      if(h2.nextSibling) sec.insertBefore(el, h2.nextSibling); else sec.appendChild(el);
+      break;
+    }
+  }
+}
+function renderSecMap(map){
+  const wrap=document.createElement('div'); wrap.className='secmap';
+  let html=`<div class="secmap-hd">🗺️ 本章子环节:顺序与并行关系</div><div class="secmap-note">${map.note}</div>`;
+  html+=`<div class="secmap-flow">`;
+  (map.flow||map.cols).forEach((col,ci)=>{
+    if(ci>0) html+=`<div class="smarrow">→</div>`;
+    html+=`<div class="smcol"><div class="smcol-lbl">${col.lbl}</div>`;
+    col.items.forEach(it=>{ html+=`<div class="smchip" data-sec="${it[0]}"><b>${it[0]}</b>${it[1]}</div>`; });
+    html+=`</div>`;
+  });
+  html+=`</div>`;
+  if(map.span){
+    html+=`<div class="secmap-span"><div class="span-lbl">⇕ ${map.span.lbl}</div><div class="span-items">`;
+    map.span.items.forEach(it=>{ html+=`<div class="smchip" data-sec="${it[0]}"><b>${it[0]}</b>${it[1]}</div>`; });
+    html+=`</div></div>`;
+  }
+  wrap.innerHTML=html;
+  wrap.querySelectorAll('.smchip').forEach(c=> c.onclick=()=>scrollToSec(c.getAttribute('data-sec')));
+  return wrap;
+}
+function scrollToSec(num){
+  const hs=document.querySelectorAll('.doc-section h3');
+  for(const h of hs){ const t=h.dataset.title||h.textContent; if(t.indexOf(num+' ')===0){ h.scrollIntoView({behavior:'smooth',block:'start'}); return; } }
+}
+
+/* ---------- 真实芯片案例(TPU)注入与渲染 ---------- */
+function injectCases(container, stage){
+  const map = (window.CASES && window.CASES[stage.prefix]) || null;
+  if(!map) return;
+  container.querySelectorAll('.doc-section h3').forEach(h=>{
+    const m = (h.dataset.title || h.textContent).match(/^(\d+\.\d+)/);
+    if(!m) return;
+    const spec = map[m[1]];
+    if(!spec) return;
+    const section = h.closest('.doc-section');
+    let node = h.nextElementSibling;
+    while(node && node.tagName !== 'H3'){ node = node.nextElementSibling; }
+    const el = renderCase(spec);
+    if(node) section.insertBefore(el, node); else section.appendChild(el);
+  });
+}
+function caseBtn(t){ const b=document.createElement('button'); b.className='case-btn'; b.textContent=t; return b; }
+function renderCase(spec){
+  const el=document.createElement('div'); el.className='case';
+  const hd=document.createElement('div'); hd.className='case-hd';
+  hd.innerHTML=`<span class="case-badge">真实芯片案例 · ${spec.chip}</span><span class="case-ttl">${spec.title}</span>`+
+    (spec.oneLine?`<span class="case-one">${spec.oneLine}</span>`:'');
+  el.appendChild(hd);
+  const bd=document.createElement('div'); bd.className='case-bd'; el.appendChild(bd);
+
+  const fig=document.createElement('div'); fig.className='case-figure'; fig.innerHTML=spec.svg; bd.appendChild(fig);
+  const parts=()=>fig.querySelectorAll('.cs-part');
+  const isHl=(p,keys)=>{ const k=p.getAttribute('data-k'), g=p.getAttribute('data-g');
+    return (k&&keys.indexOf(k)>=0)||(g&&keys.indexOf(g)>=0); };
+  function apply(keys){
+    const ps=Array.from(parts());
+    ps.forEach(p=>p.classList.remove('is-hl','is-dim'));
+    if(!keys||!keys.length) return;
+    ps.forEach(p=>{
+      if(isHl(p,keys)){ p.classList.add('is-hl'); return; }
+      // 容器里若含被高亮的子部件,则容器保持中性(不变暗),否则高亮子件会被父级的低透明度连累
+      const hasHlChild=Array.from(p.querySelectorAll('.cs-part')).some(c=>isHl(c,keys));
+      if(!hasHlChild) p.classList.add('is-dim');
+    });
+  }
+  let stepIdx=0, timer=null;
+  if(spec.steps && spec.steps.length){
+    const bar=document.createElement('div'); bar.className='case-step';
+    const prev=caseBtn('◀'), play=caseBtn('▶ 播放'), next=caseBtn('▶');
+    const cap=document.createElement('div'); cap.className='case-cap';
+    function stop(){ if(timer){clearInterval(timer);timer=null;play.textContent='▶ 播放';} }
+    function show(i){ stepIdx=(i+spec.steps.length)%spec.steps.length; apply(spec.steps[stepIdx].keys); cap.textContent=spec.steps[stepIdx].cap; }
+    prev.onclick=()=>{stop();show(stepIdx-1);};
+    next.onclick=()=>{stop();show(stepIdx+1);};
+    play.onclick=()=>{ if(timer){stop();return;} play.textContent='⏸ 暂停'; timer=setInterval(()=>show(stepIdx+1),1800); };
+    bar.append(prev,play,next,cap); bd.appendChild(bar);
+    el._restore=()=>apply(spec.steps[stepIdx].keys);
+    show(0);
+  } else { el._restore=()=>apply([]); }
+
+  if(spec.legend && spec.legend.length){
+    const lg=document.createElement('div'); lg.className='case-legend';
+    const desc=document.createElement('div'); desc.className='case-desc'; desc.textContent='悬停下方图例 → 高亮图中对应部件;点「▶」分步看数据怎么流。';
+    spec.legend.forEach(it=>{
+      const c=document.createElement('span'); c.className='cs-leg';
+      c.innerHTML=`<span class="dot"></span>${it.name}`;
+      c.onmouseenter=()=>{ apply([it.k]); desc.textContent=it.desc; };
+      c.onmouseleave=()=>{ el._restore(); desc.textContent='悬停下方图例 → 高亮图中对应部件;点「▶」分步看数据怎么流。'; };
+      lg.appendChild(c);
+    });
+    bd.appendChild(lg); bd.appendChild(desc);
+  }
+  // 设计生命周期:设计前 → 设计时 → 设计结果 → 设计后
+  const lifeList=items=>`<ul>${items.map(x=>`<li>${x}</li>`).join('')}</ul>`;
+  const lifeSpecs=items=>`<div class="case-specs">${items.map(s=>`<div class="spec"><div class="k">${s.label}</div><div class="v">${s.value}</div></div>`).join('')}</div>`;
+  const tabs=[
+    {t:'🧭 设计前 · 要定什么', html:(spec.before&&spec.before.length)?`<div class="life-intro">动手前先想清:要决定哪些量、必须考虑哪些约束与输入。</div>${lifeList(spec.before)}`:''},
+    {t:'⚖️ 设计时 · 怎么权衡', html:(spec.during&&spec.during.length)?lifeList(spec.during):''},
+    {t:'📐 设计结果 · 长什么样', html:(spec.result&&spec.result.length)?lifeSpecs(spec.result):''},
+    {t:'✅ 设计后 · 接下来做什么', html:(spec.after&&spec.after.length)?lifeList(spec.after):''}
+  ].filter(x=>x.html);
+  if(tabs.length){
+    const life=document.createElement('div'); life.className='case-life';
+    const bar=document.createElement('div'); bar.className='life-tabs';
+    const panels=document.createElement('div'); panels.className='life-panels';
+    tabs.forEach((tb,i)=>{
+      const b=document.createElement('button'); b.className='life-tab'+(i===0?' active':''); b.textContent=tb.t;
+      const p=document.createElement('div'); p.className='life-panel'+(i===0?' active':''); p.innerHTML=tb.html;
+      b.onclick=()=>{ bar.querySelectorAll('.life-tab').forEach(x=>x.classList.remove('active'));
+        panels.querySelectorAll('.life-panel').forEach(x=>x.classList.remove('active'));
+        b.classList.add('active'); p.classList.add('active'); };
+      bar.appendChild(b); panels.appendChild(p);
+    });
+    life.appendChild(bar); life.appendChild(panels); bd.appendChild(life);
+  }
+  if(spec.source){ const s=document.createElement('div'); s.className='case-src'; s.textContent='来源:'+spec.source; bd.appendChild(s); }
+  return el;
+}
+function sectionize(container){
+  const kids=Array.from(container.childNodes);
+  container.innerHTML='';
+  let lead=null, cur=null;
+  kids.forEach(node=>{
+    if(node.nodeType===1 && node.tagName==='H2'){
+      cur=document.createElement('section'); cur.className='doc-section reveal';
+      if(/忽视|坑|致命|陷阱|误区/.test(node.dataset.title||node.textContent)) cur.classList.add('warn-section');
+      container.appendChild(cur); cur.appendChild(node);
+    } else if(cur){ cur.appendChild(node); }
+    else { if(!lead){ lead=document.createElement('div'); lead.className='doc-lead'; container.appendChild(lead);} lead.appendChild(node); }
+  });
+}
+function buildDocHero(stage){
+  const col=PHASE_COLOR[stage.phase]||{c:'var(--brand)',c2:'var(--brand)',bg:'var(--brand-soft)',glow:'rgba(37,99,235,.3)'};
+  const idx=STAGES.indexOf(stage)+1;
+  const mins=Math.max(1, Math.round((stage.raw||'').length/450));
+  let dots='';
+  STAGES.forEach(s=>{
+    const c=PHASE_COLOR[s.phase]||{};
+    const isCur=s.prefix===stage.prefix;
+    let cls='dh-step'+(isCur?' cur':(s.available?' avail':''));
+    const bg=isCur?`linear-gradient(90deg,${col.c},${col.c2})`:(s.available?c.c:'var(--line)');
+    dots+=`<span class="${cls}" style="background:${bg}" title="${s.num} ${s.title}" ${s.available&&!isCur?`onclick="location.hash='#/${s.prefix}'"`:''}></span>`;
+  });
+  const hero=document.createElement('div');
+  hero.className='doc-hero';
+  hero.style.cssText=`--accent:${col.c};--accent2:${col.c2};--accentBg:${col.bg};--glow:${col.glow}`;
+  hero.innerHTML=`
+    <div class="dh-top">
+      <span class="dh-badge">${stage.num}</span>
+      <div>
+        <div class="dh-phase">${stage.phase}阶段 · 第 ${idx} / ${STAGES.length} 步</div>
+        <div class="dh-title">${stage.title}</div>
+      </div>
+    </div>
+    <div class="dh-meta"><span>📖 约 ${mins} 分钟</span><span>🧭 ${stage.phase}</span></div>
+    <div class="dh-stepper">${dots}</div>`;
+  return hero;
+}
+
+/* ---------- 路由 ---------- */
+function route(){
+  const hash = location.hash || '#/overview';
+  const m = hash.match(/^#\/(\w+)/);
+  const key = m ? m[1] : 'overview';
+  if(key==='overview') renderOverview();
+  else if(/^\d{2}$/.test(key)) renderDoc(key);
+  else { const t=document.getElementById(hash.slice(1)); if(t) t.scrollIntoView({behavior:'smooth'}); else renderOverview(); }
+}
+window.addEventListener('hashchange', route);
+if(!STAGES.length){
+  document.getElementById('content').innerHTML =
+    '<p style="color:#b3406b">未找到内容:请先在本目录运行 <code>python3 build.py</code> 生成 content.js。</p>';
+} else { route(); }
+</script>
+</body>
+</html>

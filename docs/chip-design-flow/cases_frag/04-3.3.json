@@ -1,0 +1,121 @@
+{
+ "secNum": "3.3",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 控制脉动阵列做分块 GEMM 的控制器 FSM",
+ "oneLine": "把一次大矩阵乘拆成一块块小 tile,用一个状态机依次「载权重→泵激活→累加→写回→看还有没有下一块」串起来——这正是把硬件时序行为收进有限状态机的样板。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><g class=\"cs-part\" data-k=\"idle\" data-g=\"idle\"><rect class=\"cs-box\" x=\"40\" y=\"170\" width=\"120\" height=\"60\" rx=\"24\"/><text class=\"cs-t\" x=\"100\" y=\"196\">Idle 空闲</text><text class=\"cs-sub\" x=\"100\" y=\"214\">等主机下发指令</text></g><g class=\"cs-part\" data-k=\"loadw\" data-g=\"loadw\"><rect class=\"cs-box\" x=\"230\" y=\"40\" width=\"150\" height=\"62\" rx=\"24\"/><text class=\"cs-t\" x=\"305\" y=\"66\">LoadWeights</text><text class=\"cs-sub\" x=\"305\" y=\"84\">把本块权重灌进阵列</text></g><g class=\"cs-part\" data-k=\"stream\" data-g=\"stream\"><rect class=\"cs-box\" x=\"450\" y=\"40\" width=\"160\" height=\"62\" rx=\"24\"/><text class=\"cs-t\" x=\"530\" y=\"66\">StreamActiv</text><text class=\"cs-sub\" x=\"530\" y=\"84\">从 UB 泵入激活</text></g><g class=\"cs-part\" data-k=\"accum\" data-g=\"accum\"><rect class=\"cs-box\" x=\"450\" y=\"170\" width=\"160\" height=\"62\" rx=\"24\"/><text class=\"cs-t\" x=\"530\" y=\"196\">Accumulate</text><text class=\"cs-sub\" x=\"530\" y=\"214\">阵列累加部分和</text></g><g class=\"cs-part\" data-k=\"wb\" data-g=\"wb\"><rect class=\"cs-box\" x=\"450\" y=\"300\" width=\"160\" height=\"62\" rx=\"24\"/><text class=\"cs-t\" x=\"530\" y=\"326\">WriteBack</text><text class=\"cs-sub\" x=\"530\" y=\"344\">结果回写 UB</text></g><g class=\"cs-part\" data-k=\"next\" data-g=\"next\"><rect class=\"cs-box\" x=\"230\" y=\"300\" width=\"150\" height=\"62\" rx=\"24\"/><text class=\"cs-t\" x=\"305\" y=\"320\">NextTile?</text><text class=\"cs-sub\" x=\"305\" y=\"338\">还有分块吗</text></g><g class=\"cs-part\" data-g=\"t0\"><line class=\"cs-arr\" x1=\"120\" y1=\"172\" x2=\"244\" y2=\"100\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"150\" y=\"128\">收到 GEMM 指令</text><g class=\"cs-part\" data-g=\"t1\"><line class=\"cs-arr\" x1=\"380\" y1=\"71\" x2=\"446\" y2=\"71\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"384\" y=\"32\">权重就位</text><g class=\"cs-part\" data-g=\"t2\"><line class=\"cs-arr\" x1=\"530\" y1=\"102\" x2=\"530\" y2=\"166\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"538\" y=\"138\">流水填满</text><g class=\"cs-part\" data-g=\"t3\"><line class=\"cs-arr\" x1=\"530\" y1=\"232\" x2=\"530\" y2=\"296\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"538\" y=\"268\">本块算完</text><g class=\"cs-part\" data-g=\"t4\"><line class=\"cs-arr\" x1=\"446\" y1=\"331\" x2=\"384\" y2=\"331\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"388\" y=\"292\">写回完成</text><g class=\"cs-part\" data-g=\"t5\"><polyline class=\"cs-arr\" points=\"232,318 180,300 130,250 110,234\" fill=\"none\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"120\" y=\"300\">无:回 Idle</text><g class=\"cs-part\" data-g=\"t6\"><polyline class=\"cs-arr\" points=\"305,300 305,140 300,104\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"312\" y=\"200\">有:载下一块权重</text><text class=\"cs-note\" x=\"40\" y=\"382\">注:TPU v1 未公开具体 FSM,此为这类 GEMM 分块控制器的典型状态机形态</text></svg>",
+ "legend": [
+  {
+   "k": "loadw",
+   "name": "LoadWeights 载权重态",
+   "desc": "把当前 tile 的权重子块灌进 256×256 阵列(weight-stationary:权重先就位、之后不动)。这一态本身不出结果,是为下一态铺垫。"
+  },
+  {
+   "k": "stream",
+   "name": "StreamActiv 泵激活态",
+   "desc": "从 24 MiB Unified Buffer 里把激活按行逐拍泵入阵列,启动二维流水填充。"
+  },
+  {
+   "k": "accum",
+   "name": "Accumulate 累加态",
+   "desc": "阵列稳态计算,部分和沿列向下逐级累加进 4 MiB 累加器;若该输出块要跨多个 K 维 tile,会在此态反复累加。"
+  },
+  {
+   "k": "wb",
+   "name": "WriteBack 写回态",
+   "desc": "累加完成的结果块经激活/归一化等流水,写回 Unified Buffer,供下一层或主机取走。"
+  },
+  {
+   "k": "next",
+   "name": "NextTile? 分支判断",
+   "desc": "判定整个大矩阵是否还有未算的分块:有则带着新权重回 LoadWeights,无则回 Idle。这是 FSM 的循环出口。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "idle",
+    "loadw"
+   ],
+   "cap": "① 主机经 PCIe 下发一条 CISC GEMM 指令,FSM 从 Idle 跳到 LoadWeights,开始灌第一块权重"
+  },
+  {
+   "keys": [
+    "loadw",
+    "stream",
+    "accum"
+   ],
+   "cap": "② 权重就位后进入 StreamActivations 泵入激活、流水填满即转 Accumulate,在阵列里累加出本块部分和"
+  },
+  {
+   "keys": [
+    "accum",
+    "wb"
+   ],
+   "cap": "③ 本块算完转 WriteBack,把累加器里的结果块写回 Unified Buffer"
+  },
+  {
+   "keys": [
+    "wb",
+    "next"
+   ],
+   "cap": "④ 写回完成进入 NextTile? 判断:大矩阵的分块循环还没走完吗?"
+  },
+  {
+   "keys": [
+    "next",
+    "loadw",
+    "idle"
+   ],
+   "cap": "⑤ 还有块 → 带新权重回 LoadWeights(虚线,常态循环);全部算完 → 回 Idle 等下一条指令"
+  }
+ ],
+ "before": [
+  "<b>先框定 FSM 的职责边界</b>:这个状态机只管「编排脉动阵列做一次分块矩阵乘」的时序——载权重/泵激活/累加/写回/取下一块,不管数据通路本身怎么算(那是 MXU 的事)。",
+  "<b>要枚举的状态与事件</b>:把控制流程拆成几个稳定阶段(状态),并列清每个阶段的进入/退出条件(事件):权重就位、流水填满、本块算完、写回完成、还有没有下一块。",
+  "<b>必备输入</b>:tiling 策略(大矩阵怎么切成 256×256 量级的块、K 维要不要分多次累加)、阵列装填/排空所需拍数、Unified Buffer 与累加器的容量约束。",
+  "<b>必须想清的考量</b>:host-driven 模型下「指令粒度有多粗」——TPU v1 指令仅约十几条且偏 CISC,意味着一条指令可能就对应整段 tile 循环,FSM 要在硬件里把这条粗指令展开成多拍的状态序列。"
+ ],
+ "during": [
+  "<b>状态怎么切分</b>:按「数据所处阶段」切——载权重(阵列在填权重)、泵激活+累加(阵列在算)、写回(结果在搬)。每个状态对应一组确定的控制信号(读哪块 UB、累加器清不清零、写回到哪),边界清晰、互不重叠。",
+  "<b>转移条件用什么触发</b>:优先用「计数器到点」而非复杂握手——脉动阵列是静态确定的流水,装填/计算/排空各需多少拍是可算的;FSM 多半就是「进某态→倒计数→计满即转下一态」,简单、可综合、好验证。",
+  "<b>循环结构的取舍</b>:把 NextTile? 做成显式分支态,让「单块计算」成为可复用的子序列;整张大矩阵 = 在这个子序列上套一层 tile 循环计数器。这样 FSM 状态数固定,不随矩阵大小膨胀。",
+  "<b>权重换不换的取舍</b>:weight-stationary 下换权重是有开销的——若多个激活块共享同一权重块,应让 FSM 在 StreamActiv/Accumulate 间多轮停留、复用已载权重,只有跨到新权重块时才回 LoadWeights,摊薄载权重成本。",
+  "<b>K 维累加的处理</b>:输出一个块可能要累加多个 K 维分块的部分和 → 在 Accumulate 态内不清累加器、循环多次;只有最后一次才转 WriteBack。用一个 K-计数器控制,避免新增一堆状态。",
+  "<b>异常与复位的诚实做法</b>:TPU v1 未公开其控制器的错误/复位细节;这类数据中心推理 ASIC 的通行做法是保留一条「任意态 → Idle」的复位/中止边(如主机中止、超时),保证状态机始终能回到干净起点——这是通行实践,非 v1 披露细节。"
+ ],
+ "result": [
+  {
+   "label": "状态个数",
+   "value": "约 5~6 个(Idle/LoadW/Stream/Accum/WriteBack/+判断)"
+  },
+  {
+   "label": "主转移触发",
+   "value": "多为拍计数到点(流水时序确定)"
+  },
+  {
+   "label": "循环结构",
+   "value": "单块子序列 + 外层 tile 计数器"
+  },
+  {
+   "label": "权重策略",
+   "value": "weight-stationary,复用时不重载"
+  },
+  {
+   "label": "驱动来源",
+   "value": "主机 CISC 指令(host-driven)"
+  },
+  {
+   "label": "复位/中止",
+   "value": "任意态可回 Idle(通行实践,非 v1 披露)"
+  }
+ ],
+ "after": [
+  "<b>画状态图、走遍每条边</b>:确认每个状态的进入/退出条件互斥且完备,不存在「卡死无出口」或「两条转移同时成立」的歧义;特别核对 NextTile? 的两条分支与复位边。",
+  "<b>建 cycle 模型对拍数</b>:用小矩阵手算「载权重+装填+计算+排空+写回」的总拍数,和 FSM 各态计数器配置对齐,确认没有少算装填/排空开销。",
+  "<b>定 FSM 验证用例</b>:覆盖单块、多块循环、K 维多轮累加、权重复用(不重载)、以及中途复位/中止回 Idle 这几类轨迹。",
+  "<b>交给 ⑤ RTL</b>:把状态寄存器、转移逻辑、各态控制信号与计数器写成可综合 Verilog(典型用 one-hot 或二进制编码 + 组合输出逻辑)。",
+  "<b>留时钟门控钩子</b>:Idle 态及载权重/写回等阵列空转的阶段,可对 MAC 阵列做粗粒度时钟门控省动态功耗——FSM 的状态正好是门控使能的天然来源。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(具体控制器 FSM 未公开,状态划分为这类 GEMM 分块控制器的通行实践)"
+}

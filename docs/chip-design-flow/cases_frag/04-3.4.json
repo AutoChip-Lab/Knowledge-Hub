@@ -1,0 +1,115 @@
+{
+ "secNum": "3.4",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 脉动阵列为何轻松跑到 700 MHz 的时序与频率预算",
+ "oneLine": "TPU 的频率预算几乎是「白送」的:每级关键路径只是一个 8-bit 乘加,逻辑极浅;65,536 个 PE 全靠局部短连线规则铺开,没有长全局线——所以 700 MHz 时序好收敛,不像通用 CPU 那样要为长关键路径苦苦切割。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"34\">左:一个 PE(MAC)内的关键路径——很短</text><text class=\"cs-note\" x=\"430\" y=\"34\">右:规则局部短线 vs 假想长全局线</text><line x1=\"400\" y1=\"48\" x2=\"400\" y2=\"388\" stroke=\"#cbd5e1\" stroke-width=\"1\" stroke-dasharray=\"3 5\"/><g class=\"cs-part\" data-k=\"reg_in\" data-g=\"path\"><rect class=\"cs-box\" x=\"50\" y=\"80\" width=\"92\" height=\"48\" rx=\"8\"/><text class=\"cs-t\" x=\"96\" y=\"100\">输入寄存器</text><text class=\"cs-sub\" x=\"96\" y=\"116\">act / 部分和</text></g><line class=\"cs-arr\" x1=\"142\" y1=\"104\" x2=\"178\" y2=\"104\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"mul\" data-g=\"path\"><rect class=\"cs-box\" x=\"180\" y=\"80\" width=\"74\" height=\"48\" rx=\"8\"/><text class=\"cs-t\" x=\"217\" y=\"100\">乘 ×</text><text class=\"cs-sub\" x=\"217\" y=\"116\">8b×8b</text></g><line class=\"cs-arr\" x1=\"254\" y1=\"104\" x2=\"290\" y2=\"104\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"add\" data-g=\"path\"><rect class=\"cs-box\" x=\"292\" y=\"80\" width=\"74\" height=\"48\" rx=\"8\"/><text class=\"cs-t\" x=\"329\" y=\"100\">加 +</text><text class=\"cs-sub\" x=\"329\" y=\"116\">累加</text></g><line class=\"cs-arr\" x1=\"225\" y1=\"128\" x2=\"225\" y2=\"166\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"reg_out\" data-g=\"path\"><rect class=\"cs-box\" x=\"150\" y=\"168\" width=\"150\" height=\"48\" rx=\"8\"/><text class=\"cs-t\" x=\"225\" y=\"188\">输出寄存器</text><text class=\"cs-sub\" x=\"225\" y=\"204\">每拍锁存一次</text></g><text class=\"cs-note\" x=\"50\" y=\"248\">关键路径 = 乘 → 加 → 寄存器</text><text class=\"cs-note\" x=\"50\" y=\"266\">逻辑很浅 → 单级延迟小</text><g class=\"cs-part\" data-k=\"clk\" data-g=\"clk\"><rect class=\"cs-box\" x=\"50\" y=\"288\" width=\"300\" height=\"46\" rx=\"8\"/><text class=\"cs-t\" x=\"200\" y=\"309\">时钟 700 MHz(周期 ≈1.43 ns)</text><text class=\"cs-sub\" x=\"200\" y=\"325\">浅逻辑塞得进这一拍 → 时序好收敛</text></g><g class=\"cs-part\" data-k=\"good\" data-g=\"good\"><rect class=\"cs-cell\" x=\"440\" y=\"70\" width=\"34\" height=\"34\"/><rect class=\"cs-cell\" x=\"478\" y=\"70\" width=\"34\" height=\"34\"/><rect class=\"cs-cell\" x=\"516\" y=\"70\" width=\"34\" height=\"34\"/><rect class=\"cs-cell\" x=\"440\" y=\"108\" width=\"34\" height=\"34\"/><rect class=\"cs-cell\" x=\"478\" y=\"108\" width=\"34\" height=\"34\"/><rect class=\"cs-cell\" x=\"516\" y=\"108\" width=\"34\" height=\"34\"/><rect class=\"cs-cell\" x=\"440\" y=\"146\" width=\"34\" height=\"34\"/><rect class=\"cs-cell\" x=\"478\" y=\"146\" width=\"34\" height=\"34\"/><rect class=\"cs-cell\" x=\"516\" y=\"146\" width=\"34\" height=\"34\"/><line x1=\"474\" y1=\"87\" x2=\"478\" y2=\"87\" stroke=\"#22c55e\" stroke-width=\"2\"/><line x1=\"512\" y1=\"87\" x2=\"516\" y2=\"87\" stroke=\"#22c55e\" stroke-width=\"2\"/><line x1=\"457\" y1=\"104\" x2=\"457\" y2=\"108\" stroke=\"#22c55e\" stroke-width=\"2\"/><line x1=\"495\" y1=\"104\" x2=\"495\" y2=\"108\" stroke=\"#22c55e\" stroke-width=\"2\"/></g><text class=\"cs-note\" x=\"570\" y=\"92\">规则阵列</text><text class=\"cs-note\" x=\"570\" y=\"110\">PE 只连</text><text class=\"cs-note\" x=\"570\" y=\"128\">上下左右</text><text class=\"cs-note\" x=\"570\" y=\"146\">邻居</text><text class=\"cs-note\" x=\"440\" y=\"200\">短互连、负载小 → 走线延迟极低</text><g class=\"cs-part\" data-k=\"bad\" data-g=\"bad\"><rect class=\"cs-box\" x=\"440\" y=\"240\" width=\"80\" height=\"40\" rx=\"8\"/><text class=\"cs-sub\" x=\"480\" y=\"264\">远端 A</text><polyline class=\"cs-arr\" points=\"520,260 580,235 620,290 660,255\" fill=\"none\" stroke=\"#ef4444\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><rect class=\"cs-box\" x=\"600\" y=\"300\" width=\"80\" height=\"40\" rx=\"8\"/><text class=\"cs-sub\" x=\"640\" y=\"324\">远端 B</text></g><text class=\"cs-note\" x=\"440\" y=\"300\">假想长全局线:跨芯片、负载大</text><text class=\"cs-note\" x=\"440\" y=\"318\">→ 走线延迟大,拖慢频率(TPU 没有)</text></svg>",
+ "legend": [
+  {
+   "k": "path",
+   "name": "PE 内关键路径(乘→加→寄存器)",
+   "desc": "脉动阵列每个 PE 一拍内只做「8-bit 乘 + 累加 + 锁进寄存器」。组合逻辑级数很浅,单级延迟小——这是 TPU 时序预算宽松的根本原因。"
+  },
+  {
+   "k": "clk",
+   "name": "700 MHz 时钟预算",
+   "desc": "周期约 1.43 ns。因为每级只塞了一个浅 MAC,这点逻辑加上寄存器建立时间轻松落在一拍内,时序收敛几乎不费力 → 700 MHz、~92 TOPS。"
+  },
+  {
+   "k": "good",
+   "name": "规则局部短互连",
+   "desc": "256×256 阵列里每个 PE 只和上下左右邻居连线,全是规则、短、负载小的局部互连;数据像波一样逐拍推进,没有跨越全片的长线。"
+  },
+  {
+   "k": "bad",
+   "name": "假想长全局线(慢)",
+   "desc": "对照组:若某条信号要横跨整片芯片(长走线、大负载、大延迟),它就会成为关键路径、压低频率。通用 CPU 常有这类长线,TPU 的脉动阵列刻意避开。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "reg_in",
+    "mul",
+    "add",
+    "reg_out"
+   ],
+   "cap": "① 拆一个 PE 的关键路径:输入寄存器 → 8b×8b 乘 → 累加 → 输出寄存器。寄存器到寄存器之间的组合逻辑只有「一个乘加」,非常浅。"
+  },
+  {
+   "keys": [
+    "path",
+    "clk"
+   ],
+   "cap": "② 算时序预算:浅逻辑的传播延迟 + 寄存器建立时间,要塞进一个时钟周期。因为逻辑浅,这点延迟远小于 1.43 ns → 700 MHz 这一拍绰绰有余。"
+  },
+  {
+   "keys": [
+    "good"
+   ],
+   "cap": "③ 看连线:阵列规则、PE 只连邻居,互连短、负载小、走线延迟极低——不会有意外的长线偷偷拉长关键路径。"
+  },
+  {
+   "keys": [
+    "bad"
+   ],
+   "cap": "④ 反面对照:一条横跨全片的长全局线,负载大、延迟大,会顶上来变成关键路径、逼你降频。脉动阵列的局部连线天生绕开了这个坑。"
+  },
+  {
+   "keys": [
+    "path",
+    "good",
+    "clk"
+   ],
+   "cap": "⑤ 合起来看:浅逻辑(短关键路径)× 规则局部短连线(无长线)= 时序好收敛 → 700 MHz 几乎「白送」,对比通用 CPU 要为长关键路径反复切级、费力收敛。"
+  }
+ ],
+ "before": [
+  "<b>先定目标频率与频率预算</b>:TPU v1 选 700 MHz;由此反推每级时钟周期 ≈1.43 ns,这就是每条「寄存器→组合逻辑→寄存器」路径必须满足的时间预算。",
+  "<b>盘点关键路径候选</b>:在脉动阵列里,最该担心的就是 PE 内那条「乘→加→寄存器」。要确认它(以及阵列边缘的取数/写回路径)是否是全片最慢路径。",
+  "<b>必备输入</b>:数据流(weight-stationary,权重驻留、激活/部分和逐拍流动)、单元功能(8-bit MAC)、工艺(28nm 的单元延迟与连线 RC 特性)——这些决定了单级逻辑深度与可达频率。",
+  "<b>必须想清的约束</b>:频率不是越高越好——它和 TDP(28–40W)、面积、以及 DDR3 带宽(~30 GB/s)共同决定整体性能;频率定高了若被存储带宽卡住(屋顶线的带宽屋顶),提频也是空转。"
+ ],
+ "during": [
+  "<b>核心思路:把关键路径切到「足够浅」</b>。脉动阵列天然把大矩阵乘拆成每拍一个 MAC,单级逻辑只有一个乘加 → 关键路径短到 700 MHz 轻松达标,几乎不需要为时序额外插流水级。",
+  "<b>用规则结构换可预测的时序</b>:256×256 个 PE 完全同构、只连邻居,布局布线规整、连线短而负载均匀 → 时序在版图上高度可预测、收敛快,不会冒出「某条意外长线」拖后腿。",
+  "<b>避开长全局线</b>:能不能 700 MHz,往往不是逻辑而是走线说了算。脉动阵列把数据「流」在相邻 PE 之间逐拍传递,杜绝了跨全片的长线;对比通用 CPU 里旁路网络、全局总线那种长关键路径,后者要费很大力气切割或加缓冲。",
+  "<b>频率 vs 流水深度的取舍</b>:逻辑已经够浅,所以不必为提频狂插寄存器(那会增延迟/面积/功耗);TPU 的选择是「浅逻辑 + 适度频率」,把功耗留给规模(65,536 个 MAC)而非高频。",
+  "<b>频率 vs 功耗/带宽的取舍</b>:动态功耗随频率上升,而算力还受 DDR3 ~30 GB/s 限制;在带宽受限区间盲目拉高频率收益有限。TPU 把 700 MHz 与大片上 24 MiB Unified Buffer 搭配,用片上复用喂饱阵列,而不是单靠提频。",
+  "<b>诚实边界</b>:TPU v1 论文未公开逐级时序报告、具体 setup/hold 余量、时钟树或 PVT 角等细节;此处「关键路径浅、连线短、故易达 700 MHz」是脉动阵列结构的通行时序道理与 v1 公布的 700 MHz/92 TOPS 一致的推断,而非 v1 披露的 STA 数字。"
+ ],
+ "result": [
+  {
+   "label": "目标频率",
+   "value": "700 MHz(周期 ≈1.43 ns)"
+  },
+  {
+   "label": "单级关键路径",
+   "value": "一个 8-bit 乘加 + 寄存器(逻辑浅)"
+  },
+  {
+   "label": "互连特征",
+   "value": "规则局部短连线,无长全局线"
+  },
+  {
+   "label": "由此达到的算力",
+   "value": "~92 TOPS(INT8)"
+  },
+  {
+   "label": "时序收敛难度",
+   "value": "低(结构规则、路径浅、可预测)"
+  },
+  {
+   "label": "对照通用 CPU",
+   "value": "后者有长关键路径,需费力切级/加缓冲"
+  }
+ ],
+ "after": [
+  "<b>做静态时序分析(STA)</b>:在目标工艺角(慢角/快角、温压变化)下验证每条「寄存器→寄存器」路径都满足 1.43 ns 预算,确认 setup/hold 都有正余量,关键路径确实落在 PE 内而非某条意外长线。",
+  "<b>验阵列边界路径</b>:阵列规则但边缘的取数、部分和写回、与累加器/Unified Buffer 的接口路径要单独检查——这些往往比阵列内部更可能成为真正关键路径。",
+  "<b>检查时钟树偏斜</b>:65,536 个 PE 要同步推进,时钟分布的 skew 必须受控(这是数据中心 ASIC 的通行做法);v1 未公开其时钟树细节,故只按通行实践要求验证而不编造具体数字。",
+  "<b>回看系统级是否值得</b>:把这一频率代入屋顶线模型,确认 700 MHz 给出的算力没有被 DDR3 ~30 GB/s 带宽白白浪费;若被带宽卡死,提频意义不大——频率预算要和带宽、功耗一起裁决。",
+  "<b>交付与冻结</b>:把验证过的频率目标、PE 关键路径定义与时钟约束(SDC)交给 ⑤ RTL/后端,作为综合与布局布线的时序约束基线。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(700 MHz/~92 TOPS、脉动阵列与局部互连为 v1 披露;逐级 STA 余量、时钟树、PVT 角等为数据中心推理 ASIC 通行实践,非 v1 逐字披露)"
+}

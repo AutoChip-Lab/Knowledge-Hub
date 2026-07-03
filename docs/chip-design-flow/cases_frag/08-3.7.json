@@ -1,0 +1,123 @@
+{
+ "secNum": "3.7",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 时序收敛(timing closure / ECO):布局后/CTS后/布线后反复 STA,setup 换快单元、hold 插延迟单元,用 useful skew + 增量 ECO 一拍拍逼到全工况转正",
+ "oneLine": "本案例落到「时序收敛 / ECO」小节:把 TPU 的门级网表布到 28nm 版图上后,每经一道工序(布局→CTS→布线)就跑一次 STA,看哪些路径 setup 没赶上、哪些 hold 跑过头;setup 违例靠『提速』(换快单元、缩线、重摆、升驱动),hold 违例靠『加延迟』(插延迟单元),再辅以 useful skew 借隔壁裕量救紧路径,全部用只动局部、不重跑全片的增量 ECO 完成——这是一场贯穿后端全程、最耗时的拉锯:对 TPU 这种 256×256 大阵列,阵列内关键路径短、setup 宽裕,真正难缠的是 UB↔阵列↔累加器的长全局路径(修 setup)和海量相邻 PE 间短路径(修 hold,琐碎但量大),直到 setup/hold 在所有工艺角都 ≥0 才算收敛。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 410\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"26\">时序收敛:布局后/CTS后/布线后反复 STA,setup 违例换快单元、hold 违例插延迟单元,用 useful skew + 增量 ECO 一拍拍逼到全绿</text><g class=\"cs-part\" data-k=\"sta\" data-g=\"sta\"><rect class=\"cs-box\" x=\"24\" y=\"52\" width=\"170\" height=\"78\" rx=\"8\"/><text class=\"cs-t\" x=\"109\" y=\"80\">STA 静态时序</text><text class=\"cs-sub\" x=\"109\" y=\"100\">布局/CTS/布线后各跑一次</text><text class=\"cs-sub\" x=\"109\" y=\"118\">报 setup / hold 违例路径</text></g><line class=\"cs-arr\" x1=\"194\" y1=\"78\" x2=\"252\" y2=\"60\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"194\" y1=\"104\" x2=\"252\" y2=\"124\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"setup\" data-g=\"setup\"><rect class=\"cs-box\" x=\"256\" y=\"40\" width=\"210\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"361\" y=\"64\">setup 违例(慢了,差点没赶上)</text><text class=\"cs-sub\" x=\"361\" y=\"84\">长全局路径:UB↔阵列↔累加器跨片走线</text></g><g class=\"cs-part\" data-k=\"hold\" data-g=\"hold\"><rect class=\"cs-box\" x=\"256\" y=\"106\" width=\"210\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"361\" y=\"130\">hold 违例(太快了,数据跑过头)</text><text class=\"cs-sub\" x=\"361\" y=\"150\">短路径海量:大阵列相邻 PE 间琐碎</text></g><line class=\"cs-arr\" x1=\"466\" y1=\"69\" x2=\"524\" y2=\"69\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"466\" y1=\"135\" x2=\"524\" y2=\"135\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"fixfast\" data-g=\"fixfast\"><rect class=\"cs-box\" x=\"528\" y=\"40\" width=\"168\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"612\" y=\"62\">修 setup:提速</text><text class=\"cs-sub\" x=\"612\" y=\"82\">换快单元/缩线/重摆/升驱动</text></g><g class=\"cs-part\" data-k=\"fixslow\" data-g=\"fixslow\"><rect class=\"cs-box\" x=\"528\" y=\"106\" width=\"168\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"612\" y=\"128\">修 hold:加延迟</text><text class=\"cs-sub\" x=\"612\" y=\"148\">插延迟单元(buffer/delay)</text></g><g class=\"cs-part\" data-k=\"skew\" data-g=\"skew\"><rect class=\"cs-box\" x=\"180\" y=\"190\" width=\"360\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"214\">useful skew(有意调时钟到达)</text><text class=\"cs-sub\" x=\"360\" y=\"234\">故意让某些寄存器时钟早/晚到,借隔壁裕量救紧路径,不靠堆单元</text></g><line class=\"cs-arr\" x1=\"612\" y1=\"98\" x2=\"540\" y2=\"192\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><line class=\"cs-arr\" x1=\"612\" y1=\"164\" x2=\"540\" y2=\"210\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><g class=\"cs-part\" data-k=\"eco\" data-g=\"eco\"><rect class=\"cs-box\" x=\"180\" y=\"270\" width=\"360\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"296\">增量 ECO(只动违例局部,不重跑全片)</text><text class=\"cs-sub\" x=\"360\" y=\"318\">改一点→重摆/重连这一小块→局部重 STA→看裕量挪没挪坏别处</text></g><line class=\"cs-arr\" x1=\"360\" y1=\"246\" x2=\"360\" y2=\"268\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"180,302 110,302 110,91 22,91\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"118\" y=\"360\">回灌 STA 复核:这拍修的有没有把别处推成新违例(拉锯,贯穿布局→CTS→布线全程)</text><g class=\"cs-part\" data-k=\"green\" data-g=\"green\"><rect class=\"cs-box\" x=\"560\" y=\"270\" width=\"136\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"628\" y=\"298\">全工况转正</text><text class=\"cs-sub\" x=\"628\" y=\"318\">setup/hold 在各 corner 均 ≥0</text></g><line class=\"cs-arr\" x1=\"540\" y1=\"302\" x2=\"558\" y2=\"302\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"24\" y=\"396\">注:STA/useful skew/ECO/延迟单元为通行后端实践;TPU v1 不公开其时序路径、QoR 与版图数字,图为示意,借已知结构(脉动阵列/24MiB UB/700MHz/28nm)作被收敛对象</text></svg>",
+ "legend": [
+  {
+   "k": "sta",
+   "name": "STA(静态时序分析,违例的发现者)",
+   "desc": "时序收敛的眼睛:不跑向量,而是基于网表+延迟模型穷举每条路径,算每个寄存器到寄存器的到达时间,报出 setup(数据晚到,差点没赶上下一拍)和 hold(数据太早到,把这一拍的旧值冲掉)两类违例及其裕量(slack)。后端不是只在最后跑一次 STA,而是布局后、CTS 后、布线后各跑一遍——延迟随版图越来越实(线长、寄生、时钟树偏斜逐步落地),每道工序后时序图都会变,必须重算。它是整个收敛循环每一拍的输入。"
+  },
+  {
+   "k": "setup",
+   "name": "setup 违例 → 修 setup:提速",
+   "desc": "数据从前一个寄存器出发、穿过组合逻辑+走线,没能在下一拍时钟沿前稳定到达——『慢了』。修法是给这条路提速:把路径上的慢单元换成同功能的快单元(高驱动/低 Vt)、缩短绕远的走线、把相关单元重新摆近、提高驱动能力。在 TPU 里,setup 违例集中在长全局路径——Unified Buffer 到脉动阵列、阵列到 4 MiB 累加器这种要跨越大半个 die 的连线;而阵列内部相邻 PE 间路径很短,700MHz 下 setup 裕量宽,基本不愁。"
+  },
+  {
+   "k": "hold",
+   "name": "hold 违例 → 修 hold:加延迟",
+   "desc": "和 setup 相反:数据来得太快,在本拍时钟沿还没采稳就被下一段逻辑改写了——『快了』。修法反直觉地是给这条短路径『加延迟』:插入延迟单元(delay cell / buffer)把数据故意拖慢到采样窗口之后。hold 与频率无关、只看最短路径,所以在 TPU 这种 256×256=65,536 个 MAC 的大阵列里,相邻 PE 之间的海量极短路径会冒出成千上万处 hold 违例——每处修起来很琐碎(就插个延迟单元),但量极大,是大阵列后端最磨人的体力活。"
+  },
+  {
+   "k": "skew",
+   "name": "useful skew(有意时钟偏斜,借裕量)",
+   "desc": "不靠堆单元,而是动『时钟何时到』:故意让某个寄存器的时钟稍晚到(给它前面那段路多争一点 setup 时间),或稍早到(缓解它后面那段的 hold)。本质是把相邻路径的多余裕量『借』给紧的那条,在 CTS(时钟树综合)阶段就规划进去。它常常比无脑换大单元/插 buffer 更省面积省功耗,是修紧路径的高级手段,但用过头会反过来制造新的 hold,需谨慎。"
+  },
+  {
+   "k": "eco",
+   "name": "增量 ECO(Engineering Change Order,只动局部)",
+   "desc": "收敛的执行方式:发现违例后,绝不重跑整片布局布线(那要几十小时、还会把已收敛的地方推乱),而是只对违例路径周边那一小块做工程改动单——换/插几个单元、重摆重连这几根线,再对受影响区域做局部增量 STA。改动小、可控、可回退,代价是每动一处都可能把裕量从这里挪到那里、在别处催生新违例,于是要回灌 STA 复核——这就是『拉锯』的来源。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "sta",
+    "setup",
+    "hold"
+   ],
+   "cap": "① 跑 STA 找违例:对当前版图(布局后/CTS后/布线后各一次)做静态时序分析,把路径分成两堆——setup 违例(数据晚到,差点没赶上)和 hold 违例(数据太早,把旧值冲掉),各带裕量数字"
+  },
+  {
+   "keys": [
+    "setup",
+    "fixfast"
+   ],
+   "cap": "② 修 setup 靠提速:对晚到的长全局路径(TPU 里如 UB↔阵列↔累加器的跨片连线),换快单元、缩走线、重摆靠近、升驱动——把这条路跑快,赶上下一拍时钟沿"
+  },
+  {
+   "keys": [
+    "hold",
+    "fixslow"
+   ],
+   "cap": "③ 修 hold 靠加延迟:对太快的短路径(大阵列里相邻 PE 间海量极短路径)插延迟单元,把数据故意拖到采样窗口之后——量大且琐碎,是 256×256 阵列最磨人的体力活"
+  },
+  {
+   "keys": [
+    "skew",
+    "fixfast",
+    "fixslow"
+   ],
+   "cap": "④ 用 useful skew 借裕量:对最紧的路径,不只堆单元,还在 CTS 时有意微调时钟到达时刻——让某寄存器时钟晚到争 setup、早到缓 hold,借隔壁余量救命,省面积省功耗"
+  },
+  {
+   "keys": [
+    "eco",
+    "sta",
+    "green"
+   ],
+   "cap": "⑤ 增量 ECO + 回灌复核:每处只改违例局部、做局部重 STA,再回灌全局复核这一拍有没有把别处推成新违例——拉锯往复,贯穿布局/CTS/布线全程,直到 setup/hold 在所有工艺角都 ≥0,全工况转正"
+  }
+ ],
+ "before": [
+  "<b>先把时序约束(SDC)钉死</b>:时钟周期(700MHz≈1.43ns,示意)、I/O 延迟、多周期/伪路径、各时钟域关系、输入转换与输出负载都要在 SDC 里写清——STA 算 setup/hold 全以此为准绳;约束错一条,后面收敛的全是错目标。这是通行后端实践,TPU 不公开其约束脚本。",
+  "<b>定要在哪些工艺角(corner)+ OCV 上收敛</b>:芯片要在慢角(SS、低压、高温,setup 最差)和快角(FF、高压、低温,hold 最差)都满足,还要叠片上偏差(OCV/AOCV)。收敛不是修到 typ 角全绿,而是修到最坏角全绿——一开始就要把多角多模(MMMC)列全,否则后期换角全推翻重来。",
+  "<b>准备好库与寄生数据,STA 才算得准</b>:要有 28nm 标准单元库(.lib,含快/慢单元、延迟单元的时序)、布线后用 SPEF/SPEF-like 提取的寄生 RC、CTS 后的真实时钟树延迟。布局阶段只有估算线长(理想/估算时钟),越往后数据越实、时序越准——所以同一条路径在不同阶段会反复重判。",
+  "<b>给收敛留好『可换的弹药』</b>:库里要备齐多驱动强度/多 Vt 的同功能单元(供 setup 提速)和一系列延迟单元(供 hold 加延迟),floorplan 里要留出 ECO 用的备用空间;弹药不齐,STA 报了违例也无单元可换、无空间可摆。",
+  "<b>诚实标注边界</b>:STA、setup/hold 修复、useful skew、增量 ECO、多角多模收敛都是通行后端 EDA 实践;TPU v1 不公开其具体时序路径、slack、QoR 或版图细节。本案以 TPU 已知结构(256×256 脉动阵列、24 MiB UB、4 MiB 累加器、700MHz、28nm、weight-stationary)作为被收敛的对象来讲时序收敛概念,所有路径/数字均为示意。"
+ ],
+ "during": [
+  "<b>每道工序后都重跑 STA,别等到最后</b>:布局后(估算线长/理想时钟)、CTS 后(时钟树偏斜落地、大量 hold 浮现)、布线后(真实寄生 RC 提取,setup 收紧)各跑一次 STA。时序图随版图变实而一路变化,『最后统一收敛』是幻想——收敛是贯穿后端全程、和每一步交织的持续拉锯。",
+  "<b>setup 和 hold 是反向操作,别用一种药治两种病</b>:setup 违例=路径太慢→提速(换快单元、缩线、重摆、升驱动);hold 违例=路径太快→反过来加延迟(插延迟单元)。修 setup 加的速度可能恶化 hold、修 hold 加的延迟可能恶化 setup,二者天然对冲——要在同一份时序图上同时盯着两端,不能顾此失彼。",
+  "<b>抓 TPU 的真正痛点:长 setup 路 + 海量 hold 点</b>:256×256 大阵列内相邻 PE 间路径极短,700MHz 下 setup 宽裕、几乎不愁;真正难的是 ①UB↔阵列↔累加器要跨大半个 die 的长全局路径(修 setup),②阵列内成千上万条极短路径冒出的海量 hold 违例(每处插个延迟单元很琐碎,但数量巨大)。把力气压在这两处,而不是均摊。",
+  "<b>优先用 useful skew,而非无脑堆单元</b>(示意,通行实践):对最紧的几条路径,先看能不能在 CTS 阶段微调时钟到达时刻——让接收寄存器时钟稍晚到争 setup、稍早到缓 hold,借相邻路径的余量。这比换大驱动单元/插一串 buffer 更省面积、省功耗、省 IR-drop;但偏斜过度会反咬出新 hold,需在多角下复核。",
+  "<b>只做增量 ECO,绝不轻易重跑全片</b>:发现违例只对那一小块下工程改动单(换/插几个单元、重摆重连几根线)+局部增量 STA,不重跑整片布局布线(几十小时且会把已收敛处推乱)。每个 ECO 改动小、可控、可回退;布线后的 ECO 还要用预留的备用单元/空间『无扰』地塞进去,尽量不动已布好的线。",
+  "<b>铁律:每修一拍都要回灌复核,提防『按下葫芦浮起瓢』</b>。修紧一条路常把裕量从这里挪到那里、在别处催生新违例(改 setup 伤 hold、改一处时钟伤一片)。所以收敛是『改→局部 STA→全局复核→再改』的循环,不是一遍过;不复核就 ECO,极易越修违例越多。这是后端最耗时、最考验耐心的拉锯环节。"
+ ],
+ "result": [
+  {
+   "label": "收敛入口",
+   "value": "布局后 / CTS 后 / 布线后各跑 STA,报 setup(晚到)与 hold(太早)违例及 slack(示意)"
+  },
+  {
+   "label": "修 setup(提速)",
+   "value": "换快单元(高驱动/低 Vt)、缩走线、重摆靠近、升驱动——治 UB↔阵列↔累加器长全局路径"
+  },
+  {
+   "label": "修 hold(加延迟)",
+   "value": "插延迟单元(delay cell/buffer)拖慢数据——治大阵列相邻 PE 间海量短路径,琐碎量大"
+  },
+  {
+   "label": "useful skew(示意)",
+   "value": "CTS 阶段有意调时钟到达:晚到争 setup、早到缓 hold,借隔壁裕量,省面积/功耗"
+  },
+  {
+   "label": "增量 ECO",
+   "value": "只动违例局部 + 局部重 STA + 全局回灌复核,不重跑全片;布线后用预留备用单元无扰塞入"
+  },
+  {
+   "label": "收敛判据",
+   "value": "setup/hold 在所有工艺角(慢角/快角)+OCV 下 slack 均 ≥0,即全工况转正(数字为示意目标,非 TPU 公开)"
+  }
+ ],
+ "after": [
+  "<b>核多角多模全绿,不只看 typ</b>:确认 setup 在慢角、hold 在快角、叠加 OCV 后所有路径 slack 均 ≥0,各模式(功能/测试/低功耗模式)都满足;只要有一个角或一个模式还红,就没收敛——这是最容易自欺的口子(typ 角全绿 ≠ 真收敛)。",
+  "<b>顺带核拥塞与 DRC,别为修时序撞坏可布线性</b>:为提速换大单元、为 hold 插一堆延迟单元会增加局部面积与连线,可能把布线拥塞(congestion)或间距/天线等 DRC 推坏。每轮 ECO 后要回看拥塞热图和 DRC,确认时序修好了没有以可制造性为代价。",
+  "<b>顺带核功耗与 IR-drop,提防修时序顶坏电源完整性</b>:升驱动、堆 buffer 会抬动态/漏电功耗与瞬时电流,可能压低局部供电(IR-drop),反过来又让时序变慢——时序、功耗、IR-drop 三者耦合。修完时序要复核功耗预算和电源网格压降,别陷入越修越差的怪圈。",
+  "<b>把 ECO 迭代收敛、避免反复振荡</b>:每轮 ECO 都回灌 STA 复核,确认这一拍没把别处推成新违例;若出现『修 A 坏 B、修 B 坏 A』的振荡,要回头用 useful skew 或调 floorplan/约束从根上松绑,而不是无限插单元死磕——直到一轮 ECO 不再产生新违例,迭代才收住。",
+  "<b>收敛后交签核(sign-off)</b>:用签核级 STA(签核工具+签核库+SPEF+全 corner/OCV)出最终时序报告,连同拥塞/DRC/功耗/IR-drop 的复核结论一起进物理签核;时序收敛是后端最耗时的拉锯,直到这份签核报告全绿,版图才能交 DRC/LVS 与 GDSII 出片。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(256×256 8-bit MAC 脉动阵列、24 MiB Unified Buffer、4 MiB 累加器、700MHz、28nm、weight-stationary 为该文披露的已知结构,作为被收敛对象;STA、setup/hold 修复、useful skew、延迟单元、增量 ECO、多角多模收敛、签核为通行后端 EDA 实践,图与所有路径/slack/QoR 数字均为示意,非 TPU v1 公开的时序路径、版图或 QoR 细节)"
+}

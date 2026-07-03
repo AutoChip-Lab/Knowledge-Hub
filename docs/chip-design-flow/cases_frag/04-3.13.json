@@ -1,0 +1,116 @@
+{
+ "secNum": "3.13",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · roofline 性能建模:先建模判瓶颈,达标再写 RTL",
+ "oneLine": "TPU 论文的 roofline 分析正是「微架构级性能建模」的范例:先用模型把真实负载的利用率/瓶颈(被 92 TOPS 算力卡、还是被 ~30 GB/s 带宽卡)算出来,确认微架构真能兑现 ③ 承诺的吞吐,达标才写 RTL,并同步把这个块怎么验定下来。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"24\">微架构级性能建模:先用 roofline 模型判瓶颈 → 不达标回炉调微架构 → 达标再写 RTL/定验证</text><g class=\"cs-part\" data-k=\"axis\" data-g=\"axis\"><line x1=\"80\" y1=\"210\" x2=\"430\" y2=\"210\" stroke=\"#475569\" stroke-width=\"1.5\"/><line x1=\"80\" y1=\"210\" x2=\"80\" y2=\"70\" stroke=\"#475569\" stroke-width=\"1.5\"/><text class=\"cs-note\" x=\"300\" y=\"232\">运算强度 OI(Ops/Byte,横轴对数)→</text><text class=\"cs-note\" x=\"18\" y=\"66\">性能</text><text class=\"cs-note\" x=\"18\" y=\"80\">TOPS</text></g><g class=\"cs-part\" data-k=\"bw\" data-g=\"bw\"><line class=\"cs-arr\" x1=\"80\" y1=\"200\" x2=\"210\" y2=\"92\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"92\" y=\"150\">带宽屋顶(斜)</text><text class=\"cs-note\" x=\"92\" y=\"164\">~30 GB/s DDR3</text></g><g class=\"cs-part\" data-k=\"peak\" data-g=\"peak\"><line x1=\"205\" y1=\"90\" x2=\"430\" y2=\"90\" stroke=\"#7c3aed\" stroke-width=\"2.5\"/><text class=\"cs-note\" x=\"300\" y=\"82\">算力屋顶(平)≈ 92 TOPS</text></g><g class=\"cs-part\" data-k=\"meas\" data-g=\"meas\"><circle cx=\"150\" cy=\"170\" r=\"6\" fill=\"#ef4444\"/><circle cx=\"178\" cy=\"150\" r=\"6\" fill=\"#ef4444\"/><circle cx=\"250\" cy=\"120\" r=\"6\" fill=\"#ef4444\"/><text class=\"cs-note\" x=\"120\" y=\"196\">实测点:多落在斜坡 = 被带宽卡(屋顶之下)</text></g><g class=\"cs-part\" data-k=\"model\" data-g=\"flow\"><rect class=\"cs-box\" x=\"488\" y=\"60\" width=\"200\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"588\" y=\"84\">① 建 cycle 模型</text><text class=\"cs-sub\" x=\"588\" y=\"102\">阵列利用率 / decode 延迟</text></g><g class=\"cs-part\" data-k=\"check\" data-g=\"flow\"><rect class=\"cs-box\" x=\"488\" y=\"150\" width=\"200\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"588\" y=\"174\">② 对屋顶判瓶颈</text><text class=\"cs-sub\" x=\"588\" y=\"192\">算力卡? 还是带宽卡?</text></g><g class=\"cs-part\" data-k=\"loop\" data-g=\"flow\"><rect class=\"cs-box\" x=\"488\" y=\"240\" width=\"200\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"588\" y=\"264\">③ 不达标→回炉</text><text class=\"cs-sub\" x=\"588\" y=\"282\">回 §3.1/3.5/3.6 调微架构</text></g><g class=\"cs-part\" data-k=\"rtl\" data-g=\"flow\"><rect class=\"cs-box\" x=\"488\" y=\"330\" width=\"200\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"588\" y=\"354\">④ 达标→写 RTL</text><text class=\"cs-sub\" x=\"588\" y=\"372\">同步定块级验证计划</text></g><g class=\"cs-part\" data-g=\"fa\"><line class=\"cs-arr\" x1=\"588\" y1=\"118\" x2=\"588\" y2=\"146\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-g=\"fa\"><line class=\"cs-arr\" x1=\"588\" y1=\"208\" x2=\"588\" y2=\"236\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-g=\"fb\"><polyline class=\"cs-arr\" points=\"488,269 460,269 460,89 484,89\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"438\" y=\"300\">回炉环</text><g class=\"cs-part\" data-g=\"fc\"><line class=\"cs-arr\" x1=\"588\" y1=\"298\" x2=\"588\" y2=\"326\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-g=\"probe\"><polyline class=\"cs-arr\" points=\"430,140 470,140 470,89 484,89\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"300\" y=\"252\">roofline 把「实测点 vs 屋顶」的差距,翻译成可决策的瓶颈结论</text></svg>",
+ "legend": [
+  {
+   "k": "peak",
+   "name": "算力屋顶(平顶)≈ 92 TOPS",
+   "desc": "256×256=65,536 个 8-bit MAC 在 700 MHz 下的峰值算力(INT8)——这是 roofline 的水平上限,运算强度足够高时性能被它卡住(compute-bound)。"
+  },
+  {
+   "k": "bw",
+   "name": "带宽屋顶(斜坡)~30 GB/s",
+   "desc": "片外 8 GiB DDR3 的带宽决定的斜线上限:运算强度低(每读一字节只做几次乘加)时,性能被供数带宽卡住(memory-bound),爬不上平顶。"
+  },
+  {
+   "k": "meas",
+   "name": "实测/建模点(红点)",
+   "desc": "把真实推理负载(MLP/CNN/LSTM)的运算强度与实测性能打到图上;TPU v1 上不少负载落在斜坡之下,说明实际是被带宽、而非被 MAC 阵列卡住。"
+  },
+  {
+   "k": "flow",
+   "name": "建模→回炉→写 RTL 流程",
+   "desc": "右侧小流程:建 cycle 模型→对屋顶判瓶颈→不达标就回 §3.1/3.5/3.6 调流水/FIFO/bank→达标才写 RTL 并定验证计划。核心纪律是「别等 RTL 写完才发现微架构本身达不到指标」。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "axis",
+    "peak",
+    "bw"
+   ],
+   "cap": "① 先画出两条屋顶:水平顶 = 92 TOPS 峰值算力,斜坡 = ~30 GB/s DDR3 带宽。两条线交点的运算强度,就是「算力卡」与「带宽卡」的分界(脊点)"
+  },
+  {
+   "keys": [
+    "meas",
+    "peak",
+    "bw"
+   ],
+   "cap": "② 把真实负载的运算强度与建模性能打成红点:落在斜坡上 = 被带宽卡,贴近平顶 = 被算力卡。TPU v1 多数推理负载落在斜坡之下,瓶颈是供数带宽而非 MAC 阵列"
+  },
+  {
+   "keys": [
+    "model",
+    "check",
+    "probe"
+   ],
+   "cap": "③ 用 cycle 模型把「阵列利用率、decode/取数延迟」算出来,对照屋顶定量回答:这套微架构到底兑不兑得出 ③ 承诺的吞吐?瓶颈在哪一环?"
+  },
+  {
+   "keys": [
+    "loop",
+    "model"
+   ],
+   "cap": "④ 不达标就回炉:被带宽卡→回 §3.5/3.6 加 Unified Buffer/复用、调 bank 与 FIFO;被算力或时序卡→回 §3.1 调阵列规模/流水。改完重跑模型,直到红点够接近屋顶"
+  },
+  {
+   "keys": [
+    "rtl"
+   ],
+   "cap": "⑤ 达标后才进入 ⑤ RTL,并同步交出块级验证计划(覆盖点、激励、checker)——性能在纸面证明过,才值得花几个月写 RTL"
+  }
+ ],
+ "before": [
+  "<b>先定要回答的问题</b>:这套微架构在真实负载上到底能不能兑现 ③ 给的吞吐/延迟?瓶颈是被算力(92 TOPS 峰值)卡、还是被带宽(~30 GB/s DDR3)卡?——这正是 roofline 要量化回答的。",
+  "<b>要拍板的建模量</b>:用哪类模型(解析 roofline / 块级 cycle-accurate C++/SystemC)、模哪些关键指标(脉动阵列利用率、Unified Buffer 命中/复用率、decode 与取数延迟、装填+排空开销),以及代表性负载集。",
+  "<b>必备输入</b>:③ 架构给的吞吐/延迟预算、峰值算力(65,536 个 MAC × 700 MHz ≈ 92 TOPS)、片外带宽(~30 GB/s)、片内 24 MiB UB 容量;以及目标负载(MLP/CNN/LSTM)的运算强度。",
+  "<b>必须想清的考量</b>:每个目标负载的运算强度落在脊点哪一侧(memory-bound 还是 compute-bound),决定优化方向;以及同步要把「这个块怎么验」一并规划,而不是只建功能模型不建性能模型。"
+ ],
+ "during": [
+  "<b>目标</b>:在写 RTL 之前,用模型把性能跑出来,确认微架构本身达标——本小节的灵魂纪律是「别等 RTL 写完才发现微架构压根兑不出指标,那时改要赔上几个月」。",
+  "<b>先建解析 roofline 定大方向</b>:两条屋顶(92 TOPS 平顶 + ~30 GB/s 斜坡)一画,就能快速判断每个负载是带宽卡还是算力卡——TPU v1 论文显示很多推理负载落在斜坡之下,瓶颈在供数而非 MAC 阵列。",
+  "<b>再建块级 cycle 模型定细账</b>:解析模型说不清的利用率/延迟,用 cycle-accurate 模型补——量出脉动阵列实际利用率、UB 复用是否够喂满阵列、host 经 PCIe 发 CISC 指令的开销、装填/排空摊销,确认稳态利用率达标。",
+  "<b>不达标就回炉、而非硬写 RTL</b>:被带宽卡→回 §3.5/3.6 扩大 UB 容量/提高权重与激活复用、重排 bank 与 FIFO 降访存;被算力或频率卡→回 §3.1 调阵列规模或流水级数。这是「兑现 vs 回炉」的取舍,RTL 阶段几乎无力回天。",
+  "<b>性能与验证同步规划</b>:基于同一份微架构,让验证团队把块级验证计划(覆盖点、激励、checker)定下来——性能模型证「跑得够快」,验证计划证「跑得对」,两者都是 ⑤ RTL 的直接输入。",
+  "<b>用 roofline 的差距驱动决策</b>:实测点离屋顶越远,说明微架构离峰值越浪费;把这个差距翻译成具体回炉项(扩 UB、加复用、调 bank),迭代到红点足够贴近屋顶再收手,避免为虚高峰值堆面积。"
+ ],
+ "result": [
+  {
+   "label": "峰值算力(平顶)",
+   "value": "≈ 92 TOPS(INT8,65,536 MAC × 700 MHz)"
+  },
+  {
+   "label": "带宽屋顶(斜坡)",
+   "value": "~30 GB/s(片外 8 GiB DDR3)"
+  },
+  {
+   "label": "建模结论",
+   "value": "多数推理负载 memory-bound,被带宽而非 MAC 卡"
+  },
+  {
+   "label": "模型层次",
+   "value": "解析 roofline + 块级 cycle-accurate"
+  },
+  {
+   "label": "达标判据",
+   "value": "阵列利用率达标、实测点足够贴近屋顶"
+  },
+  {
+   "label": "交付物",
+   "value": "性能模型与结论 + 块级验证计划(覆盖点/激励)"
+  }
+ ],
+ "after": [
+  "<b>用模型结论拍板:达标进 RTL、不达标回炉</b>:确认目标负载利用率/延迟达到 ③ 预算才放行 ⑤ RTL;不达标则带着 roofline 差距回 §3.1/3.5/3.6 调微架构,改完重跑模型闭环验证。",
+  "<b>交付性能模型与结论</b>:把 roofline 图、cycle 模型、各负载的利用率/瓶颈结论写进微架构规格,作为「这套微架构达标」的可追溯证据交给下游。",
+  "<b>定块级验证计划并交验证团队</b>:基于微架构定覆盖点(满流水利用率、FIFO 满/空背压、装填/排空边界、指令序列)、激励策略与 checker,使功能验证与性能建模同步推进。",
+  "<b>用试综合/RTL 实测回标模型</b>:RTL 出来后用真实 cycle 数回校准之前的性能模型,确认建模预测与实现一致;若实现偏离屋顶预期,及早回炉而非拖到 ⑦。",
+  "<b>留住建模资产复用到下一代</b>:把 roofline 与 cycle 模型沉淀为可复用的设计空间探索工具——下一代(如 TPU v2/v3/v4 pod 提升带宽与算力)可在同一套模型上快速评估,避免从白纸重建。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(roofline 分析、92 TOPS 峰值、~30 GB/s DDR3、负载多 memory-bound 等均为论文披露;cycle 模型/验证计划的具体形态为这类推理 ASIC 性能建模的通行实践)"
+}

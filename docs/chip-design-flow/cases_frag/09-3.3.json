@@ -1,0 +1,119 @@
+{
+ "secNum": "3.3",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 多角多模与片上偏差(MMMC / OCV):让 256×256 阵列在「每一种工艺/电压/温度 × 每一种工作模式」的最坏组合下都跑得稳",
+ "oneLine": "时序签核不是只在一组「标称」条件下确认 700MHz——硅片出厂会落在 SS~FF 的工艺分布上,数据中心里电压有波动、温度可达高位,芯片还要在功能/测试/低功耗等多种模式间切换;同一颗 die 上相邻单元也快慢不一(片上偏差)。MMMC(多角多模)就是把「多 PVT corner × 多模式」的所有组合都建成 view、在 PrimeTime 里一起签核,再叠 OCV/AOCV/POCV 给路径加 derate(降额),要求最坏组合下仍满足判据:慢工艺-低压-高温查建立(setup)、快工艺-高压-低温查保持(hold)。漏掉哪个 corner 或模式,硅片在那个条件上就会原形毕露——这正是把 TPU 的脉动阵列、24 MiB UB、700MHz 在 28nm 上「签到真世界每个角落」的关键一节。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-t\" x=\"360\" y=\"26\">MMMC 签核:多模式 × 多 PVT corner 同时成立,最坏组合也必须过</text><g class=\"cs-part\" data-k=\"mode\" data-g=\"mode\"><rect class=\"cs-box\" x=\"20\" y=\"50\" width=\"180\" height=\"150\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"110\" y=\"76\">多模式(Mode)</text><text class=\"cs-sub\" x=\"110\" y=\"100\">功能 functional</text><text class=\"cs-sub\" x=\"110\" y=\"120\">测试 scan/test</text><text class=\"cs-sub\" x=\"110\" y=\"140\">低功耗 low-power</text><text class=\"cs-sub\" x=\"110\" y=\"166\">每模式各有时钟/</text><text class=\"cs-sub\" x=\"110\" y=\"184\">约束/激活路径</text></g><line class=\"cs-arr\" x1=\"200\" y1=\"125\" x2=\"244\" y2=\"125\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"matrix\" data-g=\"matrix\"><rect class=\"cs-box\" x=\"246\" y=\"50\" width=\"262\" height=\"150\" rx=\"8\" fill=\"#fefce8\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"377\" y=\"74\">PVT corner 矩阵(工艺×电压×温度)</text><g class=\"cs-part\" data-k=\"ss\" data-g=\"ss\"><rect class=\"cs-box\" x=\"266\" y=\"92\" width=\"74\" height=\"44\" rx=\"6\" fill=\"#fee2e2\" stroke=\"#fca5a5\"/><text class=\"cs-t\" x=\"303\" y=\"112\">SS</text><text class=\"cs-sub\" x=\"303\" y=\"128\">慢·低压·高温</text></g><g class=\"cs-part\" data-k=\"tt\" data-g=\"tt\"><rect class=\"cs-box\" x=\"344\" y=\"92\" width=\"74\" height=\"44\" rx=\"6\"/><text class=\"cs-t\" x=\"381\" y=\"112\">TT</text><text class=\"cs-sub\" x=\"381\" y=\"128\">标称</text></g><g class=\"cs-part\" data-k=\"ff\" data-g=\"ff\"><rect class=\"cs-box\" x=\"422\" y=\"92\" width=\"74\" height=\"44\" rx=\"6\" fill=\"#dbeafe\" stroke=\"#93c5fd\"/><text class=\"cs-t\" x=\"459\" y=\"112\">FF</text><text class=\"cs-sub\" x=\"459\" y=\"128\">快·高压·低温</text></g><text class=\"cs-sub\" x=\"303\" y=\"158\">查 setup(最慢)</text><text class=\"cs-sub\" x=\"459\" y=\"158\">查 hold(最快)</text><text class=\"cs-sub\" x=\"377\" y=\"182\">V±、T 多点笛卡尔积全覆盖</text></g><line class=\"cs-arr\" x1=\"508\" y1=\"125\" x2=\"552\" y2=\"125\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"ocv\" data-g=\"ocv\"><rect class=\"cs-box\" x=\"554\" y=\"74\" width=\"150\" height=\"102\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"629\" y=\"100\">片上偏差</text><text class=\"cs-t\" x=\"629\" y=\"120\">OCV/AOCV/POCV</text><text class=\"cs-sub\" x=\"629\" y=\"144\">同片单元也有差异</text><text class=\"cs-sub\" x=\"629\" y=\"162\">→ 路径加 derate</text></g><g class=\"cs-part\" data-k=\"worst\" data-g=\"worst\"><rect class=\"cs-box\" x=\"180\" y=\"244\" width=\"360\" height=\"58\" rx=\"8\" fill=\"#fff7ed\" stroke=\"#fdba74\"/><text class=\"cs-t\" x=\"360\" y=\"270\">最坏组合:模式 × corner × derate 联合签核</text><text class=\"cs-sub\" x=\"360\" y=\"290\">setup 看 SS-低压-高温+derate;hold 看 FF-高压-低温</text></g><line class=\"cs-arr\" x1=\"377\" y1=\"200\" x2=\"360\" y2=\"240\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"110\" y1=\"200\" x2=\"240\" y2=\"252\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><line class=\"cs-arr\" x1=\"629\" y1=\"176\" x2=\"500\" y2=\"252\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><g class=\"cs-part\" data-k=\"gate\" data-g=\"gate\"><rect class=\"cs-box\" x=\"220\" y=\"332\" width=\"280\" height=\"56\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"360\" y=\"358\">全 view 绿 → 时序签核通过</text><text class=\"cs-sub\" x=\"360\" y=\"378\">漏一个 corner/模式 = 硅上该条件失效</text></g><line class=\"cs-arr\" x1=\"360\" y1=\"302\" x2=\"360\" y2=\"330\" marker-end=\"url(#csar)\"/></svg>",
+ "legend": [
+  {
+   "k": "mode",
+   "name": "多模式(Mode)",
+   "desc": "同一颗芯片在不同工作模式下,激活的路径、约束、时钟都不一样:功能模式(functional,正常算 92 TOPS 推理)、测试模式(scan/test,扫描链移位,翻转密度和时钟拓扑完全不同)、低功耗模式(降频/降压/部分门控)。每个模式都是一组独立的时序约束(SDC)。只签功能模式,芯片进 scan 测试或进低功耗态时的时序就没人保证。"
+  },
+  {
+   "k": "matrix",
+   "name": "多 PVT corner 矩阵(P×V×T)",
+   "desc": "PVT = 工艺(Process)× 电压(Voltage)× 温度(Temperature)的笛卡尔积。工艺取 SS(慢)/TT(标称)/FF(快)等角,电压在标称 ±X% 多点取(供电会跌也会冲),温度取数据中心可能的低温到高结温多点。每个组合是一个 corner,每个 corner 配相应的 .lib(单元在该 PVT 下的延迟模型)。TPU 在数据中心高温、电压有波动的真实环境下要稳跑 700MHz,正是因为签核覆盖了这张矩阵而非只签标称。"
+  },
+  {
+   "k": "ss",
+   "name": "慢角 SS 查 setup / 快角 FF 查 hold",
+   "desc": "两个方向都要查:慢角 SS(Slow-Slow,慢工艺+低压+高温,电路最慢)是建立时序(setup,信号是否在时钟沿前及时到达)的最坏角——连最慢角 setup slack 都≥0,700MHz 才在所有更快条件下也成立;数据中心高温+供电下垂正落在 SS 方向,是 TPU 这类高温运行芯片的 setup 主战场。快角 FF(Fast-Fast,快工艺+高压+低温,电路最快)是保持时序(hold,数据是否在时钟沿后保持够久不被新值冲掉)的最坏角——电路太快时数据可能「跑过头」冲掉下一级的保持窗;hold 违例和频率无关、不能靠降频救,必须在 FF 角签干净。只查一个方向必漏另一个。"
+  },
+  {
+   "k": "ocv",
+   "name": "片上偏差(OCV/AOCV/POCV)",
+   "desc": "就算选定一个 corner,同一颗 die 上不同位置、不同单元的实际快慢也不完全一样(工艺局部涨落、压降、温度梯度)。OCV(片上变差)对路径加 derate(降额):发起路径按悲观方向慢一点、捕获路径快一点,留出偏差余量。AOCV(基于级数/距离)、POCV(统计/参数化,按 σ 量化)是更精细、少一点过悲观的版本。对横跨整个 256×256 阵列的长互连/累加链,OCV 余量尤其要给足。"
+  },
+  {
+   "k": "worst",
+   "name": "最坏组合联合签核",
+   "desc": "MMMC 的核心铁律:不是各因素分开看,而是把「模式 × PVT corner × OCV derate」的最坏组合放在一起判。setup 取 SS-低压-高温且叠 derate 后仍要 slack≥0;hold 取 FF-高压-低温后仍要 slack≥0。PrimeTime 把这些做成一组 scenario/view 并行分析,一次报出所有 view 的违例,任一 view 不过都不算签核通过。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "mode"
+   ],
+   "cap": "① 枚举模式:把芯片要工作的每种模式(功能 / 测试 scan / 低功耗)各建一组约束——每个模式激活的路径、时钟、翻转都不同,都得签"
+  },
+  {
+   "keys": [
+    "matrix",
+    "ss",
+    "ff"
+   ],
+   "cap": "② 铺 PVT 矩阵:工艺(SS/TT/FF)× 电压(标称±X%)× 温度(低~高)取笛卡尔积,每个 corner 配对应 .lib——慢角 SS 主攻 setup,快角 FF 主攻 hold"
+  },
+  {
+   "keys": [
+    "ocv"
+   ],
+   "cap": "③ 叠片上偏差:在每个 corner 上加 OCV/AOCV/POCV derate,给同片单元的快慢差异留余量,长互连/累加链尤其要给足"
+  },
+  {
+   "keys": [
+    "worst",
+    "matrix",
+    "mode"
+   ],
+   "cap": "④ 取最坏组合:把「模式 × corner × derate」组成一组 view 在 PrimeTime 里并行签核——setup 看 SS-低压-高温、hold 看 FF-高压-低温,联合判而非分开看"
+  },
+  {
+   "keys": [
+    "gate"
+   ],
+   "cap": "⑤ 全绿才放行:所有 view 的 setup/hold slack 都 ≥0 才算时序签核通过;漏掉任一 corner 或模式,硅片在那个条件上就会失效"
+  }
+ ],
+ "before": [
+  "<b>列全工作模式并各写一份 SDC</b>:确认 TPU 这类芯片要签的模式集合——功能模式(700MHz 正常推理)、测试模式(scan-shift / scan-capture,时钟和翻转完全不同)、若有低功耗态(降频/降压)也要建。每个模式是一组独立约束(主时钟、IO 延迟、伪/多周期路径、case_analysis),漏一个模式 = 那个工作态没被签核。",
+  "<b>定 PVT corner 集与对应库</b>:和工艺厂、封装、应用环境对齐要覆盖的工艺角(至少 SS/TT/FF)、电压点(标称及 ±X% 下垂/上冲,示意)、温度点(数据中心可能的低温到高结温)。每个 corner 必须有该 PVT 下抽取的 .lib(单元延迟模型),库缺了对应 corner 就签不了那个角。",
+  "<b>选定 OCV 方法与 derate 来源</b>:决定用 OCV / AOCV / POCV 哪一档,以及 derate 系数/AOCV 表/POCV 的 σ 数据从哪来(工艺厂提供或硅校准)。POCV 比平铺 OCV 少一点过悲观,但要有统计库支撑。这一步定的是「给路径留多少偏差余量」的依据。",
+  "<b>备齐布线后真实寄生 SPEF(逐 corner)</b>:MMMC 签核要用各 RC corner 下抽取的真实寄生 SPEF(最差 RC、最好 RC 等),而非综合期的估算线负载。寄生与 PVT 要配对,慢角配慢 RC 查 setup、快角配快 RC 查 hold,才是真账。",
+  "<b>定判据与豁免规则</b>:写清通过判据(setup/hold slack≥0,可留示意安全裕量)、哪些路径合法豁免(经评审的伪路径/多周期路径、跨时钟域由 CDC 另管的异步路径),以及这些豁免在哪些模式/corner 下生效——豁免必须有据可查,不能用来「掩盖」真违例。"
+ ],
+ "during": [
+  "<b>铁律:setup 看慢角、hold 看快角,两头都查</b>。建立时序的最坏条件是 SS-低压-高温(电路最慢,信号可能赶不上时钟沿);保持时序的最坏条件是 FF-高压-低温(电路最快,数据可能跑过头冲掉保持窗)。只签一个方向必漏:只查 SS 会放过 hold 违例,只查 FF 会放过 setup 违例。",
+  "<b>多模式 × 多 corner 做成 view 并行签核</b>。PrimeTime(或等价工具)把「模式×PVT corner×RC corner」组合成一组 scenario/analysis view,一次性并行跑、统一报违例。这样能在最坏组合上联合判定,而不是手工逐个 corner 串行、漏掉某个交叉组合。",
+  "<b>OCV/AOCV/POCV 给路径加 derate,但别过悲观到签不过</b>。片上偏差让发起路径按慢、捕获路径按快加余量,横跨整个阵列的长路径(跨多列 PE 的累加链、长互连)偏差累积更明显,要给足。但平铺 OCV 容易过度悲观、把本能过的设计逼成假违例;改用 AOCV(按级数/距离)或 POCV(按 σ)能在保安全的同时回收一部分悲观。",
+  "<b>hold 违例不能靠降频救</b>。setup 不够还能降频补救,但 hold 违例和频率无关——在 FF 角必须靠加 buffer/延迟单元修(这属于⑧的 hold-fix ECO)。签核阶段要把 FF 角 hold 查干净,不能寄望「跑慢点就好了」。",
+  "<b>寄生与 PVT 要配对,不能张冠李戴</b>。慢工艺角要配最差 RC(线更慢)查 setup,快工艺角配最好 RC 查 hold。若把快 RC 用到 setup 分析里,会乐观漏报 setup 违例;配错了整张矩阵的结论就不可信。",
+  "<b>诚实声明方法学来源</b>:MMMC(多角多模)、PVT corner(SS/TT/FF、电压温度多点)、OCV/AOCV/POCV derate、setup 看慢角 / hold 看快角、PrimeTime 的 scenario/view、逐 corner SPEF 等,都是通行签核 EDA 实践;TPU v1 不公开其 corner 集、derate 系数、模式约束或任何签核 QoR 报告。本节以 TPU 已知结构(256×256 脉动阵列、24 MiB UB、700MHz、28nm、≤331mm²、28–40W、weight-stationary、数据中心高温/电压波动运行)作为被签核对象讲 MMMC/OCV 概念,文中电压 ±X%、温度点、判据数值与示意余量均为示意,非 TPU 私有签核数字。"
+ ],
+ "result": [
+  {
+   "label": "模式集合(示意)",
+   "value": "functional(700MHz)/ scan-shift / scan-capture / low-power,各一组 SDC"
+  },
+  {
+   "label": "工艺角",
+   "value": "SS(慢,主查 setup)/ TT(标称)/ FF(快,主查 hold)"
+  },
+  {
+   "label": "电压 × 温度点(示意)",
+   "value": "V = 标称 ±X%(供电下垂/上冲);T = 低温 ~ 高结温多点,逐点配 .lib"
+  },
+  {
+   "label": "片上偏差",
+   "value": "OCV/AOCV/POCV 对发起/捕获路径加 derate,长阵列互连余量给足"
+  },
+  {
+   "label": "setup 判据(示意)",
+   "value": "在 SS-低压-高温 + derate 下,所有路径 setup slack ≥ 0(留示意安全裕量)"
+  },
+  {
+   "label": "hold 判据(示意)",
+   "value": "在 FF-高压-低温下,所有路径 hold slack ≥ 0(hold 不能靠降频救)"
+  }
+ ],
+ "after": [
+  "<b>读全 view 的 WNS/TNS,逐角逐模式核</b>:看每个 view 的最差/总负裕量(WNS/TNS),确认没有任何 corner×模式组合留下负 slack;重点核对那些只在某一交叉组合下才暴露的违例(如仅 SS-高温-scan 模式才负)——这类「角落违例」最容易被串行检查漏掉。",
+  "<b>违例回⑧做 ECO 再签</b>:setup 违例(多在 SS 角)交后端做时序 ECO(downsize 慢路径换快单元、调时钟、插 buffer);hold 违例(多在 FF 角)插延迟单元修。改完用相同的 MMMC view 重跑增量签核,确认修好的路径过、且没把别的 view 顶破。",
+  "<b>OCV/derate 设置复核,防假违例堵进度</b>:若大批违例集中在长阵列路径且都很小,先怀疑是不是 OCV 过悲观——评估能否从平铺 OCV 升级到 AOCV/POCV 回收悲观,再判是否真要 ECO。但放宽 derate 必须有库/统计依据,不能为「过签核」硬调系数。",
+  "<b>汇入签核总闸门</b>:MMMC/OCV 的时序签核结论(全 view setup/hold 干净)只是签核的一维,要和功耗/IR-EM(RedHawk/Voltus)、DRC/LVS(Calibre)、等价性(Formality LEC)等其他维度一起汇入 tape-out 闸门,全绿才放行——任一维红都不能流片。",
+  "<b>冻结 corner/模式清单存档,可追溯</b>:把本次签核覆盖的模式集、PVT corner 集、OCV 方法与 derate 来源、各 view 结果固化归档。一旦硅片在某条件下出问题,要能回查「那个 corner/模式当初签没签、判据是什么」——漏签的 corner 就是硅上失效的源头,清单必须可追溯。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(256×256 8-bit MAC 脉动阵列、700MHz/~92 TOPS、24 MiB Unified Buffer、weight-stationary、28nm/≤331mm²/28–40W、数据中心运行为 v1 披露,作为被签核对象与量级参照;MMMC 多角多模、PVT corner(SS/TT/FF·电压温度多点)、OCV/AOCV/POCV derate、setup-看慢角 / hold-看快角、PrimeTime scenario/view、逐 corner SPEF 等签核方法,以及电压 ±X%、温度点、判据与余量数值,均为通行签核 EDA 实践与示意,非 TPU v1 私有签核报告/corner/QoR 数字)"
+}

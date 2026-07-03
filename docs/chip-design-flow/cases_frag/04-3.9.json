@@ -1,0 +1,120 @@
+{
+ "secNum": "3.9",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 阵列内逐拍移位 vs 块间 valid/ready 握手",
+ "oneLine": "脉动阵列内部 PE 与 PE 之间是「规则的局部寄存器逐拍传递」——同一时钟、节拍对齐,根本不需要握手;只有跨越功能块(UB↔MXU↔累加器)这种速率/时钟可能不一致的边界,才真正用 valid/ready 握手——这就是「块接口与握手协议」要在两种场景里做的取舍。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"30\">左:脉动阵列内 PE↔PE = 逐拍硬连线移位,无握手</text><text class=\"cs-note\" x=\"430\" y=\"30\">右:块↔块 = valid/ready 握手</text><g class=\"cs-part\" data-k=\"pe0\" data-g=\"pe\"><rect class=\"cs-box\" x=\"50\" y=\"70\" width=\"90\" height=\"70\" rx=\"8\"/><text class=\"cs-t\" x=\"95\" y=\"100\">PE(i,j)</text><text class=\"cs-sub\" x=\"95\" y=\"118\">乘累加</text></g><g class=\"cs-part\" data-k=\"pe1\" data-g=\"pe\"><rect class=\"cs-box\" x=\"220\" y=\"70\" width=\"90\" height=\"70\" rx=\"8\"/><text class=\"cs-t\" x=\"265\" y=\"100\">PE(i,j+1)</text><text class=\"cs-sub\" x=\"265\" y=\"118\">乘累加</text></g><g class=\"cs-part\" data-k=\"rega\" data-g=\"rega\"><rect x=\"150\" y=\"92\" width=\"58\" height=\"26\" rx=\"4\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/><text class=\"cs-cellt\" x=\"179\" y=\"109\">a 寄存器</text></g><g class=\"cs-part\" data-g=\"aflow\"><line class=\"cs-arr\" x1=\"140\" y1=\"105\" x2=\"148\" y2=\"105\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"208\" y1=\"105\" x2=\"216\" y2=\"105\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"150\" y=\"86\">a 每拍右移 →</text><g class=\"cs-part\" data-k=\"regp\" data-g=\"regp\"><rect x=\"66\" y=\"150\" width=\"58\" height=\"24\" rx=\"4\" fill=\"#dcf0e4\" stroke=\"#86d3a3\"/><text class=\"cs-cellt\" x=\"95\" y=\"167\">psum 寄存器</text></g><g class=\"cs-part\" data-g=\"pflow\"><line class=\"cs-arr\" x1=\"95\" y1=\"140\" x2=\"95\" y2=\"148\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"95\" y1=\"174\" x2=\"95\" y2=\"195\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"130\" y=\"170\">部分和每拍下移 ↓</text><g class=\"cs-part\" data-k=\"clk\" data-g=\"clk\"><rect class=\"cs-box\" x=\"50\" y=\"210\" width=\"260\" height=\"44\" rx=\"8\"/><text class=\"cs-t\" x=\"180\" y=\"231\">同一时钟·逐拍同步推进</text><text class=\"cs-sub\" x=\"180\" y=\"247\">无 valid/无 ready/无反压</text></g><text class=\"cs-note\" x=\"50\" y=\"284\">数据「按节拍」流动,何时到达由设计时算定,不靠运行时协商</text><line class=\"cs-arr\" x1=\"365\" y1=\"180\" x2=\"365\" y2=\"60\" stroke-dasharray=\"5 4\"/><line class=\"cs-arr\" x1=\"365\" y1=\"180\" x2=\"365\" y2=\"300\" stroke-dasharray=\"5 4\"/><g class=\"cs-part\" data-k=\"ub\" data-g=\"ub\"><rect class=\"cs-box\" x=\"420\" y=\"70\" width=\"120\" height=\"62\" rx=\"8\"/><text class=\"cs-t\" x=\"480\" y=\"97\">生产方</text><text class=\"cs-sub\" x=\"480\" y=\"115\">如 Unified Buffer</text></g><g class=\"cs-part\" data-k=\"mxu\" data-g=\"mxu\"><rect class=\"cs-box\" x=\"600\" y=\"70\" width=\"100\" height=\"62\" rx=\"8\"/><text class=\"cs-t\" x=\"650\" y=\"97\">消费方</text><text class=\"cs-sub\" x=\"650\" y=\"115\">如 MXU</text></g><g class=\"cs-part\" data-k=\"vld\" data-g=\"vld\"><line class=\"cs-arr\" x1=\"540\" y1=\"88\" x2=\"596\" y2=\"88\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"544\" y=\"82\">data + valid →</text></g><g class=\"cs-part\" data-k=\"rdy\" data-g=\"rdy\"><polyline class=\"cs-arr\" points=\"596,118 568,135 540,118\" fill=\"none\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"544\" y=\"152\">← ready(反压)</text></g><g class=\"cs-part\" data-k=\"hs\" data-g=\"hs\"><rect class=\"cs-box\" x=\"420\" y=\"190\" width=\"280\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"560\" y=\"214\">握手成立 = valid &amp; ready 同拍为真</text><text class=\"cs-sub\" x=\"560\" y=\"232\">两块各有时钟/速率 → 必须协商再传</text></g><text class=\"cs-note\" x=\"420\" y=\"276\">接口要定:位宽 / 字节序 / valid-ready 时序 / 反压 / 跨时钟(CDC)</text></svg>",
+ "legend": [
+  {
+   "k": "rega",
+   "name": "a 移位寄存器(PE 间)",
+   "desc": "相邻 PE 之间的 staging 寄存器:激活 a 每拍向右锁存一格。它就是一根「带寄存器的硬连线」,没有任何 valid/ready 旁路信号——数据到没到,设计时按拍数就能算定。"
+  },
+  {
+   "k": "regp",
+   "name": "psum 移位寄存器(PE 间)",
+   "desc": "部分和沿列向下、每拍锁存一格累加。同样是逐拍硬连线,与 a 的右移构成二维同步流动。"
+  },
+  {
+   "k": "clk",
+   "name": "同步节拍域",
+   "desc": "整个阵列在一个时钟下逐拍齐步走:没有 valid、没有 ready、没有反压。规则同步换来的是接口极简——这正是脉动阵列高效的根因之一。"
+  },
+  {
+   "k": "vld",
+   "name": "valid 通路(块间)",
+   "desc": "跨块边界(如 UB→MXU)时,生产方用 data+valid 告诉消费方「这一拍的数据有效」。"
+  },
+  {
+   "k": "rdy",
+   "name": "ready 反压(块间)",
+   "desc": "消费方用 ready 回告「我这拍能收」。valid&ready 同拍为真才真正传一拍——这套协商是阵列内部不需要、而块间必需的复杂度。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "rega",
+    "regp"
+   ],
+   "cap": "① 阵列内部:激活 a 沿行右移、部分和 psum 沿列下移,各靠一级 staging 寄存器逐拍传递,接口只有「数据线 + 时钟」"
+  },
+  {
+   "keys": [
+    "clk",
+    "pe"
+   ],
+   "cap": "② 全阵列同一时钟齐步推进:每个 PE 每拍都收上一格、算一次、送下一格,无需问「对方收没收」——数据按节拍必达"
+  },
+  {
+   "keys": [
+    "ub",
+    "vld",
+    "mxu"
+   ],
+   "cap": "③ 跨到块边界(UB→MXU):生产方发 data+valid,这里两块速率/时钟可能不一致,不能再假设「节拍必达」"
+  },
+  {
+   "keys": [
+    "rdy",
+    "hs"
+   ],
+   "cap": "④ 消费方回 ready 形成握手:只有 valid&ready 同拍为真才传一拍,ready 拉低即反压,挡住上游溢出"
+  },
+  {
+   "keys": [
+    "clk",
+    "hs"
+   ],
+   "cap": "⑤ 对比落点:同概念(把数据从 A 送到 B),阵列内用「规则同步」零握手、块间用「协商握手」抗速率差——按边界两侧是否同节拍来选"
+  }
+ ],
+ "before": [
+  "<b>先分清两类边界</b>:① 紧耦合、同时钟、节拍可静态算定的边界(脉动阵列 PE↔PE)——可用纯同步移位,零握手;② 松耦合、速率/时钟可能不一致的边界(UB↔MXU↔累加器、PCIe↔片上)——需要握手。先把每条块间连接归到这两类,再决定协议。",
+  "<b>要定的接口契约</b>:对每条跨块连接列清「数据位宽、有无 valid/ready、是否允许反压、字节/通道顺序、突发长度、复位后初值」——这是块与块之间的合同,签错后期返工极贵。",
+  "<b>必备输入</b>:架构(③)给的数据通路宽度与供数节奏(256 宽阵列每拍吃一行激活,即每拍约 256 字节进矩阵单元)、各块目标频率、两侧是否同时钟域。",
+  "<b>必须想清的考量</b>:脉动阵列内部为什么能不握手——因为数据流静态确定、所有 PE 同步齐步,「何时到达」在设计时就算死了;一旦跨到节拍不保证对齐的块边界,这个前提失效,就必须引入 valid/ready 来运行时协商。"
+ ],
+ "during": [
+  "<b>阵列内:用规则同步替代握手</b>:PE↔PE 只放一级 staging 寄存器,a 每拍右移、psum 每拍下移,全阵列一个时钟齐步推进。没有 valid/ready/反压,接口退化成「数据线 + 时钟」——面积、时序、验证都最省,这是脉动阵列简单高效的核心。",
+  "<b>块间:用 valid/ready 解耦速率</b>:UB→MXU、MXU→累加器这类边界,两侧吞吐/调度未必逐拍对齐,用 ready 提供反压,让快的一方在慢的一方没准备好时自然停等,避免丢数或溢出。",
+  "<b>握手语义要钉死</b>:约定 valid 不得依赖 ready(避免组合环)、握手在 valid&ready 同拍成立、ready 拉低期间数据必须保持稳定;这些是 valid/ready 协议能正确级联的前提,定不清就会出现吞数/重数。",
+  "<b>反压要不要、传多远</b>:取舍点在「上游能不能停」。脉动阵列一旦启动就不该中途停(停了要重排流水),所以更倾向在阵列入口前用缓冲/调度吸收速率差,而非把反压一路灌进阵列内部打乱节拍。",
+  "<b>位宽与打包的取舍</b>:块间接口位宽要匹配「每拍供一行 256 个激活」之类的带宽需求;宽接口省握手次数但费布线,窄接口省线但要更高频或更多拍——按该边界的带宽预算配平。",
+  "<b>跨时钟域(CDC)的诚实做法</b>:TPU v1 未公开其内部各块的时钟域划分与 CDC 细节;这类数据中心推理 ASIC 的通行做法是在真正跨时钟的边界(如 PCIe 接口↔核心)用异步 FIFO + 多级同步器做 valid/ready 的安全跨域——这是通行实践,非 v1 披露细节;核心 MAC 阵列则尽量留在单一同步域内免去 CDC。"
+ ],
+ "result": [
+  {
+   "label": "阵列内接口",
+   "value": "纯同步移位寄存器,无握手"
+  },
+  {
+   "label": "阵列内「何时到达」",
+   "value": "设计时按拍数静态算定"
+  },
+  {
+   "label": "块间接口",
+   "value": "data + valid/ready 握手"
+  },
+  {
+   "label": "握手成立条件",
+   "value": "valid & ready 同拍为真"
+  },
+  {
+   "label": "反压策略",
+   "value": "倾向入口前缓冲,不灌进阵列(通行实践)"
+  },
+  {
+   "label": "跨时钟(CDC)",
+   "value": "跨域边界用异步 FIFO+同步器(通行实践,非 v1 披露)"
+  }
+ ],
+ "after": [
+  "<b>逐条核接口契约</b>:把每条跨块连接的位宽/valid-ready/反压/复位初值与两侧实现对齐,确认生产方和消费方对同一根线的理解完全一致(最常见 bug 来源)。",
+  "<b>形式/仿真查握手</b>:用断言或形式工具检查 valid/ready 协议不被违反——valid 不依赖 ready、ready 低时数据保持、不丢拍不重拍;阵列内则核对逐拍移位的拍数模型与流水时序一致。",
+  "<b>压反压与边界用例</b>:块级验证覆盖消费方持续/间歇 ready=0 的反压、上游突发、复位后首拍、以及阵列装填/排空与块间握手的衔接处。",
+  "<b>交给 ⑤ RTL</b>:把同步移位寄存器、valid/ready 握手逻辑、入口缓冲/异步 FIFO 写成可综合 Verilog;CDC 边界单独做时序约束与 lint。",
+  "<b>回填集成视图</b>:把各块接口契约汇总成顶层连接表,供集成与时序收敛阶段对线,避免「块都对、连起来错」。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(脉动阵列逐拍局部传递为论文所述;块间 valid/ready 握手与 CDC 细节为这类数据中心推理 ASIC 的通行实践,非 v1 逐项披露)"
+}

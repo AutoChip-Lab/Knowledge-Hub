@@ -1,0 +1,120 @@
+{
+ "secNum": "3.15",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 软件栈:TensorFlow → XLA 编译器 → 十几条 CISC 指令 → MXU 阵列",
+ "oneLine": "编程接口决定「谁来填满阵列」——TPU 不让用户写汇编,而是让 XLA 编译器把 TensorFlow 计算图自动编译成约十几条 CISC 指令,经 PCIe 由主机下发,硬件只管执行,生态(TF/XLA)才是它真正的护城河。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"30\">软件栈:从「写模型」到「驱动阵列」自上而下逐层下沉</text><g class=\"cs-part\" data-k=\"tf\" data-g=\"tf\"><rect class=\"cs-box\" x=\"180\" y=\"44\" width=\"360\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"68\">① TensorFlow 模型(数据流图)</text><text class=\"cs-sub\" x=\"360\" y=\"86\">用户用高级框架描述「算什么」,不碰硬件</text></g><line class=\"cs-arr\" x1=\"360\" y1=\"100\" x2=\"360\" y2=\"128\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"370\" y=\"118\">下发计算图</text><g class=\"cs-part\" data-k=\"xla\" data-g=\"xla\"><rect class=\"cs-box\" x=\"180\" y=\"130\" width=\"360\" height=\"60\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"154\">② XLA 编译器</text><text class=\"cs-sub\" x=\"360\" y=\"172\">算子融合 / 排布 / 决定数据放 UB 哪里</text><text class=\"cs-sub\" x=\"360\" y=\"186\">把图编译成约十几条 CISC 指令</text></g><line class=\"cs-arr\" x1=\"360\" y1=\"190\" x2=\"360\" y2=\"218\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"370\" y=\"208\">编译产物</text><g class=\"cs-part\" data-k=\"isa\" data-g=\"isa\"><rect class=\"cs-box\" x=\"60\" y=\"220\" width=\"600\" height=\"74\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"242\">③ TPU CISC 指令集(约十几条,host 经 PCIe 下发)</text><g class=\"cs-part\" data-k=\"i_rw\" data-g=\"isa\"><rect class=\"cs-cell\" x=\"80\" y=\"256\" width=\"150\" height=\"28\" rx=\"4\"/><text class=\"cs-cellt\" x=\"155\" y=\"274\">Read_Weights</text></g><g class=\"cs-part\" data-k=\"i_mm\" data-g=\"isa\"><rect class=\"cs-cell\" x=\"244\" y=\"256\" width=\"170\" height=\"28\" rx=\"4\"/><text class=\"cs-cellt\" x=\"329\" y=\"274\">MatrixMultiply</text></g><g class=\"cs-part\" data-k=\"i_act\" data-g=\"isa\"><rect class=\"cs-cell\" x=\"428\" y=\"256\" width=\"150\" height=\"28\" rx=\"4\"/><text class=\"cs-cellt\" x=\"503\" y=\"274\">Activate</text></g></g><line class=\"cs-arr\" x1=\"360\" y1=\"294\" x2=\"360\" y2=\"322\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"370\" y=\"312\">驱动硬件</text><g class=\"cs-part\" data-k=\"hw\" data-g=\"hw\"><rect class=\"cs-box\" x=\"180\" y=\"324\" width=\"360\" height=\"60\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"348\">④ 硬件:MXU 脉动阵列 + Unified Buffer</text><text class=\"cs-sub\" x=\"360\" y=\"366\">256×256 MAC 执行 MatrixMultiply</text><text class=\"cs-sub\" x=\"360\" y=\"380\">24 MiB UB 软件管理,由编译器排数据</text></g></svg>",
+ "legend": [
+  {
+   "k": "tf",
+   "name": "① TensorFlow 模型",
+   "desc": "用户的编程入口:用高级框架描述一张数据流图(「算什么」),完全不接触脉动阵列、UB 容量、指令格式这些硬件细节。编程接口的第一原则就是把硬件复杂度藏在编译器后面。"
+  },
+  {
+   "k": "xla",
+   "name": "② XLA 编译器",
+   "desc": "软件栈的核心:做算子融合、张量排布、决定哪块数据驻留在 24 MiB Unified Buffer,最后把整张图编译成一小串 CISC 指令。硬件把「数据放哪、何时取」的担子交给编译器,这是 §3.5 软件管理 UB 的必然配套。"
+  },
+  {
+   "k": "isa",
+   "name": "③ CISC 指令集",
+   "desc": "TPU 的 ISA 只有约十几条 CISC 指令(Read_Weights / MatrixMultiply / Activate 等),每条做一件「重活」。指令少、粒度粗,正是为了配合 host-driven、确定性的批处理推理,而不是通用 CPU 那种细粒度流水。"
+  },
+  {
+   "k": "i_mm",
+   "name": "MatrixMultiply 指令",
+   "desc": "一条指令就驱动整块 256×256 脉动阵列做一次大矩阵乘——CISC 的「一条指令干一大坨」哲学。指令译码/取指开销被摊薄到几万次 MAC 上,控制逻辑因此可以极简。"
+  },
+  {
+   "k": "hw",
+   "name": "④ 硬件执行层",
+   "desc": "MXU 阵列 + Unified Buffer 只负责执行下发来的指令,不做调度决策。软硬件分工清晰:智能在编译器,蛮力在阵列——这条边界决定了整个编程模型的形态。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "tf"
+   ],
+   "cap": "① 用户在 TensorFlow 里写模型,只描述「算什么」的数据流图,不碰任何硬件细节"
+  },
+  {
+   "keys": [
+    "xla"
+   ],
+   "cap": "② XLA 编译器接图:做算子融合、张量排布,并决定数据如何驻留进 24 MiB Unified Buffer"
+  },
+  {
+   "keys": [
+    "isa",
+    "i_rw",
+    "i_mm",
+    "i_act"
+   ],
+   "cap": "③ 编译产物是约十几条 CISC 指令(Read_Weights / MatrixMultiply / Activate …)"
+  },
+  {
+   "keys": [
+    "i_mm",
+    "hw"
+   ],
+   "cap": "④ 主机经 PCIe 把指令下发,一条 MatrixMultiply 就驱动整块 256×256 阵列做一次大矩阵乘"
+  },
+  {
+   "keys": [
+    "tf",
+    "xla",
+    "isa",
+    "hw"
+   ],
+   "cap": "⑤ 全栈打通:框架易用性在顶层,硬件蛮力在底层,中间靠编译器把图「翻译并塞进」阵列"
+  }
+ ],
+ "before": [
+  "<b>先定面向谁编程</b>:这颗加速器的用户是写模型的算法工程师,不是写汇编的硬件工程师。编程接口的目标是「让用户继续用熟悉的框架」,而不是暴露一套新指令集——这决定了必须有编译器这一层。",
+  "<b>要拍板的设计量(旋钮)</b>:ISA 的风格(精简 RISC 还是粗粒度 CISC)、指令条数与粒度、host-driven 还是自治、接哪个框架/编译器、控制平面走什么接口(此处选 PCIe + CISC)。",
+  "<b>必备输入</b>:目标负载是矩阵乘为主、确定性强的批处理推理(§3.1);硬件侧的关键约束——24 MiB UB 是软件管理的 scratchpad(§3.5)、没有硬件 cache,所以数据搬运必须由软件显式安排。",
+  "<b>必须卡住的约束</b>:生态即护城河。脱离 TensorFlow/XLA 这套现成工具链,再快的阵列也没人会用;所以编程接口的成败,一半在硬件,一半在能否复用既有框架。"
+ ],
+ "during": [
+  "<b>把复杂度推给编译器</b>:硬件砍掉了 cache、乱序、分支预测(§3.9),省下的「智能」必须有人补上——交给 XLA。它负责算子融合、张量排布、UB 数据驻留决策,等于把通用 CPU 在运行时做的事,提前在编译期一次性算好。",
+  "<b>选 CISC 而非 RISC</b>:指令粒度故意做粗——一条 MatrixMultiply 就吞掉一整块 256×256 阵列的运算。这样取指/译码开销被几万次 MAC 摊薄到可忽略,控制逻辑能极简,与「确定性批处理」负载天然契合。",
+  "<b>指令少是特性不是缺陷</b>:整套 ISA 只有约十几条(Read_Weights、MatrixMultiply、Activate 等),每条对应一个粗粒度神经网络原语。少指令 → 简单解码器、简单流水,把硅面积让给 MAC。",
+  "<b>选 host-driven 模型</b>:TPU 不是自治处理器,而是主机的协处理器——主机经 PCIe 3.0 把编译好的 CISC 指令流推给它,控制权在 host。换来的是 TPU 内部不需要复杂的取指/调度前端,但也意味着主机侧软件必须把序列编排好。",
+  "<b>软硬件分工要划清</b>:智能(调度/排布/融合)放编译器,蛮力(矩阵乘)放阵列。这条边界一旦定下,就反向约束了硬件——既然软件全权管 UB,硬件就不必做 cache 一致性等机制,设计因此大幅简化。",
+  "<b>权衡的代价要认</b>:编译期静态排布换来运行时极简,代价是灵活性低、对动态/不规则形状不友好;且高度绑定 TF/XLA,迁移其它框架需要补编译器后端——这是为「极致简单+复用生态」付的账。"
+ ],
+ "result": [
+  {
+   "label": "编程入口",
+   "value": "TensorFlow 数据流图(用户不碰硬件)"
+  },
+  {
+   "label": "编译器",
+   "value": "XLA(融合/排布/UB 驻留决策)"
+  },
+  {
+   "label": "ISA 风格",
+   "value": "CISC,粗粒度,约十几条指令"
+  },
+  {
+   "label": "代表指令",
+   "value": "Read_Weights / MatrixMultiply / Activate"
+  },
+  {
+   "label": "控制模型",
+   "value": "host-driven,经 PCIe 3.0 下发指令"
+  },
+  {
+   "label": "护城河",
+   "value": "复用 TF/XLA 生态,降迁移成本"
+  }
+ ],
+ "after": [
+  "<b>验证编译链端到端跑通</b>:拿真实模型走 TensorFlow → XLA → CISC 指令 → 阵列执行,确认结果正确、阵列利用率达标;若利用率低,回去调编译器的排布/融合策略而非改硬件。",
+  "<b>与上游存储/数据流对账</b>:编译器对 UB 的排布若放不下或频繁回换 DDR3,说明 §3.5 的 24 MiB 容量或 §3.4 数据流假设要回头再议——编程接口和存储层次是一对互锁约束。",
+  "<b>把约束往下游传</b>:给微架构(④)交清最终 ISA 的指令格式与时序约束;给主机侧软件交清 PCIe 指令下发协议与队列模型,确保 host-driven 链路不卡。",
+  "<b>沉淀生态资产</b>:维护 XLA 的 TPU 后端、算子库与文档,让更多 TF 模型零改动跑上来——编程接口的长期价值在生态广度,这部分是软件工程持续投入,而非一次性硬件设计。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017"
+}

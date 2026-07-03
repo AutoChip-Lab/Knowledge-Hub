@@ -1,0 +1,119 @@
+{
+ "secNum": "3.2",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 布局规划(floorplan):把 256×256 阵列、24MiB UB 的 SRAM 宏、累加器、IO 环摆进 28nm die(示意 ≤331mm²),定利用率、留通道",
+ "oneLine": "布局规划是后端的「定地基」一步:在一块 28nm、示意 ≤331mm² 的 die 上,先把几个大块——规整的 256×256 脉动阵列、约占 die 29% 的 24MiB Unified Buffer SRAM 宏阵列、4MiB 累加器、外围 IO/Pad 环——摆到合理位置,再定核心利用率(示意 70%)、给宏留 halo、给布线和电源留通道;floorplan 摆得好不好,几乎决定了后面布局布线、时序、IR-drop 的全局成败——大块摆歪,后续布线必然拥塞、时序必然崩,且回天乏术。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 410\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-t\" x=\"360\" y=\"28\">布局规划:在 28nm die(示意 ≤331mm²)上摆大块、定利用率、留通道</text><g class=\"cs-part\" data-k=\"die\" data-g=\"die\"><rect class=\"cs-box\" x=\"40\" y=\"56\" width=\"500\" height=\"320\" rx=\"10\" fill=\"#f8fafc\" stroke=\"#94a3b8\"/><text class=\"cs-sub\" x=\"290\" y=\"74\">die 边界 / core 区(示意利用率 ~70%,留 30% 给布线+电源)</text></g><g class=\"cs-part\" data-k=\"io\" data-g=\"io\"><rect class=\"cs-box\" x=\"48\" y=\"84\" width=\"484\" height=\"284\" rx=\"8\" fill=\"none\" stroke=\"#fca5a5\" stroke-dasharray=\"5 4\"/><text class=\"cs-sub\" x=\"290\" y=\"100\">IO / Pad 环(PCIe 3.0 · DDR3 接口 · 电源 pad)</text></g><g class=\"cs-part\" data-k=\"mxu\" data-g=\"mxu\"><rect class=\"cs-box\" x=\"72\" y=\"116\" width=\"220\" height=\"200\" rx=\"6\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"182\" y=\"206\">256×256 MAC 阵列</text><text class=\"cs-sub\" x=\"182\" y=\"228\">脉动阵列(规整大块)</text><text class=\"cs-sub\" x=\"182\" y=\"246\">weight-stationary · 700MHz</text></g><g class=\"cs-part\" data-k=\"ub\" data-g=\"ub\"><rect class=\"cs-box\" x=\"308\" y=\"116\" width=\"208\" height=\"118\" rx=\"6\" fill=\"#dcfce7\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"412\" y=\"162\">24 MiB Unified Buffer</text><text class=\"cs-sub\" x=\"412\" y=\"182\">SRAM 宏阵列(约占 die 29%)</text><text class=\"cs-sub\" x=\"412\" y=\"200\">沿阵列边贴放·喂数据</text></g><g class=\"cs-part\" data-k=\"acc\" data-g=\"acc\"><rect class=\"cs-box\" x=\"308\" y=\"246\" width=\"208\" height=\"70\" rx=\"6\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"412\" y=\"276\">4 MiB 累加器</text><text class=\"cs-sub\" x=\"412\" y=\"296\">接阵列底部输出</text></g><line class=\"cs-arr\" x1=\"292\" y1=\"175\" x2=\"306\" y2=\"175\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"182\" y1=\"316\" x2=\"182\" y2=\"246\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><line class=\"cs-arr\" x1=\"370\" y1=\"246\" x2=\"280\" y2=\"316\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><g class=\"cs-part\" data-k=\"chan\" data-g=\"chan\"><rect class=\"cs-box\" x=\"72\" y=\"328\" width=\"444\" height=\"32\" rx=\"4\" fill=\"none\" stroke=\"#60a5fa\" stroke-dasharray=\"3 3\"/><text class=\"cs-sub\" x=\"294\" y=\"348\">预留布线 / 电源通道(宏间留 halo,别堵死布线)</text></g><g class=\"cs-part\" data-k=\"rule\" data-g=\"rule\"><rect class=\"cs-box\" x=\"556\" y=\"84\" width=\"148\" height=\"80\" rx=\"8\" fill=\"#eef2ff\"/><text class=\"cs-t\" x=\"630\" y=\"110\">利用率</text><text class=\"cs-sub\" x=\"630\" y=\"130\">示意 70%</text><text class=\"cs-sub\" x=\"630\" y=\"148\">太密 → 拥塞/IR-drop</text></g><g class=\"cs-part\" data-k=\"macro\" data-g=\"macro\"><rect class=\"cs-box\" x=\"556\" y=\"176\" width=\"148\" height=\"92\" rx=\"8\" fill=\"#dcfce7\"/><text class=\"cs-t\" x=\"630\" y=\"202\">宏摆放</text><text class=\"cs-sub\" x=\"630\" y=\"222\">UB SRAM 宏沿边</text><text class=\"cs-sub\" x=\"630\" y=\"240\">引脚朝阵列</text><text class=\"cs-sub\" x=\"630\" y=\"258\">留 halo / blockage</text></g><g class=\"cs-part\" data-k=\"risk\" data-g=\"risk\"><rect class=\"cs-box\" x=\"556\" y=\"280\" width=\"148\" height=\"88\" rx=\"8\" fill=\"#fef2f2\" stroke=\"#fca5a5\"/><text class=\"cs-t\" x=\"630\" y=\"306\">铁律</text><text class=\"cs-sub\" x=\"630\" y=\"326\">floorplan 定</text><text class=\"cs-sub\" x=\"630\" y=\"344\">全局成败:摆错</text><text class=\"cs-sub\" x=\"630\" y=\"362\">→ 布线时序崩</text></g></svg>",
+ "legend": [
+  {
+   "k": "die",
+   "name": "die / core 区(被实现的画布)",
+   "desc": "整块芯片的物理边界与可摆器件的核心区。对 TPU v1 这类大芯片,die 是示意 ≤331mm² 的 28nm 硅片;floorplan 的第一件事就是在这块画布上划出 core 区、定核心利用率(示意 ~70%,即只填七成、留三成给布线和电源),这是面积 vs 可布通性的根本取舍。"
+  },
+  {
+   "k": "mxu",
+   "name": "256×256 MAC 脉动阵列(规整大块)",
+   "desc": "65,536 个 8-bit MAC 组成的 weight-stationary 脉动阵列,在 700MHz 下做矩阵乘。它结构高度规整、面积巨大,floorplan 里通常作为一整块「规整宏区」整体摆放,内部 PE 阵列化排布、数据逐拍横向/纵向流过——把它摆方正、对齐,后续才好布那张密集的阵列内互连。"
+  },
+  {
+   "k": "ub",
+   "name": "24MiB Unified Buffer 的 SRAM 宏阵列",
+   "desc": "约占 die 29% 面积的片上大 SRAM,是整颗芯片最大的「硬宏」群。floorplan 的关键决策之一,就是把这一排排 SRAM 宏沿脉动阵列的边贴着摆、让读写引脚朝向阵列,缩短「UB 喂数据进阵列」的关键路径;宏摆得离阵列远或引脚朝外,这条高带宽数据通路就会变长、拥塞、掉时序。"
+  },
+  {
+   "k": "acc",
+   "name": "4MiB 累加器 + IO/Pad 环",
+   "desc": "32-bit 累加器接在脉动阵列输出侧(阵列底部),收下每列流出的部分和——floorplan 里通常贴着阵列输出边摆,缩短累加链。die 最外圈是 IO/Pad 环:PCIe 3.0(主机下指令)、外接 8GiB DDR3 的接口、以及供电 pad,是片内逻辑与外界的物理边界。"
+  },
+  {
+   "k": "chan",
+   "name": "布线 / 电源通道与利用率(留白的艺术)",
+   "desc": "floorplan 不是把块塞满,而是刻意在宏之间、宏周围留出空白:给信号布线留通道、给电源网络(PDN)留金属、给每个硬宏周围加 halo/blockage 防止标准单元贴太近。核心利用率(示意 70%)就是这种「留白」的量化——留够了后面才布得通、压得住 IR-drop;塞太满则必然拥塞。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "die",
+    "io"
+   ],
+   "cap": "① 定画布:在 28nm die(示意 ≤331mm²)上划出 core 区与外围 IO/Pad 环(PCIe 3.0、DDR3 接口、电源 pad),并定下核心利用率(示意 ~70%)作为面积与可布通性的总取舍。"
+  },
+  {
+   "keys": [
+    "mxu",
+    "macro"
+   ],
+   "cap": "② 先摆最大、最规整的块:把 256×256 脉动阵列作为一整块规整宏区摆方正、对齐,确定它在 die 上的朝向与位置——它是整个 floorplan 的骨架。"
+  },
+  {
+   "keys": [
+    "ub",
+    "chan"
+   ],
+   "cap": "③ 把 24MiB UB 的 SRAM 宏(约占 die 29%)沿阵列边贴放、引脚朝阵列,缩短高带宽喂数通路;宏周围留 halo,宏之间留布线/电源通道。"
+  },
+  {
+   "keys": [
+    "acc"
+   ],
+   "cap": "④ 把 4MiB 累加器贴在阵列输出边摆,缩短累加链;确认各大块与 IO 环之间数据流向顺、关键路径短。"
+  },
+  {
+   "keys": [
+    "rule",
+    "risk"
+   ],
+   "cap": "⑤ 复核全局:利用率别太高(防拥塞/IR-drop)、宏间留够通道、关键宏对齐——floorplan 定全局成败,摆错后续布线时序必崩,故此步要反复试摆迭代。"
+  }
+ ],
+ "before": [
+  "<b>备齐物理库与工艺规则</b>:拿到 28nm 标准单元与硬宏的物理抽象(LEF:外形/引脚/层定义)、SRAM 宏的物理视图与时序、以及工艺设计规则(DRC 规则、布线层数 M1–Mx 等)——这些是「能摆什么、怎么摆」的硬约束。",
+  "<b>接综合交接包</b>:接上一步(逻辑综合)交来的门级网表、综合后 SDC、SDF 与 DFT 信息——floorplan 要实现的就是这张网表,约束(700MHz、IO 延迟)则是摆放与后续布线的目标。",
+  "<b>定 die 尺寸与利用率目标</b>:据网表规模、宏面积(尤其 24MiB UB SRAM 约占 die 29%)与 28nm 工艺,定 die 大小(示意 ≤331mm²)与核心利用率(示意 ~70%),为布线和电源留足余量。",
+  "<b>定电源方案与 IO/Pad 规划</b>:先想好供电(电压域、电源环/电源条 PDN 走法、IR-drop 预算)与 IO/Pad 环布置(PCIe 3.0、DDR3 接口、电源 pad 的位置),floorplan 阶段就要给它们预留位置与金属。",
+  "<b>读懂数据流定大块相对位置</b>:从微架构确认 weight-stationary 数据流——UB 喂数据进阵列、阵列把部分和送累加器——据此规划「UB 贴阵列边、累加器贴阵列输出边」的相对摆位,让关键路径天生就短。"
+ ],
+ "during": [
+  "<b>铁律:floorplan 定全局成败,且越早错越难救</b>。大块摆位一旦定下,后面布局布线只能在缝里腾挪;UB 离阵列远了、阵列摆歪了,布线必然拥塞、关键路径必然超长,等到布线后才发现往往要回炉重摆——所以这一步要舍得反复试摆。",
+  "<b>先摆大、再摆规整、最后填零碎</b>。顺序是:先把最大的硬宏(24MiB UB SRAM 群)和最规整的大块(256×256 阵列)定位、对齐、定朝向,搭出骨架;标准单元区(控制逻辑、译码 FSM 等)随后在剩余空间里铺。",
+  "<b>SRAM 宏沿阵列边贴放、引脚朝阵列</b>。UB 是最大硬宏群,把它们排成阵列沿脉动阵列的边贴着摆、读写引脚朝向阵列,缩短「喂数据进阵列」的高带宽通路;摆反或摆远,这条命脉通路就长、就堵、就掉时序。",
+  "<b>给每个硬宏留 halo,宏间留通道</b>。在每个 SRAM/大宏周围加一圈 halo(placement blockage),防标准单元贴太死堵住宏引脚;宏与宏之间刻意留出布线与电源通道——利用率(示意 70%)就是给这些通道留白的量化体现。",
+  "<b>利用率与可布通性、IR-drop 联动</b>。core 利用率定太高(比如逼近九成)看着省面积,实则把布线挤爆、把电源网络挤瘦,布线拥塞与 IR-drop 一起恶化;这类大芯片通行做法是留出充裕余量(示意约七成),宁可 die 大一点也要布得通、供得稳。",
+  "<b>诚实声明边界</b>:floorplan 流程、LEF/工艺规则、利用率/halo/通道、PDN 与 IR-drop 预算均为通行后端 EDA 实践(典型工具如 Innovus / IC Compiler II);TPU v1 不公开其真实 floorplan、PDN、版图与各块精确坐标,本节仅以其已知结构(脉动阵列、24MiB UB SRAM 约占 29%、累加器、700MHz、28nm、示意 ≤331mm²、weight-stationary)作为被实现对象,文中利用率 70%、金属层 M1–Mx 等均为示意,非 TPU 私有版图数据。"
+ ],
+ "result": [
+  {
+   "label": "画布(示意)",
+   "value": "28nm die ≤331mm² · core 利用率 ~70%(示意)"
+  },
+  {
+   "label": "大块摆位",
+   "value": "256×256 阵列(规整大块)+ 24MiB UB SRAM 宏(沿阵列边,约占 die 29%)+ 4MiB 累加器(阵列输出边)"
+  },
+  {
+   "label": "外围",
+   "value": "IO/Pad 环:PCIe 3.0 · DDR3 接口 · 电源 pad"
+  },
+  {
+   "label": "宏约束(示意)",
+   "value": "每个 SRAM 宏周围加 halo/blockage,宏间留布线+电源通道"
+  },
+  {
+   "label": "电源/层(示意)",
+   "value": "预留 PDN 电源环/条 + 金属层 M1–Mx(示意),设 IR-drop 预算"
+  },
+  {
+   "label": "主产物",
+   "value": "floorplan DEF(各块位置/朝向/blockage)+ 利用率/面积报告,交布局布线"
+  }
+ ],
+ "after": [
+  "<b>看拥塞与利用率热图</b>:floorplan 初稿要先做一次试布线(trial route)/全局布线估计,看哪里红(拥塞)、哪里宏引脚被堵——据此调大块摆位、加大通道或降利用率,而不是带着拥塞往下走。",
+  "<b>查时序与关键路径长度</b>:在 floorplan 上做早期时序估算,确认 UB→阵列、阵列→累加器这些关键路径的物理距离没被摆远;若关键路径天生就长,回来挪宏比后面插一堆缓冲划算。",
+  "<b>核电源与 IR-drop 预算</b>:据摆好的大块与 PDN 规划做早期 IR-drop 评估,确认 24MiB SRAM 群与阵列这些大电流区供电够、压降在预算内;不够就在 floorplan 阶段加粗电源金属或调摆位。",
+  "<b>迭代试摆直到 floorplan 收敛</b>:floorplan 几乎一定要试摆很多轮——拥塞/时序/IR-drop 任一不过就回来重摆大块,直到三者都健康,才放给后续的电源网络与布局布线。",
+  "<b>交布局布线</b>:把收敛的 floorplan(各块位置、朝向、halo、PDN、利用率)连同网表与约束交给布局(placement)与布线,后续 DRC/LVS/签核 STA 都建立在这张地基之上。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(floorplan 流程、LEF/工艺规则、利用率/halo/通道、PDN/IR-drop 为通行后端 EDA 实践;TPU 不公开私有 floorplan/版图,文中利用率 70%、金属层 M1–Mx、各块坐标均为示意,非 TPU 私有数据)"
+}

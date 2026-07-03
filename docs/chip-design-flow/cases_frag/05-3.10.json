@@ -1,0 +1,116 @@
+{
+ "secNum": "3.10",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 可测试性友好的 RTL(DFT):让成千上万个 PE 触发器能串 scan 链、UB 能 MBIST",
+ "oneLine": "芯片出片后要在测试机上判好坏,但你没法逐个探针去戳片内每个触发器——DFT 的办法是写 RTL 时就让每个 FF 前带一个 scan-mux,测试模式下把它们串成一条移位「扫描链」,从引脚塞进任意状态再读出比对;大块 SRAM 串不进链,改用片上 MBIST 自测。本案例讲为达成这点,RTL 必须坚持全同步、避开裸门控时钟/组合环/latch/内部生成异步复位——TPU 那 256×256 阵列里成千上万个 PE 触发器、24 MiB UB,正是这套规则的极端考场。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"30\" y=\"26\">DFT 友好:让每个触发器能被串成一条移位「扫描链」，从外部塞进任意状态、再读出来比对</text><text class=\"cs-note\" x=\"30\" y=\"58\">每个 FF 前加一个 scan-mux：scan_en=0 走功能数据 D，scan_en=1 走上一拍的 scan_in</text><g class=\"cs-part\" data-k=\"si\" data-g=\"si\"><rect class=\"cs-box\" x=\"22\" y=\"92\" width=\"86\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"65\" y=\"118\">scan_in</text><text class=\"cs-sub\" x=\"65\" y=\"136\">链入口</text></g><g class=\"cs-part\" data-k=\"cell1\" data-g=\"cell\"><rect class=\"cs-box\" x=\"128\" y=\"86\" width=\"150\" height=\"74\" rx=\"8\"/><path d=\"M128,160 L142,160 L128,146 Z\" fill=\"#8b5cf6\"/><text class=\"cs-t\" x=\"203\" y=\"110\">scan-mux + FF</text><text class=\"cs-sub\" x=\"203\" y=\"130\">0:D  1:scan_in</text><text class=\"cs-sub\" x=\"203\" y=\"148\">always_ff posedge clk</text></g><line class=\"cs-arr\" x1=\"108\" y1=\"121\" x2=\"124\" y2=\"121\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"cell2\" data-g=\"cell\"><rect class=\"cs-box\" x=\"298\" y=\"86\" width=\"150\" height=\"74\" rx=\"8\"/><path d=\"M298,160 L312,160 L298,146 Z\" fill=\"#8b5cf6\"/><text class=\"cs-t\" x=\"373\" y=\"110\">scan-mux + FF</text><text class=\"cs-sub\" x=\"373\" y=\"130\">0:D  1:上一拍 Q</text><text class=\"cs-sub\" x=\"373\" y=\"148\">同一 clk 打拍</text></g><line class=\"cs-arr\" x1=\"278\" y1=\"121\" x2=\"294\" y2=\"121\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"cell3\" data-g=\"cell\"><rect class=\"cs-box\" x=\"468\" y=\"86\" width=\"150\" height=\"74\" rx=\"8\"/><path d=\"M468,160 L482,160 L468,146 Z\" fill=\"#8b5cf6\"/><text class=\"cs-t\" x=\"543\" y=\"110\">scan-mux + FF</text><text class=\"cs-sub\" x=\"543\" y=\"130\">0:D  1:上一拍 Q</text><text class=\"cs-sub\" x=\"543\" y=\"148\">…成千上万 PE FF</text></g><line class=\"cs-arr\" x1=\"448\" y1=\"121\" x2=\"464\" y2=\"121\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"so\" data-g=\"so\"><rect class=\"cs-box\" x=\"638\" y=\"92\" width=\"62\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"669\" y=\"116\">scan</text><text class=\"cs-t\" x=\"669\" y=\"134\">_out</text></g><line class=\"cs-arr\" x1=\"618\" y1=\"121\" x2=\"634\" y2=\"121\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"mbist\" data-g=\"mbist\"><rect class=\"cs-box\" x=\"22\" y=\"200\" width=\"320\" height=\"76\" rx=\"8\" fill=\"#ecfdf5\" stroke=\"#a7f3d0\"/><text class=\"cs-t\" x=\"182\" y=\"226\">SRAM → MBIST 自测引擎</text><text class=\"cs-sub\" x=\"182\" y=\"246\">24 MiB UB / 累加器无法串 scan 链</text><text class=\"cs-sub\" x=\"182\" y=\"264\">片上写遍 march 图案、逐 bank 比对</text></g><g class=\"cs-part\" data-k=\"ban\" data-g=\"ban\"><rect class=\"cs-box\" x=\"378\" y=\"200\" width=\"322\" height=\"76\" rx=\"8\" fill=\"#fef3f2\" stroke=\"#fecaca\"/><text class=\"cs-t\" x=\"539\" y=\"224\">DFT 禁忌(破坏可测/时序)</text><text class=\"cs-sub\" x=\"539\" y=\"244\">裸门控时钟 · 组合环 · latch</text><text class=\"cs-sub\" x=\"539\" y=\"262\">内部生成的异步复位</text></g><g class=\"cs-part\" data-k=\"chk\" data-g=\"chk\"><rect class=\"cs-box\" x=\"22\" y=\"312\" width=\"678\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"361\" y=\"336\">DFT 友好的 RTL = 全同步触发器 + 统一时钟/复位 + 无 latch/组合环/裸门控时钟</text><text class=\"cs-sub\" x=\"361\" y=\"354\">写完跑 DFT/scan-rule lint：扫不进/串不起来的 FF 就是测不到的盲区</text></g></svg>",
+ "legend": [
+  {
+   "k": "cell",
+   "name": "scan-mux + 触发器(可扫描单元)",
+   "desc": "DFT 的基本细胞:在每个功能触发器的 D 输入前插一个二选一 mux,由 scan_en 控制——功能模式(scan_en=0)走正常数据 D,测试模式(scan_en=1)走 scan_in(链上前一级的 Q)。所有这种单元在测试模式下首尾相接,就成了一条能逐拍移位的链。RTL 里你通常只写普通同步触发器,scan-mux 由综合/DFT 工具在扫描插入(scan insertion)阶段自动替换上去——但前提是你的 FF 写得够「规矩」,工具才认得、换得动。"
+  },
+  {
+   "k": "si",
+   "name": "scan_in / scan_en(链入口与控制)",
+   "desc": "扫描链对外暴露的几根专用引脚:scan_in 把测试图案逐位移进链头,scan_en 在「移位(shift)」和「捕获(capture)」两态间切换。测试流程是——拉高 scan_en 把一个已知状态移满整条链(把片内每个 FF 强行置成想要的值),拉低 scan_en 让功能时钟打一拍(让组合逻辑算一次、结果被捕获进各 FF),再拉高 scan_en 把结果移出去比对。这样无需物理探针,就能从外部直接「写/读」深埋片内的每一个触发器。"
+  },
+  {
+   "k": "so",
+   "name": "scan_out(链出口)",
+   "desc": "链尾,把逐拍移出的捕获结果送到外部测试机,与黄金期望值逐位比对。哪一位不符,配合扫描链拓扑就能定位到是哪段逻辑/哪个 FF 出了缺陷(stuck-at、桥接等)。这正是扫描链把「片内不可观测」变成「引脚可观测/可控」的全部价值:成千上万个 FF 都被这一进一出覆盖到。"
+  },
+  {
+   "k": "mbist",
+   "name": "SRAM → MBIST(片上存储自测)",
+   "desc": "TPU 24 MiB Unified Buffer、4 MiB 累加器这类大块 SRAM,体量太大、又是阵列结构,既不可能串进触发器扫描链,也不该用外部图案一格一格测(太慢)。做法是在 RTL 里给每块 SRAM 配一个 MBIST(Memory Built-In Self-Test)引擎:片上自动生成 march 等测试图案,把整块存储写一遍、读回逐 bank 比对,一个 go/no-go 信号报结果。存储 RTL 阶段就要为例化的 SRAM 宏接好 MBIST 端口/包裹逻辑。"
+  },
+  {
+   "k": "ban",
+   "name": "DFT 禁忌(破坏可测性的写法)",
+   "desc": "四类写法会让扫描/时序双双失效,DFT 友好的 RTL 必须避开:① 裸门控时钟(直接用组合信号 and 出一个 clk 去打 FF)——这些 FF 在测试模式下收不到稳定时钟,串不进链、移不动位;② 组合环(信号绕一圈反馈回自己)——无确定值、时序无法分析、扫描也卡住;③ latch(电平敏感锁存,多由不完整 if/case 误生成)——透明特性破坏可控可观测;④ 模块内部用组合逻辑生成的异步复位——会在不该复位时乱触发,且让扫描链状态不可控。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "cell"
+   ],
+   "cap": "① 基本细胞:每个功能触发器前插一个 scan-mux(scan_en 选 D 还是 scan_in)。RTL 里照常写规矩的同步 FF,DFT 工具在扫描插入阶段自动替成可扫描单元"
+  },
+  {
+   "keys": [
+    "si",
+    "cell",
+    "so"
+   ],
+   "cap": "② 串成链:测试模式下把所有可扫描单元首尾相接,scan_in 进、scan_out 出。移位→塞入任意已知状态,捕获→打一拍存下逻辑结果,再移出比对——片内每个 FF 都被可控可观测"
+  },
+  {
+   "keys": [
+    "cell"
+   ],
+   "cap": "③ 套到 TPU:256×256 阵列里成千上万个 PE 触发器(8-bit 乘、32-bit 累加的状态)全部要能串进扫描链,才能在测试机上判这片阵列好坏——这是 DFT 友好规则的极端考场"
+  },
+  {
+   "keys": [
+    "mbist"
+   ],
+   "cap": "④ 大块存储另走 MBIST:24 MiB UB、4 MiB 累加器串不进扫描链,改在 RTL 里给 SRAM 接片上自测引擎,自动写 march 图案、逐 bank 比对,一个信号报好坏"
+  },
+  {
+   "keys": [
+    "ban",
+    "chk"
+   ],
+   "cap": "⑤ 守禁忌:写 RTL 时坚持全同步、统一时钟/复位,避开裸门控时钟/组合环/latch/内部生成异步复位;写完跑 DFT/scan-rule lint,扫不进的 FF 就是测不到的盲区"
+  }
+ ],
+ "before": [
+  "<b>先定可测性目标与扫描风格</b>:动手前就约定「全设计可扫描」「目标 stuck-at 覆盖率(如 ≥99%)」、用 full-scan、几条扫描链、scan_en/scan_in/scan_out 怎么命名走线。可测性不是流片前补的,是写 RTL 第一天就背在身上的约束。",
+  "<b>定全同步设计与统一时钟/复位规范</b>:约定所有触发器一律 always_ff @(posedge clk) 同步打拍、复位风格全队统一(同步或顶层异步复位),禁止模块内部用组合逻辑临时拼时钟或复位——这是 scan 链能成立的地基。",
+  "<b>给每块存储分配 MBIST,而非扫描</b>:把设计里的 SRAM(UB、累加器等大块)单列出来,规划各配 MBIST 引擎、共享还是独立、测试端口怎么引出;明确这些块走自测、不进触发器扫描链。",
+  "<b>把 DFT 禁忌写进编码规范并设 lint 项</b>:在团队 RTL 规范里明令禁止裸门控时钟、组合环、推断 latch、内部生成异步复位,并配套 lint 规则,让违规在写完当天就被扫出,而不是拖到 DFT 工具插链时才报「这些 FF 串不进来」。"
+ ],
+ "during": [
+  "<b>触发器只写规矩的同步形式</b>:统一 reg q; always_ff @(posedge clk) q <= d;(示意),需要保持就显式写回自身或用同步使能 if(en) q<=d;。不要在功能 RTL 里自己手搓 scan-mux——把 FF 写干净,scan 插入交给 DFT 工具,它才认得出、换得上。",
+  "<b>铁律:不准裸门控时钟</b>:省功耗要门控时钟时,绝不用 assign gclk = clk & en; 这种组合与门直接打 FF;必须用经过验证的集成时钟门控单元(ICG/clock-gating cell)并让综合工具统一插入。裸门控出来的 FF 在测试模式拿不到稳定时钟,整段都会从扫描链里掉出去。",
+  "<b>铁律:杜绝组合环与推断 latch</b>:任何信号不得绕组合逻辑反馈回自身;always_comb / 组合 always 里所有分支、所有输出都要赋全值(if/case 配 else/default、先给默认值),否则综合会推断出 latch。环和 latch 既让静态时序无法分析,也让扫描链无法移位/捕获。",
+  "<b>异步复位只从顶层来,不在内部生成</b>:若用异步复位,复位源必须是顶层一根干净的专用信号(并做好复位同步释放),严禁在模块里用组合逻辑算出一个 rst 去异步清 FF——那会在测试时不可控地乱复位,把链上状态冲掉,也常埋下亚稳态隐患。",
+  "<b>给大块 SRAM 接 MBIST,而非塞进扫描链</b>:存储阵列本体进不了触发器链,在例化 SRAM 宏时一并接好 MBIST 引擎/包裹逻辑(测试时钟、控制、go/no-go 输出),让 24 MiB UB、累加器这类块能片上自走 march 图案自测,与逻辑扫描各管一摊。",
+  "<b>诚实边界:写法是通行 DFT 实践,非 TPU 私有披露</b>:scan-mux/扫描链/MBIST、以及「禁裸门控时钟/组合环/latch/内部异步复位」都是数字 ASIC 的通行可测性设计实践;TPU v1 不会公开其扫描链拓扑、覆盖率或 MBIST 实现。本案以 TPU 的已知结构(海量 PE 触发器、24 MiB UB)作载体讲 DFT 概念,具体 DFT 数字非论文披露。"
+ ],
+ "result": [
+  {
+   "label": "可扫描单元(示意)",
+   "value": "功能 FF 前插 scan-mux:scan_en?scan_in:d → always_ff @(posedge clk) q<=…(由 DFT 工具插入,示意)"
+  },
+  {
+   "label": "扫描链接口",
+   "value": "scan_in / scan_en / scan_out 三组专用引脚;移位→塞状态,捕获→打一拍,再移出比对"
+  },
+  {
+   "label": "TPU 阵列触发器",
+   "value": "256×256 阵列成千上万个 PE FF(8-bit 乘 / 32-bit 累加状态)全部纳入扫描链"
+  },
+  {
+   "label": "大块 SRAM",
+   "value": "24 MiB UB、4 MiB 累加器 → 不串 scan,改接片上 MBIST 自测"
+  },
+  {
+   "label": "复位/时钟风格",
+   "value": "全同步、统一时钟与复位;异步复位只从顶层进"
+  },
+  {
+   "label": "四类禁忌",
+   "value": "裸门控时钟 · 组合环 · 推断 latch · 内部生成异步复位 —— 一律避开"
+  }
+ ],
+ "after": [
+  "<b>跑 DFT / scan-rule lint(testability check)</b>:用专门工具静态检查每个触发器是否可被扫描——查出裸门控时钟、组合环、latch、内部异步复位等让 FF 掉出扫描链的违规;这些「测不到的盲区」必须在 RTL 阶段清零,而不是等 DFT 插链失败再返工。",
+  "<b>做扫描插入并核覆盖率</b>:试跑 scan insertion + ATPG(自动测试图案生成),确认链能串通、能移位/捕获,stuck-at 等覆盖率达标(如 ≥99%);覆盖率上不去就回去看是哪类不可控/不可观测的写法挡了路。",
+  "<b>仿真验证扫描模式与功能模式都对</b>:在 RTL/门级仿真里既跑功能模式,也跑扫描移位/捕获时序,确认 scan_en 切换、链顺序、ICG 时钟门控在测试模式被旁路等行为正确,功能与可测两套路径都不出错。",
+  "<b>验 MBIST 并交后端/验证收口</b>:仿真核每块 SRAM 的 MBIST 能正确写读 march 图案、报对 go/no-go;把扫描链与 MBIST 的端口、时序约束交后端布线(链走线、测试时钟),并把可测性场景交验证团队,确保出片后测试机真能判好坏。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(256×256 MAC 阵列、24 MiB Unified Buffer、4 MiB 累加器等为已知结构事实;scan-mux/扫描链/MBIST 与禁裸门控时钟·组合环·latch·内部异步复位等为通行 DFT/RTL 实践,非 TPU 逐行源码或私有 DFT 数字)"
+}

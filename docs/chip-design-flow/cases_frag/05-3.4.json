@@ -1,0 +1,115 @@
+{
+ "secNum": "3.4",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · MAC 数据通路的 RTL:8b×8b 怎样一路增长到 32b 累加,signed 怎样声明",
+ "oneLine": "把一个 MAC 写成 RTL,真正的功夫全在「位宽」和「有符号」两件事上:8-bit 乘积要给 16 位、256 个乘积连加要给 32 位累加器防溢出,而且从输入到累加每一段都得写 signed——少声明一处,符号位就被当数值,结果全错。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 380\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"30\">一个 PE(MAC)的数据通路:位宽一路增长,signed 一路声明</text><g class=\"cs-part\" data-k=\"a\" data-g=\"in\"><rect class=\"cs-box\" x=\"40\" y=\"60\" width=\"120\" height=\"52\" rx=\"8\"/><text class=\"cs-t\" x=\"100\" y=\"84\">激活 a</text><text class=\"cs-sub\" x=\"100\" y=\"100\">signed [7:0]</text></g><g class=\"cs-part\" data-k=\"b\" data-g=\"in\"><rect class=\"cs-box\" x=\"40\" y=\"150\" width=\"120\" height=\"52\" rx=\"8\"/><text class=\"cs-t\" x=\"100\" y=\"174\">权重 b</text><text class=\"cs-sub\" x=\"100\" y=\"190\">signed [7:0]</text></g><line class=\"cs-arr\" x1=\"160\" y1=\"86\" x2=\"232\" y2=\"120\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"160\" y1=\"176\" x2=\"232\" y2=\"142\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"mul\" data-g=\"mul\"><rect class=\"cs-box\" x=\"234\" y=\"98\" width=\"130\" height=\"66\" rx=\"8\"/><text class=\"cs-t\" x=\"299\" y=\"124\">乘法器 ×</text><text class=\"cs-sub\" x=\"299\" y=\"142\">8b×8b → 16b</text></g><text class=\"cs-note\" x=\"240\" y=\"184\">signed [15:0] prod</text><text class=\"cs-note\" x=\"240\" y=\"200\">= a * b(位宽翻倍)</text><line class=\"cs-arr\" x1=\"364\" y1=\"131\" x2=\"430\" y2=\"131\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"372\" y=\"122\">16b</text><g class=\"cs-part\" data-k=\"add\" data-g=\"acc\"><rect class=\"cs-box\" x=\"432\" y=\"98\" width=\"120\" height=\"66\" rx=\"8\"/><text class=\"cs-t\" x=\"492\" y=\"124\">加法器 +</text><text class=\"cs-sub\" x=\"492\" y=\"142\">符号扩展到 32b</text></g><line class=\"cs-arr\" x1=\"552\" y1=\"131\" x2=\"600\" y2=\"131\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"acc\" data-g=\"acc\"><rect class=\"cs-box\" x=\"602\" y=\"86\" width=\"96\" height=\"90\" rx=\"8\"/><path d=\"M602,176 L602,160 L618,176 Z\" fill=\"#8b5cf6\"/><text class=\"cs-t\" x=\"650\" y=\"120\">累加</text><text class=\"cs-t\" x=\"650\" y=\"138\">寄存器</text><text class=\"cs-sub\" x=\"650\" y=\"158\">signed[31:0]</text></g><line class=\"cs-arr\" x1=\"650\" y1=\"176\" x2=\"650\" y2=\"210\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"650\" y1=\"210\" x2=\"492\" y2=\"210\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"492\" y1=\"210\" x2=\"492\" y2=\"166\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"500\" y=\"226\">每拍回灌:acc &lt;= acc + prod</text><g class=\"cs-part\" data-k=\"grow\" data-g=\"grow\"><rect class=\"cs-box\" x=\"40\" y=\"262\" width=\"658\" height=\"96\" rx=\"8\"/><text class=\"cs-t\" x=\"60\" y=\"288\" text-anchor=\"start\">位宽预算:为什么累加要 32 位</text><text class=\"cs-sub\" x=\"60\" y=\"312\" text-anchor=\"start\">8b×8b 乘积最大 ~2^15(16b);256 个乘积连加,和最大约 2^15 × 256 = 2^23</text><text class=\"cs-sub\" x=\"60\" y=\"332\" text-anchor=\"start\">→ 23 位才装得下一行;留足余量取 32 位,杜绝溢出(overflow)绕回出错</text><text class=\"cs-note\" x=\"60\" y=\"350\" text-anchor=\"start\">铁律:乘=位宽翻倍,加=+1 位 / 累加=按累加深度留位;有符号必须每段都写 signed</text></g></svg>",
+ "legend": [
+  {
+   "k": "in",
+   "name": "8-bit 有符号输入(a、b)",
+   "desc": "激活 a 与权重 b 都是 INT8。RTL 里写成 logic signed [7:0] a, b;——关键是 signed:不写它,综合器会按无符号处理,-1 就被当成 255,乘出来全错。"
+  },
+  {
+   "k": "mul",
+   "name": "乘法器(8b×8b→16b)",
+   "desc": "运算符 * 映射成一个硬件乘法器。位宽铁律:两个 8 位相乘,乘积要 16 位(8+8)才装得下,所以 prod 声明 signed [15:0]——位宽在这一步翻倍。"
+  },
+  {
+   "k": "acc",
+   "name": "32-bit 有符号累加器",
+   "desc": "一行 256 个 16-bit 乘积连加,和会涨到约 2^23,32 位留足余量。它是个寄存器(时钟沿锁存),写法 always_ff @(posedge clk) acc <= acc + prod;——位宽不够就溢出绕回。"
+  },
+  {
+   "k": "grow",
+   "name": "位宽增长预算(防溢出)",
+   "desc": "数据通路 RTL 的核心算术:乘→位宽翻倍,加→+1 位,累加→按累加深度留位。算准每一段该多宽,是写对数据通路、不溢出的前提。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "a",
+    "b"
+   ],
+   "cap": "① 声明输入:a、b 都是 8-bit 有符号。RTL 写 logic signed [7:0] a, b;——signed 这个词不能漏,它决定乘法器按补码还是按无符号去综合。"
+  },
+  {
+   "keys": [
+    "mul"
+   ],
+   "cap": "② 写乘法:assign prod = a * b;。一个 * 就综合出一个乘法器。位宽必须给够:8+8=16,prod 声明 signed [15:0],否则高位被截掉。"
+  },
+  {
+   "keys": [
+    "add",
+    "acc"
+   ],
+   "cap": "③ 写累加:acc <= acc + prod;。16-bit 乘积要先符号扩展到 32 位再加。累加器是寄存器,在时钟沿更新,所以用 always_ff / <=(非阻塞)。"
+  },
+  {
+   "keys": [
+    "grow"
+   ],
+   "cap": "④ 算位宽预算:256 个乘积连加,峰值约 2^23,需要 23 位;取 32 位留余量,彻底杜绝溢出绕回。位宽是「算」出来的,不是拍脑袋。"
+  },
+  {
+   "keys": [
+    "in",
+    "mul",
+    "acc",
+    "grow"
+   ],
+   "cap": "⑤ 串起来看:8b 有符号 → 16b 乘积 → 32b 累加,位宽逐段增长、signed 逐段声明。一个 PE 写对了,256×256 个同构 PE 复制铺开就是脉动阵列。"
+  }
+ ],
+ "before": [
+  "<b>先定语言与编码风格</b>:用可综合的 SystemVerilog/Verilog 子集;时序逻辑统一 always_ff + 非阻塞 <=,组合逻辑 always_comb + 阻塞 =;复位风格(同步/异步)先定死并全模块一致——这些是通行 RTL 实践,TPU 内部不逐行公开。",
+  "<b>把位宽逐段算清楚</b>:输入 8b(INT8 MAC),乘积 8+8=16b,一行 256 个乘积连加的累加器要容纳约 2^23 → 至少 23 位,留余量取 32b(与 TPU 4 MiB 32-bit 累加器一致)。位宽是算出来的,设计前就要落到纸面。",
+  "<b>把有符号/无符号定清楚</b>:INT8 推理是有符号补码,所以 a、b、prod、acc 全链路都按 signed 设计;明确哪些信号 signed、哪些 unsigned,避免混用导致隐式无符号比较/扩展。",
+  "<b>冻结 PE 接口</b>:一个 PE 的端口(a 入、b 入/驻留、部分和入/出、时钟/复位/使能)先定好位宽与方向,因为这个 PE 要被复制 65,536 份铺成 256×256 阵列,接口错一处就错满阵列。",
+  "<b>定可综合约束</b>:不写不可综合结构(如 # 延时、initial 赋值逻辑);乘法用 * 交给综合器映射成乘法器,不手搓门级——保持 RTL 抽象、可移植。"
+ ],
+ "during": [
+  "<b>运算符直接映射成硬件</b>:写 a * b 就是一个乘法器,acc + prod 就是一个加法器。RTL 的「数据通路」本质就是把算式写成带位宽的信号连线,综合器负责把 *、+ 变成实际的乘/加电路。",
+  "<b>位宽铁律:乘翻倍、加进位、累加留深度</b>。8b×8b 必须给 16b 乘积;两数相加结果要 +1 位防进位丢失;256 项连加要按累加深度把累加器加宽到 32b。位宽给小了 → 高位被悄悄截断 → 溢出绕回(wrap-around)出错且不报错,是数据通路最阴的坑。",
+  "<b>signed 必须每一段都写</b>:logic signed [7:0] a,b; logic signed [15:0] prod; logic signed [31:0] acc;(示意)。只要有一段漏写 signed,该处就按无符号综合,符号位被当数值位——负权重立刻算错,而仿真波形看上去「有值」很难察觉。",
+  "<b>符号扩展要显式、可见</b>:把 16b 乘积加到 32b 累加器,要符号扩展(sign-extend)而非补零。在 signed 信号间相加,工具会自动符号扩展;但只要链路里混进一个 unsigned,扩展规则就翻车——所以宁可全程 signed、必要处用 $signed() 钉死。",
+  "<b>时序 vs 组合分清楚</b>:乘法和加法是组合逻辑(always_comb / assign,用 =),累加器是寄存器(always_ff @(posedge clk),用 <=)。示意:always_ff @(posedge clk) if(en) acc <= acc + a*b;——一拍一次 MAC,这正是脉动阵列每个 PE 的核心。",
+  "<b>诚实边界</b>:TPU v1 不会逐行公开其 RTL,以上 signed/位宽/always_ff 写法是数据通路的通行 RTL 实践;能确定为 TPU 事实的只是结构本身——8-bit MAC、32-bit 累加器、256×256 阵列、INT8/~92 TOPS。"
+ ],
+ "result": [
+  {
+   "label": "输入声明(示意)",
+   "value": "logic signed [7:0] a, b;"
+  },
+  {
+   "label": "乘积声明(示意)",
+   "value": "logic signed [15:0] prod = a * b;(8+8=16)"
+  },
+  {
+   "label": "累加器声明(示意)",
+   "value": "logic signed [31:0] acc;(留 23→32 位防溢出)"
+  },
+  {
+   "label": "累加写法(示意)",
+   "value": "always_ff @(posedge clk) acc <= acc + prod;"
+  },
+  {
+   "label": "位宽增长链",
+   "value": "8b → 16b(乘)→ 32b(累加)"
+  },
+  {
+   "label": "复用方式",
+   "value": "同构 PE 复制 65,536 份 → 256×256 脉动阵列"
+  }
+ ],
+ "after": [
+  "<b>跑 lint 查位宽/符号</b>:用 lint 工具扫位宽不匹配(width mismatch)、有符号/无符号混用、隐式截断这类告警——数据通路 90% 的低级 bug 在这一步就能拦下,绝不能放过 signed/unsigned 混用的 warning。",
+  "<b>定向仿真验边界值</b>:专门喂 -128、+127、全负权重、能把累加器顶到峰值(约 2^23)的向量,验证不溢出、符号正确;再随机激励对拍黄金参考模型(bit-accurate)确认每个乘加结果一致。",
+  "<b>试综合看映射与位宽</b>:综合后确认 * 被映射成乘法器、+ 成加法器,且综合报告里位宽与设计一致(没有被工具悄悄推断成别的宽度);顺带看 PE 的时序与面积是否符合 700 MHz 预算。",
+  "<b>做 CDC 检查(若跨时钟域)</b>:数据通路在阵列时钟域,与主机 PCIe/DDR3 接口可能属不同时钟域;跨域的数据/控制信号要确认有同步器,避免亚稳态——单个 PE 内不跨域,但阵列边界与接口处要查。",
+  "<b>交验证团队</b>:把 PE/数据通路 RTL、位宽预算文档、signed 约定和黄金模型一起交给验证,作为阵列级与系统级回归的基线;接口位宽冻结后再向后端(综合/布局布线)推进。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(8-bit MAC、32-bit 累加器、256×256 阵列为 v1 披露;signed/位宽/always_ff 等 RTL 写法为通行 RTL 实践,非 v1 逐行披露)"
+}

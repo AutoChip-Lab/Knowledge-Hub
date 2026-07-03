@@ -1,0 +1,119 @@
+{
+ "secNum": "3.5",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Weight FIFO 与 Unified Buffer 双缓冲:让 256×256 阵列零空转",
+ "oneLine": "缓冲与流控的根本目的是「让生产者和消费者解耦、让慢通路盖不住快通路」——TPU 用 Weight FIFO 的深度盖住从 DDR3 取权重的长延迟,用 Unified Buffer 的双缓冲让激活搬运与阵列计算重叠,合起来就是要喂饱那块每拍要吞下整列数据的脉动阵列、逼近零空转。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 380\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"28\">权重通路:取数延迟靠 FIFO 深度盖住</text><g class=\"cs-part\" data-k=\"ddr3\" data-g=\"ddr3\"><rect class=\"cs-box\" x=\"40\" y=\"44\" width=\"150\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"115\" y=\"72\">片外 DDR3</text><text class=\"cs-sub\" x=\"115\" y=\"90\">8 GiB · ~30 GB/s · 高延迟</text></g><g class=\"cs-part\" data-g=\"wflow\"><line class=\"cs-arr\" x1=\"190\" y1=\"76\" x2=\"258\" y2=\"76\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"196\" y=\"40\">取权重(长延迟)</text><g class=\"cs-part\" data-k=\"wfifo\" data-g=\"wfifo\"><rect class=\"cs-box\" x=\"262\" y=\"40\" width=\"178\" height=\"72\" rx=\"8\"/><text class=\"cs-t\" x=\"351\" y=\"68\">Weight FIFO</text><text class=\"cs-sub\" x=\"351\" y=\"86\">深度 = 盖住取数延迟</text><text class=\"cs-sub\" x=\"351\" y=\"102\">权重预取队列</text></g><g class=\"cs-part\" data-g=\"wflow2\"><line class=\"cs-arr\" x1=\"440\" y1=\"76\" x2=\"512\" y2=\"120\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"446\" y=\"62\">权重就位即灌入</text><g class=\"cs-part\" data-k=\"mxu\" data-g=\"mxu\"><rect class=\"cs-box\" x=\"516\" y=\"118\" width=\"168\" height=\"120\" rx=\"8\"/><text class=\"cs-t\" x=\"600\" y=\"150\">MXU 脉动阵列</text><text class=\"cs-sub\" x=\"600\" y=\"170\">256×256 MAC</text><rect class=\"cs-cell\" x=\"536\" y=\"184\" width=\"20\" height=\"20\"/><rect class=\"cs-cell\" x=\"560\" y=\"184\" width=\"20\" height=\"20\"/><rect class=\"cs-cell\" x=\"584\" y=\"184\" width=\"20\" height=\"20\"/><rect class=\"cs-cell\" x=\"608\" y=\"184\" width=\"20\" height=\"20\"/><rect class=\"cs-cell\" x=\"536\" y=\"208\" width=\"20\" height=\"20\"/><rect class=\"cs-cell\" x=\"560\" y=\"208\" width=\"20\" height=\"20\"/><rect class=\"cs-cell\" x=\"584\" y=\"208\" width=\"20\" height=\"20\"/><rect class=\"cs-cell\" x=\"608\" y=\"208\" width=\"20\" height=\"20\"/><text class=\"cs-sub\" x=\"600\" y=\"232\">目标:零空转</text></g><text class=\"cs-note\" x=\"40\" y=\"262\">激活通路:双缓冲让搬运与计算重叠</text><g class=\"cs-part\" data-k=\"ubping\" data-g=\"ubping\"><rect class=\"cs-box\" x=\"40\" y=\"276\" width=\"180\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"130\" y=\"302\">UB · Ping 缓冲</text><text class=\"cs-sub\" x=\"130\" y=\"320\">本拍:喂阵列(读)</text></g><g class=\"cs-part\" data-k=\"ubpong\" data-g=\"ubpong\"><rect class=\"cs-box\" x=\"240\" y=\"276\" width=\"180\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"330\" y=\"302\">UB · Pong 缓冲</text><text class=\"cs-sub\" x=\"330\" y=\"320\">同拍:搬下一批(写)</text></g><g class=\"cs-part\" data-g=\"swap\"><line class=\"cs-arr\" x1=\"220\" y1=\"349\" x2=\"240\" y2=\"349\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"240\" y1=\"362\" x2=\"220\" y2=\"362\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"246\" y=\"372\">每轮 ping/pong 互换角色</text><g class=\"cs-part\" data-g=\"feed\"><polyline class=\"cs-arr\" points=\"130,276 130,250 516,200\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"300\" y=\"248\">激活逐拍泵入 →</text></svg>",
+ "legend": [
+  {
+   "k": "ddr3",
+   "name": "片外 DDR3(慢且高延迟的源)",
+   "desc": "权重存在 8 GiB 片外 DDR3,带宽约 30 GB/s 且取数延迟高。它是缓冲要「遮挡」的对象:阵列消费权重的节奏远快于 DDR3 单次取数能跟上的节奏。"
+  },
+  {
+   "k": "wfifo",
+   "name": "Weight FIFO(权重预取队列)",
+   "desc": "DDR3 与 MXU 之间的先进先出缓冲。它把「取数」与「用数」解耦——后台持续从 DDR3 预取权重排队,阵列要用时直接从队头拿。深度按「带宽×延迟积」定,刚好盖住一次取数往返的延迟。"
+  },
+  {
+   "k": "mxu",
+   "name": "MXU 脉动阵列(贪婪的消费者)",
+   "desc": "256×256 个 8-bit MAC,700 MHz 下每拍都要吞入新数据。它是流控里最饿的消费者:只要权重或激活有一拍没到位,整列流水就出气泡、TOPS 掉。所有缓冲设计都是为了让它别停。"
+  },
+  {
+   "k": "ubping",
+   "name": "Unified Buffer · Ping(本拍在读)",
+   "desc": "24 MiB 软件管理片上 SRAM 中,本轮正被读出、逐拍泵入阵列的那一半激活缓冲。"
+  },
+  {
+   "k": "ubpong",
+   "name": "Unified Buffer · Pong(本拍在写)",
+   "desc": "同一时刻另一半缓冲正在被写入下一批激活(从 DDR3/上一层结果搬运而来)。下一轮二者角色互换,使搬运永远藏在计算背后。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "ddr3",
+    "wfifo"
+   ],
+   "cap": "① 权重预取:后台从高延迟的片外 DDR3 把权重不断取进 Weight FIFO 排队——FIFO 的深度按「带宽×延迟积」设,正好够盖住一次 DDR3 取数往返的延迟"
+  },
+  {
+   "keys": [
+    "wfifo",
+    "mxu"
+   ],
+   "cap": "② 权重就位:阵列需要新一块权重时,直接从 FIFO 队头取出灌入(weight-stationary),无需现等 DDR3,阵列不为「等权重」停拍"
+  },
+  {
+   "keys": [
+    "ubping",
+    "mxu"
+   ],
+   "cap": "③ 激活喂入:Unified Buffer 的 Ping 半区被逐拍读出、泵入阵列,撑起脉动阵列每拍一列的稳态吞吐"
+  },
+  {
+   "keys": [
+    "ubpong"
+   ],
+   "cap": "④ 同拍搬运:就在 Ping 喂阵列的同一时间,Pong 半区正被写入下一批激活——搬运与计算并行重叠,被算完全遮住"
+  },
+  {
+   "keys": [
+    "ubping",
+    "ubpong",
+    "mxu"
+   ],
+   "cap": "⑤ 角色互换:本轮算完,Ping/Pong 交换身份继续滚动;只要每一拍权重和激活都备好,阵列就逼近零空转、吃满 ~92 TOPS"
+  }
+ ],
+ "before": [
+  "<b>先定「谁喂谁、谁是瓶颈」</b>:画出生产者→缓冲→消费者链路。这里消费者是 700 MHz 下每拍吞一整列的 256×256 阵列,生产者是 ~30 GB/s 的片外 DDR3;缓冲存在的全部理由,是让贪婪的阵列别被慢源拖停。",
+  "<b>要算的关键量:带宽×延迟积</b>。FIFO/缓冲要多深,本质由「在一次取数延迟内,消费端会吃掉多少数据」决定(Little's law:在制品 = 吞吐率 × 滞留时间)。深度不够 → 阵列会等数;深度过大 → 白占片上 SRAM 面积。",
+  "<b>必须分清两条独立通路</b>:权重通路(DDR3→Weight FIFO→阵列)和激活通路(Unified Buffer↔阵列)各有各的节奏与延迟,要分别定缓冲策略;TPU 对前者用 FIFO 预取、对后者用双缓冲。",
+  "<b>列清约束输入</b>:片上 SRAM 预算(UB 共 24 MiB、累加器 4 MiB)、DDR3 的实测带宽与延迟、阵列装填/排空所需拍数、以及一块权重/一批激活的字节量——这些数值共同框定缓冲深度的上下界。",
+  "<b>明确成功判据</b>:把目标写成可验证的——「在目标层尺寸下,阵列利用率/无气泡拍占比 ≥ 某阈值」「权重等待与激活等待导致的停拍 ≈ 0」,而不是模糊地说「加个缓冲就行」。"
+ ],
+ "during": [
+  "<b>用 FIFO 深度换取「遮住延迟」</b>:Weight FIFO 不为扩吞吐、只为吸收延迟抖动——深度取到「足够盖住 DDR3 一次取数往返」即可。再深只是多耗 SRAM,对零空转无额外收益,这是典型的「够用就好」取舍。",
+  "<b>激活用双缓冲(ping-pong)而非单缓冲</b>:单缓冲会逼「先搬完再算、算完再搬」串行,阵列必然空转;双缓冲让「读一半喂阵列」与「写另一半搬下批」同拍进行,把搬运时间完全藏到计算背后。代价是激活缓冲面积翻倍——值,因为换来的是阵列不停。",
+  "<b>预取深度 vs 片上面积</b>:缓冲越深越能扛延迟毛刺,但 24 MiB UB 要同时装下激活、中间结果,寸土寸金。取舍是「按最坏延迟定深度的下界,再被 SRAM 预算压回」,二者夹出可行区间。",
+  "<b>weight-stationary 决定权重缓冲的形态</b>:权重一旦灌入阵列就长期不动,因此权重通路是「偶发、大块、可提前预取」的——用 FIFO 提前排好队最划算;激活则是「每拍都要、持续流」的,适合双缓冲滚动喂。两条通路的缓冲形态由数据流性质决定,不可互换套用。",
+  "<b>反压/流控如何传导</b>:消费端(阵列)若暂时吃不下,需有信号让上游预取暂停、避免覆盖未用数据;FIFO 的满/空标志天然承担这种握手。把流控做成「队列水位驱动」而非复杂时序握手,简单可综合、好验证。",
+  "<b>双缓冲的同步要诚实对待</b>:ping/pong 切换点要保证「读侧已读完、写侧已写完」才换,否则数据竞争。TPU v1 未公开其具体同步实现;这类设计的通行做法是用 tile 边界的计数器/完成信号驱动切换,这是通行实践、非 v1 披露细节。"
+ ],
+ "result": [
+  {
+   "label": "缓冲核心目标",
+   "value": "阵列零空转(无气泡满吞吐)"
+  },
+  {
+   "label": "权重通路缓冲",
+   "value": "Weight FIFO 预取,深度盖住 DDR3 取数延迟"
+  },
+  {
+   "label": "激活通路缓冲",
+   "value": "Unified Buffer 双缓冲(ping-pong)搬算重叠"
+  },
+  {
+   "label": "深度定法",
+   "value": "带宽×延迟积 / Little's law"
+  },
+  {
+   "label": "片上 SRAM 预算",
+   "value": "UB 24 MiB + 累加器 4 MiB(软件管理)"
+  },
+  {
+   "label": "理想峰值",
+   "value": "700 MHz × 65,536 MAC ≈ 92 TOPS(INT8)"
+  }
+ ],
+ "after": [
+  "<b>建周期级模型量化气泡</b>:在目标层尺寸下逐拍仿真权重/激活通路,统计阵列因「等权重」「等激活」而停的拍数占比,确认 ≈ 0;若有气泡,定位是 FIFO 太浅还是双缓冲切换有缝。",
+  "<b>扫最坏工况验深度</b>:用最大 DDR3 延迟、最小有效带宽做压力测试,确认 Weight FIFO 深度仍能盖住、不致阵列饿死;同时核对深度没有过度浪费 SRAM。",
+  "<b>验双缓冲无数据竞争</b>:专门覆盖 ping/pong 切换边界——读侧未读完不准被写覆盖、写侧未写完不准被读,确认同步信号正确,无覆盖/无脏读。",
+  "<b>交接给后续阶段</b>:把 FIFO 深度、UB 双缓冲分区与水位阈值、反压握手协议固化为微架构规格,移交 RTL 实现与时序收敛;并把缓冲容量/带宽假设回灌给 ③ 架构,核对与整体数据流预算一致。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(Weight FIFO、24 MiB Unified Buffer 与 weight-stationary 数据流为该文披露;ping-pong 切换的具体同步实现未公开,属这类推理 ASIC 的通行实践)"
+}

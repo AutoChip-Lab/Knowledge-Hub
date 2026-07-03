@@ -1,0 +1,113 @@
+{
+ "secNum": "3.4",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 硅上验证与特性化(silicon validation / characterization):芯片点亮(bring-up)能跑之后，不能只信纸面——硅上验证(validation)用真实场景(跑真模型推理)确认功能与性能真的符合规格；特性化(characterization)再跨 PVT(工艺/电压/温度)扫电压×频率×温度、画 shmoo 图(pass 绿区/fail 红区)实测真硅的真实最高频率、功耗、工作裕量(guardband)，并和签核(signoff)阶段的时序/功耗分析对照——确认纸上的 700MHz≈92 TOPS、28–40W 这些数字在真硅上真的成立、且四周还留出裕量；偏差大就回去查是签核模型不准还是工艺有问题",
+ "oneLine": "本案例落到「硅上验证与特性化」小节:芯片在 bring-up(3.1~3.3)里被点亮、确认基本能跑之后,这一步要回答两个更狠的问题——『它真的符合规格吗?』和『它有多大裕量、跨 PVT 还稳吗?』。① 硅上验证(silicon validation):用真实场景(在 TPU 上真的跑神经网络推理负载,而不是只跑几条点灯指令)确认功能正确、性能达到规格——纸面承诺 700MHz≈92 TOPS、24 MiB Unified Buffer 喂得动脉动阵列,要在真硅上拿真负载验出来。② 特性化(characterization):不是只验一个标称工作点,而是跨 PVT(P=工艺批次快/典型/慢片、V=电压高/标称/低、T=温度低/室/高)扫电压×频率×温度,实测真硅的真实最高可稳定运行频率、真实功耗、以及离失效边界还有多少工作裕量(guardband)——产物是经典的 shmoo 图:电压×频率网格,每格在某 V/F 跑测试,通过涂绿、失败涂红,看规格点(700MHz @标称电压)是不是稳稳落在绿区中央、四周还留有余量。③ 硅 vs 签核对照:把实测的频率/功耗/裕量,和设计签核(signoff)阶段静态时序分析/功耗分析给出的预测对照——吻合,说明纸面数字在硅上兑现;偏差大,就要回去查是签核模型/工艺库不准,还是这批硅/工艺真有问题。这里把 TPU 已知规格(256×256 脉动阵列≈92 TOPS、700MHz、24MiB UB、28nm、28–40W、PCIe 加速卡)当作『被验证、被特性化、被对照』的对象讲概念;跨 PVT 扫描方法、shmoo 图、guardband、硅-签核对照等均为这类 28nm 大芯片/PCIe 加速卡的通行硅验证/特性化实践,TPU v1 不公开其私有 shmoo、各 PVT 角实测频率/功耗/裕量等数据。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 420\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"24\">硅上验证与特性化 = 拿到点亮的真硅，用真实场景确认「功能/性能符合规格」(validation)，并跨 PVT(工艺/电压/温度)实测真实频率·功耗·裕量、画 shmoo 图(characterization)，再把实测 vs 签核分析对照——纸上的 700MHz / 92 TOPS / 28–40W 是否在真硅上真的成立</text><g class=\"cs-part\" data-k=\"validate\" data-g=\"validate\"><rect class=\"cs-box\" x=\"24\" y=\"58\" width=\"200\" height=\"86\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"124\" y=\"86\">① 硅上验证 validation</text><text class=\"cs-sub\" x=\"124\" y=\"108\">跑真实场景(真模型推理)</text><text class=\"cs-sub\" x=\"124\" y=\"128\">确认功能/性能符合规格</text></g><line class=\"cs-arr\" x1=\"224\" y1=\"101\" x2=\"262\" y2=\"101\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"charact\" data-g=\"charact\"><rect class=\"cs-box\" x=\"266\" y=\"58\" width=\"200\" height=\"86\" rx=\"8\" fill=\"#f0f9ff\" stroke=\"#7dd3fc\"/><text class=\"cs-t\" x=\"366\" y=\"86\">② 特性化 characterization</text><text class=\"cs-sub\" x=\"366\" y=\"108\">跨 PVT 扫电压×频率×温度</text><text class=\"cs-sub\" x=\"366\" y=\"128\">实测真实频率·功耗·裕量</text></g><line class=\"cs-arr\" x1=\"466\" y1=\"101\" x2=\"504\" y2=\"101\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"compare\" data-g=\"compare\"><rect class=\"cs-box\" x=\"508\" y=\"58\" width=\"188\" height=\"86\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"602\" y=\"86\">③ 硅 vs 签核对照</text><text class=\"cs-sub\" x=\"602\" y=\"108\">实测吻合签核分析?</text><text class=\"cs-sub\" x=\"602\" y=\"128\">偏差大 → 查模型/工艺</text></g><text class=\"cs-note\" x=\"24\" y=\"172\">特性化产物 = shmoo 图(电压 × 频率网格，每格在某 V/F 跑测试，pass 绿 / fail 红)；规格点(700MHz @标称电压)要稳稳落在绿区里、四周还留出裕量(guardband)</text><g class=\"cs-part\" data-k=\"shmoo\" data-g=\"shmoo\"><rect class=\"cs-box\" x=\"120\" y=\"190\" width=\"360\" height=\"206\" rx=\"8\"/><text class=\"cs-t\" x=\"300\" y=\"212\">shmoo 图：电压 × 频率(温度取一档 PVT 角)</text><text class=\"cs-sub\" x=\"62\" y=\"244\" transform=\"rotate(-90 62 320)\">电压 V →</text><text class=\"cs-sub\" x=\"300\" y=\"392\">频率 MHz →（横轴右=更快）</text><rect class=\"cs-cell\" x=\"150\" y=\"230\" width=\"40\" height=\"22\" fill=\"#dcfce7\"/><rect class=\"cs-cell\" x=\"190\" y=\"230\" width=\"40\" height=\"22\" fill=\"#dcfce7\"/><rect class=\"cs-cell\" x=\"230\" y=\"230\" width=\"40\" height=\"22\" fill=\"#dcfce7\"/><rect class=\"cs-cell\" x=\"270\" y=\"230\" width=\"40\" height=\"22\" fill=\"#dcfce7\"/><rect class=\"cs-cell\" x=\"310\" y=\"230\" width=\"40\" height=\"22\" fill=\"#dcfce7\"/><rect class=\"cs-cell\" x=\"350\" y=\"230\" width=\"40\" height=\"22\" fill=\"#fee2e2\"/><rect class=\"cs-cell\" x=\"390\" y=\"230\" width=\"40\" height=\"22\" fill=\"#fee2e2\"/><rect class=\"cs-cell\" x=\"150\" y=\"252\" width=\"40\" height=\"22\" fill=\"#dcfce7\"/><rect class=\"cs-cell\" x=\"190\" y=\"252\" width=\"40\" height=\"22\" fill=\"#dcfce7\"/><rect class=\"cs-cell\" x=\"230\" y=\"252\" width=\"40\" height=\"22\" fill=\"#dcfce7\"/><rect class=\"cs-cell\" x=\"270\" y=\"252\" width=\"40\" height=\"22\" fill=\"#dcfce7\"/><rect class=\"cs-cell\" x=\"310\" y=\"252\" width=\"40\" height=\"22\" fill=\"#dcfce7\"/><rect class=\"cs-cell\" x=\"350\" y=\"252\" width=\"40\" height=\"22\" fill=\"#dcfce7\"/><rect class=\"cs-cell\" x=\"390\" y=\"252\" width=\"40\" height=\"22\" fill=\"#fee2e2\"/><g class=\"cs-part\" data-k=\"spec\" data-g=\"spec\"><rect class=\"cs-cell\" x=\"270\" y=\"274\" width=\"40\" height=\"22\" fill=\"#22c55e\" stroke=\"#166534\" stroke-width=\"2\"/><text class=\"cs-cellt\" x=\"290\" y=\"289\">规格</text></g><rect class=\"cs-cell\" x=\"150\" y=\"274\" width=\"40\" height=\"22\" fill=\"#dcfce7\"/><rect class=\"cs-cell\" x=\"190\" y=\"274\" width=\"40\" height=\"22\" fill=\"#dcfce7\"/><rect class=\"cs-cell\" x=\"230\" y=\"274\" width=\"40\" height=\"22\" fill=\"#dcfce7\"/><rect class=\"cs-cell\" x=\"310\" y=\"274\" width=\"40\" height=\"22\" fill=\"#dcfce7\"/><rect class=\"cs-cell\" x=\"350\" y=\"274\" width=\"40\" height=\"22\" fill=\"#dcfce7\"/><rect class=\"cs-cell\" x=\"390\" y=\"274\" width=\"40\" height=\"22\" fill=\"#fee2e2\"/><rect class=\"cs-cell\" x=\"150\" y=\"296\" width=\"40\" height=\"22\" fill=\"#dcfce7\"/><rect class=\"cs-cell\" x=\"190\" y=\"296\" width=\"40\" height=\"22\" fill=\"#dcfce7\"/><rect class=\"cs-cell\" x=\"230\" y=\"296\" width=\"40\" height=\"22\" fill=\"#dcfce7\"/><rect class=\"cs-cell\" x=\"270\" y=\"296\" width=\"40\" height=\"22\" fill=\"#dcfce7\"/><rect class=\"cs-cell\" x=\"310\" y=\"296\" width=\"40\" height=\"22\" fill=\"#fee2e2\"/><rect class=\"cs-cell\" x=\"350\" y=\"296\" width=\"40\" height=\"22\" fill=\"#fee2e2\"/><rect class=\"cs-cell\" x=\"390\" y=\"296\" width=\"40\" height=\"22\" fill=\"#fee2e2\"/><rect class=\"cs-cell\" x=\"150\" y=\"318\" width=\"40\" height=\"22\" fill=\"#fef9c3\"/><rect class=\"cs-cell\" x=\"190\" y=\"318\" width=\"40\" height=\"22\" fill=\"#dcfce7\"/><rect class=\"cs-cell\" x=\"230\" y=\"318\" width=\"40\" height=\"22\" fill=\"#dcfce7\"/><rect class=\"cs-cell\" x=\"270\" y=\"318\" width=\"40\" height=\"22\" fill=\"#fee2e2\"/><rect class=\"cs-cell\" x=\"310\" y=\"318\" width=\"40\" height=\"22\" fill=\"#fee2e2\"/><rect class=\"cs-cell\" x=\"350\" y=\"318\" width=\"40\" height=\"22\" fill=\"#fee2e2\"/><rect class=\"cs-cell\" x=\"390\" y=\"318\" width=\"40\" height=\"22\" fill=\"#fee2e2\"/><g class=\"cs-part\" data-k=\"margin\" data-g=\"margin\"><rect class=\"cs-cell\" x=\"266\" y=\"270\" width=\"48\" height=\"30\" fill=\"none\" stroke=\"#16a34a\" stroke-width=\"2\" stroke-dasharray=\"5 4\"/><text class=\"cs-cellt\" x=\"430\" y=\"345\" fill=\"#16a34a\">绿=pass</text><text class=\"cs-cellt\" x=\"430\" y=\"362\" fill=\"#b91c1c\">红=fail</text><text class=\"cs-cellt\" x=\"430\" y=\"379\" fill=\"#ca8a04\">黄=临界</text></g></g><g class=\"cs-part\" data-k=\"pvt\" data-g=\"pvt\"><rect class=\"cs-box\" x=\"508\" y=\"190\" width=\"188\" height=\"96\" rx=\"8\" fill=\"#f5f3ff\" stroke=\"#c4b5fd\"/><text class=\"cs-t\" x=\"602\" y=\"214\">PVT 角(每角一张 shmoo)</text><text class=\"cs-sub\" x=\"602\" y=\"236\">P=工艺(快/典型/慢片)</text><text class=\"cs-sub\" x=\"602\" y=\"256\">V=电压(高/标称/低)</text><text class=\"cs-sub\" x=\"602\" y=\"276\">T=温度(低温/室温/高温)</text></g><g class=\"cs-part\" data-k=\"verdict\" data-g=\"verdict\"><rect class=\"cs-box\" x=\"508\" y=\"294\" width=\"188\" height=\"102\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"602\" y=\"318\">裁决：硅是否兑现纸面</text><text class=\"cs-sub\" x=\"602\" y=\"340\">700MHz/92TOPS 真成立?</text><text class=\"cs-sub\" x=\"602\" y=\"358\">28–40W 实测对得上?</text><text class=\"cs-sub\" x=\"602\" y=\"376\">跨温区还留裕量?</text><text class=\"cs-sub\" x=\"602\" y=\"394\">偏差大→查模型/工艺</text></g><text class=\"cs-note\" x=\"24\" y=\"416\">诚实边界：跨 PVT 扫电压/频率/温度画 shmoo、对照签核裕量等方法为这类 28nm 大芯片/PCIe 加速卡的通行硅验证/特性化实践；TPU v1 不公开其私有 shmoo、各 PVT 角实测频率/功耗/裕量等数据，本图借其已知规格(700MHz/92TOPS/24MiB UB/28–40W/PCIe 卡)作被验证/被特性化的对象讲概念，网格为示意非真实数据</text></svg>",
+ "legend": [
+  {
+   "k": "validate",
+   "name": "① 硅上验证 validation(真实场景确认功能/性能符合规格)",
+   "desc": "这一步的灵魂:bring-up 只证明『芯片能点亮、能响应、基本能跑』,而硅上验证要证明『它真的符合规格』——用真实工作场景(在 TPU v1 上真的跑神经网络推理,主机经 PCIe 发那十几条 CISC 指令、TensorFlow/XLA 编出来的真负载),确认功能正确、吞吐/延迟达到规格。纸面说脉动阵列在 700MHz 下能出 ~92 TOPS、24 MiB Unified Buffer 喂得动它,这些都要在真硅上用真负载验出来,而不是只靠仿真或几条点灯激励。验证不通过,就算芯片点亮了也不能算『达到规格』。具体验证负载/判据为通行硅验证实践,TPU 不公开。"
+  },
+  {
+   "k": "charact",
+   "name": "② 特性化 characterization(跨 PVT 实测真实频率·功耗·裕量)",
+   "desc": "验证回答『达不达标』,特性化回答『有多大余量、边界在哪』。它不止测一个标称工作点,而是跨 PVT 把工作条件铺开:P=工艺批次(拿快片/典型片/慢片)、V=电压(高/标称/低)、T=温度(低温/室温/高温)。在这些组合下实测真硅的真实最高可稳定运行频率、真实功耗、以及离失效边界还剩多少工作裕量(guardband)。对 TPU v1 就是去实测它在标称及偏移条件下能不能稳稳跑到 700MHz、功耗落在 28–40W、跨温区还留不留余量。具体扫描点/步进/PVT 角组合为通行特性化实践,TPU 不公开其私有特性化数据。"
+  },
+  {
+   "k": "shmoo",
+   "name": "shmoo 图(电压×频率网格,pass 绿/fail 红)",
+   "desc": "特性化最经典的产物:横轴频率、纵轴电压,组成一张网格;每个格点把芯片设到该电压/频率跑一遍测试,通过就涂绿、失败就涂红,(临界可标黄),于是整张图直观显出『芯片能稳定工作的电压-频率区域(绿)』和『失效区(红)』。判读要点:规格点——比如 700MHz @标称电压——必须稳稳落在绿区里、而且四周还留出余量,才说明芯片不是『卡着规格线勉强过』。一张 shmoo 对应一个 PVT 角(固定温度/工艺),跨角要画多张对照。TPU v1 不公开其私有 shmoo 图,图中网格为示意、非真实数据。"
+  },
+  {
+   "k": "spec",
+   "name": "规格点 + 工作裕量 guardband(深绿格)",
+   "desc": "shmoo 上那个被框出的深绿格,就是芯片的目标规格工作点(对 TPU 概念上对应 700MHz @标称电压)。光是这一格『过』还不够——真正要看的是它离红色失效边界有多远,也就是工作裕量(guardband):量产芯片要在工艺涨落、电压波动、温度变化、老化之后仍然可靠工作,所以规格点必须被一圈绿格包住、留足余量,而不能贴着失效边界。裕量太薄,意味着这批硅在数据中心常年满载、温度漂移下有翻红的风险。具体裕量取值为通行特性化/签核实践,TPU 不公开。"
+  },
+  {
+   "k": "compare",
+   "name": "③ 硅 vs 签核对照(实测兑不兑现纸面分析)",
+   "desc": "闭环关键:设计在签核(signoff)阶段靠静态时序分析(STA)、功耗分析在纸面预测过『这颗芯片应能在 700MHz 收敛、功耗约 28–40W、留多少裕量』。特性化把真硅实测的频率/功耗/裕量拿来和这些签核预测一一对照——吻合,说明纸面数字在硅上兑现、签核模型可信;若实测明显比预测差(跑不到目标频率、或功耗偏高、或裕量被吃光),就要回查:是签核用的工艺库/模型不准(则修模型、下一版更可信),还是这批硅/工艺真有问题(则反馈代工调工艺)。这一对照是『纸面→硅』可信度的最终裁决。具体对照数据 TPU 不公开,为通行实践。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "validate"
+   ],
+   "cap": "① 硅上验证:在点亮后的真 TPU 上跑真实场景(主机经 PCIe 发 CISC 指令、TF/XLA 编出的真神经网络推理负载),确认功能正确、吞吐/延迟达到规格——把『纸面承诺 700MHz≈92 TOPS、24MiB UB 喂得动阵列』用真负载验出来,而不只是点灯能亮。"
+  },
+  {
+   "keys": [
+    "charact",
+    "pvt"
+   ],
+   "cap": "② 特性化:跨 PVT(工艺快/典型/慢片、电压高/标称/低、温度低/室/高)扫电压×频率×温度,在每个 PVT 角实测真硅的真实最高可稳定频率、真实功耗、以及离失效边界的工作裕量——回答『有多大余量、最坏角还稳不稳』。"
+  },
+  {
+   "keys": [
+    "shmoo",
+    "spec",
+    "margin"
+   ],
+   "cap": "③ 画 shmoo 图判读:电压×频率网格里 pass 涂绿、fail 涂红;看规格点(700MHz @标称电压)是不是稳稳落在绿区中央、四周还留出 guardband——不是卡着失效边界勉强过,才算这颗硅在该 PVT 角真正达标。"
+  },
+  {
+   "keys": [
+    "compare",
+    "verdict"
+   ],
+   "cap": "④ 硅 vs 签核对照下裁决:把实测频率/功耗/裕量和签核(STA/功耗分析)的预测对照——吻合则纸面数字在硅上兑现(700MHz/92TOPS/28–40W 真成立);偏差大就回查是签核模型不准还是工艺有问题,推动修模型或调工艺。"
+  }
+ ],
+ "before": [
+  "<b>芯片已点亮、基本功能已通(bring-up 的输出)</b>:硅上验证与特性化是 bring-up 的下游——前提是 3.1~3.3 已把样片装上卡、上电点亮、主机经 PCIe 能发指令、芯片能响应并跑通基本通路。在『还没点亮』的芯片上谈验证/特性化没有意义;所以这一步开工前要确认有一颗(批)能稳定运行的真硅在手。",
+  "<b>定好『符合规格』的判据:功能 + 性能两条线</b>:动手验证前要明确这颗芯片要验哪些功能正确性、要达到什么性能规格(对 TPU 概念上即 700MHz 下脉动阵列出 ~92 TOPS、推理吞吐/延迟目标、功耗 28–40W 包络)。没有清晰判据,验证就只是『看起来在跑』而不能下『符合规格』的结论。具体判据为通行实践,TPU 不公开。",
+  "<b>备好真实验证场景与激励</b>:验证要用真实负载——为 TPU 准备真的神经网络推理任务、主机侧 TensorFlow/XLA 编出的指令流、经 PCIe 下发的数据通路,而不是只用几条点灯激励。真实场景才能暴露纸面/仿真里看不到的问题。负载选择/覆盖为通行硅验证实践。",
+  "<b>规划 PVT 扫描矩阵与 shmoo 测试条件</b>:特性化前要先定要扫哪些 PVT 角(工艺取哪些片、电压扫到多高多低、温度覆盖哪些档)、电压×频率网格的步进、每格跑什么测试判 pass/fail——这套矩阵决定 shmoo 图的分辨率和可信度。具体扫描点为通行特性化实践,TPU 不公开其私有矩阵。",
+  "<b>取来签核侧的预测数据做对照基线</b>:要把设计签核(STA 时序、功耗分析)阶段对频率/功耗/裕量的预测准备好,作为后面硅-签核对照的基线——没有这条纸面基线,实测出来也无从判断『硅到底兑不兑现了纸面』。"
+ ],
+ "during": [
+  "<b>这一步的任务一句话:用真硅证明『纸上的数字真的成立、且有裕量』</b>。bring-up 只证明芯片能点亮、能跑;硅上验证要用真实场景确认它『符合规格』(功能对、性能达标),特性化再跨 PVT 实测它『有多大余量』(真实频率/功耗/裕量)。本节的灵魂不是『芯片亮没亮』,而是『700MHz≈92 TOPS、28–40W 这些纸面承诺,在真硅上是不是真的、稳不稳、留没留余量』。",
+  "<b>验证用真实场景,而不是只跑点灯激励</b>。要把真的神经网络推理负载放上 TPU 跑:主机经 PCIe 发那十几条 CISC 指令、TensorFlow/XLA 编出指令流、数据喂进 24 MiB Unified Buffer、脉动阵列真的在算 INT8 MAC——在这种真实通路下确认功能正确、吞吐/延迟达到规格。只有真负载才能把仿真/点灯阶段看不到的实硅问题逼出来。",
+  "<b>特性化要跨 PVT 扫,而不是只测一个标称点</b>。同一设计造出的硅有快片/慢片(P)、供电会高低波动(V)、数据中心温度从低到高都有(T);芯片必须在这些组合下都满足规格才算可量产。所以要在多个 PVT 角各扫电压×频率,实测每个角下真硅的真实最高可稳定频率、真实功耗、以及离失效边界的工作裕量——重点盯最坏角(慢片+低压+高温能不能跑到规格)和最热角(功耗失不失控)。",
+  "<b>shmoo 图是特性化的产物,判读看『规格点在绿区中央、四周留余量』</b>。把电压×频率做成网格,每格在该 V/F 跑测试、过涂绿败涂红(临界标黄),整张图直观显出芯片能稳定工作的电压-频率区域。关键不是规格点那一格『过』,而是它要稳稳落在绿区里、被一圈绿格包住、留出工作裕量(guardband)——若规格点贴着红色失效边界,说明这颗硅是『卡着规格线勉强过』,在量产涨落/老化下有翻红风险。",
+  "<b>硅 vs 签核对照是闭环裁决:吻合就兑现,偏差大就回查</b>。把实测的频率/功耗/裕量和设计签核(STA 时序、功耗分析)的纸面预测一一对照:吻合,说明 700MHz/92 TOPS/28–40W 这些纸面数字在硅上真的成立、签核模型可信;若实测明显更差(跑不到目标频率、功耗偏高、裕量被吃光),就要分清是签核用的工艺库/模型不准(修模型,让下一版预测更准),还是这批硅/工艺本身有问题(反馈代工调工艺)——这是『纸面→硅』可信度的最终判定。",
+  "<b>诚实边界(贯穿)</b>:用真实场景做硅上验证、跨 PVT 扫电压/频率/温度做特性化、画 shmoo 图看 pass/fail 区与 guardband、把实测和签核分析对照,都是这类 28nm 大芯片/PCIe 加速卡的通行硅验证/特性化实践;TPU v1 不公开其私有 shmoo 图、各 PVT 角的实测频率/功耗/裕量、以及硅-签核对照的具体数字。本节只借 TPU 已知规格(256×256 脉动阵列≈92 TOPS、700MHz、24MiB UB、28nm、28–40W、PCIe 卡)作为被验证/被特性化/被对照的对象讲概念,shmoo 网格为示意,不杜撰 TPU 私有特性化数据。"
+ ],
+ "result": [
+  {
+   "label": "本步产物",
+   "value": "一份硅验证 + 特性化报告:真实场景下功能/性能符合规格的验证结论,加上跨 PVT 的 shmoo 图、真实频率/功耗/裕量数据,以及硅 vs 签核的对照裁决"
+  },
+  {
+   "label": "硅上验证",
+   "value": "用真神经网络推理负载(PCIe 发 CISC 指令、TF/XLA 编流)在真 TPU 上跑通,确认功能正确、吞吐/延迟/功耗达到规格——纸面 700MHz≈92 TOPS 用真负载验出来"
+  },
+  {
+   "label": "特性化(跨 PVT)",
+   "value": "在工艺(快/典型/慢片)×电压(高/标称/低)×温度(低/室/高)各角实测真硅的真实最高可稳定频率、真实功耗、以及离失效边界的工作裕量"
+  },
+  {
+   "label": "shmoo 图",
+   "value": "电压×频率网格,pass 绿/fail 红(临界黄);规格点(700MHz @标称电压)稳稳落在绿区中央、四周留出 guardband 才算达标,而非贴着失效边界勉强过"
+  },
+  {
+   "label": "硅 vs 签核裁决",
+   "value": "实测频率/功耗/裕量与签核(STA/功耗分析)预测吻合 → 纸面数字在硅上兑现;偏差大 → 回查是签核模型/工艺库不准,还是这批硅/工艺真有问题"
+  },
+  {
+   "label": "诚实边界",
+   "value": "shmoo、各 PVT 角实测频率/功耗/裕量、硅-签核对照数字均为通行硅验证/特性化实践与示意,非 TPU v1 公开数据;以其已知规格作被验证/被特性化对象"
+  }
+ ],
+ "after": [
+  "<b>核对验证结论与特性化裕量是否都达标</b>:验证侧确认功能/性能在真实场景下符合规格;特性化侧确认每个 PVT 角的 shmoo 里规格点都落在绿区且留足 guardband——尤其盯最坏角(慢片+低压+高温)还能不能跑到规格、最热角功耗不失控。任一不达标都不能放行进量产。",
+  "<b>偏差大就回查模型还是工艺,推动迭代</b>:若实测明显偏离签核预测——跑不到目标频率、功耗偏高、或裕量被吃光——要分清根因:签核用的工艺库/模型不准(修模型,使下一版预测更可信),还是这批硅/工艺真有问题(反馈代工调工艺)。这是把『纸面预测』校准到『真硅事实』的闭环。",
+  "<b>把特性化结果回喂给量产测试与分级</b>:特性化测出的真实频率/功耗/裕量,是后续量产测试设条件、以及分级(binning)定档(能跑多快、功耗多大)的依据——把哪个 V/F 点稳过、哪些角偏弱的结论交给量产测试与 binning,让批量筛选有准。",
+  "<b>裕量偏薄的薄弱点专项盯</b>:若某 PVT 角规格点贴近红色失效边界(裕量薄),要单独定位是设计裕量不足、工艺涨落,还是某条关键路径/某模块拖后腿,并决定是调电压/频率工作点、限定可用 PVT 范围,还是回设计/工艺整改——这是 TPU 这类要 7×24 满载的数据中心芯片必须守住的可靠性底线。",
+  "<b>诚实留痕</b>:本步的验证结论、shmoo 图、各 PVT 角实测频率/功耗/裕量、硅-签核对照数据记入特性化/量产档案,供后续量产测试、可靠性与失效分析复查;具体数字为通行硅验证/特性化实践与私有数据,非 TPU v1 公开。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(256×256 8-bit MAC 脉动阵列=65,536 个 MAC、700MHz≈92 TOPS(INT8)、24 MiB Unified Buffer、28nm/≤331mm²/28–40W、主机经 PCIe 3.0 发约十几条 CISC 指令并做成 PCIe 加速卡、TensorFlow/XLA 软件栈为该文披露的 TPU v1 已知规格,作为被硅上验证/被特性化/被对照的对象;硅上验证用真实场景确认功能/性能符合规格、特性化跨 PVT(工艺/电压/温度)实测真实频率/功耗/工作裕量并画 shmoo 图(pass/fail 区与 guardband)、把实测与设计签核(STA 时序/功耗分析)对照判断纸面数字是否在硅上兑现等,均为这类 28nm 大芯片/PCIe 加速卡的通行制造/封测/量产(硅验证/特性化)实践,shmoo 网格与 PVT 角数据均为示意,非 TPU v1 公开的私有 shmoo、各 PVT 角实测频率/功耗/裕量或硅-签核对照数字)"
+}

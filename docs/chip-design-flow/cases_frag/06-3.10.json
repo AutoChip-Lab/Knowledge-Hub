@@ -1,0 +1,126 @@
+{
+ "secNum": "3.10",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 专项验证:CDC/低功耗/X/寄存器/连通性——普通功能仿真默认看不到的五类致命缺陷",
+ "oneLine": "矩阵乘算对了不代表芯片能用:核心域↔PCIe↔DDR3 三个时钟域之间的跨域信号会因亚稳态偶发出错、空闲 PE 块门控下电时序错一拍就丢状态、复位前的 X 在 RTL 仿真里被「乐观」抹平到门级才暴露、CSR 复位值写错驱动一上电就跑偏、某根引脚漏连到死也测不出功能——这五类问题普通定向/随机功能仿真默认照不到,本案例讲怎么用 CDC/低功耗(UPF)/X 传播/寄存器(RAL)/连通性五项专项检查,各自盯住 TPU 对应部件把它们逼出来。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"32\" y=\"24\">五类专项检查:普通功能仿真默认看不到,却最致命——各指向 TPU 对应部件</text><g class=\"cs-part\" data-k=\"cdc\" data-g=\"chk\"><rect class=\"cs-box\" x=\"32\" y=\"44\" width=\"180\" height=\"62\" rx=\"8\" fill=\"#eff6ff\" stroke=\"#93c5fd\"/><text class=\"cs-t\" x=\"122\" y=\"68\">① CDC 跨时钟域</text><text class=\"cs-sub\" x=\"122\" y=\"86\">同步器结构+亚稳态注入</text><text class=\"cs-sub\" x=\"122\" y=\"101\">RDC/灰码/握手收敛</text></g><g class=\"cs-part\" data-k=\"lp\" data-g=\"chk\"><rect class=\"cs-box\" x=\"32\" y=\"118\" width=\"180\" height=\"62\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"122\" y=\"142\">② 低功耗 UPF</text><text class=\"cs-sub\" x=\"122\" y=\"160\">门控/下电/保持/隔离</text><text class=\"cs-sub\" x=\"122\" y=\"175\">上下电序+恢复</text></g><g class=\"cs-part\" data-k=\"xprop\" data-g=\"chk\"><rect class=\"cs-box\" x=\"32\" y=\"192\" width=\"180\" height=\"62\" rx=\"8\" fill=\"#fef2f2\" stroke=\"#fca5a5\"/><text class=\"cs-t\" x=\"122\" y=\"216\">③ X 传播</text><text class=\"cs-sub\" x=\"122\" y=\"234\">复位前/未初始化 X</text><text class=\"cs-sub\" x=\"122\" y=\"249\">RTL 乐观 vs 门级悲观</text></g><g class=\"cs-part\" data-k=\"csr\" data-g=\"chk\"><rect class=\"cs-box\" x=\"32\" y=\"266\" width=\"180\" height=\"62\" rx=\"8\" fill=\"#fefce8\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"122\" y=\"290\">④ CSR 寄存器</text><text class=\"cs-sub\" x=\"122\" y=\"308\">复位值/读写/只读/W1C</text><text class=\"cs-sub\" x=\"122\" y=\"323\">RAL 自动扫</text></g><g class=\"cs-part\" data-k=\"conn\" data-g=\"chk\"><rect class=\"cs-box\" x=\"32\" y=\"340\" width=\"180\" height=\"50\" rx=\"8\" fill=\"#faf5ff\" stroke=\"#d8b4fe\"/><text class=\"cs-t\" x=\"122\" y=\"362\">⑤ 连通性</text><text class=\"cs-sub\" x=\"122\" y=\"380\">引脚→端口逐根点对点</text></g><line class=\"cs-arr\" x1=\"212\" y1=\"75\" x2=\"296\" y2=\"92\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"212\" y1=\"149\" x2=\"296\" y2=\"140\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"212\" y1=\"223\" x2=\"296\" y2=\"180\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"212\" y1=\"297\" x2=\"296\" y2=\"240\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"212\" y1=\"365\" x2=\"296\" y2=\"300\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"tpu\" data-g=\"tpu\"><rect class=\"cs-box\" x=\"300\" y=\"70\" width=\"252\" height=\"262\" rx=\"10\" fill=\"#f8fafc\" stroke=\"#cbd5e1\"/><text class=\"cs-t\" x=\"426\" y=\"94\">TPU v1 被检对象</text><g class=\"cs-part\" data-k=\"pcie\" data-g=\"pcie\"><rect class=\"cs-box\" x=\"318\" y=\"108\" width=\"216\" height=\"40\" rx=\"6\"/><text class=\"cs-t\" x=\"426\" y=\"126\">PCIe 域 ↔ 核心域 ↔ DDR3 域</text><text class=\"cs-sub\" x=\"426\" y=\"141\">→ ① CDC 注亚稳态</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-box\" x=\"318\" y=\"156\" width=\"216\" height=\"40\" rx=\"6\"/><text class=\"cs-t\" x=\"426\" y=\"174\">256×256 PE 阵列(空闲块)</text><text class=\"cs-sub\" x=\"426\" y=\"189\">→ ② 门控下电 / ③ 复位 X</text></g><g class=\"cs-part\" data-k=\"buf\" data-g=\"buf\"><rect class=\"cs-box\" x=\"318\" y=\"204\" width=\"216\" height=\"40\" rx=\"6\"/><text class=\"cs-t\" x=\"426\" y=\"222\">24 MiB UB · 4 MiB 累加器</text><text class=\"cs-sub\" x=\"426\" y=\"237\">→ ③ 未初始化 RAM 读 X</text></g><g class=\"cs-part\" data-k=\"reg\" data-g=\"reg\"><rect class=\"cs-box\" x=\"318\" y=\"252\" width=\"216\" height=\"40\" rx=\"6\"/><text class=\"cs-t\" x=\"426\" y=\"270\">CSR 控制/状态寄存器</text><text class=\"cs-sub\" x=\"426\" y=\"285\">→ ④ 复位值/读写一致</text></g><g class=\"cs-part\" data-k=\"pin\" data-g=\"pin\"><rect class=\"cs-box\" x=\"318\" y=\"300\" width=\"216\" height=\"24\" rx=\"6\"/><text class=\"cs-t\" x=\"426\" y=\"316\">芯片引脚 / IO ⑤ 连通</text></g></g><line class=\"cs-arr\" x1=\"552\" y1=\"200\" x2=\"600\" y2=\"200\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"sign\" data-g=\"sign\"><rect class=\"cs-box\" x=\"604\" y=\"120\" width=\"104\" height=\"160\" rx=\"8\" fill=\"#ecfdf5\" stroke=\"#6ee7b7\"/><text class=\"cs-t\" x=\"656\" y=\"146\">专项签核</text><text class=\"cs-sub\" x=\"656\" y=\"166\">CDC 0 违例</text><text class=\"cs-sub\" x=\"656\" y=\"184\">UPF 序正确</text><text class=\"cs-sub\" x=\"656\" y=\"202\">无非法 X</text><text class=\"cs-sub\" x=\"656\" y=\"220\">RAL 全过</text><text class=\"cs-sub\" x=\"656\" y=\"238\">连通全通</text><text class=\"cs-sub\" x=\"656\" y=\"262\">→ 交综合⑦</text></g></svg>",
+ "legend": [
+  {
+   "k": "chk",
+   "name": "五类专项检查(功能仿真照不到)",
+   "desc": "这五项不是普通的「跑激励看输出对不对」,而是各有专门工具与方法学、专盯一类结构性缺陷:CDC(跨时钟域)、低功耗(UPF/电源意图)、X 传播(未知值)、CSR 寄存器、连通性。它们的共性是——在标准功能仿真里要么默认被掩盖(如 RTL 把 X 乐观当 0/1)、要么压根不建模(如电源域、亚稳态),所以必须单独立项、单独签核,否则漏到硅后几乎无法调试。"
+  },
+  {
+   "k": "cdc",
+   "name": "① CDC 跨时钟域验证",
+   "desc": "TPU 至少横跨 PCIe host 域、阵列核心域(700 MHz)、片外 DDR3 接口域三个异步时钟。跨域单 bit 信号必须过同步器、多 bit 必须用灰码或握手/异步 FIFO,否则采到亚稳态会偶发翻转。CDC 工具先做结构检查(每条跨域路径是否有合规同步器、有无重收敛/RDC 复位域穿越),再在仿真里对同步器前级注入亚稳态/随机延迟,验证下游逻辑对偶发翻拍鲁棒。"
+  },
+  {
+   "k": "lp",
+   "name": "② 低功耗验证(UPF)",
+   "desc": "TPU 整芯 28–40 W,降功耗的常用手段是把空闲的 PE 阵列块/缓冲做时钟门控乃至下电。电源意图写在 UPF 里:哪些域可下电、隔离单元(isolation)把下电域输出钳到合法值、保持寄存器(retention)在下电时存住关键状态、上下电要按正确序(先隔离→再断电→上电→撤隔离→恢复)。低功耗仿真就是带 UPF 跑,验证下电/保持/隔离/恢复全程不丢状态、不放出 X、序不乱。"
+  },
+  {
+   "k": "xprop",
+   "name": "③ X 传播验证",
+   "desc": "复位前的触发器、未初始化的 RAM(24 MiB UB、4 MiB 累加器上电是随机值)、多驱动冲突都会产生 X(未知值)。麻烦在于 RTL 仿真对 X 是「乐观」的——三目/if 可能把 X 当成确定值算过去,把真 bug 掩盖;门级才「悲观」暴露。X-prop 专项用悲观 X 语义或专用工具,确保复位真能把所有状态机清干净、UB/累加器读出前必被写过,不让 X 偷偷溜进数据通路。"
+  },
+  {
+   "k": "csr",
+   "name": "④ CSR 寄存器验证(RAL)",
+   "desc": "host 经 PCIe 配置 TPU 的一堆控制/状态寄存器(CSR)。寄存器验证靠寄存器抽象层(RAL/RAL model)自动批量扫:复位后逐个读、对比规格里的复位默认值;对每个域做写-读回(读写域)、写只读域应无效、W1C(写1清零)、保留位行为等。这类「上电默认值/读写属性」错了,软件一配置就跑偏,但普通功能向量很少专门去逐位扫每个寄存器。"
+  },
+  {
+   "k": "conn",
+   "name": "⑤ 连通性验证",
+   "desc": "顶层集成后,芯片引脚/IO 到内部端口、电源/扫描/JTAG/旁路等静态点对点连线是否每根都接对、有没有接反或漏接。连通性用形式或专用工具做点对点比对(source pin → dest port 一一核对),不依赖功能激励——因为一根漏连的旁路信号在常规功能跑里可能永远不被触发,却会在某个模式下让芯片瘫掉。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "cdc",
+    "pcie"
+   ],
+   "cap": "① CDC:盯住 PCIe 域↔核心域↔DDR3 域三处跨时钟边界——结构检查每条跨域路径有无合规同步器/灰码/握手,再注入亚稳态验证下游对偶发翻拍鲁棒"
+  },
+  {
+   "keys": [
+    "lp",
+    "pe"
+   ],
+   "cap": "② 低功耗:带 UPF 跑空闲 PE 块的门控/下电——验证隔离钳位、保持寄存器存状态、上下电序正确,恢复后不丢状态、不放 X"
+  },
+  {
+   "keys": [
+    "xprop",
+    "pe",
+    "buf"
+   ],
+   "cap": "③ X 传播:用悲观 X 语义复查复位是否把 PE 阵列状态机清干净、24 MiB UB / 4 MiB 累加器未写先读会不会把 X 溜进数据通路"
+  },
+  {
+   "keys": [
+    "csr",
+    "reg"
+   ],
+   "cap": "④ CSR:用 RAL 自动批量扫每个控制/状态寄存器的复位默认值、写-读回、只读/W1C 属性,堵住「上电默认值写错」类 bug"
+  },
+  {
+   "keys": [
+    "conn",
+    "pin",
+    "sign"
+   ],
+   "cap": "⑤ 连通性:顶层集成后点对点核对引脚→端口每根连线接对没接反没漏接;五项全过 → 进专项签核 → 交综合⑦"
+  }
+ ],
+ "before": [
+  "<b>把专项验证作为独立条目列进验证计划</b>:CDC、低功耗、X、寄存器、连通性这五类不能塞在「功能仿真」里顺带做——它们工具不同、判据不同、签核独立。开工前就要钉死每项的对象(哪些跨域路径、哪些电源域、哪些寄存器)、用什么工具、过什么判据,漏立一项就是漏一类硅后无解的风险。",
+  "<b>定 CDC/低功耗的「黄金意图」来源</b>:CDC 要先有一张明确的时钟域清单(PCIe 域、700 MHz 核心域、DDR3 接口域)和约束(SDC 里的异步时钟组);低功耗要先有 UPF 描述电源域、隔离、保持、上下电序。这两份「意图文件」是专项验证的参考基准——意图本身写错,后面全白验。",
+  "<b>定寄存器的参考模型(寄存器规格)</b>:CSR 验证的黄金答案是一份机器可读的寄存器规格(每个寄存器的地址、复位值、各域读写属性 RO/RW/W1C/保留)。由它生成 RAL model,自动扫描时逐个对照——参考表错或与 RTL 不同步,扫出来的「全过」就是假通过。",
+  "<b>明确 X 验证的两套语义</b>:开工前就要约定 RTL 仿真用「悲观 X」选项或专用 X-prop 工具,不能默认依赖普通 RTL 的乐观 X 语义。完成判据是:复位序列后无任何状态/控制信号为 X,UB/累加器在被写之前不被读。",
+  "<b>定连通性的检查清单与方法</b>:列出所有需要点对点核对的静态连线(IO、电源、扫描链、JTAG、旁路/test 信号),约定用形式/专用连通性工具做 source→dest 比对而非功能激励——因为漏连在功能跑里可能永不触发。"
+ ],
+ "during": [
+  "<b>铁律:CDC 先结构、后亚稳态,缺一不可</b>:只跑结构检查(查同步器/灰码/握手是否齐全)不够,因为「有同步器」不等于「下游对偶发翻拍鲁棒」;必须再在功能仿真里对跨域信号注入亚稳态/随机延迟跑一遍。TPU 的 PCIe↔核心↔DDR3 三域边界、以及握手收敛/重收敛(reconvergence)是重点排查处。",
+  "<b>低功耗:重点验上下电「序」和恢复，不只验稳态</b>:空闲 PE 块下电/上电的瞬态最易出错——隔离没在断电前生效会放出 X、保持寄存器没存住关键状态会丢配置、撤隔离/恢复顺序错一步状态机就跑飞。带 UPF 仿真要专打这些转换沿,而不是只看下电后、上电后两个稳态。",
+  "<b>X 传播:警惕 RTL 的「乐观掩盖」</b>:同一段代码 RTL 跑过门级却挂,十有八九是 X 被 RTL 乐观语义吃掉了。开 X-prop 后常见暴露点:复位没覆盖到的隐藏状态机、24 MiB UB / 4 MiB 累加器这类大 RAM 未初始化先读、跨电源域未隔离。发现 X 要追到根因(漏复位/漏初始化/漏隔离),不能靠在仿真里强行 force 成 0 糊过去。",
+  "<b>CSR:用 RAL 自动扫,别手写逐个测</b>:几十上百个寄存器逐个手写读写测试既漏又错。标准做法是由寄存器规格生成 RAL model,用内建序列(复位值检查、写-读回、位桶 bit-bash、别名检查)自动覆盖全部寄存器;手工只补 RAL 覆盖不到的副作用(如写某寄存器触发硬件动作)。",
+  "<b>连通性:不靠功能激励,靠点对点形式比对</b>:连通性的价值正在于覆盖「功能跑永远走不到」的静态连线。用形式/专用工具把每条 source→dest 连线穷举核对(接对、未接反、未漏接、极性对),输出一张全通/异常清单——这是功能仿真无论跑多久都给不出的保证。",
+  "<b>诚实边界:专项方法学通行,TPU 未公开其专项环境</b>:CDC/低功耗(UPF)/X-prop/寄存器(RAL/UVM)/连通性是大规模 ASIC 的通行专项验证实践;TPU v1 的多时钟域、空闲块门控、大容量片上 RAM、CSR 接口是其架构的客观结构,可作为被检对象。但「用了哪款工具、注了什么亚稳态参数、扫了哪些寄存器」属未披露工程细节,本节用其已知结构承载专项验证概念,不臆造 TPU 私有数字。"
+ ],
+ "result": [
+  {
+   "label": "五类专项",
+   "value": "CDC · 低功耗(UPF) · X 传播 · CSR(RAL) · 连通性"
+  },
+  {
+   "label": "CDC 判据",
+   "value": "跨域路径结构 0 违例 + 注亚稳态后功能不偶发翻"
+  },
+  {
+   "label": "低功耗判据",
+   "value": "下电/保持/隔离/恢复序正确,恢复不丢态、不放 X"
+  },
+  {
+   "label": "X 语义(示意)",
+   "value": "开悲观 X / X-prop;复位后无 X,UB/累加器未写先读不读 X"
+  },
+  {
+   "label": "CSR 扫描(示意)",
+   "value": "RAL:复位值检查 + 写-读回 + 只读/W1C 属性(自动)"
+  },
+  {
+   "label": "连通性产出",
+   "value": "引脚→端口点对点比对清单(形式,不依赖功能激励)"
+  }
+ ],
+ "after": [
+  "<b>五项专项各自收敛、各自签核</b>:CDC 报告无未豁免违例、低功耗仿真上下电序全过、X-prop 无非法 X、RAL 全部寄存器通过、连通性清单全通——每项都有独立的签核证据,缺一项不放行,因为它们覆盖的是互不重叠的盲区。",
+  "<b>每改一处都回归对应专项</b>:动了跨域路径要重跑 CDC,动了电源域/UPF 要重跑低功耗,改了寄存器规格要重生成 RAL 重扫,改了顶层连线要重做连通性——专项回归与功能回归并行纳入持续验证,防止修一处破一处。",
+  "<b>核对意图文件与 RTL 始终同步</b>:CDC 的时钟约束、低功耗的 UPF、CSR 的寄存器规格、连通性的连接表都是「黄金意图」,RTL 迭代后要确认这些意图文件没漂移——意图与实现不同步会造出「假签核」(扫的是过时的表)。",
+  "<b>把约束/电源/CDC 信息传给后端</b>:CDC 结论、UPF 电源意图、寄存器/连通信息不止用于功能验证签核,还要随约束一起交给逻辑综合⑦与后端——下游做时钟树、电源网络、扫描插入时要继续遵守这些约束,验证结论才在物理实现中延续有效。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(TPU v1 的多时钟域接口、空闲块门控、24 MiB UB / 4 MiB 累加器、PCIe CISC 指令/寄存器接口等结构为公开事实;CDC/低功耗(UPF)/X 传播/寄存器(RAL)/连通性专项验证的具体工具、参数与环境为业界通行验证实践,TPU 未公开其专项验证环境细节)"
+}

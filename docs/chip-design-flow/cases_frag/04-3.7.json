@@ -1,0 +1,117 @@
+{
+ "secNum": "3.7",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 65,536 个 MAC 全空间展开 vs 时分复用的并行取舍",
+ "oneLine": "TPU 把「复制换吞吐」做到极致——256×256 个 MAC 全空间展开、每拍一次性算 65,536 次乘加;同时用 weight-stationary 的「复用换带宽」省供数——这正是「展开多份硬件 vs 一份硬件反复用」这条并行与资源取舍主线的样板。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"28\">空间并行(复制换吞吐)</text><text class=\"cs-note\" x=\"468\" y=\"28\">时分复用(省面积降吞吐)</text><g class=\"cs-part\" data-k=\"spatial\" data-g=\"spatial\"><rect class=\"cs-cell\" x=\"44\" y=\"44\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"59\" y=\"64\">M</text><rect class=\"cs-cell\" x=\"78\" y=\"44\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"93\" y=\"64\">M</text><rect class=\"cs-cell\" x=\"112\" y=\"44\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"127\" y=\"64\">M</text><rect class=\"cs-cell\" x=\"146\" y=\"44\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"161\" y=\"64\">M</text><rect class=\"cs-cell\" x=\"180\" y=\"44\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"195\" y=\"64\">M</text><rect class=\"cs-cell\" x=\"44\" y=\"78\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"59\" y=\"98\">M</text><rect class=\"cs-cell\" x=\"78\" y=\"78\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"93\" y=\"98\">M</text><rect class=\"cs-cell\" x=\"112\" y=\"78\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"127\" y=\"98\">M</text><rect class=\"cs-cell\" x=\"146\" y=\"78\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"161\" y=\"98\">M</text><rect class=\"cs-cell\" x=\"180\" y=\"78\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"195\" y=\"98\">M</text><rect class=\"cs-cell\" x=\"44\" y=\"112\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"59\" y=\"132\">M</text><rect class=\"cs-cell\" x=\"78\" y=\"112\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"93\" y=\"132\">M</text><rect class=\"cs-cell\" x=\"112\" y=\"112\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"127\" y=\"132\">M</text><rect class=\"cs-cell\" x=\"146\" y=\"112\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"161\" y=\"132\">M</text><rect class=\"cs-cell\" x=\"180\" y=\"112\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"195\" y=\"132\">M</text><rect class=\"cs-cell\" x=\"44\" y=\"146\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"59\" y=\"166\">M</text><rect class=\"cs-cell\" x=\"78\" y=\"146\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"93\" y=\"166\">M</text><rect class=\"cs-cell\" x=\"112\" y=\"146\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"127\" y=\"166\">M</text><rect class=\"cs-cell\" x=\"146\" y=\"146\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"161\" y=\"166\">M</text><rect class=\"cs-cell\" x=\"180\" y=\"146\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"195\" y=\"166\">M</text><rect class=\"cs-cell\" x=\"44\" y=\"180\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"59\" y=\"200\">M</text><rect class=\"cs-cell\" x=\"78\" y=\"180\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"93\" y=\"200\">M</text><rect class=\"cs-cell\" x=\"112\" y=\"180\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"127\" y=\"200\">M</text><rect class=\"cs-cell\" x=\"146\" y=\"180\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"161\" y=\"200\">M</text><rect class=\"cs-cell\" x=\"180\" y=\"180\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"195\" y=\"200\">M</text><text class=\"cs-note\" x=\"44\" y=\"230\">256×256 = 65,536 个 MAC 全空间展开</text><text class=\"cs-note\" x=\"44\" y=\"246\">每拍 65,536 次乘加 → ~92 TOPS(INT8)</text></g><g class=\"cs-part\" data-k=\"ws\" data-g=\"ws\"><rect class=\"cs-box\" x=\"44\" y=\"262\" width=\"170\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"129\" y=\"286\">weight-stationary</text><text class=\"cs-sub\" x=\"129\" y=\"304\">权重驻留·复用换带宽</text></g><line class=\"cs-arr\" x1=\"230\" y1=\"130\" x2=\"282\" y2=\"130\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"232\" y=\"118\">对比</text><g class=\"cs-part\" data-k=\"tm\" data-g=\"tm\"><rect class=\"cs-box\" x=\"288\" y=\"60\" width=\"120\" height=\"120\" rx=\"8\"/><text class=\"cs-t\" x=\"348\" y=\"110\">1 份 MAC</text><text class=\"cs-sub\" x=\"348\" y=\"130\">分时复用</text><text class=\"cs-sub\" x=\"348\" y=\"148\">逐拍喂不同数据</text><path class=\"cs-arr\" d=\"M348,190 q22,9 0,18\" fill=\"none\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"288\" y=\"200\">面积小很多,但要跑 65,536 拍</text><text class=\"cs-note\" x=\"288\" y=\"216\">才等效一拍的空间阵列 → 吞吐骤降</text><g class=\"cs-part\" data-k=\"knob\" data-g=\"knob\"><rect class=\"cs-box\" x=\"468\" y=\"60\" width=\"222\" height=\"160\" rx=\"8\"/><text class=\"cs-t\" x=\"579\" y=\"86\">PPA 旋钮</text><text class=\"cs-sub\" x=\"579\" y=\"110\">复制份数 N:↑面积 ↑性能</text><text class=\"cs-sub\" x=\"579\" y=\"130\">复用轮数 R:↓面积 ↓吞吐</text><text class=\"cs-sub\" x=\"579\" y=\"150\">数据复用:↓带宽需求</text><text class=\"cs-sub\" x=\"579\" y=\"170\">利用率:取决于供数能否喂饱</text><text class=\"cs-sub\" x=\"579\" y=\"190\">面积预算 ≤331mm²/28nm</text></g><g class=\"cs-part\" data-k=\"feed\" data-g=\"feed\"><rect class=\"cs-box\" x=\"468\" y=\"244\" width=\"222\" height=\"74\" rx=\"8\"/><text class=\"cs-t\" x=\"579\" y=\"272\">供数侧:24 MiB UB</text><text class=\"cs-sub\" x=\"579\" y=\"292\">+ 8 GiB DDR3(~30 GB/s)</text><text class=\"cs-sub\" x=\"579\" y=\"308\">喂不饱阵列 = 复制白搭</text></g><line class=\"cs-arr\" x1=\"466\" y1=\"281\" x2=\"222\" y2=\"290\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><text class=\"cs-note\" x=\"44\" y=\"340\">把同一种运算「展开成很多份硬件」还是「一份硬件反复用」,就是并行与资源(面积/带宽/功耗)的核心取舍</text><text class=\"cs-note\" x=\"44\" y=\"382\">注:右侧时分复用为对比示意,非 TPU v1 实现;TPU v1 选择极致空间展开</text></svg>",
+ "legend": [
+  {
+   "k": "spatial",
+   "name": "空间并行的 MAC 阵列(复制换吞吐)",
+   "desc": "256×256=65,536 个 8-bit MAC 全部物理铺开,每拍同时算 65,536 次乘加 → ~92 TOPS。代价是巨大面积:TPU v1 把芯片绝大部分面积都让给了这片阵列。"
+  },
+  {
+   "k": "ws",
+   "name": "weight-stationary(复用换带宽)",
+   "desc": "权重一次载入后驻留在 MAC 里不动,激活流过时被反复复用 → 同一份权重摊到很多次乘加上,大幅压低对片外 DDR3 带宽的需求。这是「复用」这一维的取舍。"
+  },
+  {
+   "k": "tm",
+   "name": "时分复用(对比·省面积降吞吐)",
+   "desc": "对照面:只放 1 份 MAC、逐拍喂不同数据。面积小很多,但要算 65,536 拍才等效空间阵列的一拍,吞吐骤降。注:此为对比示意,非 TPU v1 实现。"
+  },
+  {
+   "k": "knob",
+   "name": "PPA 旋钮(复制份数 / 复用轮数)",
+   "desc": "并行设计的核心旋钮:复制份数 N 往上拧 → 面积涨、性能涨;复用轮数 R 往上拧 → 面积省、吞吐降;另叠数据复用降带宽、利用率看供数能否喂饱。"
+  },
+  {
+   "k": "feed",
+   "name": "供数侧(利用率上限)",
+   "desc": "24 MiB Unified Buffer + 8 GiB DDR3(~30 GB/s)。复制再多 MAC,若供数喂不饱,利用率上不去、复制就是白搭——并行度的真实上限由带宽/缓存决定。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "spatial"
+   ],
+   "cap": "① 复制换吞吐:把同一种乘加运算「全空间展开」成 65,536 个物理 MAC,每拍一次性出 65,536 次乘加 → ~92 TOPS(INT8)"
+  },
+  {
+   "keys": [
+    "tm"
+   ],
+   "cap": "② 反例对照:若改成时分复用——只放 1 份 MAC 逐拍喂数据,面积省到极小,但要跑 65,536 拍才等效空间阵列的一拍,吞吐塌方"
+  },
+  {
+   "keys": [
+    "ws"
+   ],
+   "cap": "③ 复用换带宽:在「展开」之外再叠一维——weight-stationary 让权重驻留、激活流过时反复复用,把片外取数压到最低"
+  },
+  {
+   "keys": [
+    "knob",
+    "spatial",
+    "tm"
+   ],
+   "cap": "④ 拧 PPA 旋钮:复制份数 N(↑面积↑性能)与复用轮数 R(↓面积↓吞吐)之间连续可调,TPU v1 把 N 拧到极致、R 拧到最小"
+  },
+  {
+   "keys": [
+    "feed",
+    "spatial"
+   ],
+   "cap": "⑤ 看清上限:复制再多,若 24 MiB UB 与 ~30 GB/s DDR3 喂不饱阵列,利用率就上不去——并行度的真实天花板是供数带宽,而非 MAC 数"
+  }
+ ],
+ "before": [
+  "<b>先定要并行的核运算与目标吞吐</b>:本案例的核是矩阵乘的乘加(MAC)。架构(③)给的吞吐目标(数据中心推理,要 ~90+ TOPS 量级)直接决定「要展开多少份 MAC」。",
+  "<b>要拍板的两个并行旋钮</b>:复制份数 N(把一份硬件复制成多少份并行算)与复用轮数 R(一份硬件分时跑多少轮),N·吞吐 ≈ 常数中和 R——这是面积换性能、时间换面积的根本对偶。",
+  "<b>必备输入与约束</b>:面积/功耗预算(28nm、die ≤331mm²、TDP 28–40W)、供数能力(24 MiB UB + 8 GiB DDR3 ~30 GB/s)、数据复用度(同一权重/激活能被重用多少次)。",
+  "<b>必须想清的考量</b>:这块负载是吞吐敏感还是延迟敏感?有没有足够的数据复用支撑「复制」不被带宽卡死?面积预算容得下全展开吗?——这些决定 N 与 R 怎么取。"
+ ],
+ "during": [
+  "<b>目标:用空间复制把吞吐顶上去</b>:推理是吞吐导向、且矩阵乘里乘加高度同构、互不依赖 → 天然适合「全空间展开」。TPU v1 直接铺 256×256=65,536 个 MAC,一拍出一片乘加,把性能拧到 ~92 TOPS。",
+  "<b>面积代价的取舍</b>:全展开=芯片绝大部分面积都给了 MAC 阵列。能这么干,前提是 8-bit 整数 MAC 单元面积/功耗极小(相比 FP32),复制 6.5 万份仍塞得进 ≤331mm²、28–40W 的预算——精度上的取舍(INT8)直接换来了可复制的密度。",
+  "<b>对照:时分复用为何这里不划算</b>:时分复用(1 份硬件跑很多轮)省面积,但吞吐随复用轮数线性掉。对一个要喂满数据中心、吞吐就是 KPI 的推理 ASIC,省那点面积远不如把吞吐顶满划算 → 选「复制」而非「复用硬件」。",
+  "<b>再叠一维:复用换带宽</b>:光复制 MAC 会被供数带宽卡死。weight-stationary 让权重驻留阵列、激活流过时反复复用同一组权重 → 每个权重摊到极多次乘加,大幅降低对 ~30 GB/s DDR3 的取数压力。这是「数据复用」这一维的取舍,和「硬件复制」正交叠加。",
+  "<b>利用率是真正的天花板</b>:有效性能 = 复制份数 × 利用率。复制再多,若 UB/DDR3 喂不饱阵列(尤其小 batch、低复用的层),利用率掉、复制就白搭 → 设计时要让供数带宽与阵列吞吐配平,而不是一味堆 MAC。",
+  "<b>诚实边界</b>:右侧「时分复用一份 MAC」是为讲清取舍而设的对照,并非 TPU v1 的实现;TPU v1 的工程选择就是把复制拧到极致、复用轮数压到最小。"
+ ],
+ "result": [
+  {
+   "label": "并行方式",
+   "value": "全空间展开(spatial,full replicate)"
+  },
+  {
+   "label": "复制份数 N",
+   "value": "256×256 = 65,536 个 8-bit MAC"
+  },
+  {
+   "label": "峰值吞吐",
+   "value": "~92 TOPS(INT8)@700 MHz"
+  },
+  {
+   "label": "复用维度",
+   "value": "weight-stationary:权重驻留·复用换带宽"
+  },
+  {
+   "label": "面积/功耗预算",
+   "value": "28nm,die ≤331mm²,TDP 28–40W"
+  },
+  {
+   "label": "利用率上限",
+   "value": "由供数带宽定(24 MiB UB + ~30 GB/s DDR3)"
+  }
+ ],
+ "after": [
+  "<b>建 roofline / cycle 模型验配平</b>:画出阵列峰值吞吐线与 ~30 GB/s 带宽线,确认目标层落在哪侧;若多数层带宽受限,说明复制过头、利用率上不去 → 回去调阵列大小或加片上复用。",
+  "<b>用真实负载测利用率</b>:跑代表性推理模型,看 65,536 个 MAC 的实际平均利用率;低利用率的层要靠加大 batch / 提高数据复用来摊薄,而非再堆 MAC。",
+  "<b>核对面积/功耗收口</b>:确认全展开后的阵列面积 + 累加器 + UB 仍在 ≤331mm²、28–40W 预算内;超了就得砍复制份数或换更省的单元(精度/位宽取舍)。",
+  "<b>交给后续阶段</b>:把「复制份数、weight-stationary 数据流、供数带宽配比」作为约束传给数据通路(③)与 RTL(⑤);并把空闲阵列的粗粒度时钟门控留作低功耗钩子。",
+  "<b>记录取舍依据</b>:把「为何选空间复制而非时分复用、为何叠 weight-stationary」写进设计决策表,供后续 TPU v2/v3/v4 在更大带宽/更高精度下重新权衡 N、R 时复用。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(时分复用对照为讲解取舍而设的通行实践示意,非 v1 实现;TPU v1 选择极致空间展开)"
+}

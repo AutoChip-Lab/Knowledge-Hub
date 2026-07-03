@@ -1,0 +1,121 @@
+{
+ "secNum": "3.5",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 以 MXU 为中心的宽数据通路(而非通用 NoC)",
+ "oneLine": "当芯片只有一条主导数据流时,一条「能把带宽无损送达」的宽数据通路 + 一条窄控制总线,就胜过通用 mesh NoC——真正的片间互连(ICI)留到多芯片扩展才登场。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"24\">单芯片内:不是 mesh NoC,而是「宽数据通路 + 控制总线」</text><g class=\"cs-part\" data-k=\"host\" data-g=\"host\"><rect class=\"cs-box\" x=\"30\" y=\"48\" width=\"150\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"105\" y=\"72\">主机 Host</text><text class=\"cs-sub\" x=\"105\" y=\"90\">PCIe 3.0 发 CISC 指令</text></g><g class=\"cs-part\" data-k=\"ctrl\" data-g=\"ctrl\"><rect class=\"cs-box\" x=\"30\" y=\"150\" width=\"150\" height=\"60\" rx=\"8\"/><text class=\"cs-t\" x=\"105\" y=\"174\">控制单元</text><text class=\"cs-sub\" x=\"105\" y=\"192\">译指令 / 发控制信号</text></g><line class=\"cs-arr\" x1=\"105\" y1=\"104\" x2=\"105\" y2=\"148\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"cbus\" data-g=\"cbus\"><line class=\"cs-arr\" x1=\"180\" y1=\"180\" x2=\"296\" y2=\"180\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"180\" y1=\"180\" x2=\"296\" y2=\"300\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"190\" y=\"172\">控制总线(窄,只走指令/握手)</text></g><g class=\"cs-part\" data-k=\"ub\" data-g=\"ub\"><rect class=\"cs-box\" x=\"240\" y=\"140\" width=\"120\" height=\"78\" rx=\"8\"/><text class=\"cs-t\" x=\"300\" y=\"166\">Unified Buffer</text><text class=\"cs-sub\" x=\"300\" y=\"184\">24 MiB SRAM</text><text class=\"cs-sub\" x=\"300\" y=\"200\">激活 / 中间结果</text></g><g class=\"cs-part\" data-k=\"wide\" data-g=\"wide\"><polyline class=\"cs-arr\" points=\"360,168 430,168\" fill=\"none\" stroke-width=\"10\" stroke=\"#64748b\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"430,196 360,196\" fill=\"none\" stroke-width=\"10\" stroke=\"#64748b\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"358\" y=\"150\">宽数据通路 256 lane</text><text class=\"cs-note\" x=\"362\" y=\"226\">峰值带宽 ~256 B/cyc</text></g><g class=\"cs-part\" data-k=\"mxu\" data-g=\"mxu\"><rect class=\"cs-box\" x=\"432\" y=\"130\" width=\"170\" height=\"100\" rx=\"8\"/><text class=\"cs-t\" x=\"517\" y=\"160\">MXU 矩阵单元</text><text class=\"cs-sub\" x=\"517\" y=\"180\">256×256 脉动阵列</text><text class=\"cs-sub\" x=\"517\" y=\"200\">片上数据流的「汇聚点」</text></g><g class=\"cs-part\" data-k=\"ddr\" data-g=\"ddr\"><rect class=\"cs-box\" x=\"432\" y=\"260\" width=\"170\" height=\"50\" rx=\"8\"/><text class=\"cs-t\" x=\"517\" y=\"284\">片外 8 GiB DDR3</text><text class=\"cs-sub\" x=\"517\" y=\"300\">~30 GB/s · 权重</text></g><line class=\"cs-arr\" x1=\"517\" y1=\"260\" x2=\"517\" y2=\"232\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"ici\" data-g=\"ici\"><rect class=\"cs-box\" x=\"628\" y=\"48\" width=\"70\" height=\"262\" rx=\"8\" stroke-dasharray=\"5 4\"/><text class=\"cs-sub\" x=\"663\" y=\"70\">多芯片</text><text class=\"cs-sub\" x=\"663\" y=\"86\">才用 ↓</text><rect class=\"cs-cell\" x=\"640\" y=\"100\" width=\"20\" height=\"20\" rx=\"4\"/><rect class=\"cs-cell\" x=\"666\" y=\"100\" width=\"20\" height=\"20\" rx=\"4\"/><rect class=\"cs-cell\" x=\"640\" y=\"126\" width=\"20\" height=\"20\" rx=\"4\"/><rect class=\"cs-cell\" x=\"666\" y=\"126\" width=\"20\" height=\"20\" rx=\"4\"/><line class=\"cs-arr\" x1=\"660\" y1=\"110\" x2=\"666\" y2=\"110\"/><line class=\"cs-arr\" x1=\"660\" y1=\"136\" x2=\"666\" y2=\"136\"/><line class=\"cs-arr\" x1=\"650\" y1=\"120\" x2=\"650\" y2=\"126\"/><line class=\"cs-arr\" x1=\"676\" y1=\"120\" x2=\"676\" y2=\"126\"/><text class=\"cs-sub\" x=\"663\" y=\"172\">ICI</text><text class=\"cs-sub\" x=\"663\" y=\"188\">2D 环面</text><text class=\"cs-sub\" x=\"663\" y=\"220\">(v2/v3</text><text class=\"cs-sub\" x=\"663\" y=\"236\">pod)</text></g></svg>",
+ "legend": [
+  {
+   "k": "cbus",
+   "name": "控制总线",
+   "desc": "很窄,只走主机译出的 CISC 指令与握手信号(TPU v1 指令集仅约十几条)。控制与数据彻底分离,控制流量极小。"
+  },
+  {
+   "k": "wide",
+   "name": "宽数据通路",
+   "desc": "片上互连的主角:UB↔MXU 之间一条极宽的并行总线,把整行激活/部分和一拍送达。目标是「带宽无损」,不是「灵活路由」。"
+  },
+  {
+   "k": "ub",
+   "name": "Unified Buffer",
+   "desc": "24 MiB 片上 SRAM,是宽数据通路的一端;激活从这里直灌阵列、结果再写回,几乎没有中转。"
+  },
+  {
+   "k": "mxu",
+   "name": "MXU(汇聚点)",
+   "desc": "256×256 脉动阵列是片上所有数据流的唯一汇聚点。互连只需服务「喂饱这一个核心」,所以拓扑可以极简。"
+  },
+  {
+   "k": "ici",
+   "name": "ICI 片间互连",
+   "desc": "单芯片用不上网络;只有把成百上千颗 TPU 连成 pod 时,才需要 ICI(2D 环面)。属 TPU v2/v3,非 v1 披露内容。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "host",
+    "ctrl",
+    "cbus"
+   ],
+   "cap": "① 主机经 PCIe 发来 CISC 指令,控制单元译码后,通过「窄控制总线」把控制信号分发给各部件——控制流与数据流分家"
+  },
+  {
+   "keys": [
+    "ub",
+    "wide",
+    "mxu"
+   ],
+   "cap": "② 激活沿「宽数据通路」从 Unified Buffer 整行直灌 MXU,带宽拉满、几乎零中转——这才是片上互连真正要保的东西"
+  },
+  {
+   "keys": [
+    "ddr",
+    "mxu"
+   ],
+   "cap": "③ 权重经片外 DDR3 单独喂入阵列;数据全部向 MXU 这一个「汇聚点」收敛,所以无需通用路由"
+  },
+  {
+   "keys": [
+    "mxu",
+    "wide",
+    "ub"
+   ],
+   "cap": "④ 部分和/结果沿同一条宽通路写回 Unified Buffer,准备下一层——一条主导数据流,一条专用宽链路就够"
+  },
+  {
+   "keys": [
+    "ici"
+   ],
+   "cap": "⑤(扩展时)单芯片喂不下大模型,才把多颗芯片用 ICI 2D 环面连成 pod——这时「网络」才登场(TPU v2/v3)"
+  }
+ ],
+ "before": [
+  "<b>先问清楚要不要「网络」</b>:片上有几条数据流、几个主从节点?是「多对多任意通信」还是「一条主导数据流灌一个核心」?TPU 是后者——这一步直接决定要不要上通用 NoC。",
+  "<b>要拍板的设计量(旋钮)</b>:互连拓扑(点对点宽链路 / 总线 / mesh / 环面)、链路位宽与频率(=带宽)、控制网与数据网是否分离、缓冲/流控策略、是否预留片间扩展接口。",
+  "<b>必备输入</b>:上游(§3.3 计算核心、§3.4 存储层次)给出的「谁要和谁通信、要多大对分带宽、节奏如何」;TPU 的输入是「UB→MXU 必须每拍喂满整行激活」。",
+  "<b>必须卡住的约束</b>:供数带宽(喂不饱阵列就白堆 MAC)、面积/功耗预算(宽线很占面积与功耗)、延迟确定性(数据中心推理要可预测延迟)、布线可行性(超宽总线的物理布通)。"
+ ],
+ "during": [
+  "<b>认清通信图</b>:TPU 片上只有一条压倒性数据流(UB↔MXU),节点少、模式固定 → 用通用 mesh NoC 是杀鸡用牛刀,反而增加延迟、面积与功耗。",
+  "<b>选最简拓扑</b>:既然所有数据都向 MXU 这个「汇聚点」收敛,就用专用的点对点宽数据通路,而不是可路由的包交换网络——省掉路由器、仲裁、虚通道的全部开销。",
+  "<b>带宽优先于灵活</b>:互连的首要目标是「把 UB 的带宽无损送达阵列」,所以把链路做得极宽(整行并行)、靠近、短走线;灵活路由能力一概不要。",
+  "<b>控制/数据分离</b>:控制总线只走十几条 CISC 指令与握手,流量极小、做窄即可;把面积与功耗预算几乎全给数据通路。这也契合 host-driven、确定性延迟的设计取向。",
+  "<b>权衡可扩展性</b>:简单宽通路的代价是「不可扩展」——单芯片装不下更大模型时无法靠片内网络扩容。TPU 的取舍是:单芯片保持极简,扩展性交给「片间互连」这一层去解决。",
+  "<b>多芯片才上网络(通行实践)</b>:把成百上千颗芯片连成 pod 时,才需要真正的互连网络;TPU v2/v3 pod 采用 ICI(2D 环面),用规则拓扑兼顾对分带宽与布线/布局——注意这是后续型号,非 v1 披露细节。"
+ ],
+ "result": [
+  {
+   "label": "片上互连形态",
+   "value": "宽数据通路 + 窄控制总线(非 mesh NoC)"
+  },
+  {
+   "label": "数据流模式",
+   "value": "单一主导流,向 MXU 汇聚"
+  },
+  {
+   "label": "数据通路宽度",
+   "value": "极宽并行(整行激活一拍送达)"
+  },
+  {
+   "label": "控制路径",
+   "value": "host-driven,CISC 指令仅约十几条"
+  },
+  {
+   "label": "片外带宽",
+   "value": "DDR3 ~30 GB/s(权重)"
+  },
+  {
+   "label": "片间互连(扩展)",
+   "value": "ICI 2D 环面 · TPU v2/v3 pod"
+  }
+ ],
+ "after": [
+  "<b>验证带宽达标</b>:在真实负载上验「互连是否把阵列喂满」——若阵列利用率被供数卡住,要么加宽数据通路,要么回上游调 UB 带宽(§3.4)。",
+  "<b>把需求往下游传</b>:给物理设计(后端)提超宽总线的布线/布局约束(线很宽、要短、要近),给时序提关键路径预算。",
+  "<b>定确定性延迟</b>:数据中心推理要可预测延迟——确认控制/数据分离后,数据通路延迟是固定且可建模的。",
+  "<b>规划扩展层</b>:明确「单芯片不可扩展」是已知取舍,把「连多颗成 pod」的需求交给片间互连(ICI)这一层,作为下一代/上层课题。",
+  "<b>留可测性钩子</b>:埋互连带宽/占用率的性能计数器,便于在真实流量下定位是算力还是互连成为瓶颈。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(ICI/2D 环面属 TPU v2/v3 pod;含数据中心推理 ASIC 的通行互连实践)"
+}

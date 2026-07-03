@@ -1,0 +1,115 @@
+{
+ "secNum": "3.3",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 封装类型选型:wire-bond / flip-chip / 2.5D / 3D——这颗高 IO 大 die 该用哪种「连到外面」的方式,才喂得饱 256×256 阵列的引脚与供电",
+ "oneLine": "封装这一步要回答的是「裸 die 怎么连到外面的世界」:① wire-bond 引线键合——die 正面朝上、用细金/铜线从边缘焊盘飞线连到基板,最便宜但引脚少;② flip-chip 倒装——把 die 翻过来,正面满铺的 C4 焊球直接落到基板上,引脚海量、互连短、供电强,高性能高 IO 芯片基本都走这条;③ 2.5D——逻辑 die 与 HBM 并排放到硅 interposer 上共封,用超宽近距总线把内存带宽拉满;④ 3D——die 叠 die、TSV 硅通孔垂直打通,互连最短最密、集成度最高。TPU v1 是要给 65,536 个 MAC 足量供电、对外大量 IO、并做成 PCIe 3.0 加速卡的高性能芯片,落在 flip-chip 这一类——满面焊球才喂得起它的引脚与电流;2.5D/3D 则是后续把内存等再共封/叠上来的更高阶形态(见 ③§3.14)。越往 flip-chip→2.5D→3D 走,IO/带宽/集成度越高,但工艺越难、成本与测试越贵,所以选型铁律是「够用就用最省的,引脚或带宽顶到墙才往上升级」。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 420\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"24\">四种封装把同一颗 die「连到外面」的方式:引脚怎么走、IO 多不多、带宽够不够——剖面对比(越往右 IO/带宽越强、越贵)</text><g class=\"cs-part\" data-k=\"wb\" data-g=\"wb\"><rect class=\"cs-box\" x=\"34\" y=\"44\" width=\"150\" height=\"150\" rx=\"8\"/><text class=\"cs-t\" x=\"109\" y=\"66\">① wire-bond 引线键合</text><rect class=\"cs-cell\" x=\"74\" y=\"86\" width=\"70\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"109\" y=\"105\">die(正面朝上)</text><rect class=\"cs-cell\" x=\"62\" y=\"120\" width=\"94\" height=\"16\" rx=\"3\"/><text class=\"cs-sub\" x=\"109\" y=\"156\">细金/铜线从 die 边焊盘</text><text class=\"cs-sub\" x=\"109\" y=\"172\">飞线连到基板,IO 少、便宜</text><polyline class=\"cs-arr\" points=\"80,86 64,124\" fill=\"none\" stroke-dasharray=\"3 3\"/><polyline class=\"cs-arr\" points=\"138,86 154,124\" fill=\"none\" stroke-dasharray=\"3 3\"/></g><g class=\"cs-part\" data-k=\"fc\" data-g=\"fc\"><rect class=\"cs-box\" x=\"196\" y=\"44\" width=\"160\" height=\"150\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"276\" y=\"66\">② flip-chip 倒装</text><rect class=\"cs-cell\" x=\"224\" y=\"80\" width=\"104\" height=\"26\" rx=\"4\"/><text class=\"cs-cellt\" x=\"276\" y=\"98\">die(翻转·正面朝下)</text><rect class=\"cs-cell\" x=\"224\" y=\"122\" width=\"104\" height=\"16\" rx=\"3\"/><text class=\"cs-sub\" x=\"276\" y=\"156\">面阵 C4 焊球直连基板</text><text class=\"cs-sub\" x=\"276\" y=\"172\">IO 海量·短互连·供电强</text><line class=\"cs-arr\" x1=\"240\" y1=\"106\" x2=\"240\" y2=\"120\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"276\" y1=\"106\" x2=\"276\" y2=\"120\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"312\" y1=\"106\" x2=\"312\" y2=\"120\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-k=\"d25\" data-g=\"d25\"><rect class=\"cs-box\" x=\"368\" y=\"44\" width=\"160\" height=\"150\" rx=\"8\"/><text class=\"cs-t\" x=\"448\" y=\"66\">③ 2.5D 共封</text><rect class=\"cs-cell\" x=\"384\" y=\"80\" width=\"62\" height=\"26\" rx=\"4\"/><text class=\"cs-cellt\" x=\"415\" y=\"98\">逻辑 die</text><rect class=\"cs-cell\" x=\"452\" y=\"80\" width=\"62\" height=\"26\" rx=\"4\"/><text class=\"cs-cellt\" x=\"483\" y=\"98\">HBM</text><rect class=\"cs-cell\" x=\"384\" y=\"118\" width=\"130\" height=\"16\" rx=\"3\"/><text class=\"cs-sub\" x=\"448\" y=\"152\">硅 interposer 把两 die</text><text class=\"cs-sub\" x=\"448\" y=\"168\">并排连起·超宽近距总线</text></g><g class=\"cs-part\" data-k=\"d3d\" data-g=\"d3d\"><rect class=\"cs-box\" x=\"540\" y=\"44\" width=\"146\" height=\"150\" rx=\"8\"/><text class=\"cs-t\" x=\"613\" y=\"66\">④ 3D 堆叠</text><rect class=\"cs-cell\" x=\"576\" y=\"80\" width=\"74\" height=\"22\" rx=\"4\"/><text class=\"cs-cellt\" x=\"613\" y=\"96\">die 上层</text><rect class=\"cs-cell\" x=\"576\" y=\"106\" width=\"74\" height=\"22\" rx=\"4\"/><text class=\"cs-cellt\" x=\"613\" y=\"122\">die 下层</text><text class=\"cs-sub\" x=\"613\" y=\"152\">TSV 硅通孔垂直打通</text><text class=\"cs-sub\" x=\"613\" y=\"168\">die 叠 die·最短最密</text><line class=\"cs-arr\" x1=\"600\" y1=\"102\" x2=\"600\" y2=\"106\"/><line class=\"cs-arr\" x1=\"626\" y1=\"102\" x2=\"626\" y2=\"106\"/></g><g class=\"cs-part\" data-k=\"tpu\" data-g=\"tpu\"><rect class=\"cs-box\" x=\"34\" y=\"214\" width=\"652\" height=\"68\" rx=\"8\" fill=\"#dcfce7\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"360\" y=\"240\">TPU v1:高性能、IO 多、要给 256×256 阵列足量供电 → 走 flip-chip 这一类(面阵 C4 焊球)</text><text class=\"cs-sub\" x=\"360\" y=\"262\">把 die 翻过来、用满整面的焊球直连封装基板,引脚数与供电远胜引线键合;做成 PCIe 3.0 加速卡插进主机</text><text class=\"cs-sub\" x=\"360\" y=\"276\">(2.5D/3D 是把内存等再共封/叠上来的更高阶形态,见 ③§3.14 chiplet 物理落地)</text></g><line class=\"cs-arr\" x1=\"276\" y1=\"194\" x2=\"276\" y2=\"212\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"pick\" data-g=\"pick\"><rect class=\"cs-box\" x=\"34\" y=\"300\" width=\"652\" height=\"50\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"322\">选型逻辑:够用最省 → 引脚/带宽吃紧才升级</text><text class=\"cs-sub\" x=\"360\" y=\"340\">IO 少/低成本→wire-bond  ·  IO 多/高供电→flip-chip  ·  要近距大内存带宽→2.5D  ·  要最高密度/最短互连→3D(TSV)</text></g><text class=\"cs-note\" x=\"40\" y=\"376\">越往右(flip-chip→2.5D→3D)IO/带宽/集成度越高,但工艺越难、成本/测试越贵;TPU 在 flip-chip 这档已能满足高 IO + 强供电</text><text class=\"cs-note\" x=\"40\" y=\"398\">诚实边界:四种封装的剖面/凸点/TSV 均为通行封测实践;TPU v1 仅已知为高性能 PCIe 加速卡(高 IO),其私有封装凸点节距/基板/OSAT/良率均未公开,本图按「这类高 IO 大芯片走 flip-chip 类」定性说明,不杜撰 TPU 专属封装数字</text></svg>",
+ "legend": [
+  {
+   "k": "wb",
+   "name": "① wire-bond 引线键合",
+   "desc": "最传统、最便宜的封装:die 正面朝上贴在基板上,用极细的金线或铜线,从 die 边缘一圈的焊盘(bond pad)一根根「飞线」连到基板的引脚上。优点是工艺成熟、成本低、设备门槛低;缺点是引脚只能排在 die 四周一圈、数量有限,线又细又长、电阻/电感大,供电和高速信号都吃亏。适合 IO 不多、不追极致性能、对成本敏感的芯片——而 TPU 这种「引脚海量 + 要给大阵列灌电流」的高性能芯片,引线键合明显喂不饱。"
+  },
+  {
+   "k": "fc",
+   "name": "② flip-chip 倒装(TPU 这一类)",
+   "desc": "高性能芯片的主流:把 die「翻过来」(flip),让原本朝上的电路面朝下,在这面满满铺一层焊球(C4 凸点,Controlled Collapse Chip Connection),回流焊后整面焊球同时直接落到封装基板上。相比引线键合,IO 不再局限于四周一圈、而是铺满整个面阵,引脚数可达上千乃至更多;互连极短、电阻电感小,供电和高速信号质量都大幅改善。TPU v1 要给 256×256=65,536 个 MAC 灌足电流、对外有大量 IO、并做成 PCIe 3.0 加速卡——正落在 flip-chip 这一类。"
+  },
+  {
+   "k": "d25",
+   "name": "③ 2.5D(硅 interposer 共封)",
+   "desc": "把多颗 die「并排」放到一块硅 interposer(转接板)上共封:interposer 上有微凸点和超密走线,把逻辑 die 与紧挨着它的 HBM 内存堆栈用近距、超宽总线连起来,内存带宽相对板级 DDR 提升一个数量级。它本质是在 flip-chip 之上再加一层硅做「桥」,让相邻 die 之间走海量短连线。代价是 interposer/HBM 成本与封装/测试复杂度上升。注:TPU v1 是单片片外 DDR3,2.5D 是其后续代次方向(③§3.14)。"
+  },
+  {
+   "k": "d3d",
+   "name": "④ 3D(TSV 垂直堆叠)",
+   "desc": "集成度最高的封装:用 TSV(Through-Silicon Via,硅通孔)在 die 里打竖直的金属通孔,把多颗 die 直接上下叠起来、垂直贯通。互连距离从「跨过整片芯片」缩到「穿过一层硅」,最短、最密、延迟与功耗最优,HBM 堆栈本身就是 3D 叠 DRAM 的例子。代价是热(上下层热叠加)、TSV 工艺难度、以及堆叠后整体测试与良率管理都更复杂。它是 2.5D 之上再进一步的纵向集成手段。"
+  },
+  {
+   "k": "pick",
+   "name": "选型逻辑(够用最省)",
+   "desc": "四种不是越高级越好,而是按需求逐级升级:IO 少、低成本就用 wire-bond;IO 多、要强供电(如 TPU)就用 flip-chip;还要给内存灌满近距大带宽就上 2.5D;要最高密度、最短互连就上 3D(TSV)。每往上一档,IO/带宽/集成度更高,但工艺更难、成本与测试更贵。判据落在引脚数、所需带宽、供电电流、热预算与成本之间权衡——顶到墙的那一项,决定该升到哪一档。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "wb"
+   ],
+   "cap": "① 先看最便宜的 wire-bond:die 正面朝上,细金/铜线从边缘焊盘飞线连到基板——成熟便宜,但引脚只在 die 四周一圈、数量有限,线长电感大,高 IO/强供电芯片喂不饱。"
+  },
+  {
+   "keys": [
+    "fc",
+    "tpu"
+   ],
+   "cap": "② TPU 落在 flip-chip:把 die 翻过来,正面满铺 C4 焊球面阵直连基板,引脚海量、互连短、供电强——正好喂得起 256×256 阵列的引脚与电流,再做成 PCIe 3.0 加速卡。"
+  },
+  {
+   "keys": [
+    "d25"
+   ],
+   "cap": "③ 再要近距大内存带宽,升 2.5D:逻辑 die 与 HBM 并排放上硅 interposer 共封,用超宽短总线把带宽拉满(TPU 后续代次方向,见 ③§3.14)。"
+  },
+  {
+   "keys": [
+    "d3d"
+   ],
+   "cap": "④ 要最高密度/最短互连,升 3D:用 TSV 硅通孔把 die 上下垂直叠起来贯通,互连最短最密、集成度最高,代价是热与工艺/测试更难。"
+  },
+  {
+   "keys": [
+    "pick"
+   ],
+   "cap": "⑤ 选型铁律:够用就用最省的——IO 少→wire-bond,IO 多/强供电→flip-chip,要近距大带宽→2.5D,要最高密度→3D;引脚或带宽顶到墙,才往上升一档。"
+  }
+ ],
+ "before": [
+  "<b>先盘清这颗 die 对封装的硬需求</b>:要多少 IO/引脚、对外带宽多大、给 256×256 阵列(§3.3)供多大电流、热预算(§3.9)多少、单颗成本上限多少——这几条决定该用四种封装里的哪一档。",
+  "<b>选型旋钮要拍板</b>:wire-bond 还是 flip-chip?要不要共封内存上 2.5D?要不要 TSV 垂直叠 3D?用哪种基板、凸点/球阵节距、封装尺寸与脚位(对 TPU 还要对齐 PCIe 3.0 金手指)。",
+  "<b>必备输入</b>:芯片 IO 清单与供电网络需求、die 尺寸(TPU v1 28nm、≤331mm²)、目标功耗 28–40W 的散热路径、HBM/interposer 的成本与供应(若考虑 2.5D)、OSAT 封测厂的工艺能力清单。",
+  "<b>必须卡住的约束</b>:wire-bond 引脚数与供电有物理天花板;flip-chip 起码要 die 面有满阵焊盘与凸点重布线;2.5D/3D 工艺更难、成本更高、热更棘手——封装越高级,测试与良率管理越复杂,不是越高级越好。"
+ ],
+ "during": [
+  "<b>四档按需逐级升,不是越高级越好</b>:从 wire-bond → flip-chip → 2.5D → 3D,IO/带宽/集成度一路抬高、但工艺难度与成本/测试也一路抬高。先用够用的最便宜那档,某一项需求(引脚、带宽、供电、密度)顶到墙,才升上一档。",
+  "<b>wire-bond:便宜但「连得少、连得远」</b>:die 正面朝上,细金/铜线从四周焊盘飞线到基板。引脚只能排 die 一圈、数量有限,线又细又长,电阻电感大、供电和高速信号都打折——适合低 IO、低成本场景,撑不起 TPU 这种高 IO 大芯片。",
+  "<b>flip-chip:翻过来用满面焊球,TPU 走这档</b>:把 die 翻转、电路面朝下,正面满铺 C4 焊球面阵,回流后整面同时直连基板。IO 从「四周一圈」变「铺满整面」、可上千,互连极短、供电强、信号好。TPU v1 要喂 65,536 个 MAC 的引脚与电流、并做成 PCIe 加速卡,正是 flip-chip 的典型对象。",
+  "<b>2.5D:再加一层硅 interposer 共封内存</b>:在 flip-chip 之上,把逻辑 die 与 HBM 并排放到硅 interposer 上,用 interposer 的超密短走线把两者用近距宽总线连起来,内存带宽相对板级 DDR 拉高一个数量级。代价是 interposer/HBM 成本与封装复杂度。注:TPU v1 仍是单片片外 DDR3,2.5D 属其后续方向。",
+  "<b>3D:TSV 把 die 竖着叠、贯通到底</b>:用硅通孔(TSV)在 die 内打竖直金属孔,把多 die 上下堆叠、垂直直连,互连最短最密、集成度最高(HBM 本身就是 3D 叠 DRAM)。代价是上下层热叠加、TSV 工艺与堆叠后测试/良率都更难。它是纵向再集成的最高阶手段。",
+  "<b>诚实边界</b>:wire-bond/flip-chip/2.5D/3D 的剖面结构、C4 凸点、interposer、TSV 都是这类高 IO 大芯片/PCIe 加速卡的通行封测实践。TPU v1 已知是高性能、高 IO、PCIe 3.0 加速卡(据此判定走 flip-chip 类),但其私有的封装基板、凸点/球阵节距、OSAT 厂、封装良率均未公开,本节按「这类芯片走 flip-chip 类」定性说明,不杜撰 TPU 专属封装数字。"
+ ],
+ "result": [
+  {
+   "label": "TPU v1 封装档位",
+   "value": "flip-chip 类(满面 C4 焊球直连基板),做成 PCIe 3.0 加速卡"
+  },
+  {
+   "label": "为什么走 flip-chip",
+   "value": "高性能 / IO 海量 / 要给 256×256=65,536 个 MAC 强供电"
+  },
+  {
+   "label": "四档对比",
+   "value": "wire-bond 便宜少脚 → flip-chip 满面焊球 → 2.5D 共封内存 → 3D TSV 垂直叠"
+  },
+  {
+   "label": "升级方向",
+   "value": "越往右 IO/带宽/集成度↑,但工艺/成本/测试↑"
+  },
+  {
+   "label": "2.5D/3D 定位",
+   "value": "把 HBM 等再共封/叠上的更高阶形态(TPU 后续方向,见 ③§3.14)"
+  },
+  {
+   "label": "选型铁律",
+   "value": "够用最省;引脚/带宽/供电/密度顶到墙,才升上一档"
+  }
+ ],
+ "after": [
+  "<b>验证封装选型对得上需求</b>:核对 flip-chip 的焊球数能盖住 TPU 的全部 IO 与供电电流、信号/电源完整性达标、封装热阻撑得住 28–40W、封装尺寸与 PCIe 金手指脚位对齐——都过才定稿封装方案。",
+  "<b>把约束往封装/封测下游传</b>:给封装设计交凸点/重布线(RDL)布局、基板叠层、球阵脚位;给封测厂交 flip-chip 倒装回流、底填(underfill)、封装后老化与测试要求,确保可制造、可测试。",
+  "<b>若升 2.5D/3D 则补 KGD 策略</b>:一旦走共封/堆叠,必须先保证每颗 die 都是 known-good-die 再封,否则一颗坏 die 拖垮整封装良率;把 KGD 与堆叠后测试要求交给可测性设计(DFT)。",
+  "<b>留迭代余地</b>:若后续代次要更大内存带宽(行业通行做法是上 2.5D + HBM),需在选型时就评估从 flip-chip 升到 interposer 共封的成本/热/良率代价,避免架构期欠考虑、后期返工。",
+  "<b>诚实留痕</b>:封装选型依据(IO/供电/热/成本)与判定 TPU 属 flip-chip 类的理由记入档案;明确区分「TPU 已知结构与高 IO 加速卡形态」与「未公开的私有封装工艺数字」,后者一律不编造。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(wire-bond/flip-chip/2.5D/3D 封装类型的剖面结构、C4 凸点、interposer、TSV 均为通行封测实践;TPU v1 已知为高性能高 IO 的 PCIe 3.0 加速卡,据此定性判其走 flip-chip 类,其私有封装凸点/基板/OSAT/良率未公开,不杜撰专属数字)"
+}

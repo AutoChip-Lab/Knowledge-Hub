@@ -1,0 +1,125 @@
+{
+ "secNum": "3.7",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Weight FIFO 与脉动阵列之间的流水、valid/ready 握手与背压 RTL",
+ "oneLine": "流水、握手与 FIFO 是把「快慢不一、延迟不定的两个模块」可靠拼在一起的 RTL 三件套——TPU 在 DMA→UB、Weight FIFO→脉动阵列之间用 valid/ready 双向握手、用读写指针管 FIFO 满空、用流水寄存器逐级打拍,既不让那块每拍要吞一整列的阵列空转,又靠背压保证上游永不溢出、整条链端到端不死锁。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">生产者 → FIFO → 消费者:valid/ready 双向握手,背压端到端传导</text><g class=\"cs-part\" data-k=\"prod\" data-g=\"prod\"><rect class=\"cs-box\" x=\"40\" y=\"48\" width=\"158\" height=\"78\" rx=\"8\"/><text class=\"cs-t\" x=\"119\" y=\"76\">生产者(DMA)</text><text class=\"cs-sub\" x=\"119\" y=\"96\">DDR3→UB 搬数</text><text class=\"cs-sub\" x=\"119\" y=\"114\">out_valid 高=有数</text></g><g class=\"cs-part\" data-k=\"vr1\" data-g=\"hs\"><line class=\"cs-arr\" x1=\"198\" y1=\"74\" x2=\"276\" y2=\"74\" marker-end=\"url(#csar)\"/><text class=\"cs-sub\" x=\"200\" y=\"66\">valid →</text><line class=\"cs-arr\" x1=\"276\" y1=\"100\" x2=\"198\" y2=\"100\" marker-end=\"url(#csar)\"/><text class=\"cs-sub\" x=\"200\" y=\"118\">← ready</text></g><g class=\"cs-part\" data-k=\"fifo\" data-g=\"fifo\"><rect class=\"cs-box\" x=\"280\" y=\"40\" width=\"178\" height=\"120\" rx=\"8\"/><text class=\"cs-t\" x=\"369\" y=\"64\">Weight FIFO</text><rect class=\"cs-cell\" x=\"300\" y=\"78\" width=\"138\" height=\"16\"/><text class=\"cs-cellt\" x=\"369\" y=\"91\">wr_ptr →</text><rect class=\"cs-cell\" x=\"300\" y=\"98\" width=\"138\" height=\"16\"/><rect class=\"cs-cell\" x=\"300\" y=\"118\" width=\"138\" height=\"16\"/><text class=\"cs-cellt\" x=\"369\" y=\"131\">rd_ptr →</text><text class=\"cs-sub\" x=\"369\" y=\"152\">full/empty 由读写指针算</text></g><g class=\"cs-part\" data-k=\"vr2\" data-g=\"hs\"><line class=\"cs-arr\" x1=\"458\" y1=\"86\" x2=\"536\" y2=\"86\" marker-end=\"url(#csar)\"/><text class=\"cs-sub\" x=\"460\" y=\"78\">valid →</text><line class=\"cs-arr\" x1=\"536\" y1=\"112\" x2=\"458\" y2=\"112\" marker-end=\"url(#csar)\"/><text class=\"cs-sub\" x=\"460\" y=\"130\">← ready</text></g><g class=\"cs-part\" data-k=\"cons\" data-g=\"cons\"><rect class=\"cs-box\" x=\"540\" y=\"48\" width=\"150\" height=\"100\" rx=\"8\"/><text class=\"cs-t\" x=\"615\" y=\"78\">消费者</text><text class=\"cs-sub\" x=\"615\" y=\"98\">脉动阵列流水</text><text class=\"cs-sub\" x=\"615\" y=\"116\">256×256 MAC</text><text class=\"cs-sub\" x=\"615\" y=\"134\">in_ready 高=能收</text></g><g class=\"cs-part\" data-k=\"pipe\" data-g=\"pipe\"><rect class=\"cs-box\" x=\"40\" y=\"196\" width=\"650\" height=\"80\" rx=\"8\"/><text class=\"cs-t\" x=\"70\" y=\"220\" text-anchor=\"start\">流水寄存器逐级打拍(skid/退避)</text><rect class=\"cs-cell\" x=\"120\" y=\"236\" width=\"56\" height=\"26\"/><text class=\"cs-cellt\" x=\"148\" y=\"253\">stage0</text><line class=\"cs-arr\" x1=\"176\" y1=\"249\" x2=\"214\" y2=\"249\" marker-end=\"url(#csar)\"/><rect class=\"cs-cell\" x=\"216\" y=\"236\" width=\"56\" height=\"26\"/><text class=\"cs-cellt\" x=\"244\" y=\"253\">stage1</text><line class=\"cs-arr\" x1=\"272\" y1=\"249\" x2=\"310\" y2=\"249\" marker-end=\"url(#csar)\"/><rect class=\"cs-cell\" x=\"312\" y=\"236\" width=\"56\" height=\"26\"/><text class=\"cs-cellt\" x=\"340\" y=\"253\">stage2</text><line class=\"cs-arr\" x1=\"368\" y1=\"249\" x2=\"406\" y2=\"249\" marker-end=\"url(#csar)\"/><rect class=\"cs-cell\" x=\"408\" y=\"236\" width=\"56\" height=\"26\"/><text class=\"cs-cellt\" x=\"436\" y=\"253\">stage3</text><text class=\"cs-sub\" x=\"640\" y=\"253\" text-anchor=\"end\">always_ff @(posedge clk)</text></g><g class=\"cs-part\" data-k=\"bp\" data-g=\"bp\"><polyline class=\"cs-arr\" points=\"615,148 615,176 369,176 369,160\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"369,176 119,176 119,126\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-sub\" x=\"300\" y=\"190\">背压:ready 撤销逐级回传,生产者停拍</text></g><text class=\"cs-note\" x=\"40\" y=\"300\">铁律一:握手不能成环——ready 不许组合依赖同向的 valid,否则组合环、综合不收敛</text><text class=\"cs-note\" x=\"40\" y=\"320\">铁律二:满则停写、空则停读——!full 才推 wr_ptr、!empty 才推 rd_ptr,不溢出/不读空</text><text class=\"cs-note\" x=\"40\" y=\"340\">铁律三:背压端到端不死锁——消费者撑住,ready 一路回传让阵列既不空转也不丢数</text><text class=\"cs-note\" x=\"40\" y=\"382\">注:HDL 片段为通行 RTL 写法的示意;TPU v1 不逐行公开,此处借其已知结构讲流水/握手/FIFO</text></svg>",
+ "legend": [
+  {
+   "k": "prod",
+   "name": "生产者(DMA 搬数)",
+   "desc": "把权重/激活从片外 DDR3、Unified Buffer 推向下游的源。它用 out_valid=1 宣告「这一拍有有效数据」,只有当下游 ready 也为 1 时这拍才真正被取走——valid 由生产者驱动,ready 由下游驱动,二者同高的那一拍即一次成功传输。"
+  },
+  {
+   "k": "fifo",
+   "name": "Weight FIFO(读写指针 + 满空)",
+   "desc": "解耦快慢的弹性缓冲。写指针 wr_ptr 在 !full 且写握手成立时 +1,读指针 rd_ptr 在 !empty 且读握手成立时 +1;full/empty 由两指针之差算出。对上游它是消费者(ready=!full),对下游它是生产者(valid=!empty),把两侧节奏隔开。"
+  },
+  {
+   "k": "cons",
+   "name": "消费者(脉动阵列流水)",
+   "desc": "256×256 MAC 的脉动阵列,每拍都要吞入新数据。它用 in_ready 表达「这一拍我能收」;一旦内部流水暂时吃不下(in_ready=0),这个「收不下」会顺着握手逆流而上,变成对 FIFO、再对 DMA 的背压。"
+  },
+  {
+   "k": "pipe",
+   "name": "流水寄存器(逐级打拍)",
+   "desc": "数据通路被切成 stage0→stage1→… 多级,级与级之间插寄存器,always_ff @(posedge clk) 每拍前移一级。它把长组合路径切短以提频率;暂停时靠 skid/退避寄存器接住「正在路上」的那一拍,避免丢数。"
+  },
+  {
+   "k": "bp",
+   "name": "背压通路(ready 逆向传导)",
+   "desc": "与数据同向相反的一条控制流:消费者撤销 ready → FIFO 满 → FIFO 对上游撤 ready → DMA 停推。背压让全链按最慢一环的节奏走,既不溢出也不空转;设计铁律是这条逆向路径不能与正向 valid 成组合环、且端到端不死锁。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "prod",
+    "vr1",
+    "fifo"
+   ],
+   "cap": "① 入队握手:DMA 把数据推到 FIFO 入口,out_valid 拉高;当 FIFO 未满(ready=!full)且 valid 同高的那一拍,数据被写入、wr_ptr+1。满了 ready 落、这拍不写,数据留在生产者侧等下一拍"
+  },
+  {
+   "keys": [
+    "fifo",
+    "vr2",
+    "cons"
+   ],
+   "cap": "② 出队握手:FIFO 非空时对阵列出 valid=!empty;阵列能收时拉 in_ready,二者同高这拍数据被取走、rd_ptr+1。读写两侧各按自己节奏推进指针,FIFO 把快慢差吸收成水位起伏"
+  },
+  {
+   "keys": [
+    "cons",
+    "pipe"
+   ],
+   "cap": "③ 流水推进:取出的数据进入逐级打拍的流水(stage0→stage1→…),always_ff 每个时钟沿前移一级;级间寄存器把长路径切短,撑起 700 MHz 的时序"
+  },
+  {
+   "keys": [
+    "cons",
+    "bp",
+    "fifo",
+    "prod"
+   ],
+   "cap": "④ 背压回传:阵列流水一旦暂时吃不下,in_ready 落 → FIFO 渐满 → 对上游撤 ready → DMA 停推。这个「停」沿握手逐级逆向传导,谁也别覆盖谁未用的数据"
+  },
+  {
+   "keys": [
+    "prod",
+    "fifo",
+    "cons"
+   ],
+   "cap": "⑤ 稳态滚动:只要 FIFO 水位在满空之间、两侧握手各自成立,生产者持续推、阵列持续吞——阵列逼近零空转吃满 ~92 TOPS,而上游永不溢出,整条链端到端不死锁"
+  }
+ ],
+ "before": [
+  "<b>先定握手协议与语义</b>:选 valid/ready(类 AXI-Stream)双向握手——valid 由上游给、ready 由下游给,二者同高才传输一拍。要白纸黑字写清「valid 一旦拉高,在握手成立前不得撤、数据不得变」,这是后续不丢数/不重复的根。",
+  "<b>定 FIFO 的深度、位宽与同步性</b>:深度按「带宽×延迟积 / Little's law」给(够盖住上游取数延迟即可,不浪费 SRAM);位宽=一拍数据宽;再判读写是否同一时钟域——同域用普通计数器指针,跨域必须用格雷码指针 + 双拍同步器(异步 FIFO)。",
+  "<b>定流水级数与复位/暂停风格</b>:据目标频率(700 MHz)把数据通路切成几级流水;统一复位风格(本系列通行:同步复位、posedge clk),并约定暂停语义——是整条流水冻结(clock-enable),还是用 skid 退避寄存器接住在途数据。",
+  "<b>列可综合约束</b>:握手与指针逻辑必须可综合、无组合环;full/empty 要在写入/读出的同一拍正确(避免 off-by-one 溢出/读空);明确接口位宽(权重 8-bit、累加 32-bit)与边界信号(last/tlast 之类的 tile 结束标记)。",
+  "<b>写下成功判据</b>:「任意背压模式下不丢一拍、不重复一拍、不溢出、不读空」「最坏背压下整链不死锁」「目标层下阵列因等数停拍占比 ≈ 0」——可被定向激励逐条验证,而非模糊地说「能跑通」。"
+ ],
+ "during": [
+  "<b>握手成立的判定要纯组合且无环</b>:一拍传输的条件是 fire = valid && ready。铁律:ready 不得在组合上依赖同向的 valid(否则 valid→ready→valid 成组合环、综合不收敛)。常见做法是让 ready 只取决于本级是否有空位(如 !full / 下游 ready 寄存后的版本),把环打断。",
+  "<b>FIFO 用读写指针 + 满空标志</b>:写侧 if(wr_en && !full) begin mem[wr_ptr]<=din; wr_ptr<=wr_ptr+1; end;读侧 if(rd_en && !empty) rd_ptr<=rd_ptr+1;empty=(wr_ptr==rd_ptr)、full 用多一位的环绕指针或计数器判。示意写法,标明是通行 RTL 实践、非 TPU 披露的逐行实现。",
+  "<b>流水寄存器逐级打拍,组合只做一段</b>:每级 always_ff @(posedge clk) 把上一级结果寄存后前移,级间只放一段组合(如阵列里 acc<=acc+a*b 这种乘加),把长路径切短换频率。暂停时所有级一起 clock-enable 冻结,或用 skid 寄存器接住正在路上的那一拍,绝不能让它凭空消失。",
+  "<b>背压要端到端连成一条线</b>:下游 in_ready 落 → FIFO 渐满 → FIFO 对上游 ready 落 → DMA 这拍不推、数据停在原处。关键是「停」必须在数据被安全寄存的前提下逐级传导:任何一级若只停了 valid 没停对应数据寄存器,就会丢拍或重复拍。",
+  "<b>提防三类经典坑:组合环 / off-by-one / 死锁</b>。组合环=ready 与 valid 互相组合依赖;off-by-one=full/empty 判定差一拍,导致写满还写(溢出)或空了还读(读空)。死锁=A 等 B 的 ready、B 又等 A 的 valid 互相卡住——任何成环的「互等」都要在协议层用「至少一方无条件能动」打破。",
+  "<b>诚实边界</b>:以上 valid/ready、读写指针、流水打拍、skid 退避都是工业界通行 RTL 写法,图与片段为示意;TPU v1 不逐行公开其 RTL,这里仅借它「Weight FIFO + 脉动阵列 + UB」的已知结构作为载体讲清这些 RTL 概念,未编造 TPU 专属代码或私有数字。"
+ ],
+ "result": [
+  {
+   "label": "握手协议",
+   "value": "valid/ready 双向(同高一拍即 fire),类 AXI-Stream(示意)"
+  },
+  {
+   "label": "握手核心铁律",
+   "value": "ready 不组合依赖同向 valid(禁组合环);valid 拉高后数据须稳定"
+  },
+  {
+   "label": "FIFO 控制",
+   "value": "wr_ptr/rd_ptr + full/empty;!full 才写、!empty 才读"
+  },
+  {
+   "label": "流水写法(示意)",
+   "value": "always_ff @(posedge clk) if(en) stage1<=stage0; 逐级打拍,skid 接在途数据"
+  },
+  {
+   "label": "背压目标",
+   "value": "阵列零空转 + 上游不溢出 + 端到端不死锁"
+  },
+  {
+   "label": "三大坑",
+   "value": "组合环 / full-empty off-by-one / 互等死锁"
+  }
+ ],
+ "after": [
+  "<b>lint 与 CDC 检查先行</b>:跑 RTL lint 抓组合环、未驱动/多驱动、阻塞/非阻塞误用;若 FIFO 读写跨时钟域,专门跑 CDC 检查确认用了格雷码指针 + 双触发器同步、无单比特多路径汇聚导致的亚稳态。",
+  "<b>定向 + 随机背压仿真</b>:用激励反复戳消费者随机拉低 ready(各种背压模式),断言「不丢一拍、不重复、不溢出、不读空」;覆盖 FIFO 满到顶、空到底、满空交替的边界拍,确认 full/empty 无 off-by-one。",
+  "<b>形式化证死锁/活性</b>:对握手 + FIFO 写性质断言(SVA):无组合环、full 时不再 fire 写、empty 时不再 fire 读、且「上游有数 + 下游最终能收 ⇒ 数据最终前进」,用形式工具证最坏背压下整链不死锁、不饿死。",
+  "<b>试综合看时序与频率</b>:做一次试综合,确认逐级打拍后关键路径(如阵列乘加段)能收到目标频率附近、握手逻辑无意外长路径;若某级超时,回去再插一级流水或调整 skid。",
+  "<b>固化接口规格交验证/集成</b>:把 valid/ready 时序、FIFO 深度/位宽、背压传导链、流水级数与 last 边界信号写成接口规格,连同断言一起移交验证与上层集成,确保 DMA→UB→阵列整条链拼起来行为一致。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(Weight FIFO、Unified Buffer 与脉动阵列为该文披露;valid/ready 握手、读写指针 FIFO、流水打拍与 skid 退避等 RTL 写法为通行 RTL 实践,图与 HDL 片段为示意,非 v1 逐行实现)"
+}

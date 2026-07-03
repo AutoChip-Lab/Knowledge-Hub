@@ -1,0 +1,118 @@
+{
+ "secNum": "3.6",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 综合阶段抠功耗:让工具按约束/UPF 自动给 256×256 阵列插时钟门控、换多Vt、隔操作数、分电源域",
+ "oneLine": "功耗优化不是「写完 RTL 再单独搞一遍」,而是综合时和面积/时序一起被工具自动做掉——它读 ⑤ 写好的带 enable 寄存器、SDC 时序约束、多Vt 库、UPF 电源意图,在不改功能的前提下自动插入四类省电结构:时钟门控 ICG(把「空闲就别更新」编译成真实门控单元,256×256 阵列里某列不算就让整列时钟停摆)、多Vt 替换(非关键路径换高阈值 HVT 省漏电)、操作数隔离(空闲单元冻结输入、掐掉无谓翻转)、按 UPF 切多电源域。一句话:省电意图你在 RTL/约束里表达,具体省电门级结构由综合工具替你插。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 410\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">综合不只追面积/时序,还要在「不改功能」前提下自动抠功耗——四类省电结构由工具按约束/UPF自动插入</text><g class=\"cs-part\" data-k=\"rtl\" data-g=\"rtl\"><rect class=\"cs-box\" x=\"40\" y=\"50\" width=\"200\" height=\"78\" rx=\"8\"/><text class=\"cs-t\" x=\"140\" y=\"80\">⑤写好的 RTL</text><text class=\"cs-sub\" x=\"140\" y=\"100\">阵列 PE 列 / UB 控制</text><text class=\"cs-sub\" x=\"140\" y=\"118\">寄存器带 enable 更新</text></g><g class=\"cs-part\" data-k=\"intent\" data-g=\"intent\"><rect class=\"cs-box\" x=\"40\" y=\"150\" width=\"200\" height=\"78\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"140\" y=\"180\">功耗意图 + 约束</text><text class=\"cs-sub\" x=\"140\" y=\"200\">SDC 时序 + UPF 电源域</text><text class=\"cs-sub\" x=\"140\" y=\"218\">多Vt 库 + 功耗目标</text></g><line class=\"cs-arr\" x1=\"240\" y1=\"89\" x2=\"296\" y2=\"120\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"240\" y1=\"189\" x2=\"296\" y2=\"160\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"tool\" data-g=\"tool\"><rect class=\"cs-box\" x=\"300\" y=\"118\" width=\"150\" height=\"92\" rx=\"8\"/><text class=\"cs-t\" x=\"375\" y=\"150\">综合工具</text><text class=\"cs-sub\" x=\"375\" y=\"172\">DC / Genus</text><text class=\"cs-sub\" x=\"375\" y=\"190\">自动插入省电结构</text></g><line class=\"cs-arr\" x1=\"450\" y1=\"138\" x2=\"506\" y2=\"92\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"450\" y1=\"158\" x2=\"506\" y2=\"172\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"450\" y1=\"178\" x2=\"506\" y2=\"252\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"450\" y1=\"196\" x2=\"506\" y2=\"332\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"icg\" data-g=\"icg\"><rect class=\"cs-box\" x=\"510\" y=\"62\" width=\"180\" height=\"62\" rx=\"8\"/><text class=\"cs-t\" x=\"600\" y=\"86\">时钟门控 ICG</text><text class=\"cs-sub\" x=\"600\" y=\"106\">enable+clk→gated_clk</text></g><g class=\"cs-part\" data-k=\"vt\" data-g=\"vt\"><rect class=\"cs-box\" x=\"510\" y=\"142\" width=\"180\" height=\"62\" rx=\"8\"/><text class=\"cs-t\" x=\"600\" y=\"166\">多Vt 替换</text><text class=\"cs-sub\" x=\"600\" y=\"186\">非关键路径换 HVT</text></g><g class=\"cs-part\" data-k=\"iso\" data-g=\"iso\"><rect class=\"cs-box\" x=\"510\" y=\"222\" width=\"180\" height=\"62\" rx=\"8\"/><text class=\"cs-t\" x=\"600\" y=\"246\">操作数隔离</text><text class=\"cs-sub\" x=\"600\" y=\"266\">空闲列冻结输入</text></g><g class=\"cs-part\" data-k=\"pd\" data-g=\"pd\"><rect class=\"cs-box\" x=\"510\" y=\"302\" width=\"180\" height=\"62\" rx=\"8\"/><text class=\"cs-t\" x=\"600\" y=\"326\">多电源域 (UPF)</text><text class=\"cs-sub\" x=\"600\" y=\"346\">隔离/电平移位单元</text></g><g class=\"cs-part\" data-k=\"icgcell\" data-g=\"icgcell\"><rect class=\"cs-box\" x=\"40\" y=\"282\" width=\"430\" height=\"92\" rx=\"8\" fill=\"#ecfeff\" stroke=\"#67e8f9\"/><text class=\"cs-t\" x=\"255\" y=\"306\">ICG 插入示意:一组寄存器前插一个门控单元</text><text class=\"cs-sub\" x=\"255\" y=\"330\">enable ─┐  clk ─┤ICG├─ gated_clk → REG[*]   (工具自动识别 enable 后插入)</text><text class=\"cs-sub\" x=\"255\" y=\"352\">PE 列空闲 → enable=0 → 该列时钟停摆 → 翻转功耗清零</text></g></svg>",
+ "legend": [
+  {
+   "k": "tool",
+   "name": "输入(RTL+约束/库/UPF)→ 综合工具自动插省电结构",
+   "desc": "省电的输入有三样:⑤ 写好的可综合 RTL(256×256 阵列 PE 列、UB 控制,关键是那些「带 enable 条件更新」的寄存器 if(en) q<=d——这正是门控的抓手)、功耗意图与约束(SDC 时序界定关键路径与余量、含多Vt 的 Liberty 库、UPF/CPF 电源域意图、面积/功耗/时序联合目标)。Design Compiler / Genus 这类综合器把功耗当成与面积、时序并列的优化维度,按这些约束自动重写门级实现:插 ICG、换 HVT、加隔离、按 UPF 插隔离/电平移位单元——全部「工具自动插入」,等价性由后续 LEC 兜底。工程师表达意图,工具补结构。"
+  },
+  {
+   "k": "icg",
+   "name": "时钟门控 ICG(省动态功耗的主力)",
+   "desc": "时钟翻转是动态功耗大头。综合把 RTL 里「带 enable 的寄存器更新」识别成门控时机,在一组寄存器的时钟前自动插入集成时钟门控单元(ICG):enable + clk → gated_clk。enable=0 时该组寄存器时钟停摆、不翻转、几乎不耗动态功耗。落到 TPU:256×256 阵列中本拍不参与计算的 PE 列,其更新寄存器的时钟可被整列门掉——「空闲 PE 列门控」在这一步才真正变成网表里的 ICG 单元。"
+  },
+  {
+   "k": "vt",
+   "name": "多Vt 替换(省静态/漏电功耗)",
+   "desc": "工艺库常提供同功能、不同阈值电压的单元:低阈值 LVT 快但漏电大,高阈值 HVT 慢但漏电小。综合按 SDC 看每条路径的时序余量:关键路径保留快单元保时序,时序有富余的非关键路径自动换成 HVT,在不破坏 700 MHz 时序收敛的前提下压低整芯片静态漏电。28nm 这类节点漏电占比可观,多Vt 是综合阶段省漏电的标准手段。"
+  },
+  {
+   "k": "iso",
+   "name": "操作数隔离(掐掉无谓翻转)",
+   "desc": "即使时钟没被门掉,组合逻辑的输入若乱翻,运算单元也会空耗动态功耗。操作数隔离在数据通路输入处加锁存/与门,当某单元这拍的结果用不上(如空闲 PE 列的乘加)时把其输入冻住,阻止无意义的信号翻转往下传播。它和时钟门控互补:门控停时钟,隔离停数据,合起来把空闲单元的动态功耗压到最低。"
+  },
+  {
+   "k": "pd",
+   "name": "多电源域(UPF/CPF 驱动)",
+   "desc": "更激进的省电是按 UPF/CPF 把芯片切成多个电源域,空闲的大块在低功耗模式下降压甚至关断。综合据此在域边界自动插入隔离单元(防止关断域输出的浮空值污染常开域)和电平移位单元(跨不同电压域时搬移逻辑电平)。这是「电源意图在 UPF 里声明、对应门级单元由工具插入」的典型——工程师写意图,工具补结构。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "rtl",
+    "intent"
+   ],
+   "cap": "① 备齐输入:⑤ 写好的带 enable 寄存器 RTL + 功耗意图与约束(SDC 时序、多Vt 库、UPF 电源域、功耗目标)。省电意图在这里就要表达清楚,工具才知道往哪省。"
+  },
+  {
+   "keys": [
+    "tool"
+   ],
+   "cap": "② 综合工具把功耗当作与面积/时序并列的优化维度,在工艺映射与优化中按约束自动重写门级实现——不改功能,只换更省电的等价结构。"
+  },
+  {
+   "keys": [
+    "rtl",
+    "icg",
+    "icgcell"
+   ],
+   "cap": "③ 时钟门控:工具把「带 enable 的寄存器更新」识别成门控时机,在寄存器组前自动插 ICG 单元(enable+clk→gated_clk)。空闲的 PE 列整列时钟停摆,动态功耗清零——这是省动态功耗主力。"
+  },
+  {
+   "keys": [
+    "vt",
+    "iso"
+   ],
+   "cap": "④ 多Vt 替换 + 操作数隔离:时序有富余的非关键路径换成 HVT 省漏电;空闲数据通路输入处加隔离冻住翻转。一个省静态、一个省动态,且都不碰关键路径时序。"
+  },
+  {
+   "keys": [
+    "pd"
+   ],
+   "cap": "⑤ 按 UPF/CPF 切多电源域:工具在域边界自动插隔离单元与电平移位单元,让空闲大块能降压/关断。电源意图在 UPF 声明、门级结构由工具补全。"
+  }
+ ],
+ "before": [
+  "<b>先在 RTL 里把省电「钩子」埋好,而不是综合时硬抠</b>:时钟门控能省多少,根上取决于 ⑤ 阶段寄存器是否写成「带 enable 的条件更新」(如 if(en) q<=d)。enable 语义清晰,综合才识别得出门控时机;若 RTL 把每拍都无脑更新,工具想门控也无从下手。所以功耗优化的起点其实在写 RTL 时就定了。",
+  "<b>准备含多Vt 的工艺库与功耗视图</b>:Liberty 库要带 LVT/SVT/HVT 多套同功能单元,且含各单元的漏电/动态功耗数据;ICG、隔离、电平移位等专用单元也要齐备。库不全(比如只有单一 Vt、没有 ICG 单元),工具就没法做多Vt 替换或插门控。",
+  "<b>用 SDC 划清关键路径与时序余量</b>:多Vt 替换、ICG 插入都要在「不破坏 700 MHz 时序收敛」前提下做。SDC(create_clock、输入输出延迟、伪/多周期路径)界定了哪些路径碰不得、哪些有富余可让工具换慢省电单元。约束不准,省电要么不敢做、要么把时序做崩。",
+  "<b>用 UPF/CPF 声明电源意图与功耗目标</b>:若要多电源域,先在 UPF/CPF 里声明电源域划分、关断/常开关系、域间隔离与电平移位策略;同时给综合下功耗目标(与面积/时序联合)。意图先于结构——工程师声明「谁能关、谁要隔离」,综合才据此补对应单元。"
+ ],
+ "during": [
+  "<b>功耗是与面积/时序并列的优化维度,不是事后补丁</b>:综合在工艺映射与优化阶段就同时权衡三者。省电结构(ICG、HVT、隔离、电源域单元)是工具在满足时序的前提下自动插入的,而非工程师手工往 RTL 里塞门控逻辑——手搓门控既易错又难维护,交给约束驱动的工具是通行做法。",
+  "<b>时钟门控:把 RTL 的 enable 语义编译成真实 ICG 单元</b>。工具扫描带 enable 的寄存器组,在其时钟前插集成时钟门控单元,enable=0 时该组时钟停摆。落到 TPU,256×256 阵列里本拍不参与计算的 PE 列,整列更新寄存器的时钟被门掉——「空闲 PE 列门控」在这一步从 RTL 意图变成网表里实打实的 ICG 单元。",
+  "<b>多Vt 替换:按时序余量换单元,关键路径碰不得</b>。工具据 SDC 给每条路径算余量:关键路径保 LVT/SVT 快单元保时序,余量大的非关键路径换 HVT 省漏电。这是纯等价替换(同功能不同 Vt),不改逻辑只改实现,28nm 上能显著压低静态漏电而不丢 700 MHz 收敛。",
+  "<b>操作数隔离与时钟门控互补</b>:门控停的是时钟、省的是寄存器翻转;隔离停的是数据、省的是组合逻辑无谓翻转。对空闲 PE 列这种「这拍结果用不上」的单元,两者叠加——时钟门掉 + 输入冻住——把空闲动态功耗压到最低。",
+  "<b>多电源域:工具在域边界自动补隔离/电平移位单元</b>。按 UPF/CPF,关断域到常开域之间自动插隔离单元(钳住浮空输出),跨电压域处自动插电平移位单元。漏插隔离会让关断时浮空值污染下游、漏插移位会让跨域信号电平错位——这些都由工具按电源意图自动处理,不靠人逐处手加。",
+  "<b>诚实边界:这些是通行 EDA 综合实践,TPU 不公开其专属脚本/数字</b>。ICG 自动插入、多Vt 替换、操作数隔离、UPF 多电源域,以及 DC/Genus、SDC、Liberty 多Vt、LEC,都是大型 ASIC 的标准低功耗综合手段;TPU v1 用哪套库、约束脚本怎么写、省了多少功耗,均未公开。此处把 TPU 已知结构(256×256 脉动阵列、UB、700 MHz、28nm、weight-stationary)当作被优化对象讲方法,SDC 片段为示意,不臆造 TPU 私有的综合数字与脚本。"
+ ],
+ "result": [
+  {
+   "label": "示意 SDC(界定关键时序,省电不得越界)",
+   "value": "create_clock -name core_clk -period 1.43 [get_ports clk]   # 700 MHz,示意"
+  },
+  {
+   "label": "时钟门控开关(示意,库相关命令)",
+   "value": "set_clock_gating_style -sequential_cell latch ;  insert_clock_gating  →  RTL 的 enable 寄存器组前自动生成 ICG 单元"
+  },
+  {
+   "label": "多Vt 库选项(示意)",
+   "value": "target_library = {stdcell_lvt.db, stdcell_svt.db, stdcell_hvt.db} ;  非关键路径自动换 HVT 省漏电"
+  },
+  {
+   "label": "ICG 在网表里的样子(示意)",
+   "value": "CLKGATE_X1 u_icg ( .EN(col_en), .CK(core_clk), .GCK(col_gclk) ) ;  REG[*].CK = col_gclk"
+  },
+  {
+   "label": "操作数隔离 / 多电源域单元",
+   "value": "数据通路插隔离(锁存/与门);UPF 域边界自动插 ISO 隔离单元 + LS 电平移位单元"
+  },
+  {
+   "label": "功耗报告产物(示意,非 TPU 实数)",
+   "value": "report_power → 区分动态(翻转/时钟) vs 静态(漏电);看门控覆盖率、HVT 占比、时序仍收敛"
+  }
+ ],
+ "after": [
+  "<b>LEC 形式等价检查:省电不能改功能</b>:ICG、多Vt、隔离、电源域单元都是工具自动插入的,必须用逻辑等价检查(LEC)证明门级网表与 RTL 功能等价。时钟门控尤其要确认门控条件正确(enable=0 的拍本就不该更新),不能因门控错误漏更新或多更新——这是省电后的头号签核项。",
+  "<b>看功耗报告确认省到位</b>:跑 report_power 区分动态(翻转、时钟)与静态(漏电)功耗;查时钟门控覆盖率(多少寄存器被 ICG 覆盖)、HVT 单元占比、隔离是否覆盖了空闲通路。覆盖率低说明 RTL 的 enable 钩子没埋好或约束太保守,要回头迭代。",
+  "<b>确认时序没被省电做崩</b>:多Vt 换 HVT、插 ICG 都可能动到时序,要重跑时序确认 700 MHz(示意 1.43 ns 周期)仍收敛、ICG 的 enable 不在关键路径上添新违例。功耗与时序是拉锯——省过头把时序做崩则前功尽弃,要在两者间收敛。",
+  "<b>UPF 电源意图一致性核查</b>:用低功耗验证确认隔离单元、电平移位单元都按 UPF 插全、域间关系正确(关断域输出被钳住、跨域信号电平对齐);电源意图要在 RTL→网表→后端各阶段一致传递,不能综合插了、后端又对不上。",
+  "<b>带省电结构的网表交后端,并把约束/意图一并传递</b>:签核(LEC 通过、功耗达标、时序收敛、UPF 一致)后,把含 ICG/多Vt/隔离/电源域单元的门级网表连同 SDC、UPF、库设置一起交布局布线(⑧)。后端要按这些电源意图做电源网络、域规划与时钟树,综合阶段的省电意图才能在硅上真正兑现。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(256×256 脉动阵列、24 MiB Unified Buffer、700 MHz、28nm、weight-stationary 为 v1 披露;综合阶段的时钟门控 ICG / 多Vt 替换 / 操作数隔离 / UPF 多电源域,及 DC/Genus、SDC、Liberty 多Vt、LEC 为通行 EDA 综合实践,SDC 片段为示意,TPU 未公开其专属低功耗综合脚本与功耗数字)"
+}

@@ -1,0 +1,118 @@
+{
+ "secNum": "3.3",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 256×256 脉动阵列矩阵乘单元(MXU)",
+ "oneLine": "TPU 就是「数据中心推理加速卡」的真实代表——它的计算核心是一整块脉动阵列,把推理里压倒性的矩阵乘做到极致能效。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 410\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"130\" y=\"132\">激活流入 →</text><text class=\"cs-note\" x=\"300\" y=\"86\">权重载入 ↓</text><g class=\"cs-part\" data-k=\"ub\" data-g=\"ub\"><rect class=\"cs-box\" x=\"26\" y=\"150\" width=\"92\" height=\"150\" rx=\"8\"/><text class=\"cs-t\" x=\"72\" y=\"172\">Unified</text><text class=\"cs-t\" x=\"72\" y=\"187\">Buffer</text><text class=\"cs-sub\" x=\"72\" y=\"202\">24 MiB</text><text class=\"cs-sub\" x=\"72\" y=\"217\">激活/中间结果</text></g><g class=\"cs-part\" data-k=\"wfifo\" data-g=\"wfifo\"><rect class=\"cs-box\" x=\"300\" y=\"28\" width=\"210\" height=\"40\" rx=\"8\"/><text class=\"cs-t\" x=\"405\" y=\"50\">Weight FIFO  ← DDR3 权重</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"300\" y=\"140\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"318\" y=\"162\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"342\" y=\"140\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"360\" y=\"162\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"384\" y=\"140\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"402\" y=\"162\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"426\" y=\"140\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"444\" y=\"162\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"468\" y=\"140\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"486\" y=\"162\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"300\" y=\"182\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"318\" y=\"204\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"342\" y=\"182\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"360\" y=\"204\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"384\" y=\"182\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"402\" y=\"204\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"426\" y=\"182\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"444\" y=\"204\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"468\" y=\"182\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"486\" y=\"204\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"300\" y=\"224\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"318\" y=\"246\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"342\" y=\"224\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"360\" y=\"246\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"384\" y=\"224\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"402\" y=\"246\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"426\" y=\"224\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"444\" y=\"246\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"468\" y=\"224\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"486\" y=\"246\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"300\" y=\"266\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"318\" y=\"288\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"342\" y=\"266\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"360\" y=\"288\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"384\" y=\"266\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"402\" y=\"288\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"426\" y=\"266\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"444\" y=\"288\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"468\" y=\"266\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"486\" y=\"288\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"300\" y=\"308\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"318\" y=\"330\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"342\" y=\"308\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"360\" y=\"330\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"384\" y=\"308\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"402\" y=\"330\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"426\" y=\"308\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"444\" y=\"330\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"468\" y=\"308\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"486\" y=\"330\">×+</text></g><text class=\"cs-sub\" x=\"402\" y=\"358\">256×256 PE 阵列(每个 PE = 8-bit 乘累加)</text><line class=\"cs-arr\" x1=\"120\" y1=\"158\" x2=\"296\" y2=\"158\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"120\" y1=\"200\" x2=\"296\" y2=\"200\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"120\" y1=\"242\" x2=\"296\" y2=\"242\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"330\" y1=\"70\" x2=\"330\" y2=\"138\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"402\" y1=\"70\" x2=\"402\" y2=\"138\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"474\" y1=\"70\" x2=\"474\" y2=\"138\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"330\" y1=\"362\" x2=\"330\" y2=\"378\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"402\" y1=\"362\" x2=\"402\" y2=\"378\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"474\" y1=\"362\" x2=\"474\" y2=\"378\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"acc\" data-g=\"acc\"><rect class=\"cs-box\" x=\"300\" y=\"380\" width=\"204\" height=\"32\" rx=\"8\"/><text class=\"cs-t\" x=\"402\" y=\"402\">Accumulators 4 MiB · INT32</text></g><g class=\"cs-part\" data-k=\"act\" data-g=\"act\"><rect class=\"cs-box\" x=\"545\" y=\"250\" width=\"150\" height=\"44\" rx=\"8\"/><text class=\"cs-t\" x=\"620\" y=\"272\">激活 / 归一化</text></g><polyline class=\"cs-arr\" points=\"504,396 620,396 620,294\" fill=\"none\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"620,250 620,120 72,120 72,148\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"360\" y=\"118\">结果写回 Unified Buffer →</text></svg>",
+ "legend": [
+  {
+   "k": "ub",
+   "name": "Unified Buffer",
+   "desc": "24 MiB 软件管理的片上 SRAM(scratchpad),存激活与中间结果。TPU 干脆砍掉了硬件 cache,用它换确定性延迟。"
+  },
+  {
+   "k": "wfifo",
+   "name": "Weight FIFO",
+   "desc": "权重从片外 8 GiB DDR3 经 Weight FIFO 流入,预载进阵列后保持不动(weight-stationary)。"
+  },
+  {
+   "k": "pe",
+   "name": "PE 阵列(MXU)",
+   "desc": "256×256 = 65,536 个 8-bit 乘累加单元。数据在 PE 间直接传递、几乎不碰内存——这是高能效的根源。"
+  },
+  {
+   "k": "acc",
+   "name": "Accumulators",
+   "desc": "4 MiB 的 32-bit 累加器,接住阵列每列流下来的部分和(低精度乘、高精度累加防溢出)。"
+  },
+  {
+   "k": "act",
+   "name": "激活/归一化",
+   "desc": "对累加结果做激活函数/归一化,再写回 Unified Buffer,准备下一层。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "wfifo",
+    "pe"
+   ],
+   "cap": "① 权重从 DDR3 经 Weight FIFO 预载入阵列(weight-stationary,载入后固定不动)"
+  },
+  {
+   "keys": [
+    "ub",
+    "pe"
+   ],
+   "cap": "② 激活从 Unified Buffer 沿各行泵入阵列,每拍向右前进一个 PE"
+  },
+  {
+   "keys": [
+    "pe"
+   ],
+   "cap": "③ 每个 PE 做一次 8-bit 乘累加,把部分和向下一个 PE 传递——全程不访存"
+  },
+  {
+   "keys": [
+    "pe",
+    "acc"
+   ],
+   "cap": "④ 部分和沿列方向逐级累加,落入 32-bit 累加器"
+  },
+  {
+   "keys": [
+    "act",
+    "ub"
+   ],
+   "cap": "⑤ 过激活/归一化,结果写回 Unified Buffer,进入下一层计算"
+  }
+ ],
+ "before": [
+  "<b>先确定要回答的问题</b>:这颗芯片的「计算核心」做成什么形态?——通用 CPU 核?向量机?还是专用阵列?TPU 的答案是:为推理专门做一台「矩阵乘机器」。",
+  "<b>要拍板的设计量(旋钮)</b>:算力目标(TOPS)、数值精度(INT8 / FP16…)、数据流(weight / output / row-stationary)、阵列规模(PE 个数)、目标频率、面积/功耗预算。",
+  "<b>必备输入</b>:目标负载画像(§3.1 给的——矩阵乘占比、算术强度、工作集大小)、能提供的供数带宽上限、工艺库的密度/速度/功耗特征。",
+  "<b>必须卡住的约束</b>:功耗天花板(决定到底能堆多少 MAC)、片上/片外带宽(决定阵列喂不喂得饱)、软件生态(选的数值格式要被框架接受)。"
+ ],
+ "during": [
+  "<b>认定负载</b>:推理 = 海量矩阵乘(MLP/CNN/LSTM 都能 lower 成 GEMM),算术强度高、compute-bound → 干脆把整颗芯片做成「矩阵乘机器」。",
+  "<b>选结构</b>:脉动阵列让每个数据进来后在阵列里被复用很多次,PE 之间直接传数、几乎不碰内存 → MAC/面积、MAC/瓦都最优(TPU 原话:64K 个 ALU 之间传数据全程不访存,显著降功耗)。",
+  "<b>定数据流</b>:weight-stationary——权重先压进阵列不动,激活流过、部分和向下累加,最大化权重复用。",
+  "<b>定精度</b>:推理容忍低精度 → 8-bit 整数乘 + 32-bit 累加,相比浮点省 4× 存储、MAC 单元更小更省电。",
+  "<b>定规模</b>:256×256 由「目标吞吐 + 供数带宽 + 面积/功耗预算」共同夹出——阵列再大就会喂不饱(带宽跟不上)。",
+  "<b>做减法</b>:为了把面积全让给 MAC,TPU 砍掉了 cache、分支预测、乱序执行,换确定性延迟与极高算力密度。"
+ ],
+ "result": [
+  {
+   "label": "阵列规模",
+   "value": "256×256 = 65,536 个 MAC"
+  },
+  {
+   "label": "峰值算力",
+   "value": "700 MHz → ~92 TOPS(INT8)"
+  },
+  {
+   "label": "数据流",
+   "value": "weight-stationary 脉动"
+  },
+  {
+   "label": "数值",
+   "value": "INT8 乘 / INT32 累加"
+  },
+  {
+   "label": "片上激活",
+   "value": "24 MiB Unified Buffer"
+  },
+  {
+   "label": "工艺/功耗",
+   "value": "28nm · ≤331mm² · 28–40W"
+  }
+ ],
+ "after": [
+  "<b>验证达标</b>:用 roofline / cycle 级模型在真实负载上验阵列利用率,确认是被算力还是被带宽卡——不达标就回去调阵列规模、数据流或片上 SRAM。",
+  "<b>把需求往下游传</b>:给存储层次(§3.4)提 SRAM 容量与带宽要求、给片上互连(§3.5)提对分带宽要求、给数据流(§3.6)定供数节奏。",
+  "<b>交给微架构(④)</b>:PE 内部怎么流水、阵列怎么装填/排空(正是 ④ §3.1 流水线那一节)。",
+  "<b>定验证与可测性钩子</b>:阵列怎么验、片上 SRAM 怎么 MBIST、要埋哪些性能计数器(利用率、stall)。",
+  "<b>留 margin 与配置点</b>:精度/阵列规模能不能裁剪,以便派生高中低端产品家族。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017"
+}

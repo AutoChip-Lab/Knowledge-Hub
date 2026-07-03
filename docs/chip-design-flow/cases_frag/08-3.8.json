@@ -1,0 +1,121 @@
+{
+ "secNum": "3.8",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 寄生提取与信号完整性:从布完线的版图算每条线真实 RC(出 SPEF),把脉动阵列相邻线串扰与长总线 RC 纳入时序,确认 700MHz 在真实寄生下仍成立",
+ "oneLine": "本案例落到「寄生提取与信号完整性(extraction / SI)」小节:布线后单元有了坐标、线有了真实长度/层/间距,提取引擎(StarRC/Quantus 这类)从版图几何算出每条网络的真实电阻 R 与电容 C(含线间耦合电容 Cc)写进 SPEF,喂给静态时序做精确签核;同时信号完整性(SI)处理串扰——密集脉动阵列里高速翻转的 aggressor 线经 Cc 把跳变耦合到相邻 victim 线,造成噪声毛刺与 delta-delay;只有把真实 RC 与串扰一起算进时序,才能确认 TPU 的 700MHz(约 1.43ns)在真实物理寄生下依然成立,把综合阶段的『估计时序』兑现成『真账』。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 408\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"26\">寄生提取:从布完线的版图算每条线真实 RC → 出 SPEF → 喂精确时序;信号完整性:处理相邻线串扰(aggressor 干扰 victim)</text><g class=\"cs-part\" data-k=\"layout\" data-g=\"layout\"><rect class=\"cs-box\" x=\"24\" y=\"52\" width=\"190\" height=\"120\" rx=\"8\"/><text class=\"cs-t\" x=\"119\" y=\"78\">布完线的版图</text><text class=\"cs-sub\" x=\"119\" y=\"96\">routed layout(几何)</text><g class=\"cs-part\" data-k=\"wire\" data-g=\"wire\"><rect class=\"cs-cell\" x=\"40\" y=\"108\" width=\"158\" height=\"20\"/><text class=\"cs-cellt\" x=\"119\" y=\"122\">脉动阵列相邻 MAC 线</text></g><g class=\"cs-part\" data-k=\"bus\" data-g=\"bus\"><rect class=\"cs-cell\" x=\"40\" y=\"134\" width=\"158\" height=\"20\"/><text class=\"cs-cellt\" x=\"119\" y=\"148\">UB↔阵列 长总线</text></g><text class=\"cs-sub\" x=\"119\" y=\"166\">线有了层 / 长 / 间距</text></g><line class=\"cs-arr\" x1=\"214\" y1=\"112\" x2=\"276\" y2=\"112\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"220\" y=\"104\">提取</text><g class=\"cs-part\" data-k=\"extract\" data-g=\"extract\"><rect class=\"cs-box\" x=\"280\" y=\"52\" width=\"180\" height=\"120\" rx=\"8\"/><text class=\"cs-t\" x=\"370\" y=\"78\">RC 提取引擎</text><text class=\"cs-sub\" x=\"370\" y=\"96\">StarRC / Quantus(示意)</text><g class=\"cs-part\" data-k=\"r\" data-g=\"r\"><rect class=\"cs-cell\" x=\"296\" y=\"108\" width=\"70\" height=\"20\"/><text class=\"cs-cellt\" x=\"331\" y=\"122\">线电阻 R</text></g><g class=\"cs-part\" data-k=\"c\" data-g=\"c\"><rect class=\"cs-cell\" x=\"374\" y=\"108\" width=\"70\" height=\"20\"/><text class=\"cs-cellt\" x=\"409\" y=\"122\">电容 C</text></g><text class=\"cs-sub\" x=\"370\" y=\"148\">对地 C + 线间 耦合 Cc</text><text class=\"cs-sub\" x=\"370\" y=\"166\">查工艺 RC 技术文件</text></g><line class=\"cs-arr\" x1=\"460\" y1=\"112\" x2=\"522\" y2=\"112\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"spef\" data-g=\"spef\"><rect class=\"cs-box\" x=\"526\" y=\"52\" width=\"170\" height=\"120\" rx=\"8\"/><text class=\"cs-t\" x=\"611\" y=\"78\">SPEF 文件</text><text class=\"cs-sub\" x=\"611\" y=\"98\">每条网络的真实 RC</text><text class=\"cs-sub\" x=\"611\" y=\"118\">含耦合电容 Cc</text><text class=\"cs-sub\" x=\"611\" y=\"146\">→ 喂 STA 做</text><text class=\"cs-sub\" x=\"611\" y=\"164\">精确(真账)时序</text></g><g class=\"cs-part\" data-k=\"si\" data-g=\"si\"><rect class=\"cs-box\" x=\"24\" y=\"206\" width=\"430\" height=\"130\" rx=\"8\"/><text class=\"cs-t\" x=\"239\" y=\"232\">信号完整性(SI):串扰 crosstalk</text><g class=\"cs-part\" data-k=\"agg\" data-g=\"agg\"><rect class=\"cs-cell\" x=\"44\" y=\"250\" width=\"170\" height=\"34\"/><text class=\"cs-cellt\" x=\"129\" y=\"264\">Aggressor(攻击线)</text><text class=\"cs-cellt\" x=\"129\" y=\"278\">高速翻转</text></g><g class=\"cs-part\" data-k=\"vic\" data-g=\"vic\"><rect class=\"cs-cell\" x=\"44\" y=\"294\" width=\"170\" height=\"34\"/><text class=\"cs-cellt\" x=\"129\" y=\"308\">Victim(受害线)</text><text class=\"cs-cellt\" x=\"129\" y=\"322\">被耦合干扰</text></g><line class=\"cs-arr\" x1=\"214\" y1=\"277\" x2=\"214\" y2=\"305\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"232\" y=\"266\">耦合电容 Cc 把</text><text class=\"cs-note\" x=\"232\" y=\"284\">aggressor 的跳变注到</text><text class=\"cs-note\" x=\"232\" y=\"302\">victim:噪声毛刺 / 延迟</text><text class=\"cs-note\" x=\"232\" y=\"320\">推迟或加速(delta-delay)</text></g><line class=\"cs-arr\" x1=\"370\" y1=\"172\" x2=\"280\" y2=\"204\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><g class=\"cs-part\" data-k=\"close\" data-g=\"close\"><rect class=\"cs-box\" x=\"476\" y=\"206\" width=\"220\" height=\"130\" rx=\"8\"/><text class=\"cs-t\" x=\"586\" y=\"232\">SI 感知时序签核</text><text class=\"cs-sub\" x=\"586\" y=\"256\">真实 RC + 串扰 delta</text><text class=\"cs-sub\" x=\"586\" y=\"276\">→ 确认 700MHz(1.43ns)</text><text class=\"cs-sub\" x=\"586\" y=\"296\">在真实寄生下仍成立</text><text class=\"cs-sub\" x=\"586\" y=\"316\">不过 → 回 ECO(3.7)修</text></g><line class=\"cs-arr\" x1=\"611\" y1=\"172\" x2=\"611\" y2=\"204\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"454\" y1=\"271\" x2=\"474\" y2=\"271\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"24\" y=\"360\">读法:版图几何 → RC 提取出 SPEF → 与串扰 delta 一起喂时序;密集阵列相邻线 + 长总线的真实 RC/串扰决定 700MHz 在硅上成不成立</text><text class=\"cs-note\" x=\"24\" y=\"392\">注:RC 提取/SPEF/串扰 aggressor-victim/SI 签核为通行后端实践;TPU v1 不公开其版图、寄生与 SI 报告,图为示意,借已知结构(脉动阵列/UB/700MHz/28nm)当被提取对象</text></svg>",
+ "legend": [
+  {
+   "k": "layout",
+   "name": "布完线的版图(提取的输入:几何)",
+   "desc": "走到 3.8 时布线已完成,单元有了坐标、每条线有了真实的金属层、走向、长度和与邻线的间距——这是寄生提取唯一的输入。综合阶段线还没布、RC 靠模型估;只有到版图几何确定,提取才能算出真实 RC。TPU 里两类线最吃紧:256×256 脉动阵列内成千上万条相邻的 MAC 互连(密集、易串扰),以及 24 MiB UB 与阵列之间的长数据总线(长→ R/C 大→延迟与噪声显著)。"
+  },
+  {
+   "k": "extract",
+   "name": "RC 提取引擎(StarRC / Quantus 这类,示意)",
+   "desc": "提取引擎结合版图几何与工艺厂提供的 RC 技术文件(各金属层单位电阻、层间/线间电容系数),为每条网络算出真实的线电阻 R、对地电容 C 以及关键的线间耦合电容 Cc。这是通行后端 EDA 实践:不靠猜,而是按真实版图把每段线的寄生算出来。提取精度有不同模式(快速近似到场求解 field-solver),签核前用高精度。"
+  },
+  {
+   "k": "spef",
+   "name": "SPEF(提取产物:每条线真实 RC)",
+   "desc": "提取的标准输出格式 SPEF(Standard Parasitic Exchange Format),逐条网络记录 R、C 与耦合电容 Cc。它替换掉综合时的线延迟估计,喂给静态时序分析(STA)做精确时序——线延迟从『模型猜』变成『从版图算的真账』。SPEF 也是交给 ⑨ 签核做最终 STA/功耗/EM-IR 的核心数据之一。"
+  },
+  {
+   "k": "si",
+   "name": "信号完整性 / 串扰(aggressor 干扰 victim)",
+   "desc": "线间耦合电容 Cc 不只影响延迟,还引入串扰:当一条高速翻转的 aggressor(攻击线)跳变时,经 Cc 把电荷注到相邻的 victim(受害线)上。后果有二——victim 静止时被推出噪声毛刺(可能误翻转下游逻辑),或 victim 也在切换时被推迟/加速(delta-delay,改变到达时间)。TPU 脉动阵列线密、并行总线长,正是串扰的高发地,必须专门分析。"
+  },
+  {
+   "k": "close",
+   "name": "SI 感知的时序签核(确认 700MHz 成立)",
+   "desc": "把真实 RC(SPEF)与串扰带来的 delta-delay 一起算进 STA,做 SI 感知的时序签核:确认在真实寄生与噪声下,关键路径仍满足 700MHz(约 1.43ns)的建立/保持。先进节点串扰、双重曝光等效应越来越重,这一步越来越关键。任一路径不过,就回 3.7 做 ECO(改间距/加屏蔽/换驱动/buffer)再提取再签核,直到收敛。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "layout",
+    "wire",
+    "bus"
+   ],
+   "cap": "① 拿布完线的版图作输入:单元有坐标、线有真实层/长/间距;锁定两类吃紧线——脉动阵列内密集相邻的 MAC 互连、UB↔阵列的长数据总线"
+  },
+  {
+   "keys": [
+    "extract",
+    "r",
+    "c"
+   ],
+   "cap": "② 提取真实 RC:引擎(StarRC/Quantus 这类)结合版图几何 + 工艺 RC 技术文件,为每条网络算出线电阻 R、对地电容 C 与关键的线间耦合电容 Cc"
+  },
+  {
+   "keys": [
+    "spef"
+   ],
+   "cap": "③ 出 SPEF:把每条线的真实 RC(含耦合 Cc)写进标准 SPEF 文件,替换综合时的线延迟估计,喂给 STA 做精确(真账)时序"
+  },
+  {
+   "keys": [
+    "si",
+    "agg",
+    "vic"
+   ],
+   "cap": "④ 处理信号完整性:用耦合电容分析串扰——高速翻转的 aggressor 经 Cc 把跳变注到相邻 victim,产生噪声毛刺与 delta-delay(到达时间被推迟/加速)"
+  },
+  {
+   "keys": [
+    "close"
+   ],
+   "cap": "⑤ SI 感知签核:把真实 RC + 串扰 delta 一起算进时序,确认 700MHz(约 1.43ns)在真实寄生下仍成立;不过则回 3.7 ECO 修后重提取重签核"
+  }
+ ],
+ "before": [
+  "<b>先备齐工艺 RC 技术文件</b>:提取要用工艺厂提供的、与 28nm 工艺绑定的 RC 技术/校准文件(各金属层单位电阻、层间与线间电容系数、对应布线层栈)。这是提取算 R/C 的物理依据,通行后端实践;TPU 不公开其具体工艺与提取 deck。",
+  "<b>定提取角点(corner)与精度</b>:寄生随工艺/温度/电压(PVT)变化,要定在哪些 RC 角点(如 RC best/worst、典型)提取、签核用哪些;签核前一般用高精度甚至 field-solver 模式,布线迭代中可用快速近似省时。",
+  "<b>定 SI / 串扰分析的范围与阈值</b>:声明对哪些网络做串扰分析、噪声毛刺与 delta-delay 的判据阈值、哪些关键线(如阵列时钟、长总线)优先保护;先进节点串扰越重,范围要划清。",
+  "<b>给好布线期的 SI 预防手段</b>:串扰不是只到提取后才管——布线阶段就应允许加非默认规则(NDR:加宽/加间距)、对敏感线插屏蔽线(shielding)、限平行走线长度。这些预防做好,提取后串扰违例才少。",
+  "<b>诚实标注边界</b>:RC 提取、SPEF、串扰 aggressor-victim 模型、SI 感知 STA 是通行后端 EDA 实践;TPU v1 不公开其版图、提取 deck、SPEF 或 SI 报告。本案以 TPU 已知结构(256×256 脉动阵列、24 MiB UB、长总线、700MHz、28nm)作为被提取/分析的对象来讲概念,数值与设置均为示意。"
+ ],
+ "during": [
+  "<b>提取的输入是版图几何,不是网表猜测</b>:与综合阶段靠线负载模型估线延迟不同,3.8 的提取直接读布完线的版图——每段线的层、长度、宽度、与邻线间距都是真的,据此算真实 R/C。这是后端把『估计时序』转成『真账』的关键一步。",
+  "<b>耦合电容 Cc 是延迟与串扰的共同根源</b>:提取不仅算线对地电容,还要算线间耦合电容 Cc。Cc 既让 victim 的有效电容随邻线状态变化(影响延迟),又是串扰把 aggressor 跳变注入 victim 的通道——同一个 Cc,既进时序又进 SI。",
+  "<b>aggressor / victim 的两种危害分开判</b>(通行模型):一是 victim 静止时被耦合出噪声毛刺(noise),看会不会误触发下游;二是 victim 也切换时被加速或推迟(crosstalk delta-delay),改变到达时间、可能破坏建立/保持。两类都要分析。",
+  "<b>密集阵列与长总线是 TPU 的串扰高发区</b>(示意,通行实践):256×256 阵列内 MAC 互连密、相邻线多、平行长——耦合面积大;UB↔阵列长总线 R/C 本就大、又长距离平行——串扰与 RC 延迟叠加。这两处的真实寄生最可能让 700MHz 路径在硅上失效,提取与 SI 要重点盯。",
+  "<b>SPEF 喂回 STA 做 SI 感知时序</b>:把 SPEF(真实 RC)加载进静态时序,再叠加串扰 delta-delay,做 SI 感知 STA;此时关键路径的延迟是『真实 RC + 串扰修正』后的值,才用来判 700MHz≈1.43ns 是否还满足建立/保持。",
+  "<b>诚实边界</b>:以上提取角点、Cc/串扰模型、SPEF→STA 流程是通行后端工业做法,『700MHz≈1.43ns、阵列相邻线/长总线串扰』为借 TPU 已知结构作示意说明;TPU v1 未公开其提取 deck、SPEF、串扰违例或 SI 报告,这里未编造任何 TPU 私有的寄生或 SI 数字。"
+ ],
+ "result": [
+  {
+   "label": "提取产物(核心)",
+   "value": "SPEF 文件:逐条网络的真实线电阻 R + 对地电容 C + 线间耦合电容 Cc,替换综合时的线延迟估计"
+  },
+  {
+   "label": "提取工具(示意)",
+   "value": "RC 提取引擎(StarRC / Quantus 这类),结合版图几何 + 工艺 RC 技术文件;签核用高精度/field-solver 模式"
+  },
+  {
+   "label": "被提取的吃紧对象",
+   "value": "脉动阵列内密集相邻的 MAC 互连(易串扰)、24 MiB UB↔阵列的长数据总线(R/C 大、长距离平行)"
+  },
+  {
+   "label": "SI / 串扰分析",
+   "value": "aggressor-victim 模型:噪声毛刺(可能误翻转)+ crosstalk delta-delay(到达时间被推迟/加速),按阈值判违例"
+  },
+  {
+   "label": "SI 感知时序",
+   "value": "真实 RC(SPEF)+ 串扰 delta 一起算进 STA,核 700MHz(约 1.43ns)关键路径建立/保持是否仍满足(示意)"
+  },
+  {
+   "label": "违例处置出口",
+   "value": "串扰/时序违例 → 回 3.7 做 ECO(加间距 NDR、插屏蔽线、换驱动/buffer)→ 重提取 → 重签核,迭代到收敛"
+  }
+ ],
+ "after": [
+  "<b>看 SI 感知时序签核结果</b>:用真实 RC + 串扰 delta 重跑 STA,查关键路径(尤其阵列与长总线)在 700MHz 下建立/保持是否还满足,是否有 negative slack;不达标的路径列出来交 ECO 处理。",
+  "<b>查串扰违例清单</b>:看噪声毛刺超阈值的 victim(可能误触发下游)、以及被串扰推迟/加速过头的网络;按受害线定位 aggressor,决定是加间距、插屏蔽、还是降 aggressor 驱动/转换速率。",
+  "<b>回 3.7 ECO 修复并重提取</b>:串扰/时序违例的修复多在布线后 ECO 里做——改路由加间距、加 shielding、换 buffer/驱动;但任何动版图都会改寄生,必须重做提取(出新 SPEF)再重签核,不能只改不重算。",
+  "<b>多角点确认</b>:在定好的 RC/PVT 角点(best/worst RC、温度电压组合)分别提取并签核,确认 700MHz 在所有签核角点的真实寄生下都成立,而非只在一个典型角点凑过。",
+  "<b>把 SPEF 交 ⑨ 签核</b>:收敛后的最终网表连同 SPEF(真实寄生)一并交第 ⑨ 步签核,做最终、最严格的全面 STA/功耗/EM-IR/物理验证——这份提取出的真实 RC 正是签核判断硅上时序/功耗的依据。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(256×256 脉动阵列、24 MiB Unified Buffer、长总线、700MHz、28nm 为该文披露的已知结构;RC 提取、SPEF、StarRC/Quantus、串扰 aggressor-victim、SI 感知 STA 等为通行后端 EDA 实践,图与数值为示意,非 TPU v1 公开的版图、提取 deck、SPEF 或 SI 报告)"
+}

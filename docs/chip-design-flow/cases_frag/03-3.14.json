@@ -1,0 +1,118 @@
+{
+ "secNum": "3.14",
+ "chip": "Google TPU v1",
+ "title": "TPU v1(单片)对比 v2+ · 何时从 monolithic 走向 2.5D / Chiplet 封装",
+ "oneLine": "封装/Chiplet 架构要回答的是「这颗芯片到底做成一片硅,还是拆成几片再封到一起」——TPU v1 是单片,而 v2+ 用 2.5D interposer 把逻辑 die 与 HBM 共封、pod 用 ICI 拼多芯片,正是被良率、内存带宽、reticle 上限这三条逼出来的演进。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"30\">左:TPU v1 单片 monolithic</text><text class=\"cs-note\" x=\"400\" y=\"30\">右:TPU v2+ 逻辑 die + HBM 经 interposer 2.5D 共封</text><g class=\"cs-part\" data-k=\"mono\" data-g=\"mono\"><rect class=\"cs-box\" x=\"40\" y=\"48\" width=\"300\" height=\"150\" rx=\"8\"/><text class=\"cs-t\" x=\"190\" y=\"74\">v1 单颗 die(28nm,≤331mm²)</text><text class=\"cs-sub\" x=\"190\" y=\"92\">MXU + Unified Buffer 全在一片硅上</text></g><g class=\"cs-part\" data-k=\"monomxu\" data-g=\"monomxu\"><rect class=\"cs-cell\" x=\"64\" y=\"108\" width=\"120\" height=\"74\" rx=\"5\"/><text class=\"cs-cellt\" x=\"124\" y=\"142\">MXU 256×256</text><text class=\"cs-cellt\" x=\"124\" y=\"160\">+ 累加器</text></g><g class=\"cs-part\" data-k=\"monoub\" data-g=\"monoub\"><rect class=\"cs-cell\" x=\"196\" y=\"108\" width=\"120\" height=\"74\" rx=\"5\"/><text class=\"cs-cellt\" x=\"256\" y=\"142\">24 MiB</text><text class=\"cs-cellt\" x=\"256\" y=\"160\">Unified Buffer</text></g><g class=\"cs-part\" data-k=\"ddr3\" data-g=\"ddr3\"><rect class=\"cs-box\" x=\"100\" y=\"222\" width=\"180\" height=\"44\" rx=\"8\"/><text class=\"cs-t\" x=\"190\" y=\"244\">片外 8 GiB DDR3</text><text class=\"cs-sub\" x=\"190\" y=\"258\">~30 GB/s · 走 PCB 板级走线</text></g><line class=\"cs-arr\" x1=\"190\" y1=\"198\" x2=\"190\" y2=\"220\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"44\" y=\"290\">单片:良率随面积↓、带宽被板级 DDR 卡住、面积受 reticle 上限封顶</text><g class=\"cs-part\" data-k=\"interposer\" data-g=\"interposer\"><rect class=\"cs-box\" x=\"400\" y=\"150\" width=\"290\" height=\"48\" rx=\"8\"/><text class=\"cs-t\" x=\"545\" y=\"172\">硅 interposer(2.5D 转接板)</text><text class=\"cs-sub\" x=\"545\" y=\"188\">微凸点 + 超密走线,把多 die 连在一起</text></g><g class=\"cs-part\" data-k=\"logicdie\" data-g=\"logicdie\"><rect class=\"cs-box\" x=\"406\" y=\"60\" width=\"150\" height=\"80\" rx=\"8\"/><text class=\"cs-t\" x=\"481\" y=\"92\">逻辑 die</text><text class=\"cs-sub\" x=\"481\" y=\"110\">MXU + 片上 SRAM</text><text class=\"cs-sub\" x=\"481\" y=\"126\">单独流片、可换工艺</text></g><g class=\"cs-part\" data-k=\"hbm\" data-g=\"hbm\"><rect class=\"cs-box\" x=\"566\" y=\"60\" width=\"118\" height=\"80\" rx=\"8\"/><text class=\"cs-t\" x=\"625\" y=\"88\">HBM 堆栈</text><text class=\"cs-sub\" x=\"625\" y=\"106\">3D 叠 DRAM</text><text class=\"cs-sub\" x=\"625\" y=\"122\">超高带宽</text></g><line class=\"cs-arr\" x1=\"481\" y1=\"140\" x2=\"481\" y2=\"148\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"625\" y1=\"140\" x2=\"625\" y2=\"148\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"556,100 566,100\" fill=\"none\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"404\" y=\"232\">2.5D:HBM 贴着逻辑近距宽总线,带宽数量级↑;两 die 各自小、良率好</text><g class=\"cs-part\" data-k=\"ici\" data-g=\"ici\"><rect class=\"cs-box\" x=\"400\" y=\"252\" width=\"290\" height=\"46\" rx=\"8\"/><text class=\"cs-t\" x=\"545\" y=\"274\">pod:多芯片 + ICI 片间互连扩展</text><text class=\"cs-sub\" x=\"545\" y=\"290\">突破单封装规模上限,横向拼成大集群</text></g><line class=\"cs-arr\" x1=\"545\" y1=\"198\" x2=\"545\" y2=\"250\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"decide\" data-g=\"decide\"><rect class=\"cs-box\" x=\"40\" y=\"330\" width=\"650\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"365\" y=\"354\">何时从单片走向 2.5D / 多 die</text><text class=\"cs-sub\" x=\"365\" y=\"374\">触发三条:① 良率(面积大良率崩)  ② 内存带宽(板级 DDR 喂不饱)  ③ reticle 上限(单 die 做不下)</text></g></svg>",
+ "legend": [
+  {
+   "k": "mono",
+   "name": "v1 单片 die",
+   "desc": "TPU v1 是 monolithic:28nm、die ≤331mm²,MXU 脉动阵列、累加器、24 MiB Unified Buffer 全做在同一片硅上。一片硅最简单、无封装内互连开销,但面积越大良率越差。"
+  },
+  {
+   "k": "ddr3",
+   "name": "v1 片外 DDR3",
+   "desc": "v1 的主存是片外 8 GiB DDR3,只有 ~30 GB/s,走 PCB 板级走线。带宽被封装/板级 IO 卡死——这正是后来要把内存搬到 interposer 上的根本动因。"
+  },
+  {
+   "k": "logicdie",
+   "name": "v2+ 逻辑 die",
+   "desc": "v2+ 把计算逻辑单独做成一颗 die,可以单独流片、用最合适的工艺,面积也更小、良率更好——这就是「拆分」带来的自由度。"
+  },
+  {
+   "k": "hbm",
+   "name": "v2+ HBM(经 2.5D)",
+   "desc": "用 HBM 堆栈(3D 叠 DRAM)取代板级 DDR3,经硅 interposer 与逻辑 die 近距、超宽总线相连,内存带宽提升一个数量级,直接解掉 v1 的喂数瓶颈。"
+  },
+  {
+   "k": "decide",
+   "name": "走向多 die 的三条触发",
+   "desc": "判据:良率(面积太大良率崩)、内存带宽(板级 DDR 喂不饱算力)、reticle 上限(单 die 物理上做不下)。任一条顶到天花板,就该考虑 2.5D / chiplet。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "mono",
+    "monomxu",
+    "monoub"
+   ],
+   "cap": "① 起点 v1:整颗芯片做成一片硅,MXU、累加器、24 MiB Unified Buffer 全集成在同一 die 上(monolithic)"
+  },
+  {
+   "keys": [
+    "ddr3"
+   ],
+   "cap": "② 暴露瓶颈:主存只能挂片外 DDR3、~30 GB/s 走板级走线——算力堆上去后,内存带宽先到顶"
+  },
+  {
+   "keys": [
+    "logicdie",
+    "hbm",
+    "interposer"
+   ],
+   "cap": "③ v2+ 拆分:逻辑 die 与 HBM 分别做成小 die,放到硅 interposer 上做 2.5D 共封,近距宽总线把带宽拉高一个数量级"
+  },
+  {
+   "keys": [
+    "ici"
+   ],
+   "cap": "④ 再扩展:pod 用多芯片 + ICI 片间互连横向拼接,突破单封装的规模上限"
+  },
+  {
+   "keys": [
+    "decide"
+   ],
+   "cap": "⑤ 决策准则:良率 / 内存带宽 / reticle 上限,任一顶到天花板就是从单片走向 2.5D / chiplet 的信号"
+  }
+ ],
+ "before": [
+  "<b>先定封装形态这道分叉</b>:这颗芯片做成 monolithic 单 die,还是拆成多 die 再用 2.5D / chiplet 封到一起?这是架构层就要拍板、且会反向约束下游所有物理实现的大决策。",
+  "<b>要拍板的设计量(旋钮)</b>:目标 die 面积、要不要拆 die(逻辑/内存/IO 各自成 die)、用 2.5D(interposer)还是更便宜的有机基板、内存用片外 DDR 还是共封 HBM、要不要预留片间互连(如 ICI)做横向扩展。",
+  "<b>必备输入</b>:目标算力(§3.3 阵列规模)、配套需要的内存带宽(§3.4 存储层次)、工艺节点的良率曲线与 reticle 面积上限、HBM/interposer 的成本与供应、整机功耗与散热预算(§3.9)。",
+  "<b>必须卡住的约束</b>:良率随 die 面积急剧下降;单 die 不能超过光刻 reticle 上限;板级 DDR 的带宽/引脚数有物理天花板;封装越复杂、成本与测试难度越高。"
+ ],
+ "during": [
+  "<b>先问要不要拆</b>:v1 的取舍是「能做一片就做一片」——单 die 没有封装内互连开销、设计与测试最简单。只要面积、良率、带宽都还在预算内,monolithic 就是最省事的选择。",
+  "<b>良率把面积顶到墙</b>:缺陷密度固定时,die 面积越大、整片报废概率越高,良率近似随面积指数级下滑。当单 die 大到良率不可接受,就该把它拆成几颗小 die——每颗小、良率好,坏的单独丢。",
+  "<b>内存带宽逼出 2.5D</b>:v1 的 ~30 GB/s 片外 DDR3 在更大模型上喂不饱阵列。把 HBM 经硅 interposer 与逻辑 die 近距、超宽总线相连(2.5D),带宽可提升一个数量级——这正是 v2+ 相对 v1 的关键升级。",
+  "<b>reticle 上限封顶规模</b>:单次光刻能曝的面积有物理上限(reticle),想再堆算力、单 die 装不下时,只能拆 die 或用 chiplet 拼,绕开这堵物理墙。",
+  "<b>权衡拆分的代价</b>:拆 die 换来良率与带宽,但要付出 interposer/HBM 的成本、封装内互连的功耗与延迟、以及多 die 协同测试(KGD,known-good-die)的复杂度——不是越拆越好,要算总账。",
+  "<b>再大就横向扩展</b>:单封装也有上限时,用 pod 思路——多芯片 + 片间互连(ICI)拼成大集群。这把「拆分」从封装内推到封装间,是规模再上一个台阶的手段。"
+ ],
+ "result": [
+  {
+   "label": "v1 封装形态",
+   "value": "monolithic 单片 die"
+  },
+  {
+   "label": "v1 工艺/面积",
+   "value": "28nm · die ≤331mm²"
+  },
+  {
+   "label": "v1 主存",
+   "value": "片外 8 GiB DDR3 · ~30 GB/s"
+  },
+  {
+   "label": "v2+ 内存封装",
+   "value": "HBM 经硅 interposer 2.5D 共封,带宽数量级↑"
+  },
+  {
+   "label": "pod 扩展",
+   "value": "多芯片 + ICI 片间互连横向拼接"
+  },
+  {
+   "label": "走多 die 的判据",
+   "value": "良率 / 内存带宽 / reticle 上限 任一顶墙"
+  }
+ ],
+ "after": [
+  "<b>验证封装方案可行</b>:对选定形态做良率与成本测算、对 2.5D 方案做封装内互连的信号完整性/功耗/散热评估,确认带宽与良率目标都达到才定稿。",
+  "<b>把约束往下游传</b>:给物理实现(⑥)交 die 切分边界、interposer/凸点布局、封装尺寸与热设计;给存储层次(§3.4)对账内存到底用 DDR 还是共封 HBM、带宽是否够喂阵列。",
+  "<b>定多 die 测试策略</b>:多 die 必须先保证每颗都是 known-good-die 再封装,否则一颗坏 die 拖垮整封装良率——把 KGD/封装后测试要求交给可测性设计(DFT)。",
+  "<b>预留扩展接口</b>:若规划 pod 级扩展,需在架构期就留好片间互连(ICI)的引脚/协议/带宽预算,避免后期返工。",
+  "<b>诚实标注</b>:本案例的 v2+/pod 对比为 TPU 演进的方向性说明;具体 interposer 凸点节距、HBM 代次/带宽数字等封装工艺细节,属各代 TPU 与通行 2.5D 实践,非 TPU v1 ISCA 2017 论文披露,故以定性方式给出,不杜撰专属数字。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(v1 为单片;v2+ 的 2.5D/HBM 共封与 pod/ICI 扩展属 TPU 后续各代与通行 2.5D 封装实践,本案例按演进方向定性说明,不引 v1 未披露的封装工艺数字)"
+}

@@ -1,0 +1,116 @@
+{
+ "secNum": "3.12",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 编码规范、Lint 与面向综合的写法:为什么「仿真通过」只是起点",
+ "oneLine": "RTL 仿真跑过只能说明「行为对」,离「能流片、能跑到 700 MHz」还差两道关——先过 Lint(自动揪出隐式锁存器、case/敏感列表不全、位宽不匹配、多驱动/X、跨时钟未同步),再守可综合且不写超长组合链;TPU 阵列每拍只做「一个 MAC(8bit 乘 + 32bit 累加)」、关键路径天生就短,只要 Lint 干净、组合不拉长,700 MHz 收敛反而是顺理成章的事。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">关卡流程:RTL 写完只是起点 → 过 Lint → 可综合 → 才算合格</text><g class=\"cs-part\" data-k=\"rtl\" data-g=\"rtl\"><rect class=\"cs-box\" x=\"40\" y=\"60\" width=\"150\" height=\"92\" rx=\"8\"/><text class=\"cs-t\" x=\"115\" y=\"92\">RTL(仿真通过)</text><text class=\"cs-sub\" x=\"115\" y=\"114\">always_ff/always_comb</text><text class=\"cs-sub\" x=\"115\" y=\"132\">PE=8b乘+32b累加</text></g><line class=\"cs-arr\" x1=\"190\" y1=\"106\" x2=\"262\" y2=\"106\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"lint\" data-g=\"lint\"><rect class=\"cs-box\" x=\"266\" y=\"44\" width=\"190\" height=\"180\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"361\" y=\"68\">Lint 关卡(逐条扫)</text><g class=\"cs-part\" data-k=\"latch\" data-g=\"lint\"><rect class=\"cs-cell\" x=\"282\" y=\"80\" width=\"158\" height=\"22\"/><text class=\"cs-cellt\" x=\"361\" y=\"95\">① latch 隐式锁存器</text></g><g class=\"cs-part\" data-k=\"case\" data-g=\"lint\"><rect class=\"cs-cell\" x=\"282\" y=\"106\" width=\"158\" height=\"22\"/><text class=\"cs-cellt\" x=\"361\" y=\"121\">② case/敏感列表不全</text></g><g class=\"cs-part\" data-k=\"width\" data-g=\"lint\"><rect class=\"cs-cell\" x=\"282\" y=\"132\" width=\"158\" height=\"22\"/><text class=\"cs-cellt\" x=\"361\" y=\"147\">③ 位宽不匹配/截断</text></g><g class=\"cs-part\" data-k=\"drive\" data-g=\"lint\"><rect class=\"cs-cell\" x=\"282\" y=\"158\" width=\"158\" height=\"22\"/><text class=\"cs-cellt\" x=\"361\" y=\"173\">④ 多驱动 / X 传播</text></g><g class=\"cs-part\" data-k=\"cdc\" data-g=\"lint\"><rect class=\"cs-cell\" x=\"282\" y=\"184\" width=\"158\" height=\"22\"/><text class=\"cs-cellt\" x=\"361\" y=\"199\">⑤ CDC 跨时钟未同步</text></g></g><line class=\"cs-arr\" x1=\"456\" y1=\"134\" x2=\"528\" y2=\"134\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"synth\" data-g=\"synth\"><rect class=\"cs-box\" x=\"532\" y=\"60\" width=\"158\" height=\"92\" rx=\"8\" fill=\"#dcfce7\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"611\" y=\"92\">可综合 + 收频</text><text class=\"cs-sub\" x=\"611\" y=\"114\">无超长组合链</text><text class=\"cs-sub\" x=\"611\" y=\"132\">→ 700 MHz 可达</text></g><g class=\"cs-part\" data-k=\"chain\" data-g=\"chain\"><rect class=\"cs-box\" x=\"40\" y=\"248\" width=\"650\" height=\"72\" rx=\"8\"/><text class=\"cs-t\" x=\"70\" y=\"272\" text-anchor=\"start\">关键路径短才收频:阵列一拍只做「一个 MAC」</text><rect class=\"cs-cell\" x=\"120\" y=\"288\" width=\"120\" height=\"22\"/><text class=\"cs-cellt\" x=\"180\" y=\"303\">a*b(8b 乘)</text><line class=\"cs-arr\" x1=\"240\" y1=\"299\" x2=\"276\" y2=\"299\" marker-end=\"url(#csar)\"/><rect class=\"cs-cell\" x=\"280\" y=\"288\" width=\"120\" height=\"22\"/><text class=\"cs-cellt\" x=\"340\" y=\"303\">+acc(32b 加)</text><line class=\"cs-arr\" x1=\"400\" y1=\"299\" x2=\"436\" y2=\"299\" marker-end=\"url(#csar)\"/><rect class=\"cs-cell\" x=\"440\" y=\"288\" width=\"150\" height=\"22\"/><text class=\"cs-cellt\" x=\"515\" y=\"303\">寄存器打拍(每拍切断)</text><text class=\"cs-sub\" x=\"640\" y=\"303\" text-anchor=\"end\">acc&lt;=acc+a*b;</text></g><text class=\"cs-note\" x=\"40\" y=\"350\">铁律:每个 reg 只在一个 always 块里赋值;组合块写全 default/else,杜绝 latch</text><text class=\"cs-note\" x=\"40\" y=\"370\">铁律:Lint 当编译错误对待——零 warning 才放行,不允许「先记着以后再说」</text><text class=\"cs-note\" x=\"40\" y=\"390\">注:编码规范/Lint 规则集为通行 RTL 实践;借 TPU 已知结构作载体,非 v1 逐行披露</text></svg>",
+ "legend": [
+  {
+   "k": "rtl",
+   "name": "RTL · 仿真通过(起点而非终点)",
+   "desc": "按规范写好的可综合 RTL,功能仿真已能跑通——但仿真器对写法很宽容:隐式锁存器、位宽悄悄截断、case 漏分支,仿真里可能恰好碰不到、或被默认值掩盖。所以「仿真过」只证明了行为在所测激励下对,不等于这段代码能干净变成电路、更不等于能收到目标频率。"
+  },
+  {
+   "k": "lint",
+   "name": "Lint 关卡(五类高频问题)",
+   "desc": "静态规则扫描,不跑仿真就能揪出结构性隐患,逐条卡:① 组合块漏赋值/漏 else → 综合器推出隐式 latch;② case 不写 default、always_comb 敏感列表不全 → 仿真综合行为不一致;③ 赋值两边位宽不匹配 → 隐式截断或符号扩展;④ 同一信号被多个块驱动(多驱动)或读到未初始化的 X 并传播;⑤ 跨时钟域信号没过同步器(CDC)。铁律是把 Lint warning 当编译错误,零告警才放行。"
+  },
+  {
+   "k": "synth",
+   "name": "可综合 + 能收频(合格判据)",
+   "desc": "Lint 干净后还要真能映射成门级网表、且关键路径满足周期。判据不是「仿真通过」,而是「Lint 零告警 + 可综合无报错 + 试综合时序达标」三者同时成立——这才叫合格的 RTL。"
+  },
+  {
+   "k": "chain",
+   "name": "关键路径短:一拍一个 MAC",
+   "desc": "频率上不去最常见的根因是组合逻辑链太长。TPU 脉动阵列把运算切得极碎——每个 PE 一拍只做一次「8bit 乘 + 32bit 累加」,结果立即用寄存器打拍切断(acc<=acc+a*b)。组合段短、级间全是触发器,关键路径自然短,这是它能轻松站上 700 MHz 的结构性原因;反例就是把一长串乘加/选择全堆进一个 always_comb,综合后必然超周期。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "rtl"
+   ],
+   "cap": "① 写完 RTL、功能仿真跑通——记住这只是起点:仿真器宽容,latch、位宽截断、漏分支它可能照样让你「通过」。"
+  },
+  {
+   "keys": [
+    "lint",
+    "latch",
+    "case"
+   ],
+   "cap": "② 过 Lint 第一刀:扫隐式锁存器(组合块漏赋值/漏 else)和 case/敏感列表不全——这两类让「仿真行为」与「综合行为」悄悄分叉。"
+  },
+  {
+   "keys": [
+    "lint",
+    "width",
+    "drive"
+   ],
+   "cap": "③ 过 Lint 第二刀:抓位宽不匹配(8bit 乘积错配 32bit 累加、隐式截断)、多驱动(一个 reg 被两个块赋值)与 X 传播——把零告警当硬门槛。"
+  },
+  {
+   "keys": [
+    "lint",
+    "cdc"
+   ],
+   "cap": "④ 过 Lint 第三刀:CDC 检查——host/PCIe 域到阵列核心域的跨时钟信号必须过同步器,Lint/CDC 工具确认没有裸跨。"
+  },
+  {
+   "keys": [
+    "chain",
+    "synth"
+   ],
+   "cap": "⑤ 面向综合写法 + 试综合:组合链不拉长(一拍一个 MAC、及时打拍),Lint 干净 + 可综合 + 时序达标 → 700 MHz 收敛,才算真合格。"
+  }
+ ],
+ "before": [
+  "<b>定编码规范文档</b>:把命名(模块/信号/参数前后缀)、复位风格(本系列通行:同步复位、posedge clk、复位有效极性)、组合用 always_comb+阻塞=、时序用 always_ff+非阻塞<= 的约定白纸黑字写下,全队统一,避免风格各异导致 Lint 噪声和 review 内耗。",
+  "<b>选并配置 Lint 规则集</b>:挑可综合性 + RTL 风格规则集(隐式 latch、不完整 case、位宽不匹配、多驱动、未驱动/未初始化、阻塞/非阻塞误用、CDC),开工前就接进 CI,而不是流片前临时补扫。",
+  "<b>钉死位宽与默认类型</b>:PE 乘法输入按 [7:0]、累加器按 [31:0] 显式声明,约定不靠隐式位宽推断;让 Lint 能据此判定每处赋值两边是否匹配。",
+  "<b>定面向综合的目标</b>:目标频率 700 MHz 写进约束;约定「组合链一段只做有限运算、及时用寄存器打拍」「关键数据通路(如阵列乘加)单级组合不超一个 MAC 量级」,从写法上就朝可收敛的方向走。",
+  "<b>写下合格判据</b>:不是「仿真通过」,而是「Lint 零告警 + 可综合无报错 + 试综合关键路径达标」三条同时成立——可被工具逐条客观验证,不靠人感觉「应该没问题」。"
+ ],
+ "during": [
+  "<b>铁律一:杜绝隐式锁存器</b>。组合块(always_comb)里每条路径都要给每个输出赋值——case 写 default、if 配 else,或在块首给所有输出赋默认值。漏一条路径,综合器就推出一个 latch,既不可控又毁时序。Lint 的 latch 告警必须清零。",
+  "<b>铁律二:一个信号只在一个 always 块里赋值</b>。多驱动(同一 reg 被两个块写)会综合出竞争或被工具任意选一个,行为不可预期;Lint 抓多驱动要当致命错。同理避免读未初始化值导致 X 在网表里传播。",
+  "<b>铁律三:位宽显式、不靠隐式截断</b>。8bit×8bit 的乘积是 16bit、累加到 32bit 要显式对齐;赋值两边位宽不等时综合器会静默截断或符号扩展。写成显式拼接/扩展({{N{sign}}, x} 之类),让 Lint 的 width-mismatch 告警归零。",
+  "<b>铁律四:case 与敏感列表写全</b>。case 必带 default(或 full_case 经评审),always_comb 让工具自动算敏感列表而非手写 always @(a or b) 漏信号——敏感列表不全会让仿真与综合行为不一致,是「仿真过、流片错」的典型来源。",
+  "<b>面向综合:组合链不拉长</b>。频率收敛的关键是关键路径短。TPU 阵列一拍只做一个 MAC——示意:always_ff @(posedge clk) acc <= acc + a*b;(示意写法,非 TPU 私有代码),乘加结果立即打拍。绝不要把一长串乘加/多级 mux 全塞进一个组合块,那必然超周期。",
+  "<b>诚实边界</b>:复位风格、Lint 规则集、面向综合的写法都是工业界通行 RTL 实践;TPU v1 不逐行公开其 RTL 与私有数字。本节借它已知的结构(PE=8bit 乘+32bit 累加、256×256 阵列、UB、host 经 PCIe 发 CISC 指令、多时钟域)作载体讲编码规范与 Lint,图与 HDL 片段均为示意。"
+ ],
+ "result": [
+  {
+   "label": "合格判据(关键)",
+   "value": "仿真通过 ≠ 合格;Lint 零告警 + 可综合 + 试综合达标 才合格"
+  },
+  {
+   "label": "Lint 抓的五类",
+   "value": "隐式 latch / case 与敏感列表不全 / 位宽不匹配 / 多驱动·X / CDC 未同步"
+  },
+  {
+   "label": "防 latch(示意)",
+   "value": "always_comb 块首给默认值 + case 必带 default"
+  },
+  {
+   "label": "单驱动铁律",
+   "value": "每个 reg 只在一个 always 块里赋值,杜绝多驱动"
+  },
+  {
+   "label": "面向综合写法(示意)",
+   "value": "always_ff @(posedge clk) acc <= acc + a*b; 一拍一个 MAC,及时打拍"
+  },
+  {
+   "label": "收频原因",
+   "value": "阵列关键路径短(一个 MAC)→ Lint 净+不写长组合链 → 700 MHz 易收"
+  }
+ ],
+ "after": [
+  "<b>Lint 清零再往下走</b>:跑完 Lint 把所有告警逐条消掉(或经评审显式豁免并记录原因),零告警才进下一步;把 Lint 接进 CI,任何新提交重新触发,防止旧问题回潮。",
+  "<b>功能仿真复跑确认无回归</b>:为消 Lint 改了写法(补 default、对齐位宽)后,重跑功能仿真确认行为未变——改写法不能改功能。",
+  "<b>CDC 专项检查</b>:对 host/PCIe 域与阵列核心域之间的跨时钟信号跑 CDC 工具,确认同步器到位、无单比特多路径汇聚导致的亚稳态(与 CDC 小节衔接)。",
+  "<b>试综合看时序</b>:把 RTL 喂综合器,确认无不可综合报错、能干净映射成门级网表,并初看关键路径(如阵列乘加段)是否收到 700 MHz 附近;某级超时就回去再插一级流水或拆短组合。",
+  "<b>固化规范与豁免清单交验证</b>:把编码规范、Lint 规则集与豁免清单、可综合约定一并移交验证与集成团队,作为后续 review 和验证环境搭建的统一依据。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(脉动阵列、PE=8bit 乘+32bit 累加、UB 与多时钟结构为该文披露;编码规范、Lint 规则集与面向综合写法为通行 RTL 实践,图与 HDL 片段为示意,非 v1 逐行实现)"
+}

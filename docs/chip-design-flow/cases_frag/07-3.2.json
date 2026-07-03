@@ -1,0 +1,115 @@
+{
+ "secNum": "3.2",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 工艺库与标准单元:综合从 28nm 库里「挑 cell」实现逻辑——海量 MAC 用 HVT 压漏电、关键路径用 LVT 抢速度",
+ "oneLine": "逻辑综合不是凭空生成电路,而是从 foundry 提供的 28nm 标准单元库里「挑现成积木」:同一个 AND/触发器/全加器,库里备了多种驱动强度(X1…X8)和多种阈值电压(LVT 快但漏大、HVT 慢但省漏);综合器照着时序/功耗约束,为 TPU 256×256 阵列里 6.5 万个 MAC 的每一段逻辑选一颗最划算的 cell——关键路径上的少数门用高 drive、LVT 抢 700 MHz,占绝大多数的非关键逻辑则换成 HVT 压住整颗芯片的漏电(对 28–40 W 的功耗预算至关重要)。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 410\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"32\" y=\"28\">28nm 工艺·标准单元库(foundry 提供):同一逻辑功能,多种驱动强度 × 多种 Vt</text><g class=\"cs-part\" data-k=\"lib\" data-g=\"lib\"><rect class=\"cs-box\" x=\"30\" y=\"48\" width=\"280\" height=\"300\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"170\" y=\"72\">标准单元库 (.lib / Liberty)</text><g class=\"cs-part\" data-k=\"cAND\" data-g=\"cell\"><rect class=\"cs-box\" x=\"50\" y=\"92\" width=\"240\" height=\"56\" rx=\"7\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"170\" y=\"112\">组合门 AND2 / NAND2 / MUX</text><text class=\"cs-sub\" x=\"170\" y=\"130\">drive: X1 X2 X4 X8 · Vt: LVT/SVT/HVT</text></g><g class=\"cs-part\" data-k=\"cFF\" data-g=\"cell\"><rect class=\"cs-box\" x=\"50\" y=\"158\" width=\"240\" height=\"56\" rx=\"7\" fill=\"#fefce8\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"170\" y=\"178\">时序单元 DFF / SDFF(扫描)</text><text class=\"cs-sub\" x=\"170\" y=\"196\">setup/hold·驱动·Vt 多版本</text></g><g class=\"cs-part\" data-k=\"cADD\" data-g=\"cell\"><rect class=\"cs-box\" x=\"50\" y=\"224\" width=\"240\" height=\"56\" rx=\"7\" fill=\"#fef2f2\" stroke=\"#fca5a5\"/><text class=\"cs-t\" x=\"170\" y=\"244\">算术单元 FA / HA / AOI</text><text class=\"cs-sub\" x=\"170\" y=\"262\">MAC 的乘加由这些拼出</text></g><text class=\"cs-note\" x=\"60\" y=\"304\">每个 cell 都带:延迟/转换表·</text><text class=\"cs-note\" x=\"60\" y=\"322\">输入电容·漏电(由 Vt 决定)·</text><text class=\"cs-note\" x=\"60\" y=\"340\">面积·针对 PVT 角的多套 .lib</text></g><line class=\"cs-arr\" x1=\"310\" y1=\"198\" x2=\"372\" y2=\"198\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"316\" y=\"188\">综合按约束挑</text><g class=\"cs-part\" data-k=\"syn\" data-g=\"syn\"><rect class=\"cs-box\" x=\"376\" y=\"150\" width=\"156\" height=\"96\" rx=\"8\"/><text class=\"cs-t\" x=\"454\" y=\"184\">逻辑综合</text><text class=\"cs-sub\" x=\"454\" y=\"204\">映射 + 选 cell</text><text class=\"cs-sub\" x=\"454\" y=\"222\">满足时序/功耗</text></g><line class=\"cs-arr\" x1=\"532\" y1=\"198\" x2=\"594\" y2=\"198\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"critP\" data-g=\"impl\"><rect class=\"cs-box\" x=\"598\" y=\"92\" width=\"98\" height=\"86\" rx=\"8\" fill=\"#fef2f2\" stroke=\"#fca5a5\"/><text class=\"cs-t\" x=\"647\" y=\"124\">关键路径</text><text class=\"cs-sub\" x=\"647\" y=\"142\">高 drive</text><text class=\"cs-sub\" x=\"647\" y=\"160\">LVT(快)</text></g><g class=\"cs-part\" data-k=\"bulkP\" data-g=\"impl\"><rect class=\"cs-box\" x=\"598\" y=\"218\" width=\"98\" height=\"86\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"647\" y=\"250\">非关键</text><text class=\"cs-sub\" x=\"647\" y=\"268\">海量 MAC</text><text class=\"cs-sub\" x=\"647\" y=\"286\">HVT(省漏)</text></g><line class=\"cs-arr\" x1=\"540\" y1=\"170\" x2=\"594\" y2=\"135\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><line class=\"cs-arr\" x1=\"540\" y1=\"226\" x2=\"594\" y2=\"261\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><text class=\"cs-note\" x=\"376\" y=\"276\">示意约束:set_max_transition / set_leakage_power</text><text class=\"cs-note\" x=\"376\" y=\"294\">示意:set_dont_use 慢角异常 cell · multi-Vt 库一起 link</text><text class=\"cs-note\" x=\"376\" y=\"330\">注:工艺库由 foundry 提供,</text><text class=\"cs-note\" x=\"376\" y=\"348\">具体单元/系数非 TPU 私有;</text><text class=\"cs-note\" x=\"376\" y=\"366\">下列数字为通行综合实践示意。</text></svg>",
+ "legend": [
+  {
+   "k": "lib",
+   "name": "标准单元库(Liberty/.lib)",
+   "desc": "foundry 随 28nm 工艺一起交付的「积木目录」:每种逻辑功能(AND/NAND/MUX/触发器/全加器…)都备有一组预先设计、版图固定、特征化好的 cell。库里每颗 cell 都附带延迟/转换查找表、输入电容、漏电、动态功耗、面积,且针对不同 PVT 工艺角(慢/典型/快、不同温压)各有一套 .lib。综合器只能用库里有的 cell,挑得好坏直接决定 QoR。"
+  },
+  {
+   "k": "cell",
+   "name": "多驱动强度 × 多 Vt 的同功能 cell",
+   "desc": "关键在「同一功能、多个版本」:同一个 NAND2 有 X1/X2/X4/X8 多档驱动强度(驱动越大、带负载越快但越费面积/功耗),又有 LVT/SVT/HVT 多档阈值电压(LVT 跑得快但静态漏电大、HVT 慢但漏电小)。综合就是在这张「速度↔功耗↔面积」的笛卡尔积里,为每段逻辑各选一颗。"
+  },
+  {
+   "k": "syn",
+   "name": "综合:映射 + 选 cell",
+   "desc": "综合器把布尔逻辑映射成库单元网络时,会做「技术映射 + 尺寸/Vt 优化」:在满足时序(700 MHz 即周期约 1.43 ns)的前提下,优先把功耗、面积压到最低。哪段是关键路径、哪段宽裕,由静态时序分析的 slack 决定,进而决定该挑哪一档 drive/Vt。"
+  },
+  {
+   "k": "impl",
+   "name": "选型结果:关键路径 vs 海量非关键逻辑",
+   "desc": "落到 TPU 这种结构上呈两极:少数卡周期的关键路径(如累加链、控制译码的长路径)挑高 drive + LVT 换速度;而占面积绝大多数、本身时序宽裕的 256×256 脉动阵列 MAC 阵列,则尽量换成 HVT 把静态漏电压下去——这正是 multi-Vt 综合对 28–40 W 功耗预算的核心贡献。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "lib",
+    "cell"
+   ],
+   "cap": "① 先看清库里有什么:同一逻辑功能备了 X1…X8 多档驱动强度与 LVT/SVT/HVT 多档 Vt,每颗 cell 都特征化好了延迟/漏电/面积。"
+  },
+  {
+   "keys": [
+    "lib",
+    "syn"
+   ],
+   "cap": "② 把多 Vt 库一起 link 给综合器,告诉它在 700 MHz(≈1.43 ns 周期)约束与漏电目标下,自由从库里挑 cell 实现 RTL 逻辑。"
+  },
+  {
+   "keys": [
+    "syn",
+    "critP"
+   ],
+   "cap": "③ 对 slack 紧的关键路径(累加链/控制译码),综合挑高驱动强度 + LVT 的快 cell,先把时序收住。"
+  },
+  {
+   "keys": [
+    "syn",
+    "bulkP"
+   ],
+   "cap": "④ 对时序宽裕、却占面积绝大多数的 256×256 MAC 阵列,综合换成 HVT 慢 cell——单颗省一点漏,乘以 6.5 万颗就是整芯片功耗的大头。"
+  },
+  {
+   "keys": [
+    "critP",
+    "bulkP"
+   ],
+   "cap": "⑤ 结果是一张「快路径少而精、慢路径多而省」的混 Vt 网表,在满足 700 MHz 的同时把静态功耗压进 28–40 W 预算。"
+  }
+ ],
+ "before": [
+  "<b>拿齐工艺库</b>:向 foundry 取得 28nm 标准单元库的多套 Liberty(.lib)——至少覆盖慢/典型/快工艺角与目标温压,且每个 Vt 档(LVT/SVT/HVT)各一套;综合与后续 STA 全靠它定义 cell 的延迟、漏电、面积。",
+  "<b>定 Vt 使用策略</b>:决定本设计允许用哪些 Vt 档、是否限制 LVT 比例(LVT 漏电大,过量用会顶破功耗预算)。TPU 这类阵列重、时序大面积宽裕的设计,基线应偏向 HVT,LVT 仅留给关键路径。",
+  "<b>给时序/转换/电容约束</b>:在 SDC 里写死目标频率(示意:create_clock -period 1.43,对应 700 MHz)与 set_max_transition / set_max_capacitance 等信号完整性边界——它们决定综合要为某段逻辑挑多大 drive 的 cell。",
+  "<b>给功耗意图</b>:设定 set_max_leakage_power / 动态功耗目标,让综合在满足时序后主动把宽裕路径换成 HVT、降 drive,而不是一味追速度。",
+  "<b>设 don't_use / don't_touch</b>:把不想让综合使用的异常 cell(如仅留给时钟树或会带来良率风险的单元)set_dont_use 屏蔽掉,保证选型只在批准的子集里发生。"
+ ],
+ "during": [
+  "<b>铁律:综合只能用库里有的 cell</b>。综合不发明电路,只做「技术映射 + 尺寸/Vt 选择」——把 RTL 的布尔逻辑覆盖成一张标准单元网络。库里没有的功能/强度,综合变不出来;库的好坏直接封顶 QoR。",
+  "<b>drive 选型跟着负载与 slack 走</b>。一颗门要驱动的扇出/线长越大、所在路径 slack 越紧,综合越倾向挑高驱动强度(X4/X8)的版本;宽裕且轻载处则降到 X1/X2 省面积省功耗。",
+  "<b>Vt 选型是功耗的主战场</b>。先用较快的 Vt 收时序,再对所有有正 slack 的路径反向「换 HVT / 降 drive」回收漏电(leakage recovery)。TPU 的 256×256 阵列规模决定了:海量 MAC 多换一档 HVT,整芯片漏电收益巨大。",
+  "<b>关键路径才动用 LVT</b>。LVT 又快又漏,只该出现在确实卡周期、换不动的少数关键路径上;若关键路径过多导致 LVT 泛滥,应回头改架构/做流水,而非靠堆 LVT 硬扛。",
+  "<b>多角一致(multi-corner)</b>。延迟在慢角最差、漏电在快/热角最差,选型要同时满足多个工艺角:在慢角收时序、在快角守住漏电与 hold——单看一个角选出的 cell 会在别的角翻车。",
+  "<b>诚实声明来源</b>:标准单元库由 foundry 提供,其具体 cell 列表、延迟系数、漏电数据并非 TPU 私有;multi-Vt + 多驱动强度的库选型、SDC 约束、leakage recovery 是通行 EDA 综合实践。本节用 TPU 已知结构(脉动阵列、700 MHz、28nm、weight-stationary)作为被综合对象讲库选型,图中数字为示意,不代表 TPU 公开数据。"
+ ],
+ "result": [
+  {
+   "label": "输入库(多 Vt 一起 link)",
+   "value": "28nm Liberty:LVT/SVT/HVT × drive X1…X8 × 多工艺角"
+  },
+  {
+   "label": "时序约束(示意 SDC)",
+   "value": "create_clock -period 1.43 [get_ports clk]  # ≈700 MHz"
+  },
+  {
+   "label": "信号完整性约束(示意)",
+   "value": "set_max_transition / set_max_capacitance ..."
+  },
+  {
+   "label": "功耗/Vt 约束(示意)",
+   "value": "set_max_leakage_power 0; set_dont_use <慢角异常cell>"
+  },
+  {
+   "label": "选型结果(混 Vt 网表)",
+   "value": "关键路径→高drive+LVT;海量 MAC→HVT 压漏电"
+  },
+  {
+   "label": "报告产物",
+   "value": "面积/时序/功耗 QoR 报告 + 各 Vt 单元数占比统计"
+  }
+ ],
+ "after": [
+  "<b>看 Vt 占比与功耗报告</b>:核对网表里 LVT/SVT/HVT 的单元数与面积占比——若 LVT 比例偏高、漏电超预算,回头收紧约束或改架构重综合。",
+  "<b>看时序报告</b>:确认在 1.43 ns 周期、各工艺角下关键路径 slack≥0(setup)且无 hold 风险;timing 不收就调 drive/Vt 或反馈给设计做流水。",
+  "<b>形式等价检查(LEC)</b>:用等价性检查工具证明所选 cell 拼出的门级网表与 RTL 逻辑功能完全一致——选型/优化不得改变功能。",
+  "<b>迭代回收漏电</b>:在不破坏时序的前提下,对仍有正 slack 的路径继续换 HVT/降 drive,把漏电再压一轮,直到时序与功耗都达标。",
+  "<b>交后端</b>:把混 Vt 门级网表连同 SDC 约束、库信息交给布局布线;后端会基于真实线延迟再做一轮时序/Vt 优化,选型在那里还会微调。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(标准单元库由 foundry 提供、多 Vt/多驱动强度库选型与 SDC/功耗约束为通行 EDA 综合实践,具体单元与综合数字非 TPU 公开数据)"
+}

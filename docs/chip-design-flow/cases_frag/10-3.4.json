@@ -1,0 +1,112 @@
+{
+ "secNum": "3.4",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 流片方式抉择:同一套签核通过的 GDSII,是走「全掩模 full mask set」专属整套(贵、量产用),还是先搭「MPW/shuttle 多项目晶圆」拼车(便宜、原型小量用)——首版上 MPW 摊薄 NRE 试错,确认无误再切全掩模铺量",
+ "oneLine": "本案例落到「流片方式:全掩模 vs MPW/shuttle」小节:流片不是只有一种『把 GDSII 交工厂』,而是先选一条『以什么方式上线』的路——核心是 NRE(非经常性工程费,主要是那套光掩模的一次性制版费)怎么分摊。全掩模 = 为本设计单独制一整套专属掩模、整片晶圆全是自家 die,掩模 NRE 一次性很高但产能不封顶、单位成本随量摊薄、die 外形/尺寸自由,适合确认无误后铺量;MPW(多项目晶圆)/shuttle = 多家设计共享一套掩模套与同一片晶圆,把那笔掩模 NRE 几家拼车摊薄,但每家只切出几颗工程样片、外形受 shuttle 框约束,适合首版试错/bring-up 验证/小批量原型。通行策略是首版走 MPW 省钱试错,确认设计无误再切全掩模量产。本节把 TPU v1 已知结构(256×256 脉动阵列、占近 29% die 的 24 MiB Unified Buffer、700 MHz、28nm/≤331mm²、做成 PCIe 加速卡、TF/XLA 栈)作为『被这两种方式流片的对象』来讲方式怎么选,绝不编造 TPU 私有的掩模套/NRE/良率数字,也不指定其代工厂。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 420\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"26\">流片方式两条路:同一套签核通过的 GDSII,既能走「全掩模 full mask set」专属整套(贵、但量产用),也能先走「MPW/shuttle 多项目晶圆」拼车(便宜、原型/小量);策略=首版上 MPW 试错省 NRE,确认无误再切全掩模量产</text><g class=\"cs-part\" data-k=\"gds\" data-g=\"gds\"><rect class=\"cs-box\" x=\"282\" y=\"56\" width=\"156\" height=\"58\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"360\" y=\"82\">签核通过的 GDSII</text><text class=\"cs-sub\" x=\"360\" y=\"102\">TPU v1:256×256 阵列/24MiB UB/28nm</text></g><line class=\"cs-arr\" x1=\"320\" y1=\"114\" x2=\"190\" y2=\"150\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"400\" y1=\"114\" x2=\"528\" y2=\"150\" marker-end=\"url(#csar)\"/><text class=\"cs-sub\" x=\"170\" y=\"138\">原型/小量:先省钱试错</text><text class=\"cs-sub\" x=\"556\" y=\"138\">确认无误:再上量产</text><g class=\"cs-part\" data-k=\"mpw\" data-g=\"mpw\"><rect class=\"cs-box\" x=\"24\" y=\"152\" width=\"318\" height=\"226\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"183\" y=\"176\">MPW / shuttle 多项目晶圆(拼车)</text><text class=\"cs-sub\" x=\"183\" y=\"196\">多家设计共享一套掩模套 + 同一片晶圆,NRE 摊薄</text><g class=\"cs-part\" data-k=\"shuttlewafer\" data-g=\"shuttlewafer\"><rect class=\"cs-cell\" x=\"60\" y=\"210\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"80\" y=\"234\">A</text><rect class=\"cs-cell\" x=\"104\" y=\"210\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"124\" y=\"234\">B</text><rect class=\"cs-cell\" x=\"148\" y=\"210\" width=\"40\" height=\"40\" fill=\"#dcfce7\"/><text class=\"cs-cellt\" x=\"168\" y=\"234\">TPU</text><rect class=\"cs-cell\" x=\"192\" y=\"210\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"212\" y=\"234\">C</text><rect class=\"cs-cell\" x=\"236\" y=\"210\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"256\" y=\"234\">D</text><rect class=\"cs-cell\" x=\"60\" y=\"254\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"80\" y=\"278\">E</text><rect class=\"cs-cell\" x=\"104\" y=\"254\" width=\"40\" height=\"40\" fill=\"#dcfce7\"/><text class=\"cs-cellt\" x=\"124\" y=\"278\">TPU</text><rect class=\"cs-cell\" x=\"148\" y=\"254\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"168\" y=\"278\">F</text><rect class=\"cs-cell\" x=\"192\" y=\"254\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"212\" y=\"278\">G</text><rect class=\"cs-cell\" x=\"236\" y=\"254\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"256\" y=\"278\">H</text></g><text class=\"cs-sub\" x=\"183\" y=\"316\">同一晶圆切出几十块各家裸片,各取各的几颗工程样片</text><text class=\"cs-sub\" x=\"183\" y=\"338\">✔ NRE 低、共享流片排期  ✘ 产量极少、外形/尺寸受 shuttle 框约束</text><text class=\"cs-sub\" x=\"183\" y=\"358\">用途:首版工程样片 / bring-up 验证 / 小批量原型</text></g><g class=\"cs-part\" data-k=\"full\" data-g=\"full\"><rect class=\"cs-box\" x=\"378\" y=\"152\" width=\"318\" height=\"226\" rx=\"8\" fill=\"#fefce8\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"537\" y=\"176\">全掩模 full mask set(专属整套)</text><text class=\"cs-sub\" x=\"537\" y=\"196\">为本设计单独制一整套光掩模,整片晶圆全是 TPU die</text><g class=\"cs-part\" data-k=\"fullwafer\" data-g=\"fullwafer\"><rect class=\"cs-cell\" x=\"414\" y=\"210\" width=\"40\" height=\"40\" fill=\"#fef9c3\"/><text class=\"cs-cellt\" x=\"434\" y=\"234\">TPU</text><rect class=\"cs-cell\" x=\"458\" y=\"210\" width=\"40\" height=\"40\" fill=\"#fef9c3\"/><text class=\"cs-cellt\" x=\"478\" y=\"234\">TPU</text><rect class=\"cs-cell\" x=\"502\" y=\"210\" width=\"40\" height=\"40\" fill=\"#fef9c3\"/><text class=\"cs-cellt\" x=\"522\" y=\"234\">TPU</text><rect class=\"cs-cell\" x=\"546\" y=\"210\" width=\"40\" height=\"40\" fill=\"#fef9c3\"/><text class=\"cs-cellt\" x=\"566\" y=\"234\">TPU</text><rect class=\"cs-cell\" x=\"590\" y=\"210\" width=\"40\" height=\"40\" fill=\"#fef9c3\"/><text class=\"cs-cellt\" x=\"610\" y=\"234\">TPU</text><rect class=\"cs-cell\" x=\"414\" y=\"254\" width=\"40\" height=\"40\" fill=\"#fef9c3\"/><text class=\"cs-cellt\" x=\"434\" y=\"278\">TPU</text><rect class=\"cs-cell\" x=\"458\" y=\"254\" width=\"40\" height=\"40\" fill=\"#fef9c3\"/><text class=\"cs-cellt\" x=\"478\" y=\"278\">TPU</text><rect class=\"cs-cell\" x=\"502\" y=\"254\" width=\"40\" height=\"40\" fill=\"#fef9c3\"/><text class=\"cs-cellt\" x=\"522\" y=\"278\">TPU</text><rect class=\"cs-cell\" x=\"546\" y=\"254\" width=\"40\" height=\"40\" fill=\"#fef9c3\"/><text class=\"cs-cellt\" x=\"566\" y=\"278\">TPU</text><rect class=\"cs-cell\" x=\"590\" y=\"254\" width=\"40\" height=\"40\" fill=\"#fef9c3\"/><text class=\"cs-cellt\" x=\"610\" y=\"278\">TPU</text></g><text class=\"cs-sub\" x=\"537\" y=\"316\">整套掩模 NRE 独担,但单位成本随产量摊薄、产能不封顶</text><text class=\"cs-sub\" x=\"537\" y=\"338\">✔ 量产产能足、die 尺寸/外形自由  ✘ 掩模 NRE 一次性高</text><text class=\"cs-sub\" x=\"537\" y=\"358\">用途:确认设计无误后,真正铺量交付 PCIe 加速卡</text></g><line class=\"cs-arr\" x1=\"183\" y1=\"378\" x2=\"183\" y2=\"402\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"537\" y1=\"378\" x2=\"537\" y2=\"402\" marker-end=\"url(#csar)\"/><text class=\"cs-sub\" x=\"183\" y=\"416\">出口:几颗样片 → 验证</text><text class=\"cs-sub\" x=\"537\" y=\"416\">出口:整片整片 die → 量产</text></svg>",
+ "legend": [
+  {
+   "k": "gds",
+   "name": "签核通过的 GDSII(流片对象)",
+   "desc": "两条流片路共用的同一个输入:第 ⑨ 步签核五维全绿、过了 tape-out 闸门的那版 GDSII。它本身不变,变的只是『以什么方式把它做到硅片上』。本节用 TPU v1 已知结构(256×256 8-bit MAC 脉动阵列、24 MiB Unified Buffer、700 MHz、28nm、die ≤ 331 mm²、weight-stationary、做成经 PCIe 3.0 接主机的加速卡、TF/XLA 软件栈)作为被流片对象。注意:die 高达 ≤331mm² 是『大芯片』,这一点直接影响下面两种方式怎么选——大 die 在 shuttle 框里很占地方、能拼的样片更少。TPU 不公开其具体掩模套/版次/NRE,均为示意。"
+  },
+  {
+   "k": "mpw",
+   "name": "MPW / shuttle 多项目晶圆(拼车,原型小量)",
+   "desc": "Multi-Project Wafer / shuttle:由代工厂或中介把多家、多项目的不同设计拼到同一套光掩模与同一片晶圆上一起跑,几家分摊那笔最贵的掩模 NRE(制版费),所以每家上车的钱大幅降低。代价是每家只能从晶圆上切出极少量(几颗到几十颗量级)工程样片,且 die 外形/尺寸要塞进 shuttle 预留的方格、流片排期跟车走。它是『首版试错/bring-up/小批量原型』的省钱通道:用最低成本拿到几颗真硅,验证设计与封装、跑通 bring-up,再决定要不要砸钱上全掩模。MPW 是业界通行的原型流片实践;TPU 是否、何时走过 MPW 不公开,图为概念示意。"
+  },
+  {
+   "k": "shuttlewafer",
+   "name": "shuttle 晶圆:多家 die 拼一片(NRE 摊薄的物理形态)",
+   "desc": "MPW 在晶圆上的样子:同一片晶圆被切成几十块不同公司/项目的裸片(图中 A/B/C…与几颗标 TPU 的格子混排),大家共用同一套掩模一起曝光、一起制造,所以那套掩模的一次性 NRE 被『按格子』分摊。换来的是每家只拿走自己那几颗——产量天然极少,只够做工程样片。大 die(如 TPU 这种 ≤331mm²)在 shuttle 框里很占面积,能放的份额更小、单颗摊到的 NRE 反而更高,这是大芯片走 MPW 的现实约束。具体拼版/同车厂商是 MPW 服务的私有信息,图为示意。"
+  },
+  {
+   "k": "full",
+   "name": "全掩模 full mask set(专属整套,量产)",
+   "desc": "Full mask set:为本设计单独制一整套完整的光掩模(每一层一张专属掩模),整片晶圆全部都是自家的 die。这套专属掩模的一次性 NRE 由本设计独担、数额很高,但好处是产能不封顶、整片整片地出 die、die 外形/尺寸完全自由(不必迁就 shuttle 框),且单位成本随产量上去而被摊薄——量越大越划算。它是『确认设计无误后真正铺量』的方式:TPU v1 要做成数据中心规模部署的 PCIe 加速卡,最终必然走全掩模量产路线。全掩模是通行量产流片实践;TPU 的具体掩模层数/NRE/产线不公开,图为示意。"
+  },
+  {
+   "k": "fullwafer",
+   "name": "全掩模晶圆:整片都是自家 die(产能不封顶)",
+   "desc": "全掩模在晶圆上的样子:整片晶圆密铺自家同一颗 die(图中整片标 TPU 的格子),没有别家拼车。因为掩模是本设计专属的,每片晶圆能出的好 die 数量由 die 面积和良率决定、不再被 shuttle 份额卡住,要多少片晶圆就跑多少片,产能可随量产规模放大。这正是大 die、要规模交付的芯片必须走全掩模的原因。单片出 die 数/良率是 die 面积与工艺良率的函数,属代工厂私有,TPU 不公开,图为示意。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "gds"
+   ],
+   "cap": "① 拿到同一份签核通过的 GDSII:不改设计,只决定『以什么方式上线』——先看体量(TPU 这种 ≤331mm² 大 die、要做成数据中心规模的 PCIe 加速卡)与当前阶段(还在试错?还是确认要铺量?),据此选路"
+  },
+  {
+   "keys": [
+    "mpw",
+    "shuttlewafer"
+   ],
+   "cap": "② 若是首版试错/bring-up/小量原型:走 MPW/shuttle——多家拼一套掩模、共享一片晶圆,把最贵的掩模 NRE 几家摊薄,只取自己那几颗工程样片;省钱、但产量极少且外形受 shuttle 框约束"
+  },
+  {
+   "keys": [
+    "full",
+    "fullwafer"
+   ],
+   "cap": "③ 若已确认设计无误、要真正铺量:走全掩模 full mask set——为本设计单独制整套专属掩模、整片晶圆全是自家 die;掩模 NRE 一次性高,但产能不封顶、外形自由、单位成本随量摊薄"
+  },
+  {
+   "keys": [
+    "shuttlewafer",
+    "fullwafer"
+   ],
+   "cap": "④ 通行策略=先 MPW 后全掩模:首版上 MPW 用最低成本拿真硅、跑通 bring-up 与封装验证;确认无误后再切全掩模量产,避免一上来就为没把握的设计砸下整套专属掩模的高 NRE"
+  }
+ ],
+ "before": [
+  "<b>定流片对象与体量画像</b>:确认要流片的就是签核全绿、过了 tape-out 闸门的那版 GDSII(本节为 TPU v1:256×256 脉动阵列、24 MiB UB、700 MHz、28nm、die ≤ 331 mm²),并量清它是『大 die』——大 die 在 shuttle 框里很占面积、可拼份额小,这是后面选 MPW 还是全掩模的硬约束。TPU 具体掩模套/版次不公开。",
+  "<b>定当前阶段:是试错还是铺量</b>:把『这一版是用来验证/试错的工程样片,还是已确认无误要规模交付的量产版』先想清楚——阶段不同,最划算的流片方式完全相反。首版多半还要验证,后续才进量产,本节按这条通行节奏组织。",
+  "<b>算清 NRE 与产量的账(本质权衡)</b>:流片方式之争的核心是那笔一次性掩模 NRE 怎么分摊——MPW 几家拼车摊薄但产量极少,全掩模独担高 NRE 但产能不封顶、单位成本随量下降。先按预期产量算清两条路的总成本拐点,而不是只看单次上车价。具体 NRE/良率/单价是代工厂私有,TPU 不公开,均为示意。",
+  "<b>定外形与封装约束</b>:MPW 的 die 必须塞进 shuttle 预留方格、外形尺寸受限;全掩模则 die 外形/尺寸自由。要事先确认目标封装(TPU v1 要做成经 PCIe 3.0 接主机的加速卡)对 die 尺寸/版图外形的要求能否被所选方式满足——大 die 尤其要核对 shuttle 框放不放得下。",
+  "<b>定流片排期与代工/中介对接</b>:MPW 要跟车——必须赶上代工厂/中介的 shuttle 班次窗口、按对方拼版规则交数据;全掩模则按本项目独立排期制整套掩模。事先约定走哪条、对接谁、什么时间点交 GDSII。MPW/全掩模的具体班期与厂商均为通行实践,TPU 不指定代工厂、不公开排期。"
+ ],
+ "during": [
+  "<b>铁律:GDSII 不动,变的只是『上线方式』</b>。无论走 MPW 还是全掩模,送出的都是同一份签核通过的版图;流片方式抉择是工程/成本决策,不是再设计。不能因为要上 MPW 就临时动版图(除非为塞进 shuttle 框做的、需重新签核的外框调整),把签核结论搅乱。",
+  "<b>本质是用 NRE 换产量与自由度</b>。MPW = 低 NRE 但低产量、受 shuttle 框约束;全掩模 = 高 NRE 但产能不封顶、外形自由、单位成本随量摊薄。选路就是在『当前要多少颗、未来要不要铺量』之间找拐点,别用量产的思路去走原型车,也别用原型车去扛量产产能。",
+  "<b>大 die 走 MPW 要算清份额代价</b>。TPU 这种 ≤331mm² 的大 die 在 shuttle 框里占地大、能拼的份额小,单颗摊到的 NRE 反而偏高、拿到的样片更少;所以大芯片走 MPW 主要图『拿到真硅做 bring-up/封装验证』,不是图便宜量产——这一点必须想清,免得对 MPW 的产量与成本抱错期望。",
+  "<b>首版优先 MPW 试错,是省钱的通行做法</b>。在设计还没经真硅确认前,先用 MPW 以最低成本拿到几颗工程样片、点亮、跑通封装与 bring-up,远比一上来就为没把握的版本砸下整套专属掩模 NRE 稳妥;万一首版需小改,损失的也只是 MPW 这一程的小钱。",
+  "<b>确认无误再切全掩模量产,不可省略验证</b>。等 MPW 样片把功能/封装/bring-up 都验证过、确认设计无误,才切到全掩模铺量——这一步是『把验证过的设计放大到产能不封顶』。跳过验证直接上全掩模,等于把整套高 NRE 押在未经真硅确认的版本上,风险极大。",
+  "<b>诚实声明:策略与数字均为通行实践</b>。全掩模 vs MPW/shuttle、NRE 摊薄、首版 MPW 后续全掩模、shuttle 框约束、整片密铺 die 等,都是 foundry/中介与业界的通行流片实践。TPU v1 不公开其是否/何时走过 MPW、掩模层数/套数、NRE、单片出 die 数、良率,也未公开代工厂;本节以 TPU 已知结构(256×256 阵列、24 MiB UB、700 MHz、28nm、≤331mm²、PCIe 卡、TF/XLA)为被流片对象讲方式怎么选,图与所有成本/产量/拼版描述均为示意,非 TPU 私有数字。"
+ ],
+ "result": [
+  {
+   "label": "决策输入",
+   "value": "同一份签核通过的 GDSII(TPU v1:256×256 阵列/24MiB UB/700MHz/28nm/≤331mm²/PCIe 卡)+ 体量画像(大 die)+ 当前阶段(试错 or 铺量)"
+  },
+  {
+   "label": "MPW / shuttle 路(原型小量)",
+   "value": "多家共享一套掩模 + 同片晶圆,掩模 NRE 几家摊薄;每家只取几颗工程样片,外形受 shuttle 框约束;✔ 上车成本低、共享排期  ✘ 产量极少、大 die 份额小"
+  },
+  {
+   "label": "全掩模 full mask set 路(量产)",
+   "value": "为本设计制整套专属掩模、整片晶圆全是自家 die;✔ 产能不封顶、die 外形自由、单位成本随量摊薄  ✘ 掩模 NRE 一次性高、独担"
+  },
+  {
+   "label": "本质权衡(NRE↔产量)",
+   "value": "MPW=低 NRE/低产量/受框约束;全掩模=高 NRE/产能不封顶/外形自由;选路即按预期产量找成本拐点(数字为代工厂私有,示意)"
+  },
+  {
+   "label": "通行策略",
+   "value": "首版走 MPW 以最低成本拿真硅试错、跑通 bring-up 与封装验证;确认设计无误后再切全掩模量产铺量"
+  },
+  {
+   "label": "两条路的出口",
+   "value": "MPW → 几颗工程样片进 ⑫ 封测/bring-up 验证;全掩模 → 整片整片 die 进 ⑪ 制造/⑬ 量产,做成 PCIe 加速卡规模交付"
+  }
+ ],
+ "after": [
+  "<b>按阶段与产量定下走哪条路</b>:综合体量画像(大 die)、当前阶段(试错/铺量)与预期产量,定下本版走 MPW 还是全掩模;首版若仍需真硅验证,优先 MPW;若设计已确认且要规模交付,直接全掩模。决策记录在案,便于后续复盘。",
+  "<b>若走 MPW:拿样片做 bring-up 与封装验证</b>:把切下的几颗工程样片送去封装、点亮、跑通功能与封装验证,确认设计在真硅上无误、PCIe 卡形态可行;这正是 MPW 这一程的目的——用最低成本换『设计是否真的对』的确定性。",
+  "<b>若样片验证暴露问题:小改再上 MPW 或修后再切全掩模</b>:MPW 样片若发现需修的问题,回去定点改、重签核,再决定补一次 MPW 还是直接进全掩模;此时损失的只是 MPW 小钱,而非整套全掩模高 NRE——这正是先 MPW 的价值所在。",
+  "<b>确认无误后切全掩模、进量产</b>:验证通过、确认设计无误,即为本设计制整套专属掩模、整片晶圆铺自家 die,进入 ⑪ 制造/⑬ 量产,把验证过的设计放大到产能不封顶,最终做成数据中心规模交付的 PCIe 加速卡。",
+  "<b>交付下一步并留好可追溯记录</b>:把所选流片方式、版次、对应掩模套/排期与验证结论清晰交给 ⑪ 制造/⑫ 封测,并登记可追溯——避免量产时分不清用的是哪一版掩模、哪一程验证过的设计。具体掩模套/排期为通行实践,TPU 不公开。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(256×256 8-bit MAC 脉动阵列、24 MiB Unified Buffer、700MHz、28nm、die ≤331mm²、weight-stationary、PCIe 3.0 加速卡、TF/XLA 栈为该文披露的已知结构,作为被流片的对象;全掩模 full mask set vs MPW/shuttle 多项目晶圆、掩模 NRE 摊薄、首版 MPW 后续全掩模、shuttle 框约束、整片密铺 die 等流片方式与策略均为 foundry/中介与业界通行的制造/流片实践,图与所有 NRE/产量/拼版/良率描述均为示意,TPU v1 不公开其是否/何时走 MPW、掩模套数/层数、NRE、单片出 die 数、良率,亦未公开其代工厂)"
+}

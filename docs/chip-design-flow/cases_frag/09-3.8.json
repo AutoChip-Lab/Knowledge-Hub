@@ -1,0 +1,120 @@
+{
+ "secNum": "3.8",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 逻辑等价性签核(LEC):证明经综合 + 后端 + 全部 ECO 后的最终网表仍 ≡ 已验证 RTL",
+ "oneLine": "⑥ 验证证明的是「RTL 功能对」,可从 RTL 到 tape-out 之间,综合、布局布线、时钟树、每一次时序/IR/DRC 修复的 ⑧ECO,都在不停改写网表——任何一步都可能悄悄把逻辑改坏;LEC(Logic Equivalence Check)是签核环节里那道「功能没被改坏」的最终闸门:把黄金 RTL 和最终门级网表逐锥比对,用穷举证明(非仿真)判定两者逻辑函数完全相同,等价才放行流片,把功能正确性从 ⑥ 一路守到 tape-out。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">最终 LEC:证明经综合 + 后端 + 所有 ECO 后的「最终门级网表」仍 ≡ 已验证 RTL —— 功能从 ⑥ 守到流片</text><g class=\"cs-part\" data-k=\"rtl\" data-g=\"rtl\"><rect class=\"cs-box\" x=\"40\" y=\"70\" width=\"200\" height=\"90\" rx=\"8\"/><text class=\"cs-t\" x=\"140\" y=\"100\">黄金参考 RTL</text><text class=\"cs-sub\" x=\"140\" y=\"122\">⑥ 已通过功能验证</text><text class=\"cs-sub\" x=\"140\" y=\"140\">这一刻起被冻成「金标准」</text></g><g class=\"cs-part\" data-k=\"net\" data-g=\"net\"><rect class=\"cs-box\" x=\"40\" y=\"240\" width=\"200\" height=\"90\" rx=\"8\"/><text class=\"cs-t\" x=\"140\" y=\"270\">最终门级网表</text><text class=\"cs-sub\" x=\"140\" y=\"292\">综合 + 布局布线后</text><text class=\"cs-sub\" x=\"140\" y=\"310\">叠加全部 ⑧ECO 的版本</text></g><line class=\"cs-arr\" x1=\"240\" y1=\"115\" x2=\"316\" y2=\"180\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"240\" y1=\"285\" x2=\"316\" y2=\"222\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"lec\" data-g=\"lec\"><rect class=\"cs-box\" x=\"320\" y=\"158\" width=\"190\" height=\"86\" rx=\"8\"/><text class=\"cs-t\" x=\"415\" y=\"188\">LEC 等价判定</text><text class=\"cs-sub\" x=\"415\" y=\"210\">切锥比对 · 非仿真</text><text class=\"cs-sub\" x=\"415\" y=\"228\">穷举证明逻辑函数相同</text></g><line class=\"cs-arr\" x1=\"510\" y1=\"180\" x2=\"582\" y2=\"118\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"510\" y1=\"222\" x2=\"582\" y2=\"300\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"eq\" data-g=\"eq\"><rect class=\"cs-box\" x=\"586\" y=\"84\" width=\"120\" height=\"66\" rx=\"8\"/><text class=\"cs-t\" x=\"646\" y=\"112\">等价 ✓</text><text class=\"cs-sub\" x=\"646\" y=\"132\">放行 tape-out</text></g><g class=\"cs-part\" data-k=\"diff\" data-g=\"diff\"><rect class=\"cs-box\" x=\"586\" y=\"270\" width=\"120\" height=\"66\" rx=\"8\"/><text class=\"cs-t\" x=\"646\" y=\"298\">不等价 ✗</text><text class=\"cs-sub\" x=\"646\" y=\"318\">吐反例 → 回 ⑧</text></g><g class=\"cs-part\" data-k=\"ecoloop\" data-g=\"ecoloop\"><rect class=\"cs-box\" x=\"320\" y=\"300\" width=\"190\" height=\"62\" rx=\"8\"/><text class=\"cs-t\" x=\"415\" y=\"326\">每次物理优化/ECO</text><text class=\"cs-sub\" x=\"415\" y=\"346\">都可能悄悄动逻辑 → 必复签</text></g><line class=\"cs-arr\" x1=\"415\" y1=\"300\" x2=\"415\" y2=\"246\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/></svg>",
+ "legend": [
+  {
+   "k": "rtl",
+   "name": "黄金参考 RTL(golden)",
+   "desc": "⑥ 阶段已经通过功能验证(仿真 + formal + 覆盖率收口)的那份 RTL。从签核角度看,它此刻被「冻」成金标准:LEC 不再质疑它对不对(那是 ⑥ 的事),而是把它当作唯一基准,去检查后端做出来的网表有没有偏离它。换句话说,LEC 守的是「一致性」,不是「正确性」。"
+  },
+  {
+   "k": "net",
+   "name": "最终门级网表(implementation)",
+   "desc": "经综合(RTL→门级)、布局布线、时钟树综合、扫描链插入,再叠加全部 ⑧ECO(时序修复、IR/EM 修复、DRC 修复、漏洞补丁)之后,真正要送去流片的那份网表。它和黄金 RTL 之间隔着成千上万次自动 + 手动改动,每一次都有把逻辑改错的风险——这正是 LEC 要比对的对象。"
+  },
+  {
+   "k": "lec",
+   "name": "LEC 等价判定引擎",
+   "desc": "形式化等价检查工具(如 Formality / Conformal)。它不靠喂激励仿真,而是先在两份设计间建立寄存器/端口的对应关系(key points / mapping),再把组合逻辑切成一个个「逻辑锥(cone)」,对每一对锥用穷举式的布尔证明判定其逻辑函数是否完全相同——对所有输入组合都相同才算等价。这是穷尽证明,不是抽样。"
+  },
+  {
+   "k": "eq",
+   "name": "判定:等价(equivalent)",
+   "desc": "所有逻辑锥逐一比对、且所有关键点都成功映射、无未比对(unmapped)残留时,工具返回 equivalent。这意味着最终网表与黄金 RTL 在功能上逐位等价——⑥ 验证过的功能,经过整条后端 + ECO 链条,确实一点没被改坏。这是 tape-out 闸门要的「绿灯」之一。"
+  },
+  {
+   "k": "diff",
+   "name": "判定:不等价(non-equivalent)",
+   "desc": "若某个逻辑锥的函数对不上,工具不会含糊地说「失败」,而是给出具体的失败点 + 一组反例输入(在该输入下两侧输出不同)。工程师照着反例就能定位是哪次 ECO/优化把逻辑改坏了。不等价是硬停:绝不允许带着任何一个真不等价点流片。(图中 ecoloop 块强调后端每次动逻辑都需复签,故 LEC 非一次性。)"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "rtl"
+   ],
+   "cap": "① 把 ⑥ 已验证通过的 RTL 冻成黄金参考(golden):LEC 不再判它对不对,只把它当作唯一基准——签核守的是「网表 ≡ 这份 RTL」,正确性已由 ⑥ 负责"
+  },
+  {
+   "keys": [
+    "net",
+    "ecoloop"
+   ],
+   "cap": "② 取真正要流片的那份网表:它是综合 + 布局布线 + 时钟树,再叠加全部 ⑧ECO(时序/IR/DRC/补丁修复)之后的最终版本;这中间每一步都可能悄悄动逻辑"
+  },
+  {
+   "keys": [
+    "rtl",
+    "net",
+    "lec"
+   ],
+   "cap": "③ 把黄金 RTL 与最终网表一起交给 LEC 引擎:先建立寄存器/端口映射(key points),再把组合逻辑切成逻辑锥,对每一对锥做穷举布尔证明——不是仿真抽样,是对所有输入组合判定函数是否相同"
+  },
+  {
+   "keys": [
+    "lec",
+    "eq"
+   ],
+   "cap": "④ 所有锥都比对相同、关键点全映射、无 unmapped 残留 → 返回 equivalent:最终网表与黄金 RTL 逐位等价,功能从 ⑥ 守到此刻没被改坏,给 tape-out 闸门一盏绿灯"
+  },
+  {
+   "keys": [
+    "lec",
+    "diff",
+    "ecoloop"
+   ],
+   "cap": "⑤ 若某锥函数对不上 → 返回 non-equivalent + 失败点 + 反例输入:照反例定位是哪次 ECO 改坏了逻辑,回 ⑧ 修,改完再复签——绝不带着真不等价点流片"
+  }
+ ],
+ "before": [
+  "<b>先钉死「黄金参考」是哪一份 RTL</b>:LEC 的全部意义建立在「基准选对」上。必须明确签核比对的 golden 就是 ⑥ 阶段功能验证签字通过的那个 RTL 版本/标签,而不是某个中途分支或带临时改动的副本;基准选错,等价证明再漂亮也是证了个寂寞。",
+  "<b>定清楚映射规则与可接受的优化</b>:综合会做寄存器重定时(retiming)、相位反转、常量传播、扫描链/测试逻辑插入等——这些会让两侧寄存器不是一一对应。要事先约定哪些是「合法的、需告诉工具的」结构变化(配 setup 文件、retiming 选项、相位映射),把它们和「真改坏逻辑」区分开,否则会满屏伪不等价。",
+  "<b>列出并管控所有合法豁免(black-box / 不比对域)</b>:存储器宏、PLL、IO、模拟 IP 等通常以黑盒处理,不参与逻辑等价比对;哪些单元设黑盒、黑盒边界的接口约束怎么写,要先成清单。豁免必须是「有据的结构差异」,绝不能拿豁免去掩盖一个真正的逻辑改动。",
+  "<b>把 LEC 列为「每次动网表后必跑、tape-out 前最后必跑」的硬闸</b>:签核前就要明确判据——最终签核以「叠加全部 ECO 的最终网表」对黄金 RTL 跑出 equivalent、零未比对点、零真不等价点为通过线,任何一项不达标都不放行。这条判据要在动手前写进签核 checklist。"
+ ],
+ "during": [
+  "<b>铁律:比对的必须是「最终的、要流片的那一份网表」</b>:LEC 最常见的致命疏漏,是签了一个旧网表、却把后来又改过的版本送去流片。最终 LEC 一定要在所有 ⑧ECO、所有手工改门全部落定之后,对那份字节级最终网表跑;此后网表只要再被碰一下,就得重签。",
+  "<b>先解决「未比对点(unmapped/unmatched)」,再看等价结论</b>:一个关键点没被成功映射,意味着这部分逻辑根本没被比较——它不是「等价」,是「没查」。必须先把所有 unmapped 清成零(补映射规则或确认是合法黑盒),否则一份「equivalent」报告下可能藏着一整块从未被验证的逻辑。",
+  "<b>认真分诊每个不等价点:真 bug 还是 setup 问题</b>:工具报不等价时,先判断是「真把逻辑改坏了」还是「映射/相位/retiming setup 没配对导致的伪不等价」。真 bug 拿反例回 ⑧ 修 RTL/网表;伪不等价补 setup 再重证。把伪不等价当真 bug 乱改、或把真 bug 当 setup 掩盖掉,都是危险操作。",
+  "<b>取舍:用约束/分块换收敛,但绝不缩小被证范围去骗绿灯</b>:大设计的 LEC 可能跑不收敛(某些锥太大、hard cone)。合法手段是分层比对(先子模块、再 top)、配证明引擎、加约束帮助收敛;不合法的是把跑不出的部分悄悄设成黑盒或 don't-verify 蒙混过去——那等于把没证的逻辑放进了硅片。",
+  "<b>ECO 后的复签要跑「全量等价」,而非只看改动点</b>:一次 ECO 名义上只动几个门,但物理工具可能借机做连带优化,影响波及面未必只在改动处。复签时对最终网表跑完整 LEC(而不是只比对你以为改了的那块),才能保证 ECO 没有意外的副作用泄漏到别处。",
+  "<b>诚实边界:TPU 不公开其 LEC 报告与 setup</b>:TPU v1 经历综合 + 后端 + ECO 才能流片,是这类大芯片的客观流程,逻辑等价签核因此是其必经一关;但「用哪款 LEC 工具、配了哪些 retiming/黑盒规则、最终跑出什么报告」属于未披露的工程细节。以上为大芯片的通行签核实践,用来承载 LEC 概念,非 TPU 专属披露;脉动阵列、24MiB UB、700MHz、28nm 等仅作被签核的对象。"
+ ],
+ "result": [
+  {
+   "label": "签核命题",
+   "value": "最终门级网表 ≡ ⑥ 已验证黄金 RTL(逐位逻辑等价)"
+  },
+  {
+   "label": "比对方法",
+   "value": "形式化切锥布尔证明,非仿真抽样(穷举所有输入)"
+  },
+  {
+   "label": "被签对象(版本)",
+   "value": "综合 + 布局布线 + 全部 ⑧ECO 后的「要流片」最终网表"
+  },
+  {
+   "label": "通过判据(示意)",
+   "value": "equivalent · 关键点 unmapped = 0 · 真不等价点 = 0"
+  },
+  {
+   "label": "失败产出",
+   "value": "non-equivalent + 失败逻辑锥 + 一组反例输入"
+  },
+  {
+   "label": "闸门定位",
+   "value": "tape-out 前最后一道「功能没被改坏」的硬闸"
+  }
+ ],
+ "after": [
+  "<b>不等价 → 回 ⑧ECO 修、再签</b>:照工具给的反例定位是哪次优化/ECO 改坏了逻辑,回 ⑧ 修正网表(或 RTL,若是 RTL 侧问题),修完对最终网表重跑全量 LEC 确认转为 equivalent——不等价是硬停,一个真不等价点都不许带去流片。",
+  "<b>每一次网表再被改动都要复签</b>:LEC 的通过是「针对某一字节级网表版本」的;只要此后又跑了任何 ECO、改了任何一个门,之前的绿灯立即作废,必须对新最终网表重签。把「最终 LEC 在所有改动之后」作为不可破的次序。",
+  "<b>清账:零 unmapped、零未证、所有豁免有据</b>:汇总闸门前逐项核对——没有关键点是 unmapped(=没查),没有逻辑锥是 inconclusive/abort 被悄悄放过,所有黑盒/豁免都登记在册且确为合法结构差异而非掩盖逻辑改动。一份带未比对点的 equivalent 不算通过。",
+  "<b>把 LEC 绿灯并入 tape-out 汇总闸门</b>:LEC(功能等价)和 STA(时序)、IR/EM(电源完整性)、DRC/LVS(物理/版图)这些签核维度一样,各是 tape-out 闸门上的一格;只有 LEC 等价 + 其余维度全绿,这块设计才算签核通过、可放行流片——LEC 守的就是那条「功能从 ⑥ 一路守到 tape-out」的命脉。",
+  "<b>归档黄金 RTL 标签、最终网表与等价报告</b>:把通过 LEC 的黄金 RTL 版本号、对应最终网表、等价报告(含映射/豁免清单)一并归档锁定,作为「这颗硅片功能上等于哪份 RTL」的可追溯证据——硅后若出功能问题,这是回溯的第一手依据。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(TPU v1 的脉动阵列、24MiB Unified Buffer、700 MHz、28nm 等为公开结构事实,作被签核对象;逻辑等价签核 LEC 的具体工具、setup、豁免规则与报告为通行签核实践,TPU 未公开其 LEC 方法学细节)"
+}

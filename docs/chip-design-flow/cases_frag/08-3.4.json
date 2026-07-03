@@ -1,0 +1,117 @@
+{
+ "secNum": "3.4",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 布局(placement):把综合后的标准单元摆进 floorplan——时序驱动+拥塞驱动摆放,再合法化",
+ "oneLine": "本案例把本小节的「布局(placement)」落到 TPU 后端上:综合给出的门级网表里有海量标准单元,布局工具(如 Innovus/ICC2)要把每个单元摆到 floorplan 划好的区域里。两根指挥棒:时序驱动——把同一条紧时序路径上的单元拉近,缩短连线、保住 700 MHz;拥塞驱动——别把单元摆太挤,否则布线⑤的金属层塞不下、布不通(routing congestion)。摆完先是「粗放(global placement)」有重叠、不对齐,再做合法化(legalize)对齐到标准单元行、消除重叠且不破坏时序/拥塞。TPU 的福音是脉动阵列极其规整:256×256 个 PE 成排规则摆、数据流方向清晰、拥塞天然可控;真正的拥塞热点往往在旁边那块不规则的控制逻辑区。诚实边界:工具/流程是通行后端实践,TPU 不公开其私有 floorplan 与布局数据,文中利用率、区块走向均为示意。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">布局(placement):把综合后的标准单元摆进 floorplan 划好的区里——时序驱动 + 拥塞驱动,再合法化</text><text class=\"cs-note\" x=\"40\" y=\"46\">阵列的规整性是后端福音:成排 PE 规则摆、数据流方向清晰、拥塞可控</text><g class=\"cs-part\" data-k=\"netlist\" data-g=\"netlist\"><rect class=\"cs-box\" x=\"36\" y=\"86\" width=\"120\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"96\" y=\"110\">门级网表</text><text class=\"cs-sub\" x=\"96\" y=\"128\">+SDC+LEF</text></g><line class=\"cs-arr\" x1=\"156\" y1=\"115\" x2=\"214\" y2=\"115\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"td\" data-g=\"td\"><rect class=\"cs-box\" x=\"218\" y=\"86\" width=\"150\" height=\"58\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#c7d2fe\"/><text class=\"cs-t\" x=\"293\" y=\"110\">时序驱动摆放</text><text class=\"cs-sub\" x=\"293\" y=\"128\">紧路径单元拉近</text></g><line class=\"cs-arr\" x1=\"368\" y1=\"115\" x2=\"424\" y2=\"115\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"cong\" data-g=\"cong\"><rect class=\"cs-box\" x=\"428\" y=\"86\" width=\"150\" height=\"58\" rx=\"8\" fill=\"#fff7ed\" stroke=\"#fed7aa\"/><text class=\"cs-t\" x=\"503\" y=\"110\">拥塞驱动摆放</text><text class=\"cs-sub\" x=\"503\" y=\"128\">摆太挤→布不通</text></g><line class=\"cs-arr\" x1=\"503\" y1=\"144\" x2=\"503\" y2=\"186\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"293\" y1=\"144\" x2=\"293\" y2=\"186\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"die\" data-g=\"die\"><rect class=\"cs-box\" x=\"40\" y=\"190\" width=\"500\" height=\"190\" rx=\"8\" fill=\"#f8fafc\" stroke=\"#cbd5e1\"/><text class=\"cs-sub\" x=\"290\" y=\"208\">核内单元摆放(die 内,示意)</text><g class=\"cs-part\" data-k=\"array\" data-g=\"array\"><rect class=\"cs-box\" x=\"64\" y=\"222\" width=\"300\" height=\"138\" rx=\"6\" fill=\"#dcfce7\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"214\" y=\"246\">规整阵列区:256×256 PE</text><text class=\"cs-sub\" x=\"214\" y=\"264\">成排规则摆 / weight-stationary</text><line class=\"cs-arr\" x1=\"84\" y1=\"288\" x2=\"344\" y2=\"288\"/><line class=\"cs-arr\" x1=\"84\" y1=\"308\" x2=\"344\" y2=\"308\"/><line class=\"cs-arr\" x1=\"84\" y1=\"328\" x2=\"344\" y2=\"328\"/><text class=\"cs-sub\" x=\"214\" y=\"350\">数据流方向清晰→拥塞可控</text></g><g class=\"cs-part\" data-k=\"ctrl\" data-g=\"ctrl\"><rect class=\"cs-box\" x=\"378\" y=\"222\" width=\"146\" height=\"138\" rx=\"6\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"451\" y=\"252\">控制逻辑区</text><text class=\"cs-sub\" x=\"451\" y=\"274\">译码 / 调度</text><text class=\"cs-sub\" x=\"451\" y=\"292\">不规则、连线杂</text><text class=\"cs-sub\" x=\"451\" y=\"316\">拥塞热点常在此</text><text class=\"cs-sub\" x=\"451\" y=\"338\">需重点照顾</text></g></g><g class=\"cs-part\" data-k=\"legalize\" data-g=\"legalize\"><rect class=\"cs-box\" x=\"560\" y=\"190\" width=\"140\" height=\"190\" rx=\"8\" fill=\"#ede9fe\" stroke=\"#c4b5fd\"/><text class=\"cs-t\" x=\"630\" y=\"222\">合法化</text><text class=\"cs-sub\" x=\"630\" y=\"244\">legalize</text><text class=\"cs-sub\" x=\"630\" y=\"270\">对齐行/site</text><text class=\"cs-sub\" x=\"630\" y=\"290\">消重叠</text><text class=\"cs-sub\" x=\"630\" y=\"316\">不破坏</text><text class=\"cs-sub\" x=\"630\" y=\"334\">时序/拥塞</text></g><line class=\"cs-arr\" x1=\"540\" y1=\"285\" x2=\"560\" y2=\"285\" marker-end=\"url(#csar)\"/></svg>",
+ "legend": [
+  {
+   "k": "td",
+   "name": "时序驱动摆放(timing-driven)",
+   "desc": "布局的第一根指挥棒。工具读综合交来的 SDC,把同一条关键(紧 slack)时序路径上的单元尽量摆近,缩短它们之间的连线延迟,保住 700 MHz。摆得越分散、连线越长,布线后的真实线延迟越大、slack 越容易翻负。所以布局不是随便填满,而是带着时序账在摆。"
+  },
+  {
+   "k": "cong",
+   "name": "拥塞驱动摆放(congestion-driven)",
+   "desc": "第二根指挥棒,常和时序矛盾。把单元摆太挤(局部利用率太高),该区域上方需要穿过的连线就超过金属层能提供的布线资源,布线⑤会布不通(congestion / DRC 短路)。工具要预估布线需求 vs 容量,在热点处主动「松绑」、把单元摊开。TPU 的拥塞热点通常不在规整阵列,而在控制逻辑区。"
+  },
+  {
+   "k": "array",
+   "name": "规整阵列区:后端的福音",
+   "desc": "256×256 = 65,536 个结构完全相同的 PE,weight-stationary、数据沿固定方向(激活横向流、部分和纵向累加)逐拍传递。这种规整性对布局极友好:单元成排规则摆、相邻 PE 短连线、数据流方向清晰、布线方向一致 → 拥塞天然可控、利用率可做高。大阵列虽然单元多,却是布局里最「省心」的部分。"
+  },
+  {
+   "k": "ctrl",
+   "name": "控制逻辑区:拥塞真正的热点",
+   "desc": "阵列旁边的指令译码、地址生成、调度握手逻辑。它不规整、扇出杂、连线多向交叉,是布局里最难摆、最容易出拥塞和长路径的地方——TPU 主机经 PCIe 下发的十几条 CISC 指令就在这里展开成对阵列的控制。布局要给这块多留布线余量、重点盯它的拥塞图。"
+  },
+  {
+   "k": "legalize",
+   "name": "合法化(legalize)",
+   "desc": "global placement 先给个粗放结果:单元位置大致对、但有重叠、没对齐到标准单元行。合法化把每个单元精确吸附到合法的 site(行内栅格位)、消除所有重叠,同时尽量不破坏刚摆好的时序与拥塞。它是「从大致摆好」到「物理上合法、可布线」的必经一步。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "netlist",
+    "td"
+   ],
+   "cap": "① 读入综合交来的门级网表 + SDC + 标准单元 LEF(物理抽象),先时序驱动:把同一紧路径上的单元拉近,缩短连线、护住 700 MHz。"
+  },
+  {
+   "keys": [
+    "cong"
+   ],
+   "cap": "② 叠加拥塞驱动:预估各区布线需求 vs 容量,别让局部利用率过高;摆太挤的地方主动摊开,免得布线⑤布不通。"
+  },
+  {
+   "keys": [
+    "die",
+    "array"
+   ],
+   "cap": "③ 落到 die 内的区域:规整阵列区把 256×256 个 PE 成排规则摆,数据流方向清晰、相邻短连线,拥塞天然可控——这是后端福音。"
+  },
+  {
+   "keys": [
+    "ctrl"
+   ],
+   "cap": "④ 重点照顾控制逻辑区:不规则、连线杂,是拥塞热点和长路径多发区,要多留布线余量、盯紧它的拥塞图。"
+  },
+  {
+   "keys": [
+    "legalize"
+   ],
+   "cap": "⑤ 合法化:把粗放摆放里有重叠、没对齐的单元精确吸附到标准单元行的合法 site、消除重叠,且不破坏已摆好的时序/拥塞,交给布线⑤。"
+  }
+ ],
+ "before": [
+  "<b>定 floorplan 与区域约束(摆放的容器)</b>:布局前 floorplan(3.x)已划好 die 轮廓、把 24 MiB Unified Buffer 等大 SRAM 宏(约占 die 29% 面积)、累加器 SRAM 摆为硬宏并预留通道;脉动阵列区、控制逻辑区的大致位置也已定。布局只在这些区域里摆标准单元,区域划得好不好直接决定能不能摆得开。",
+  "<b>定标准单元 LEF / 技术 LEF(物理抽象)</b>:布局要的不只是时序库,还要每个标准单元的物理 LEF——尺寸、引脚位置、布线遮挡;以及技术 LEF 里 28nm 的金属层栈(M1–Mx,示意)、布线轨距、行高(site)。没有 LEF,工具不知道单元多大、占几行,摆放无从谈起。",
+  "<b>定目标利用率与拥塞预算</b>:设一个标准单元利用率目标(如 70%,示意),太低浪费面积、太高必拥塞布不通。规整的阵列区可做高利用率,杂乱的控制逻辑区要留更多余量。这条预算是布局在时序与拥塞间取舍的总基准。",
+  "<b>定时序约束与例外(从综合 SDC 继承)</b>:把综合交来的 SDC(create_clock 700 MHz、IO delay、false_path/multicycle 等)带进布局,让工具知道哪些是关键路径要摆近、哪些是例外不必管。约束不全,布局就看不到真实时序压力,会摆错重点。",
+  "<b>定电源/地引脚与行方向</b>:确认标准单元行(row)方向、电源轨(VDD/VSS rail)走向与 floorplan 的供电方案(电源环/条带)一致,合法化时单元才能正确吸附到行、接上电源轨——这关系到后续 PDN 与 IR-drop。"
+ ],
+ "during": [
+  "<b>铁律:布局是「时序 vs 拥塞」的连续取舍</b>。时序驱动想把紧路径单元拉到一起(连线短),拥塞驱动想把单元摊开(别堵布线)——两者天然对立。布局工具反复在二者间平衡,目标是既让关键路径连线够短保住 700 MHz,又让每块区域的布线需求不超过容量。摆放的好坏不看「填得满不满」,看时序与拥塞同时过关。",
+  "<b>先 global、后 legalize、再 detail</b>。流程通常是粗放布局(global placement,允许重叠、位置近似)→ 合法化(吸附到行 site、消重叠)→ 详细布局(detailed,局部微调进一步优化时序/拥塞)。global 决定大局,legalize 让结果物理合法可布线,detail 抠细节;跳过 legalize 的结果只是「大致摆好」,不能直接布线。",
+  "<b>吃透阵列规整性这个福音</b>。256×256 个 PE 结构相同、weight-stationary、数据流方向固定(激活横向流过、部分和纵向累加),布局可以让它们成排规则摆、相邻 PE 短连线、布线方向高度一致 → 拥塞天然可控、利用率可做高。大阵列虽单元最多,反而是布局里最稳的部分;别用摆杂乱逻辑的思路去摆它。",
+  "<b>盯控制逻辑区的拥塞</b>。真正的拥塞热点和长路径多在阵列旁边那块不规则的控制逻辑(指令译码、地址生成、调度握手)——扇出杂、连线多向交叉。布局要在这里多留布线余量、降局部利用率、必要时手工区域约束,别让它把整片的布线⑤拖下水。",
+  "<b>反复看拥塞图(congestion map),别等布线才发现堵</b>。布局阶段工具能给出布线拥塞的预估热力图。一旦某区飘红(布线需求超容量),就当场摊开单元、降利用率、或调区域,而不是摆完直接交布线——摆太挤,布线⑤一定布不通,返工代价远大于此刻调整。",
+  "<b>诚实边界:方法通行,数字非 TPU 披露</b>。timing-driven / congestion-driven placement、global→legalize→detail、利用率目标、拥塞图、LEF/SDC 都是通行后端 EDA 实践(Innovus/ICC2 等);本案例把 TPU 已知结构(256×256 脉动阵列、24 MiB UB SRAM、700 MHz、28nm、≤331mm²、weight-stationary)当作被摆放对象来讲布局概念。TPU 不公开其私有 floorplan、利用率、布局结果,文中 70%、M1–Mx、区块走向均为示意,不代表 TPU 私有版图数据。"
+ ],
+ "result": [
+  {
+   "label": "输入",
+   "value": "门级网表 + 综合 SDC + 标准单元/技术 LEF"
+  },
+  {
+   "label": "两根指挥棒",
+   "value": "时序驱动(紧路径拉近)+ 拥塞驱动(别摆太挤)"
+  },
+  {
+   "label": "流程顺序",
+   "value": "global placement → legalize(对齐行/消重叠)→ detailed"
+  },
+  {
+   "label": "利用率目标(示意)",
+   "value": "标准单元利用率约 70%(阵列区可更高,控制区留余量)"
+  },
+  {
+   "label": "阵列区摆放",
+   "value": "256×256 PE 成排规则摆、数据流方向清晰、拥塞可控"
+  },
+  {
+   "label": "拥塞热点",
+   "value": "控制逻辑区(不规则、连线杂),非规整阵列"
+  }
+ ],
+ "after": [
+  "<b>看拥塞报告与利用率分布</b>:布局后查全片拥塞热力图——是否有区域布线需求超容量(飘红);查各区利用率是否落在预算内。阵列区通常干净,重点核对控制逻辑区有没有堆出过不去的热点,有就回去摊开重摆。",
+  "<b>做布局后时序检查(pre-CTS STA)</b>:用布局后的估计连线重算 slack,看关键路径有没有因为单元被摊得太开而变长、翻负。负 slack 要回布局调整(把紧路径单元再拉近)或反馈给综合,而不是带病进布线。",
+  "<b>迭代:在时序与拥塞间收敛</b>:时序紧就拉近、拥塞高就摊开,二者按热点逐区调,反复 placement→检查直到时序与拥塞同时达标。切忌为压时序把某区摆死、把拥塞推给布线⑤去背。",
+  "<b>确认合法化彻底</b>:核对没有残留单元重叠、所有单元都对齐到合法 site、都接到了电源轨;一个没合法化干净的位置会让布线、PDN、乃至后续 DRC 直接报错。",
+  "<b>交布线并附热点清单</b>:把布局结果(DEF)、继承的 SDC、拥塞热点区与关键路径清单交给布线⑤;提醒布线对控制逻辑区的拥塞、对关键路径的连线长度重点照顾,布完再回签 STA/DRC。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(256×256 脉动阵列、24 MiB Unified Buffer、700 MHz、28nm/die ≤331mm²、weight-stationary 为 v1 披露;timing-driven / congestion-driven placement、global→legalize→detailed、利用率/拥塞图、LEF/SDC/DEF 为通行后端 EDA 实践,70%、M1–Mx、floorplan/布局走向等均为示意,非 v1 披露)"
+}

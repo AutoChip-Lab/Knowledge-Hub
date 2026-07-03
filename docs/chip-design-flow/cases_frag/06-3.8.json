@@ -1,0 +1,123 @@
+{
+ "secNum": "3.8",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 形式验证:用穷举数学证明指令 FSM 不死锁、PCIe/DDR3 握手协议恒成立",
+ "oneLine": "TPU 的主机指令 FSM、PCIe 与 DDR3 接口握手、跨时钟域控制——这些「状态机/协议」类逻辑用仿真很难穷尽角落,本案例讲怎么用形式验证(formal)把待证性质交给引擎穷举所有可达状态:要么证明恒成立(PROVEN),要么吐一条反例波形(counterexample);而大数据通路的 256×256 阵列状态空间会爆炸,必须先划定范围。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">形式验证:对一个 FSM/协议穷举所有可达状态,要么证明性质恒成立,要么吐一条反例波形</text><g class=\"cs-part\" data-k=\"prop\" data-g=\"prop\"><rect class=\"cs-box\" x=\"40\" y=\"60\" width=\"230\" height=\"74\" rx=\"8\"/><text class=\"cs-t\" x=\"155\" y=\"86\">待证性质(SVA)</text><text class=\"cs-sub\" x=\"155\" y=\"106\">控制 FSM 无死锁 · 握手恒成立</text><text class=\"cs-sub\" x=\"155\" y=\"123\">assert(req |-> ##[1:N] gnt);(示意)</text></g><g class=\"cs-part\" data-k=\"dut\" data-g=\"dut\"><rect class=\"cs-box\" x=\"40\" y=\"170\" width=\"230\" height=\"74\" rx=\"8\"/><text class=\"cs-t\" x=\"155\" y=\"196\">被证对象 RTL</text><text class=\"cs-sub\" x=\"155\" y=\"216\">指令 FSM / PCIe·DDR3 握手</text><text class=\"cs-sub\" x=\"155\" y=\"233\">划定范围:不含 256×256 阵列</text></g><line class=\"cs-arr\" x1=\"270\" y1=\"97\" x2=\"332\" y2=\"120\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"270\" y1=\"207\" x2=\"332\" y2=\"160\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"fpv\" data-g=\"fpv\"><rect class=\"cs-box\" x=\"336\" y=\"110\" width=\"180\" height=\"80\" rx=\"8\"/><text class=\"cs-t\" x=\"426\" y=\"140\">形式引擎</text><text class=\"cs-sub\" x=\"426\" y=\"160\">穷举所有可达状态</text><text class=\"cs-sub\" x=\"426\" y=\"177\">数学证明,非逐条仿真</text></g><line class=\"cs-arr\" x1=\"516\" y1=\"138\" x2=\"582\" y2=\"100\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"516\" y1=\"162\" x2=\"582\" y2=\"300\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"proven\" data-g=\"proven\"><rect class=\"cs-box\" x=\"586\" y=\"66\" width=\"120\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"646\" y=\"92\">PROVEN</text><text class=\"cs-sub\" x=\"646\" y=\"112\">性质恒成立</text></g><g class=\"cs-part\" data-k=\"cex\" data-g=\"cex\"><rect class=\"cs-box\" x=\"586\" y=\"270\" width=\"120\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"646\" y=\"296\">反例 CEX</text><text class=\"cs-sub\" x=\"646\" y=\"316\">一条违例波形</text></g><g class=\"cs-part\" data-k=\"sim\" data-g=\"sim\"><rect class=\"cs-box\" x=\"40\" y=\"300\" width=\"476\" height=\"68\" rx=\"8\"/><text class=\"cs-t\" x=\"278\" y=\"326\">对比:仿真只走「有限条」激励路径</text><text class=\"cs-sub\" x=\"278\" y=\"346\">深角落 / 罕见状态组合可能永远不被走到 → 漏死锁</text></g><line class=\"cs-arr\" x1=\"278\" y1=\"244\" x2=\"278\" y2=\"296\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/></svg>",
+ "legend": [
+  {
+   "k": "prop",
+   "name": "待证性质(SVA assertion)",
+   "desc": "用 SystemVerilog Assertion 把「要保证的事」写成形式语言:比如「一旦发出 req,就必须在 N 拍内收到 gnt(无死锁)」「握手 valid/ready 不会卡死」「FSM 不会进入未定义状态」。形式引擎要证的就是这条性质在所有可达状态下都成立。assert(req |-> ##[1:N] gnt);(示意,非 TPU 披露)。"
+  },
+  {
+   "k": "dut",
+   "name": "被证对象 RTL(划定范围)",
+   "desc": "形式验证的对象是「控制密集、数据位宽小」的逻辑:主机 CISC 指令的解码/调度 FSM、PCIe 接口握手、DDR3 控制器握手、跨时钟域控制路径。关键是必须划定范围——绝不把 256×256=6.5 万单元的脉动阵列整块塞进来,否则状态空间指数爆炸,引擎跑不出结论。"
+  },
+  {
+   "k": "fpv",
+   "name": "形式引擎(穷举证明)",
+   "desc": "形式工具不像仿真那样「喂一条激励看一次结果」,而是用数学方法(可达性分析/归纳/模型检验)一次性覆盖被证逻辑的全部可达状态空间。对状态机和协议这类有限但角落极多的逻辑,它能给出「对所有输入序列都成立」的强保证,这是仿真给不了的。"
+  },
+  {
+   "k": "proven",
+   "name": "结论 PROVEN(性质恒成立)",
+   "desc": "引擎遍历完所有可达状态都没找到违例,返回 PROVEN——这条性质被数学证明在该范围内恒成立。注意它只对「划进证明边界、且环境约束设对」的那部分负责;边界外、约束写错的情形不在保证内。"
+  },
+  {
+   "k": "cex",
+   "name": "反例 counterexample(CEX)",
+   "desc": "若存在某条输入序列能让性质违例,引擎不会含糊地说「失败」,而是吐出一条具体的反例波形:从复位起一步步走到违例的完整信号轨迹。工程师照着这条波形就能复现并定位 bug——这是 formal 最值钱的产出之一。"
+  },
+  {
+   "k": "sim",
+   "name": "对照:仿真只走有限路径",
+   "desc": "仿真只能跑你写出/随机出的「有限条」激励,深角落、罕见的状态组合(如某拍 FIFO 将满又恰好复位、两个握手同时翻转)很可能永远不被走到,死锁就这样漏过去。formal 正是用来补这个洞——它不依赖你「想到」那条激励。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "prop",
+    "dut"
+   ],
+   "cap": "① 选「控制密集」的逻辑做对象:指令 FSM、PCIe/DDR3 握手、CDC 控制路径;把要保证的事(无死锁、握手恒成立、FSM 不进非法态)写成 SVA 性质——明确划定边界,阵列大数据通路排除在外"
+  },
+  {
+   "keys": [
+    "dut",
+    "fpv"
+   ],
+   "cap": "② 把被证 RTL + 性质 + 环境约束交给形式引擎;引擎不逐条跑激励,而是穷举该逻辑的全部可达状态空间,做数学证明"
+  },
+  {
+   "keys": [
+    "fpv",
+    "proven"
+   ],
+   "cap": "③ 若遍历所有可达状态都无违例 → 返回 PROVEN:这条性质在划定范围内被证恒成立,比「跑了一万条仿真没崩」强得多"
+  },
+  {
+   "keys": [
+    "fpv",
+    "cex"
+   ],
+   "cap": "④ 若存在违例 → 引擎吐一条反例波形(counterexample):从复位到违例的完整信号轨迹,照着就能复现、定位 bug"
+  },
+  {
+   "keys": [
+    "sim"
+   ],
+   "cap": "⑤ 对照仿真:它只走有限条激励路径,深角落的死锁/卡死可能永远不被触发而漏掉——formal 的价值正是不依赖你「恰好写出」那条激励"
+  }
+ ],
+ "before": [
+  "<b>先挑「适合 formal 的逻辑」并划定证明范围</b>:形式验证擅长控制密集、状态多、数据位宽小的块——TPU 的主机指令 FSM、PCIe/DDR3 接口握手、跨时钟域控制握手都是好对象;而 256×256 阵列、Unified Buffer 这类大数据通路状态会指数爆炸,要么排除、要么抽象/切小块,这条边界必须在动手前定死。",
+  "<b>把「要保证的事」写成可证性质(assertion)</b>:不是「跑跑看」,而是先把目标形式化:FSM 无死锁(任何状态都能在有限拍内推进)、握手协议恒成立(req 必有后续 gnt、valid/ready 不互锁)、不进非法状态、计数器不越界。这些 SVA 性质就是 formal 的完成判据。",
+  "<b>定环境约束(assume)防伪反例</b>:形式引擎会探索「物理上不可能发生」的输入组合,得先用 assume 约束把合法输入空间圈定(如协议规定 req 拉高后不能中途撤),否则引擎会拿一条非法激励当反例,浪费排查时间。约束怎么写,要和接口协议规范对齐。",
+  "<b>明确 formal 与仿真的分工</b>:formal 负责「穷尽证明」控制/协议类性质,仿真/覆盖率负责数据通路和端到端功能。两者完成判据不同——formal 看 PROVEN/CEX,仿真看覆盖率收敛。先把哪些性质归 formal、哪些归仿真分清楚,避免重复或漏验。"
+ ],
+ "during": [
+  "<b>从小性质、窄范围起步,逐步放大</b>:先对单个 FSM、单条握手通道证最关键的一两条性质,确认能在合理时间内收敛(PROVEN 或 CEX);再逐步加性质、扩边界。一上来就把一大片逻辑+几十条性质一起扔进去,极易状态爆炸跑不出结论。",
+  "<b>铁律:控制 FSM 必证「无死锁/活性」</b>:死锁是仿真最容易漏、硅后最难查的一类 bug——某个罕见状态组合下 FSM 卡住不再推进。用 formal 证活性(liveness:每个 req 终会得到响应、每个状态终能离开)正好补仿真的盲区,这是 TPU 这类多接口、多时钟域控制逻辑的首要 formal 目标。",
+  "<b>认真对待每一条反例(CEX)</b>:引擎给出反例时,先判断是「真 bug」还是「约束写漏了导致的伪反例」。真 bug 照波形定位修 RTL;伪反例则补 assume 约束再重证。把伪反例当真 bug 改 RTL、或把真 bug 当伪反例约束掉,都是危险操作。",
+  "<b>给跑不收敛的证明做抽象/分治</b>:状态空间太大导致引擎既不给 PROVEN 也不给 CEX(超时/inconclusive)时,常用手段是数据抽象(把宽数据总线抽象成「任意值」只保留控制位)、切割边界、加辅助归纳不变量(helper assertion),把问题压到引擎能闭合的规模——而不是放弃或误判为通过。",
+  "<b>取舍:formal 不替代仿真,而是互补</b>:formal 给的是「范围内对所有输入成立」的强保证,但范围划得小、约束依赖人写对;仿真覆盖广义功能但走不全角落。对 TPU 的握手/FSM 用 formal 兜底死锁,对阵列数据通路用带覆盖率的仿真兜底功能,二者各管一段。",
+  "<b>诚实边界:TPU 未公开其 formal 环境</b>:TPU v1 的指令 FSM、PCIe/DDR3 握手、多时钟域结构是其架构的客观存在,但「用了哪款形式工具、证了哪些具体性质、跑多久收敛」属于未披露的工程细节。以上为这类控制密集 ASIC 的通行 formal 实践,用来承载形式验证概念,非 TPU 专属披露。"
+ ],
+ "result": [
+  {
+   "label": "适用对象",
+   "value": "控制 FSM · PCIe/DDR3 握手 · CDC 控制路径"
+  },
+  {
+   "label": "首要待证性质",
+   "value": "无死锁(活性) · 握手恒成立 · 不进非法态"
+  },
+  {
+   "label": "性质示意(SVA)",
+   "value": "assert property(req |-> ##[1:N] gnt);(示意)"
+  },
+  {
+   "label": "环境约束示意",
+   "value": "assume property(协议合法输入);防伪反例(示意)"
+  },
+  {
+   "label": "两种结论",
+   "value": "PROVEN(恒成立) / CEX(反例波形)"
+  },
+  {
+   "label": "范围红线",
+   "value": "排除 256×256 阵列大数据通路,防状态爆炸"
+  }
+ ],
+ "after": [
+  "<b>核对性质清单是否全 PROVEN</b>:把这一块的所有待证性质(每条 FSM 的无死锁、每条握手的活性/安全)逐条确认结论为 PROVEN,且没有任何一条是因超时被悄悄标成 inconclusive 蒙混过去——未闭合的性质要么继续抽象求收敛,要么明确记为「仅部分证明」。",
+  "<b>反例修完要回归重证</b>:每修一处由 CEX 暴露的 bug,都要重新跑形式证明确认该性质现在 PROVEN、且没有引入新的违例;formal 的回归就是「重证全部性质集」,和仿真回归并行纳入持续验证。",
+  "<b>检查约束健全性,防「假 PROVEN」</b>:过强的 assume 会把违例情形排除在证明之外,造出虚假的 PROVEN。要做约束审查(如对 assume 跑 cover、检查可达性),确认证明不是被过度约束「证空」出来的——这是 formal 签核的关键一关。",
+  "<b>把 formal 结论与仿真覆盖合并签核</b>:formal 证下的控制/协议性质 + 仿真达成的数据通路功能覆盖,共同构成功能验证的签核证据;两边都收敛(formal 全 PROVEN、仿真覆盖率收口)后,这部分设计才算验证通过,可交综合(⑦)。",
+  "<b>记录诚实边界</b>:文档中标注哪些是 TPU v1 公开的结构事实(指令 FSM、PCIe/DDR3 接口、多时钟域),哪些是按通行 formal 实践补全的方法学(SVA 写法、assume 约束、抽象分治),避免把方法学推断当成 TPU 的披露细节。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(主机经 PCIe 发 CISC 指令、片外 DDR3、700 MHz 核心阵列等结构为公开事实;形式验证的具体工具、性质与证明环境为通行验证实践,TPU 未公开其 formal 方法学细节)"
+}

@@ -1,0 +1,114 @@
+{
+ "secNum": "3.2",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 一个 PE 怎么写:乘法是组合(=)、累加是时序(<=)——阻塞/非阻塞铁律",
+ "oneLine": "脉动阵列里每个 PE 都是「组合乘 + 时序累加」的标准搭档:乘积用 always_comb / = 当场算出,部分和用 always_ff @(posedge clk) / <= 逐拍寄存——把这两类逻辑和它们的赋值符号分清,是写 RTL 的第一条铁律。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 360\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"60\" y=\"34\">一个 PE(脉动阵列里的乘累加单元)的 RTL 结构</text><text class=\"cs-note\" x=\"60\" y=\"86\">组合逻辑 always_comb · 用 = · 无时钟</text><text class=\"cs-note\" x=\"425\" y=\"86\">时序逻辑 always_ff · 用 &lt;= · 跟 clk</text><line x1=\"395\" y1=\"100\" x2=\"395\" y2=\"345\" stroke=\"#cbd5e1\" stroke-width=\"1\" stroke-dasharray=\"3 5\"/><g class=\"cs-part\" data-k=\"a\" data-g=\"in\"><rect class=\"cs-box\" x=\"40\" y=\"120\" width=\"92\" height=\"44\" rx=\"8\"/><text class=\"cs-t\" x=\"86\" y=\"142\">激活 a</text><text class=\"cs-sub\" x=\"86\" y=\"158\">8-bit</text></g><g class=\"cs-part\" data-k=\"w\" data-g=\"in\"><rect class=\"cs-box\" x=\"40\" y=\"190\" width=\"92\" height=\"44\" rx=\"8\"/><text class=\"cs-t\" x=\"86\" y=\"212\">权重 w</text><text class=\"cs-sub\" x=\"86\" y=\"228\">8-bit · stationary</text></g><g class=\"cs-part\" data-k=\"mul\" data-g=\"comb\"><rect class=\"cs-box\" x=\"180\" y=\"150\" width=\"180\" height=\"74\" rx=\"8\"/><text class=\"cs-t\" x=\"270\" y=\"178\">组合乘法器</text><text class=\"cs-sub\" x=\"270\" y=\"197\">always_comb</text><text class=\"cs-sub\" x=\"270\" y=\"214\">prod = a * w; (16-bit)</text></g><line class=\"cs-arr\" x1=\"132\" y1=\"142\" x2=\"176\" y2=\"172\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"132\" y1=\"212\" x2=\"176\" y2=\"202\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"acc\" data-g=\"seq\"><rect class=\"cs-box\" x=\"430\" y=\"148\" width=\"210\" height=\"80\" rx=\"8\"/><path d=\"M430,228 L430,210 L448,228 Z\" fill=\"#8b5cf6\"/><text class=\"cs-t\" x=\"535\" y=\"176\">累加寄存器 acc</text><text class=\"cs-sub\" x=\"535\" y=\"195\">always_ff @(posedge clk)</text><text class=\"cs-sub\" x=\"535\" y=\"212\">acc &lt;= acc + prod; (32-bit)</text></g><line class=\"cs-arr\" x1=\"360\" y1=\"187\" x2=\"426\" y2=\"187\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"362\" y=\"178\">prod</text><g class=\"cs-part\" data-k=\"clk\" data-g=\"seq\"><rect class=\"cs-box\" x=\"430\" y=\"262\" width=\"120\" height=\"44\" rx=\"8\"/><text class=\"cs-t\" x=\"490\" y=\"284\">时钟 clk</text><text class=\"cs-sub\" x=\"490\" y=\"300\">700 MHz</text></g><line class=\"cs-arr\" x1=\"490\" y1=\"262\" x2=\"490\" y2=\"232\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"psum\" data-g=\"seq\"><rect class=\"cs-box\" x=\"595\" y=\"248\" width=\"118\" height=\"44\" rx=\"8\"/><text class=\"cs-t\" x=\"654\" y=\"270\">部分和 psum</text><text class=\"cs-sub\" x=\"654\" y=\"286\">沿阵列下传</text></g><polyline class=\"cs-arr\" points=\"640,188 668,188 668,244\" fill=\"none\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"60\" y=\"332\">铁律:&lt;= 给时序、= 给组合;用反 → 仿真/综合结果不一致(锁存器、竞争、波形错位)。</text></svg>",
+ "legend": [
+  {
+   "k": "comb",
+   "name": "组合逻辑(乘法器,用 always_comb / =)",
+   "desc": "8-bit 激活 × 8-bit 权重 → 16-bit 乘积,是纯组合:输出只随输入变,无时钟、无状态。写法用阻塞赋值 = (prod = a*w),综合出的是一片乘法器门电路,这一拍就给出结果。"
+  },
+  {
+   "k": "seq",
+   "name": "时序逻辑(累加器,用 always_ff @(posedge clk) / <=)",
+   "desc": "32-bit 累加寄存器 acc 在每个时钟上升沿把「旧 acc + 新乘积」锁进去。写法用非阻塞赋值 <= ,综合出的是带 clk 的触发器(图中左下小三角表示时钟沿),它持有跨拍的状态。"
+  },
+  {
+   "k": "in",
+   "name": "PE 的两路输入(a / w)",
+   "desc": "激活 a 沿阵列横向流入、权重 w 提前驻留(weight-stationary)。两者都是 8-bit,喂进组合乘法器;输入本身不决定用 = 还是 <= ,是「这块逻辑是组合还是时序」决定。"
+  },
+  {
+   "k": "clk",
+   "name": "时钟 clk(700 MHz)",
+   "desc": "只有时序逻辑跟着它走:每个上升沿推进一次累加。组合乘法器完全不接 clk。一个 PE 的关键路径(乘 + 加)必须在 1.43 ns(700 MHz 一拍)内稳定,否则要插流水寄存器。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "in",
+    "mul"
+   ],
+   "cap": "① 组合段:a、w 进 always_comb 块,prod = a * w 用阻塞 =。它没有 clk、没有记忆,输入一变输出立刻跟着变——综合成一坨乘法器门。"
+  },
+  {
+   "keys": [
+    "mul",
+    "acc"
+   ],
+   "cap": "② 乘积 prod 送进时序段:always_ff @(posedge clk) 里 acc <= acc + prod,用非阻塞 <= ——这一拍读到的还是旧 acc,沿到来时才把新值锁进寄存器。"
+  },
+  {
+   "keys": [
+    "clk",
+    "acc"
+   ],
+   "cap": "③ 时钟驱动:每个上升沿 acc 前进一步,把状态留到下一拍。这正是「组合算、时序记」的分工——组合负责当拍计算,时序负责跨拍保存。"
+  },
+  {
+   "keys": [
+    "acc",
+    "psum"
+   ],
+   "cap": "④ 部分和经寄存器节拍化后沿阵列下传给相邻 PE。寄存器同时起两个作用:存累加结果、给脉动流水切出整齐的时序级。"
+  },
+  {
+   "keys": [
+    "mul",
+    "acc"
+   ],
+   "cap": "⑤ 铁律对照:乘法器若错用 <= 、累加若错用 = ,仿真波形与综合电路就会对不上(意外锁存器/读到本拍新值/竞争)——这是 RTL 最常见也最隐蔽的坑。"
+  }
+ ],
+ "before": [
+  "<b>先分清组合还是时序</b>:对每块逻辑问一句「它需要记住上一拍吗?」需要 → 时序(寄存器);不需要、输出只随当前输入 → 组合。PE 里乘法不需记忆(组合),累加要跨拍攒部分和(时序)。",
+  "<b>定赋值符号的铁律</b>:时序块(always_ff @(posedge clk))一律用非阻塞 <= ;组合块(always_comb)一律用阻塞 =。这条不是风格偏好,而是保证「仿真行为 == 综合电路」的硬约束,全设计统一执行。",
+  "<b>定复位风格与位宽</b>:累加寄存器 acc 用同步还是异步复位、复位值是不是 0;位宽要算够——8-bit×8-bit=16-bit 乘积,多次累加要留到 32-bit(TPU 累加器正是 32-bit)防溢出。",
+  "<b>定可综合子集</b>:只用可综合写法(always_comb / always_ff、敏感列表完整、每个组合输出在所有分支都赋值),不写 # 延时、initial 这类仿真专用、不可综合的结构。"
+ ],
+ "during": [
+  "<b>组合乘法器这样写</b>:always_comb prod = a * w;(示意)——用阻塞 = ,块内顺序即数据流向,当拍算完。绝不能在组合块里依赖上一拍的值,否则就成了「想要时序却没寄存器」,综合会推出意外锁存器。",
+  "<b>累加寄存器这样写</b>:always_ff @(posedge clk) acc <= acc + prod;(示意)——用非阻塞 <= 。关键语义:= 号右边读的是「本拍沿到来前的旧 acc」,沿到来才更新。这保证同一时钟域多个寄存器并行更新、互不抢读对方新值。",
+  "<b>为什么不能混用</b>:组合块若用 <= 、或时序块若用 = ,RTL 仿真(按事件队列调度)与综合后的门级电路可能给出不同结果——竞争冒险、读到本拍新值、漏掉一拍。这类 bug 在波形上极隐蔽,是新手头号坑。",
+  "<b>组合块敏感列表要全</b>:用 always_comb 让工具自动收全敏感信号,避免手写 always @(a) 漏了 w 导致「仿真像锁存器、综合是组合」的不一致。每个组合输出必须在所有路径都被赋值,否则推出锁存器。",
+  "<b>关键路径要留够时间</b>:一个 PE 的组合路径是「乘 + 加」,必须在一个时钟周期(700 MHz → 1.43 ns)内稳定到累加寄存器输入端。脉动阵列把长链切成一格一寄存器,正是用时序逻辑把组合路径剁短、撑住高频。",
+  "<b>诚实边界</b>:这里的 prod=a*w;、acc<=acc+prod; 是「这类乘累加 PE 的通行 RTL 写法」示意,用来讲组合/时序与 =/<= 的铁律;TPU v1 不逐行公开其 PE 源码,文中不杜撰其私有编码细节,只借其已知结构(8-bit 乘 + 32-bit 累加 + 脉动阵列)作载体。"
+ ],
+ "result": [
+  {
+   "label": "组合乘法器(示意 HDL)",
+   "value": "always_comb prod = a * w;  // 阻塞 = ,16-bit"
+  },
+  {
+   "label": "累加寄存器(示意 HDL)",
+   "value": "always_ff @(posedge clk) acc <= acc + prod;  // 非阻塞 <= ,32-bit"
+  },
+  {
+   "label": "铁律一句话",
+   "value": "<= 给时序、= 给组合;用反则仿真≠综合"
+  },
+  {
+   "label": "组合段综合结果",
+   "value": "一片乘法器门电路,无 clk、无状态"
+  },
+  {
+   "label": "时序段综合结果",
+   "value": "带 clk 的触发器,持跨拍部分和"
+  },
+  {
+   "label": "约束(单 PE)",
+   "value": "乘+加须在 1.43 ns(700 MHz 一拍)内稳定"
+  }
+ ],
+ "after": [
+  "<b>跑 lint 抓铁律违例</b>:用 lint 工具专扫「组合块里用了 <= 」「时序块里用了 =」「组合输出未全路径赋值 → 意外锁存器」「敏感列表不全」——这些是 =/<= 写错最直接的告警。",
+  "<b>仿真验功能与边界</b>:给 PE 喂向量,核对 acc 是否逐拍正确累加;特意造一拍输入翻转,检查组合段是否当拍跟变、时序段是否恰好延后一拍——确认 =/<= 的时序语义如预期。",
+  "<b>试综合并比对</b>:做一次试综合,确认组合段映成乘法器+加法器(无 latch)、累加段映成触发器,且关键路径满足 700 MHz;再做综合前后(RTL vs 门级)一致性/形式比对,坐实「仿真 == 电路」。",
+  "<b>查 CDC</b>:本 PE 在单一 700 MHz 域内不跨时钟;但 PE 与 Unified Buffer / 主机 PCIe 接口之间存在多时钟域,交付前要把跨域信号的同步器/握手单独做 CDC 检查(见后续小节)。",
+  "<b>交验证</b>:把组合/时序划分、复位策略、位宽与时序约束连同 testbench 一并交给验证,作为后续把单 PE 扩成 256×256 阵列的可信积木。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(组合/时序与阻塞/非阻塞的具体 RTL 写法为通行 RTL 实践,示意片段非 TPU v1 逐行披露)"
+}

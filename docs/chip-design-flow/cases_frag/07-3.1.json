@@ -1,0 +1,123 @@
+{
+ "secNum": "3.1",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 综合全景:把那 256×256 阵列的 RTL「翻译 + 优化」成 28nm 门级网表",
+ "oneLine": "逻辑综合不是「按个按钮变门」,而是五步流水线:读 RTL → elaborate 推出通用逻辑 → 绑 28nm 库做工艺映射 → 按时序/面积/功耗优化 → 吐出门级网表与一摞报告;全程被一份 SDC 约束牵着走,跑不达标就回炉重综合——TPU 那个规整的 65,536-MAC 脉动阵列,正是被这条流水线一遍遍「揉」成真实标准单元网表的对象。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-t\" x=\"360\" y=\"30\">逻辑综合:把 RTL 一步步「翻译 + 优化」成门级网表</text><g class=\"cs-part\" data-k=\"rtl\" data-g=\"rtl\"><rect class=\"cs-box\" x=\"24\" y=\"70\" width=\"150\" height=\"120\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"99\" y=\"100\">① 读 RTL</text><text class=\"cs-sub\" x=\"99\" y=\"120\">read_verilog</text><text class=\"cs-sub\" x=\"99\" y=\"138\">TPU 可综合代码</text><text class=\"cs-sub\" x=\"99\" y=\"156\">256×256 阵列·UB</text><text class=\"cs-sub\" x=\"99\" y=\"174\">·控制 FSM</text></g><line class=\"cs-arr\" x1=\"174\" y1=\"130\" x2=\"214\" y2=\"130\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"elab\" data-g=\"elab\"><rect class=\"cs-box\" x=\"216\" y=\"70\" width=\"150\" height=\"120\" rx=\"8\"/><text class=\"cs-t\" x=\"291\" y=\"100\">② Elaborate</text><text class=\"cs-sub\" x=\"291\" y=\"120\">展开参数/generate</text><text class=\"cs-sub\" x=\"291\" y=\"138\">推断通用逻辑:</text><text class=\"cs-sub\" x=\"291\" y=\"156\">加法器·乘法器·</text><text class=\"cs-sub\" x=\"291\" y=\"174\">寄存器·MUX(GTECH)</text></g><line class=\"cs-arr\" x1=\"366\" y1=\"130\" x2=\"406\" y2=\"130\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"map\" data-g=\"map\"><rect class=\"cs-box\" x=\"408\" y=\"70\" width=\"150\" height=\"120\" rx=\"8\"/><text class=\"cs-t\" x=\"483\" y=\"100\">③ 工艺映射</text><text class=\"cs-sub\" x=\"483\" y=\"120\">绑 28nm 标准单元库</text><text class=\"cs-sub\" x=\"483\" y=\"138\">通用门 → 真实 cell</text><text class=\"cs-sub\" x=\"483\" y=\"156\">NAND/DFF/全加器…</text><text class=\"cs-sub\" x=\"483\" y=\"174\">.lib(Liberty)</text></g><line class=\"cs-arr\" x1=\"558\" y1=\"130\" x2=\"598\" y2=\"130\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"opt\" data-g=\"opt\"><rect class=\"cs-box\" x=\"600\" y=\"70\" width=\"96\" height=\"120\" rx=\"8\" fill=\"#fefce8\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"648\" y=\"100\">④ 优化</text><text class=\"cs-sub\" x=\"648\" y=\"120\">时序/面积</text><text class=\"cs-sub\" x=\"648\" y=\"138\">/功耗</text><text class=\"cs-sub\" x=\"648\" y=\"156\">多 Vt 选 cell</text><text class=\"cs-sub\" x=\"648\" y=\"174\">·缓冲·重定时</text></g><g class=\"cs-part\" data-k=\"sdc\" data-g=\"sdc\"><rect class=\"cs-box\" x=\"216\" y=\"220\" width=\"342\" height=\"60\" rx=\"8\" fill=\"#fef2f2\" stroke=\"#fca5a5\"/><text class=\"cs-t\" x=\"387\" y=\"244\">约束 SDC(驱动②③④)</text><text class=\"cs-note\" x=\"232\" y=\"266\">create_clock -period 1.43 [get_ports clk]  // 示意:700MHz</text></g><line class=\"cs-arr\" x1=\"291\" y1=\"220\" x2=\"291\" y2=\"192\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><line class=\"cs-arr\" x1=\"483\" y1=\"220\" x2=\"483\" y2=\"192\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><line class=\"cs-arr\" x1=\"500\" y1=\"250\" x2=\"648\" y2=\"192\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><line class=\"cs-arr\" x1=\"648\" y1=\"190\" x2=\"648\" y2=\"312\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"net\" data-g=\"net\"><rect class=\"cs-box\" x=\"408\" y=\"316\" width=\"288\" height=\"58\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"552\" y=\"340\">⑤ 门级网表 + 报告</text><text class=\"cs-sub\" x=\"552\" y=\"358\">netlist.v · 时序/面积/功耗 QoR · SDF/SDC</text></g><g class=\"cs-part\" data-k=\"iter\" data-g=\"iter\"><rect class=\"cs-box\" x=\"24\" y=\"316\" width=\"360\" height=\"58\" rx=\"8\" fill=\"#fff7ed\" stroke=\"#fdba74\"/><text class=\"cs-t\" x=\"204\" y=\"340\">迭代:看报告 → 调约束/RTL/库 → 重综合</text><text class=\"cs-sub\" x=\"204\" y=\"358\">未收敛(违例/超面积)就回炉,直到 QoR 达标</text></g><line class=\"cs-arr\" x1=\"408\" y1=\"345\" x2=\"388\" y2=\"345\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"204\" y1=\"316\" x2=\"204\" y2=\"284\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/></svg>",
+ "legend": [
+  {
+   "k": "rtl",
+   "name": "① 读 RTL(read)",
+   "desc": "综合器先把验证签核过的可综合 RTL 读进来:TPU 的 PE(8bit 乘 + 32bit 累加)、256×256 脉动阵列、24 MiB Unified Buffer 的读写控制、十几条 CISC 指令的译码 FSM 等。这一步只做语法/层次解析,还没有任何门——它是后面四步的原料。"
+  },
+  {
+   "k": "elab",
+   "name": "② Elaborate(推断通用逻辑)",
+   "desc": "把参数与 generate 展开(N=256 就拉出整列阵列),并把 RTL 语义推断成「与工艺无关的通用逻辑」——加法器、乘法器、寄存器、多路选择器这类抽象门(GTECH)。此时电路结构成型,但用的还不是任何真实库里的单元。"
+  },
+  {
+   "k": "map",
+   "name": "③ 工艺映射(technology mapping)",
+   "desc": "拿来 28nm 标准单元库(.lib / Liberty),把上一步的通用门一一映射成库里真实存在的物理单元:NAND、DFF、全加器、缓冲器……这是「从抽象逻辑落到具体工艺」的关键一跳,选哪颗 cell 直接决定面积/时延/功耗。"
+  },
+  {
+   "k": "opt",
+   "name": "④ 优化(时序/面积/功耗)",
+   "desc": "在满足 SDC 约束的前提下反复调结构:换更快或更省的 cell(多 Vt 库)、插缓冲修建立/保持、做逻辑重组与重定时、共享资源减面积。综合的「智能」几乎都在这一步——它要在 700 MHz 时序、面积、功耗之间找平衡。"
+  },
+  {
+   "k": "sdc",
+   "name": "约束 SDC(贯穿②③④的指挥棒)",
+   "desc": "综合不是无目标地变门,而是被 SDC 约束牵着走:时钟周期(示意 create_clock -period 1.43,对应约 700 MHz)、输入输出延迟、驱动/负载、伪路径/多周期。约束定得对不对,直接决定综合是去优时序还是去省面积。"
+  },
+  {
+   "k": "net",
+   "name": "⑤ 门级网表 + 报告(产物)",
+   "desc": "流水线吐出两类东西:门级网表(netlist.v,全是真实标准单元 + 连线)与一摞 QoR 报告(时序 slack、面积、功耗),外加给后端用的 SDC/SDF。网表交给布局布线,报告用来判断这一轮综合「收没收敛」。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "rtl",
+    "elab"
+   ],
+   "cap": "① 读入签核过的 TPU 可综合 RTL,elaborate 展开 generate/参数,把语义推断成与工艺无关的通用逻辑(加法器/乘法器/寄存器/MUX)。"
+  },
+  {
+   "keys": [
+    "map",
+    "sdc"
+   ],
+   "cap": "② 绑 28nm 标准单元库做工艺映射:在 SDC(示意 create_clock -period 1.43)指挥下,把通用门换成库里真实的 NAND/DFF/全加器等单元。"
+  },
+  {
+   "keys": [
+    "opt"
+   ],
+   "cap": "③ 优化:为满足 700 MHz 时序、控面积、降功耗,换 cell(多 Vt)、插缓冲、做重定时与资源共享——综合的核心智能都在这一步。"
+  },
+  {
+   "keys": [
+    "net"
+   ],
+   "cap": "④ 产物落地:吐出门级网表(netlist.v)、时序/面积/功耗 QoR 报告,以及给后端的 SDC/SDF。"
+  },
+  {
+   "keys": [
+    "iter",
+    "sdc",
+    "rtl"
+   ],
+   "cap": "⑤ 迭代:若报告显示时序违例或超面积/功耗,就回去调约束/RTL/库再重综合,直到 QoR 达标——综合是个收敛循环,不是一次性动作。"
+  }
+ ],
+ "before": [
+  "<b>备齐三类输入</b>:签核过的可综合 RTL、目标工艺的标准单元库(.lib/Liberty,28nm,通常含多 Vt 版本)、以及约束文件 SDC——三者缺一,综合无从谈起。",
+  "<b>写时序约束(SDC)</b>:先定主时钟(示意 create_clock -period 1.43 [get_ports clk],对应约 700 MHz)、输入/输出延迟、驱动强度与负载、伪路径与多周期路径——约束是综合的优化目标,定错则全盘跑偏。",
+  "<b>声明功耗意图与 DFT 要求</b>:若有多电压/门控时钟意图用 UPF/CPF 表达;同时约定可测性(扫描链插入、压缩比)在综合阶段还是后续做——这些都影响生成的网表结构。",
+  "<b>定 QoR 目标与库策略</b>:把「700 MHz 下时序闭合、面积/功耗在预算内」写成可量化目标;选好多 Vt 库的使用策略(默认高 Vt 省漏电,关键路径才用低 Vt 提速)。",
+  "<b>对齐工艺与上游</b>:确认工艺角(慢/快/典型)、工作电压温度,以及从微架构拿到的结构参数(256×256 阵列、24 MiB UB、4 MiB 累加器、weight-stationary 数据流)作为被综合对象。"
+ ],
+ "during": [
+  "<b>铁律:综合被约束驱动,不是自动变门</b>。同一份 TPU RTL,SDC 把时钟逼紧就去优时序(多插缓冲、用低 Vt、面积涨),约束松就去省面积/功耗——约束错,网表必错,QoR 数字毫无意义。",
+  "<b>五步要分清「翻译」与「优化」</b>。read/elaborate/map 是把 RTL 一步步翻成具体单元(语义不变),optimize 才是在约束下改结构求最优;混淆两者,会误把映射当成了最终质量。",
+  "<b>规整阵列重在批量映射的一致性</b>。TPU 的 256×256 同构 PE 在 elaborate 后是 6.5 万个几乎一样的乘加单元,综合器会对它们做一致的映射与优化;这类规整设计通常综合得整齐,关键路径常落在累加链与跨 PE 互连上。",
+  "<b>用多 Vt 库做时序/漏电的取舍</b>。这类高频设计的通行做法:整体用高 Vt(低漏电)铺底,只在违例的关键路径上换低 Vt(快但漏电高)——综合器自动在满足 700 MHz 与控总功耗间分配。",
+  "<b>大数据通路注意算术结构选择</b>。8bit 乘 + 32bit 累加这种宽算术,综合器可选不同加法器/乘法器实现(行波、超前进位、华莱士树),时序紧时自动选更快但更大的结构——这是面积/时延取舍的典型现场。",
+  "<b>诚实声明方法学来源</b>:read→elaborate→map→optimize→netlist 五步、SDC 约束、Liberty 库、多 Vt、QoR 报告均为通行 EDA 综合实践(Design Compiler / Genus / Yosys 等);TPU 不公开其私有综合脚本、库或 QoR 数字,本节以其已知结构为被综合对象讲流程,所有脚本/周期数均为示意,非 TPU 私有数据。"
+ ],
+ "result": [
+  {
+   "label": "综合五步",
+   "value": "read → elaborate → tech-map → optimize → netlist"
+  },
+  {
+   "label": "时钟约束(示意)",
+   "value": "create_clock -period 1.43 [get_ports clk]  // ~700MHz"
+  },
+  {
+   "label": "工艺库(示意选项)",
+   "value": "28nm 多 Vt .lib(高 Vt 铺底 / 低 Vt 救关键路径)"
+  },
+  {
+   "label": "主产物·网表",
+   "value": "门级 netlist.v(全真实标准单元 + 连线)"
+  },
+  {
+   "label": "主产物·报告",
+   "value": "时序 slack / 面积 / 功耗 QoR 报告"
+  },
+  {
+   "label": "交后端",
+   "value": "SDC + SDF(给布局布线与后续 STA)"
+  }
+ ],
+ "after": [
+  "<b>读 QoR 报告判收敛</b>:看时序 slack(700 MHz 下建立/保持有无违例)、总面积、动态/漏电功耗是否落在预算内——这三张报告决定本轮综合算不算成功。",
+  "<b>逻辑等价检查(LEC)</b>:用形式化等价工具比对 RTL 与门级网表,确认综合(尤其重定时/优化)没有改变功能逻辑——这是放行网表的硬关卡。",
+  "<b>迭代回炉</b>:有违例就回去调 SDC、改 RTL 流水或换库策略再重综合;综合本质是收敛循环,常跑很多轮才把 QoR 调达标。",
+  "<b>交付后端</b>:把签过 LEC 的门级网表连同 SDC/SDF、库与功耗意图交给布局布线;布线后还要回来做带寄生的签核 STA,确认 700 MHz 在真实互连下仍成立。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(逻辑综合流程/约束/库/QoR 部分为通行 EDA 综合实践,工具与脚本/周期数为示意,非 TPU 公开的私有综合数据)"
+}

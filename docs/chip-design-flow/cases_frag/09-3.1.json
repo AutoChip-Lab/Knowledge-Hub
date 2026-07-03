@@ -1,0 +1,119 @@
+{
+ "secNum": "3.1",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 签核流程与「金标准」工具:把 ⑧ 交来的那版收敛版图,用业界公认的签核级工具按「时序 / 电源 IR-EM / 物理 DRC-LVS / 逻辑等价 / 功耗」多维度并行复核一遍,五维全绿汇入 tape-out 闸门才放行流片;任一维度红就回 ⑧ ECO、重提取、再签,来回迭代到全绿",
+ "oneLine": "本案例落到「签核流程与金标准工具」小节:签核不是再设计,而是『换一套独立、权威、可被复现的标尺,把后端说收敛的版图最后核一遍』。组织上分三段——先把后端移交包(收敛版图 GDSII + SPEF 真实寄生 + 布线后网表/SDC + 全工艺角签核库)准备齐、对得上;再用各维度业界公认的『金标准』签核工具并行各跑各的(时序用 PrimeTime 在 MMMC 多模多角 + OCV 下做 STA、电源完整性用 RedHawk/Voltus 做 IR-drop/EM、物理用 Calibre 做 DRC/LVS/DFM、逻辑等价用 Formality 做网表↔RTL LEC、功耗用 PrimePower 类工具核动态/漏电);最后把五维报告汇入一个 tape-out 闸门,全部达标(全绿)才放行。这条流程是通行签核实践;这里把 TPU 已知的 256×256 脉动阵列、占近 29% die 的 24 MiB Unified Buffer、700 MHz、28nm/≤331mm²、28–40W、weight-stationary 作为『被签核对象』来讲签核怎么组织,绝不编造 TPU 私有的 corner/报告/QoR 数字。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 420\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"26\">签核流程:后端交来「版图 + SPEF 真实寄生 + 网表/SDC + 全 corner 库」→ 多维度并行用「金标准」签核级工具各自复核 → 汇入 tape-out 闸门,全绿才放行;任一红回 ⑧ ECO 再签</text><g class=\"cs-part\" data-k=\"input\" data-g=\"input\"><rect class=\"cs-box\" x=\"24\" y=\"56\" width=\"158\" height=\"300\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"103\" y=\"82\">签核输入(来自 ⑧)</text><text class=\"cs-sub\" x=\"103\" y=\"106\">收敛后版图 GDSII</text><text class=\"cs-sub\" x=\"103\" y=\"126\">SPEF 真实寄生 RC</text><text class=\"cs-sub\" x=\"103\" y=\"146\">布线后网表 + SDC</text><text class=\"cs-sub\" x=\"103\" y=\"170\">全 corner 签核库 .lib</text><text class=\"cs-sub\" x=\"103\" y=\"190\">(P/V/T 多组合)</text><text class=\"cs-sub\" x=\"103\" y=\"222\">被签核对象:</text><text class=\"cs-sub\" x=\"103\" y=\"242\">256×256 脉动阵列</text><text class=\"cs-sub\" x=\"103\" y=\"262\">24MiB UB / 700MHz</text><text class=\"cs-sub\" x=\"103\" y=\"282\">28nm / ≤331mm²</text><text class=\"cs-sub\" x=\"103\" y=\"302\">28–40W / weight-stat.</text></g><line class=\"cs-arr\" x1=\"182\" y1=\"96\" x2=\"236\" y2=\"96\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"182\" y1=\"168\" x2=\"236\" y2=\"168\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"182\" y1=\"240\" x2=\"236\" y2=\"240\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"182\" y1=\"312\" x2=\"236\" y2=\"312\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"parallel\" data-g=\"parallel\"><rect class=\"cs-box\" x=\"240\" y=\"56\" width=\"252\" height=\"300\" rx=\"8\" fill=\"none\" stroke=\"#cbd5e1\" stroke-dasharray=\"5 4\"/><text class=\"cs-t\" x=\"366\" y=\"78\">多维度并行签核(各用金标准工具)</text><g class=\"cs-part\" data-k=\"sta\" data-g=\"sta\"><rect class=\"cs-cell\" x=\"252\" y=\"92\" width=\"228\" height=\"44\"/><text class=\"cs-cellt\" x=\"366\" y=\"110\">时序 STA · PrimeTime</text><text class=\"cs-cellt\" x=\"366\" y=\"128\">MMMC 多模多角 + OCV/AOCV</text></g><g class=\"cs-part\" data-k=\"ir\" data-g=\"ir\"><rect class=\"cs-cell\" x=\"252\" y=\"142\" width=\"228\" height=\"44\"/><text class=\"cs-cellt\" x=\"366\" y=\"160\">电源 IR/EM · RedHawk/Voltus</text><text class=\"cs-cellt\" x=\"366\" y=\"178\">动静态压降 + 电迁移</text></g><g class=\"cs-part\" data-k=\"phys\" data-g=\"phys\"><rect class=\"cs-cell\" x=\"252\" y=\"192\" width=\"228\" height=\"44\"/><text class=\"cs-cellt\" x=\"366\" y=\"210\">物理验证 · Calibre DRC/LVS</text><text class=\"cs-cellt\" x=\"366\" y=\"228\">规则 + 版图↔网表一致 + DFM</text></g><g class=\"cs-part\" data-k=\"lec\" data-g=\"lec\"><rect class=\"cs-cell\" x=\"252\" y=\"242\" width=\"228\" height=\"44\"/><text class=\"cs-cellt\" x=\"366\" y=\"260\">逻辑等价 · Formality LEC</text><text class=\"cs-cellt\" x=\"366\" y=\"278\">网表 ↔ RTL 功能等价</text></g><g class=\"cs-part\" data-k=\"pwr\" data-g=\"pwr\"><rect class=\"cs-cell\" x=\"252\" y=\"292\" width=\"228\" height=\"44\"/><text class=\"cs-cellt\" x=\"366\" y=\"310\">功耗签核 · PrimePower 类</text><text class=\"cs-cellt\" x=\"366\" y=\"328\">动态/漏电 vs 28–40W 预算</text></g></g><line class=\"cs-arr\" x1=\"480\" y1=\"114\" x2=\"548\" y2=\"150\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"480\" y1=\"164\" x2=\"548\" y2=\"172\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"480\" y1=\"214\" x2=\"548\" y2=\"194\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"480\" y1=\"264\" x2=\"548\" y2=\"216\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"480\" y1=\"314\" x2=\"548\" y2=\"238\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"gate\" data-g=\"gate\"><rect class=\"cs-box\" x=\"552\" y=\"140\" width=\"146\" height=\"120\" rx=\"8\" fill=\"#fefce8\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"625\" y=\"170\">tape-out 闸门</text><text class=\"cs-sub\" x=\"625\" y=\"196\">五维报告汇总</text><text class=\"cs-sub\" x=\"625\" y=\"216\">全部判据达标</text><text class=\"cs-sub\" x=\"625\" y=\"236\">= 全绿才放行</text></g><line class=\"cs-arr\" x1=\"625\" y1=\"260\" x2=\"625\" y2=\"306\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"tapeout\" data-g=\"tapeout\"><rect class=\"cs-box\" x=\"552\" y=\"310\" width=\"146\" height=\"46\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"625\" y=\"334\">⑩ 流片 tape-out</text><text class=\"cs-sub\" x=\"625\" y=\"350\">GDSII 交工厂制掩膜</text></g><polyline class=\"cs-arr\" points=\"552,250 516,250 516,372 103,372 103,358\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"118\" y=\"368\">任一维度违例 → 回 ⑧ ECO 修 → 重提取 SPEF/重打包 → 再签到全绿(高度迭代)</text><text class=\"cs-note\" x=\"24\" y=\"398\">注:PrimeTime/MMMC/OCV、RedHawk/Voltus、Calibre DRC/LVS/DFM、Formality LEC、PrimePower、tape-out 闸门均为通行签核 EDA 实践;TPU v1 不公开其签核报告/corner/QoR,图为示意</text></svg>",
+ "legend": [
+  {
+   "k": "input",
+   "name": "签核输入(后端 ⑧ 的移交包)",
+   "desc": "签核开跑前,要把后端交来的一套自洽数据备齐对上:① 收敛后的版图(GDSII);② 从版图提取的 SPEF 真实寄生 RC(签核算延迟/电流的真账,而非综合阶段的估算);③ 布线后的最终门级网表 + SDC 约束;④ 覆盖全工艺角(P/V/T 多组合)的签核级时序/功耗库 .lib。这四类必须同属一版、彼此对得上,签核才信得过。本节用 TPU 已知结构(256×256 脉动阵列、24 MiB UB、700 MHz、28nm、≤331mm²、28–40W)作为被签核对象;TPU 不公开其具体移交包/corner/库。"
+  },
+  {
+   "k": "sta",
+   "name": "时序签核 STA · PrimeTime + MMMC/OCV",
+   "desc": "时序维度的金标准:用 PrimeTime 这类签核级静态时序分析,在 MMMC(多模多角:多个功能/测试模式 × 多个 P/V/T 工艺角)下、叠加 OCV/AOCV(片上偏差)做 setup/hold 检查,确认 TPU 的 700 MHz 时钟与脉动阵列累加链等关键路径在所有 corner 下 slack 都不为负。判据示意:全角 setup/hold slack ≥ 0。具体 corner 集与 slack 数字是 TPU 私有、不公开,文中数字为示意。"
+  },
+  {
+   "k": "ir",
+   "name": "电源完整性签核 · RedHawk/Voltus(IR-drop/EM)",
+   "desc": "电源维度的金标准:用 RedHawk 或 Voltus 这类工具做动态/静态 IR-drop 与电迁移(EM)签核。256×256 阵列满负荷时翻转密集、瞬态电流大,要确认电源网格把压降压在阈值内、各金属段电流密度不超 EM 规则。判据示意:IR-drop < 电源电压的某个百分比(如几个 % 量级,示意)、EM 余量为正。TPU 实际 PDN/压降数字不公开。"
+  },
+  {
+   "k": "phys",
+   "name": "物理验证签核 · Calibre(DRC/LVS/DFM)",
+   "desc": "可制造性维度的金标准:用 Calibre 这类工具按代工厂 28nm runset 做 DRC(设计规则检查)、LVS(版图↔网表一致)与 DFM(可制造性/良率优化检查)。判据是硬门槛:DRC/LVS 必须零违例(或仅剩已正式豁免项),否则版图根本不可制造、不许流片。TPU 用的具体 PDK/runset 不公开。"
+  },
+  {
+   "k": "gate",
+   "name": "tape-out 闸门(五维汇总放行)",
+   "desc": "签核的收口:把时序、电源 IR-EM、物理 DRC/LVS、逻辑等价(Formality LEC 证网表↔RTL 等价)、功耗五维各自的签核报告汇总到一个 tape-out 闸门,逐项对照事先定好的判据——只有全部达标(全绿)才放行,这套 GDSII 才进 ⑩ 流片;任一维度红就回 ⑧ ECO 再签。它是『后端自报不算数、五维独立复核全过才放行』这条签核纪律的物理落点。tape-out 闸门是通行签核治理实践。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "input"
+   ],
+   "cap": "① 备齐签核输入:把 ⑧ 交来的收敛版图(GDSII)、SPEF 真实寄生、布线后网表+SDC、全工艺角签核库对齐成一套自洽数据——签核以真实寄生而非估算开跑,被签核对象是 TPU 的脉动阵列/24MiB UB/700MHz/28nm 版图"
+  },
+  {
+   "keys": [
+    "parallel",
+    "sta"
+   ],
+   "cap": "② 时序维度并行开跑:用 PrimeTime 这类金标准 STA,在 MMMC 多模多角 + OCV 下核 setup/hold,确认 700MHz 与阵列累加链在全 corner 下 slack ≥ 0(判据示意)"
+  },
+  {
+   "keys": [
+    "ir",
+    "phys"
+   ],
+   "cap": "③ 电源与物理维度并行:RedHawk/Voltus 核 IR-drop/EM(阵列大电流下压降/电迁移在阈值内,示意);Calibre 按工艺 runset 核 DRC/LVS/DFM,要求零违例(或仅已豁免项)——可制造性硬门槛"
+  },
+  {
+   "keys": [
+    "lec",
+    "pwr"
+   ],
+   "cap": "④ 等价与功耗维度并行:Formality LEC 证网表↔RTL 功能等价(不走样);PrimePower 类核动态/漏电功耗对 28–40W 预算——各维度互不替代、各算各的"
+  },
+  {
+   "keys": [
+    "gate",
+    "tapeout"
+   ],
+   "cap": "⑤ 汇入 tape-out 闸门:五维报告汇总,全部达标(全绿)才放行,这套 GDSII 进 ⑩ 流片;任一维度违例则回 ⑧ ECO 修→重提取 SPEF/重打包→再签,高度迭代到全绿"
+  }
+ ],
+ "before": [
+  "<b>定真实寄生 SPEF 与库的基准</b>:约定签核以哪一版版图提取的 SPEF(逐条网络真实 R/C/耦合 Cc)、配哪套全工艺角签核级 .lib 为准——签核必须用布线后真实寄生而非综合估算来算延迟/电流,且版图、网表、SPEF、SDC 要同属一版,彼此对得上。TPU 的实际寄生/库不公开,这里以其已知结构为被签核对象,数值示意。",
+  "<b>定 corner 集与运行模式(MMMC 矩阵)</b>:列清要覆盖哪些工艺角(慢/快/典型 × 高/低压 × 高/低温等 P/V/T 组合)、哪些功能/测试模式,组成 MMMC 多模多角矩阵,并明确是否叠加 OCV/AOCV 片上偏差。大芯片的签核 corner 是收敛成败的关键,但 TPU 私有 corner 集不公开,本节为通行实践与示意。",
+  "<b>定各维度的判据(放行线)</b>:先把『什么算达标』钉死——时序:全角 setup/hold slack ≥ 0(示意);电源:IR-drop < 电源电压某百分比、EM 余量为正(示意阈值);物理:DRC/LVS 零违例(仅允许已正式豁免项);等价:Formality 形式等价通过;功耗:动态+漏电在 28–40W 预算内(示意)。判据先定,签核才有客观放行依据。",
+  "<b>定金标准工具链与版本</b>:约定各维度用哪套签核级工具及版本——时序 PrimeTime、IR/EM RedHawk 或 Voltus、物理 Calibre(DRC/LVS/DFM)、等价 Formality、功耗 PrimePower 类;这些是业界通行的签核『金标准』,其结果被当作放行依据。TPU 实际工具链不公开,均为通行实践示意。",
+  "<b>定豁免规则与 DRC waiver 流程</b>:大芯片签核常有少量已知、经评审可接受的违例(如某些 DRC waiver、特定路径的时序豁免),要事先约定哪些可豁免、怎么走评审签字、如何在报告里登记可追溯——避免拿『还没评审的违例』去卡或去蒙混放行。这是通行签核治理实践,TPU 不公开其具体豁免清单。"
+ ],
+ "during": [
+  "<b>铁律:签核是『独立换标尺再核一遍』</b>。后端用实现工具说自己收敛了不算数;签核要用独立于实现工具的签核级『金标准』工具、签核库、真实寄生重新核——核出来的才是放行依据。签核的价值正在于这份独立性与权威性,不能直接拿后端实现工具的自报结果当签核结论。",
+  "<b>多维度并行、各算各的,互不替代</b>。时序、电源 IR-EM、物理 DRC/LVS、逻辑等价、功耗是相互独立的维度,要并行各跑各的——时序绿不代表压降绿,DRC 干净不代表逻辑等价。任何一维红都不算签核通过,绝不能只盯时序而放掉电源完整性或可制造性。",
+  "<b>用真实寄生 SPEF,不用估算</b>。签核 STA/功耗/EM-IR 都要用从版图提取的真实寄生 RC,而非综合阶段的线负载估算——很多设计在估算下『看起来收敛』,用真实寄生一核就露馅。这一步就是把前端/实现的乐观假设兑现成真账。",
+  "<b>DRC/LVS 是不可妥协的硬门槛</b>。物理验证一红,版图就不可制造,无论时序多漂亮都不许流片;LVS 不一致更说明版图和网表对不上,签核其余维度的结论也都不可信。所以物理验证要清到零违例(或仅剩已正式豁免项)。",
+  "<b>逻辑等价兜住『功能不走样』</b>。综合→CTS→布线→ECO 一路改下来,必须用 Formality 这类 LEC 形式证明网表与 RTL 仍等价;等价不过说明实现把功能改坏了,必须查清修正——不能带着功能偏差去流片,这是签核里可穷尽、不依赖测试向量的功能保障。",
+  "<b>诚实声明方法学来源(贯穿)</b>:PrimeTime + MMMC/OCV 的 STA、RedHawk/Voltus 的 IR-drop/EM、Calibre 的 DRC/LVS/DFM、Formality 的 LEC、PrimePower 类功耗签核、五维汇入 tape-out 闸门——都是通行签核 EDA 实践。TPU v1 不公开其签核报告、corner 集、库、QoR 或工具链;本节以 TPU 已知结构(256×256 脉动阵列、24 MiB UB、700 MHz、28nm、≤331mm²、28–40W、weight-stationary)为被签核对象讲签核怎么组织,文中所有 corner、slack、IR-drop 百分比、功耗判据均为示意,非 TPU 私有数字。"
+ ],
+ "result": [
+  {
+   "label": "签核组织(三段)",
+   "value": "备齐移交包(版图+SPEF+网表/SDC+全角库)→ 多维度并行用金标准工具复核 → 汇入 tape-out 闸门,全绿放行"
+  },
+  {
+   "label": "时序签核",
+   "value": "PrimeTime + MMMC(多模多角)+ OCV/AOCV;判据(示意):全 corner setup/hold slack ≥ 0,700MHz 关键路径无违例"
+  },
+  {
+   "label": "电源完整性签核",
+   "value": "RedHawk / Voltus 的动静态 IR-drop + EM;判据(示意):IR-drop < 电源电压某百分比、EM 余量为正(阵列大电流下成立)"
+  },
+  {
+   "label": "物理验证签核",
+   "value": "Calibre DRC / LVS / DFM,按 28nm runset;判据(硬门槛):零违例,仅允许已正式豁免项"
+  },
+  {
+   "label": "逻辑等价 + 功耗签核",
+   "value": "Formality LEC 证网表↔RTL 等价(无不等价点);PrimePower 类核动态/漏电功耗对 28–40W 预算(示意)"
+  },
+  {
+   "label": "放行 / 打回出口",
+   "value": "五维全绿 → 汇入 tape-out 闸门放行,GDSII 进 ⑩ 流片;任一维度红 → 回 ⑧ ECO,重提取/重打包/再签,迭代到全绿"
+  }
+ ],
+ "after": [
+  "<b>汇总五维报告做 tape-out 闸门判定</b>:把时序、电源 IR-EM、物理 DRC/LVS、逻辑等价、功耗五个维度的签核报告集中汇总,逐项对照事先定好的判据——只有全部达标(全绿)才允许过闸门;任何一维红或仅靠未评审违例蒙混,都不放行。",
+  "<b>违例回 ⑧ 做 ECO 修复</b>:某维度有违例(如某 corner 时序为负、某处 IR-drop 超阈、DRC 有错),列清问题交回第 ⑧ 步做 ECO(工程修改单)定点修——签核本身不改电路,改在后端,签核只负责判定与复核。",
+  "<b>改完必须重提取、重打包、再签</b>(铁律):ECO 动了网表/版图后,要连带重提取 SPEF、重导版图、更新网表与 SDC,再把受影响维度(乃至全维度)重新签一遍——切忌只改一处而让移交包不再自洽,或只重签一维而漏掉 ECO 对其它维度的连带影响。",
+  "<b>后端与签核来回迭代到全绿</b>:签核↔⑧ECO 是高度迭代的拉锯,可能反复多轮,直到所有维度在所有 corner 下全部转绿、判据全满足;这一轮轮独立复核正是签核存在的意义。",
+  "<b>全绿后过闸放行 ⑩ 流片</b>:五维签核全部通过、tape-out 闸门放行后,这套经独立复核确认的 GDSII 正式进入第 ⑩ 步流片,交工厂制光掩膜——设计从『数据』走向『硅片』,签核完成把关使命。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(256×256 8-bit MAC 脉动阵列、24 MiB Unified Buffer、700MHz、28nm、≤331mm²、28–40W、weight-stationary 为该文披露的已知结构,作为被签核对象;签核流程与 PrimeTime/MMMC/OCV 的 STA、RedHawk/Voltus 的 IR-drop/EM、Calibre 的 DRC/LVS/DFM、Formality 的 LEC、PrimePower 类功耗签核、tape-out 闸门等均为通行签核 EDA 实践,图与所有 corner/slack/IR-drop/功耗判据均为示意,非 TPU v1 公开的私有签核报告、corner、库或 QoR 数字)"
+}

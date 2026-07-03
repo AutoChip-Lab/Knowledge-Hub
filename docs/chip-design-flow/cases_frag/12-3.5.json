@@ -1,0 +1,117 @@
+{
+ "secNum": "3.5",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 晶圆测试(CP / wafer sort):封装之前,先在「整片晶圆」上用探针卡逐颗 die 加电探测,把每颗 ≤331mm² 的 TPU die 当场标成 good ✓ 或 bad ✗、画出 wafer map——好 die 才花钱进切割/封装,坏 die 在最便宜的阶段就被早筛掉,同时把良率与缺陷分布回喂制造",
+ "oneLine": "本案例落到「晶圆测试(CP / wafer sort)」小节:芯片制造完工、晶圆上密密麻麻排着一颗颗 TPU die,但此刻它们还连成一整片、好坏未知。封装是一道贵工序,绝不能把注定报废的坏 die 也封进去白花钱。CP(chip probing,又叫 wafer sort/晶圆分选)就是在切割与封装之前,用一张布满细探针的『探针卡(probe card)』逐颗 die 扎住焊盘加电、跑测试图形、量响应,当场判定每颗 die 是 good 还是 bad,并把全片好坏分布画成一张『wafer map』。它一举三得:① 早筛——坏 die 在最便宜的阶段被标出、挡在封装之外,省下封装与成品测的钱;② 给后道明确指令——只把标为 good 的 TPU die 送去切割/封装;③ 反馈制造——晶圆良率高低与坏 die 的空间分布(边缘环、簇状、随机)能帮工艺定位缺陷来源。这里把 TPU 已知结构(256×256 脉动阵列、24 MiB Unified Buffer、700 MHz、28nm、≤331mm² 大 die、最终做成 PCIe 加速卡)当作『被探针逐颗探测、被标好坏』的对象来讲 CP 概念;探针卡/测试机、测试项与判据、良率与缺陷分布、wafer map 格式均为这类 28nm 大 die 的通行封测实践,TPU v1 不公开其私有 CP 测试项与良率数据。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 420\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"26\">晶圆测试(CP / wafer sort):封装之前,用探针卡逐颗 die 探测电测 → 标 good ✓ / bad ✗ → 出 wafer map(好坏分布);坏 die 早筛掉,不浪费封装钱</text><g class=\"cs-part\" data-k=\"wafer\" data-g=\"wafer\"><rect class=\"cs-box\" x=\"24\" y=\"58\" width=\"206\" height=\"200\" rx=\"8\"/><text class=\"cs-t\" x=\"127\" y=\"82\">① 整片晶圆(满是 TPU die)</text><text class=\"cs-sub\" x=\"127\" y=\"100\">制造完工、还连成一整片</text><rect class=\"cs-cell\" x=\"52\" y=\"116\" width=\"36\" height=\"36\"/><rect class=\"cs-cell\" x=\"92\" y=\"116\" width=\"36\" height=\"36\"/><rect class=\"cs-cell\" x=\"132\" y=\"116\" width=\"36\" height=\"36\"/><rect class=\"cs-cell\" x=\"172\" y=\"116\" width=\"36\" height=\"36\"/><rect class=\"cs-cell\" x=\"52\" y=\"156\" width=\"36\" height=\"36\"/><rect class=\"cs-cell\" x=\"92\" y=\"156\" width=\"36\" height=\"36\"/><rect class=\"cs-cell\" x=\"132\" y=\"156\" width=\"36\" height=\"36\"/><rect class=\"cs-cell\" x=\"172\" y=\"156\" width=\"36\" height=\"36\"/><rect class=\"cs-cell\" x=\"52\" y=\"196\" width=\"36\" height=\"36\"/><rect class=\"cs-cell\" x=\"92\" y=\"196\" width=\"36\" height=\"36\"/><rect class=\"cs-cell\" x=\"132\" y=\"196\" width=\"36\" height=\"36\"/><rect class=\"cs-cell\" x=\"172\" y=\"196\" width=\"36\" height=\"36\"/><text class=\"cs-sub\" x=\"127\" y=\"250\">每格 = 一颗 ≤331mm² TPU die</text></g><line class=\"cs-arr\" x1=\"230\" y1=\"158\" x2=\"272\" y2=\"158\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"probe\" data-g=\"probe\"><rect class=\"cs-box\" x=\"276\" y=\"58\" width=\"186\" height=\"200\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"369\" y=\"82\">② 探针卡逐 die 探测</text><text class=\"cs-sub\" x=\"369\" y=\"100\">探针扎焊盘,逐颗加电测</text><line class=\"cs-arr\" x1=\"300\" y1=\"122\" x2=\"300\" y2=\"158\"/><line class=\"cs-arr\" x1=\"330\" y1=\"122\" x2=\"330\" y2=\"158\"/><line class=\"cs-arr\" x1=\"360\" y1=\"122\" x2=\"360\" y2=\"158\"/><line class=\"cs-arr\" x1=\"390\" y1=\"122\" x2=\"390\" y2=\"158\"/><line class=\"cs-arr\" x1=\"420\" y1=\"122\" x2=\"420\" y2=\"158\"/><rect class=\"cs-cell\" x=\"296\" y=\"160\" width=\"128\" height=\"40\"/><text class=\"cs-cellt\" x=\"360\" y=\"184\">当前被测 die</text><text class=\"cs-sub\" x=\"369\" y=\"222\">送测试图形 → 量响应</text><text class=\"cs-sub\" x=\"369\" y=\"240\">逐 die 步进,测遍全片</text></g><line class=\"cs-arr\" x1=\"462\" y1=\"158\" x2=\"504\" y2=\"158\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"map\" data-g=\"map\"><rect class=\"cs-box\" x=\"508\" y=\"58\" width=\"188\" height=\"200\" rx=\"8\" fill=\"#dcfce7\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"602\" y=\"82\">③ wafer map(好坏分布)</text><text class=\"cs-sub\" x=\"602\" y=\"100\">每 die 标 good ✓ / bad ✗</text><g class=\"cs-part\" data-k=\"good\" data-g=\"good\"><rect class=\"cs-cell\" x=\"534\" y=\"116\" width=\"32\" height=\"32\"/><text class=\"cs-cellt\" x=\"550\" y=\"137\">✓</text><rect class=\"cs-cell\" x=\"570\" y=\"116\" width=\"32\" height=\"32\"/><text class=\"cs-cellt\" x=\"586\" y=\"137\">✓</text><rect class=\"cs-cell\" x=\"606\" y=\"116\" width=\"32\" height=\"32\"/><text class=\"cs-cellt\" x=\"622\" y=\"137\">✓</text><rect class=\"cs-cell\" x=\"534\" y=\"152\" width=\"32\" height=\"32\"/><text class=\"cs-cellt\" x=\"550\" y=\"173\">✓</text><rect class=\"cs-cell\" x=\"606\" y=\"152\" width=\"32\" height=\"32\"/><text class=\"cs-cellt\" x=\"622\" y=\"173\">✓</text><rect class=\"cs-cell\" x=\"570\" y=\"188\" width=\"32\" height=\"32\"/><text class=\"cs-cellt\" x=\"586\" y=\"209\">✓</text><rect class=\"cs-cell\" x=\"642\" y=\"116\" width=\"32\" height=\"32\"/><text class=\"cs-cellt\" x=\"658\" y=\"137\">✓</text></g><g class=\"cs-part\" data-k=\"bad\" data-g=\"bad\"><rect class=\"cs-cell\" x=\"642\" y=\"152\" width=\"32\" height=\"32\" fill=\"#fee2e2\" stroke=\"#fca5a5\"/><text class=\"cs-cellt\" x=\"658\" y=\"173\">✗</text><rect class=\"cs-cell\" x=\"534\" y=\"188\" width=\"32\" height=\"32\" fill=\"#fee2e2\" stroke=\"#fca5a5\"/><text class=\"cs-cellt\" x=\"550\" y=\"209\">✗</text><rect class=\"cs-cell\" x=\"606\" y=\"188\" width=\"32\" height=\"32\" fill=\"#fee2e2\" stroke=\"#fca5a5\"/><text class=\"cs-cellt\" x=\"622\" y=\"209\">✗</text></g><text class=\"cs-sub\" x=\"602\" y=\"240\">✓ 进封装 / ✗ 早筛丢弃</text></g><g class=\"cs-part\" data-k=\"save\" data-g=\"save\"><rect class=\"cs-box\" x=\"24\" y=\"282\" width=\"330\" height=\"56\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"189\" y=\"306\">早筛省钱:坏 die 不进封装</text><text class=\"cs-sub\" x=\"189\" y=\"326\">封装/测试贵 → 提前剔坏 die,只把好 die 往下送</text></g><g class=\"cs-part\" data-k=\"feedback\" data-g=\"feedback\"><rect class=\"cs-box\" x=\"366\" y=\"282\" width=\"330\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"531\" y=\"306\">良率反馈:map 回喂制造</text><text class=\"cs-sub\" x=\"531\" y=\"326\">良率高低 + 坏 die 空间分布 → 定位制造缺陷</text></g><polyline class=\"cs-arr\" points=\"602,258 602,272 531,272 531,282\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"24\" y=\"362\">点题:封装之前先在「整片晶圆」上逐 die 电测,把好坏分清——好 die 才花钱去切割/封装,坏 die 当场筛掉;这就是 CP / wafer sort</text><text class=\"cs-note\" x=\"24\" y=\"384\">为什么先测再封:封装与成品测都很贵,等封完才发现 die 是坏的,封装钱白花;CP 在最便宜的阶段就把坏 die 标出来、挡在封装之外</text><text class=\"cs-note\" x=\"24\" y=\"408\">诚实边界:探针卡/测试机、测试项与判据、良率与缺陷分布、wafer map 格式均为这类 28nm 大 die / PCIe 加速卡的通行封测实践;TPU v1 不公开其私有 CP 测试项与良率数据,本图借其已知结构作被探测对象讲概念</text></svg>",
+ "legend": [
+  {
+   "k": "wafer",
+   "name": "整片晶圆(满是 TPU die,好坏未知)",
+   "desc": "CP 的输入:一整片刚做完前后道、还没切开的晶圆,上面用同一套版图重复曝光出成百上千颗 die,每颗都是一颗完整的 ≤331mm² TPU(256×256 脉动阵列、24 MiB Unified Buffer、控制逻辑都已造好、连好)。但同一片晶圆上,各 die 的命运并不一样——制造过程中的颗粒污染、套刻偏差、缺陷会让一部分 die 失效。此刻它们还连成一整片、好坏未知,CP 的任务就是在切开之前,把这片『鱼龙混杂』的晶圆逐颗 die 测一遍、分出好坏。"
+  },
+  {
+   "k": "probe",
+   "name": "探针卡逐 die 探测(chip probing)",
+   "desc": "CP 的核心动作。测试机配一张『探针卡(probe card)』——上面有一排极细的探针,精确对准一颗 die 的 I/O 焊盘扎下去、临时建立电接触,就能在 die 还没切下、没封装时直接给它加电、灌入测试图形、量它的响应。测完一颗,工作台步进(step)到下一颗,逐 die 把整片扫一遍。对 TPU 这种由 65,536 个 8-bit MAC 拼成的大 die,CP 会跑一组测试图形粗判它的阵列、SRAM、控制逻辑通不通、关键功能对不对,给出 pass/fail。探针卡设计、对准精度、测试项与判据均为通行封测实践,TPU v1 不公开其私有 CP 测试方案。"
+  },
+  {
+   "k": "map",
+   "name": "wafer map(全片好坏分布图)",
+   "desc": "CP 的产物。把全片每颗 die 的 pass/fail 结果按它在晶圆上的物理位置画成一张图——good die 标 ✓、bad die 标 ✗,就得到一张『晶圆好坏地图(wafer map)』。这张图有两层价值:对后道,它是『只取打了 ✓ 的 die、丢掉 ✗』的取片指令;对制造,坏 die 在图上的空间分布(集中在边缘成环、扎堆成簇、还是均匀随机)直接暗示了缺陷来源。坏 die 也可在晶圆上直接打墨点(ink dot)标记。wafer map 格式与良率数字为通行封测实践,TPU v1 不公开其私有数据。"
+  },
+  {
+   "k": "good",
+   "name": "good die ✓(通过 CP,进封装)",
+   "desc": "通过 CP 测试、判为合格的 die。它们在 wafer map 上被标 ✓,是这片晶圆里真正值得继续投钱的那部分——只有它们会被送去切割、贴装、封装,最终做成一块块 TPU v1 那样的 PCIe 加速卡。把封装这道贵工序只花在 good die 上,正是 CP『早筛』省钱的落点。具体某片有多少 good die(良率)为 TPU 不公开的私有数据,这里只讲『挑出好 die 往下送』的概念。"
+  },
+  {
+   "k": "bad",
+   "name": "bad die ✗(未过 CP,早筛丢弃)",
+   "desc": "未通过 CP、判为失效的 die。它们在 wafer map 上被标 ✗(或被打墨点),在切割/封装之前就被识别出来、不再往下送——这是 CP 最值钱的一刀:封装与成品测都很贵,坏 die 越早被挡住,白花的钱越少。一颗 ≤331mm² 的大 TPU die 若拖到封装后才发现是坏的,封装成本就纯粹打了水漂;CP 让坏 die 在最便宜的阶段出局。坏 die 的占比与失效原因为 TPU 不公开的私有数据。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "wafer",
+    "probe"
+   ],
+   "cap": "① 探针卡逐 die 探测:把刚做完、还连成一整片的晶圆送上测试机,用布满细探针的探针卡精确对准一颗 die 的焊盘扎下去加电,跑测试图形量响应,测完步进到下一颗——在切割/封装之前,逐颗把整片 TPU die 电测一遍"
+  },
+  {
+   "keys": [
+    "good",
+    "bad"
+   ],
+   "cap": "② 逐 die 判好坏:每颗 die 给出 pass/fail——通过的标 good ✓、失效的标 bad ✗(或打墨点),在 die 还没切下、没封装的最便宜阶段就把好坏分清楚"
+  },
+  {
+   "keys": [
+    "map"
+   ],
+   "cap": "③ 出 wafer map:把全片每颗 die 的好坏按物理位置画成一张『晶圆好坏地图』,既是后道『只取 ✓ 丢 ✗』的取片指令,也是看坏 die 空间分布的诊断图"
+  },
+  {
+   "keys": [
+    "save"
+   ],
+   "cap": "④ 早筛省钱:封装/成品测都贵,坏 die 在 CP 阶段就被挡在封装之外,只把标 good 的 TPU die 往切割/封装送——别为注定报废的 die 白花封装钱"
+  },
+  {
+   "keys": [
+    "feedback"
+   ],
+   "cap": "⑤ 良率反馈制造:把晶圆良率高低和坏 die 的空间分布(边缘环/簇状/随机)回喂给制造,帮工艺定位缺陷来源、迭代改进——CP 不只是筛 die,也是制造的体检报告"
+  }
+ ],
+ "before": [
+  "<b>晶圆已制造完工(前后道都做完)</b>:CP 是封装前道,前提是晶圆的 FEOL 器件层与 BEOL 多层互连都已做完、整颗 TPU 电路已经『连成』并能加电;开工前要确认拿到的是已完工待测的晶圆,而不是还在制造中途的片子。",
+  "<b>备好探针卡与测试程序</b>:要按 TPU die 的焊盘布局做一张对得准、扎得稳的探针卡,并写好一套 CP 测试程序——发什么测试图形、量哪些响应、用什么阈值判 pass/fail。这套『测什么、怎么判好坏』是 CP 的灵魂,测试项与判据为这类大芯片的通行封测实践、TPU 不公开其私有方案。",
+  "<b>定 CP 的目标:粗筛而非全测</b>:想清楚 CP 这一关要筛到什么程度——它是在晶圆级用探针快速判 die 死活/关键功能通不通的『粗筛』,把明显的坏 die 挡在封装外即可;更细更全的功能/性能测可放到封装后的成品测做。先定好分工,免得 CP 既慢又贵。",
+  "<b>对齐 wafer map 与取片坐标系</b>:确认 CP 给每颗 die 编址的坐标系,和后续切割/取片用的坐标系一致——这样『map 上标 ✓ 的那颗』和『取片时吸起来的那颗』才能对上;坐标对不齐,好坏标记就会张冠李戴。",
+  "<b>约定坏 die 的标记方式</b>:定好失效 die 怎么记——是只存进电子 wafer map,还是同时在晶圆上打墨点(ink dot)做物理标记;后道据此识别并跳过坏 die。标记方式为通行封测实践。"
+ ],
+ "during": [
+  "<b>为什么非要在封装之前测</b>:封装(切割、贴装、引线/凸点、封壳)和封装后的成品测都是花钱花时间的工序。如果不先筛,坏 die 也会被一起封进去,等封完、甚至成品测时才发现是坏的——那这颗坏 die 的封装钱就纯粹打了水漂。CP 把『判好坏』提前到晶圆还没切、还没封的最便宜阶段,让坏 die 尽早出局,这就是『早筛省封装钱』的核心逻辑。",
+  "<b>探针卡逐 die 扎焊盘加电</b>:die 还在整片晶圆上、还没切下,怎么给它通电?靠探针卡——一排极细的探针精确对准一颗 die 的 I/O 焊盘扎下去,临时建立电接触,测试机就能直接给这颗 die 加电、灌入测试图形、采集它的输出响应。测完一颗,工作台步进到相邻 die,逐颗把整片扫完。对准要准、接触要稳,大 die 焊盘多、扫一片耗时也长。",
+  "<b>逐 die 判 pass/fail、当场标好坏</b>:每颗 die 测出的响应和预期判据一比,就给出 pass(good ✓)或 fail(bad ✗)。对 TPU 这种 65,536 个 MAC 的大 die,CP 会跑一组测试图形粗判它的脉动阵列、SRAM(Unified Buffer/累加器)、控制逻辑通不通、关键功能对不对——不求测全测细,只求在晶圆级把死的、明显坏的 die 当场分出来。",
+  "<b>汇成 wafer map:好坏的『晶圆地图』</b>:把全片每颗 die 的 pass/fail 按它在晶圆上的物理位置画成一张图,good 标 ✓、bad 标 ✗,就是 wafer map。这张图同时承担两个角色:对后道是『只取 ✓、丢 ✗』的精确取片指令;对制造是一张体检报告——一眼能看出这片良率高低、坏 die 都长在哪。",
+  "<b>坏 die 的分布会『说话』,反馈给制造</b>:wafer map 上坏 die 的空间分布大有讲究——若集中在晶圆边缘成环,常指向边缘工艺(镀膜/刻蚀均匀性)问题;若扎堆成簇,可能是局部颗粒污染或某道工序的局部缺陷;若均匀随机散布,更像是整体缺陷密度偏高。把良率和这种分布回喂制造,工艺端就能顺藤摸瓜定位、改进——CP 因此不只是筛 die,也是制造的诊断输入。",
+  "<b>诚实边界</b>:探针卡探测、逐 die 步进电测、pass/fail 判据、wafer map、墨点标记、按坏 die 分布反推缺陷,都是这类 28nm 大 die / PCIe 加速卡的通行晶圆测试(CP/wafer sort)实践;TPU v1 不公开其私有 CP 测试项、判据阈值、良率数字与缺陷分布,本节只借其已知结构(256×256 阵列、24 MiB UB、700 MHz、≤331mm² 大 die、28nm、PCIe 卡)作为被『探针逐颗探测、标好坏』的对象讲 CP 概念,不杜撰 TPU 私有的测试与良率数据。"
+ ],
+ "result": [
+  {
+   "label": "本步产物",
+   "value": "整片晶圆逐 die 测完,每颗 TPU die 都被标成 good ✓ 或 bad ✗,产出一张 wafer map"
+  },
+  {
+   "label": "测试方式",
+   "value": "探针卡逐 die 扎焊盘加电、跑测试图形量响应,在 die 没切下/没封装时就电测(晶圆级粗筛)"
+  },
+  {
+   "label": "wafer map",
+   "value": "全片好坏的『晶圆地图』:✓ = good 进封装,✗ = bad 早筛丢弃;后道据此只取好 die"
+  },
+  {
+   "label": "早筛价值",
+   "value": "封装/成品测都贵,坏 die 在最便宜的晶圆阶段出局,不为注定报废的 die 白花封装钱"
+  },
+  {
+   "label": "良率反馈",
+   "value": "良率高低 + 坏 die 空间分布(边缘环/簇状/随机)回喂制造,帮工艺定位缺陷来源"
+  },
+  {
+   "label": "诚实边界",
+   "value": "测试项/判据/良率/缺陷分布/wafer map 格式均为通行封测实践,非 TPU v1 公开数字;以其 ≤331mm² 大 die 作被探测对象"
+  }
+ ],
+ "after": [
+  "<b>good die 交切割/封装</b>:按 wafer map,只把标 ✓ 的 good TPU die 送往后续切割(dicing)、贴装与封装,最终封成 TPU v1 那样的 PCIe 加速卡;坏 die 不再往下送——CP 的早筛在这里兑现成实打实省下的封装成本。",
+  "<b>坏 die 识别与剔除</b>:后道取片时依据 wafer map(或晶圆上的墨点)识别并跳过标 ✗ 的 die,确保坏 die 不被误封;对薄而大的 TPU die,这一步也避免把功夫浪费在注定报废的 die 上。",
+  "<b>良率与分布回喂制造迭代</b>:把这片(及批次)的良率、坏 die 空间分布、失效类型回喂给制造工艺——边缘环查镀膜/刻蚀均匀性、簇状查颗粒污染、随机偏高查整体缺陷密度,推动工艺改进、把良率拉上去;这是制造与封测之间的闭环。",
+  "<b>good die 进成品测做细筛</b>:CP 只是晶圆级粗筛,挑出的 good die 封装后还要做更细更全的成品测(功能/性能/老化筛选)进一步把关;先定好『CP 粗筛、成品测细筛』的分工,两关各管一段。",
+  "<b>诚实留痕</b>:本片的 CP 测试项、判据、wafer map、良率与缺陷分布数据记入封测/制造工艺档案,供后续封装、良率分析与缺陷追溯复查(为通行封测做法,非 TPU 公开数字)。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(256×256 8-bit MAC 脉动阵列、24 MiB Unified Buffer、700 MHz、≤331mm² die、28nm、做成 PCIe 加速卡为该文披露的 TPU v1 已知结构,作为被探针逐颗探测、标好坏的对象;探针卡(probe card)探测、逐 die 步进晶圆级电测、pass/fail 判据、good ✓ / bad ✗ 标记、wafer map 好坏分布、墨点(ink dot)标记、封装前早筛省封装成本、按坏 die 空间分布反推制造缺陷、CP 粗筛 + 成品测细筛分工等,均为这类 28nm 大 die / PCIe 加速卡的通行晶圆测试(CP / wafer sort)与封测实践,TPU v1 不公开其私有 CP 测试项、判据阈值、良率数字与缺陷分布,本节借其已知结构讲概念,不杜撰 TPU 私有测试/良率数据)"
+}

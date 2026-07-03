@@ -1,0 +1,118 @@
+{
+ "secNum": "3.11",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 产出与交接(GDSII 准备):把收敛后的 TPU 版图打成一套自洽移交包——GDSII/OASIS 版图 + SPEF 寄生 + 最终网表/SDC + STA/功耗/DRC/LVS/IR 报告,交 ⑨ 签核全面复核,通过即 ⑩ 流片,不过则回 ⑧ ECO 来回迭代到全绿",
+ "oneLine": "本案例落到「产出与交接(GDSII 准备)」小节:后端走到这一步,布局/CTS/布线/ECO 已让 TPU 的门级网表在 28nm 上收敛——现在的任务不是再改电路,而是把这份成果『打包封口』。后端把最终版图导成业界标准的 GDSII(或 OASIS)几何文件,连同提取出的 SPEF 真实寄生、布线后的最终门级网表与 SDC 约束,以及一整套报告(签核级 STA 时序、功耗、Calibre 这类工具的 DRC/LVS 干净证据、IR-drop/EM/拥塞)一起,交给第 ⑨ 步签核做最终、独立、最严格的全面验证(全工艺角 STA、功耗、EM-IR、物理验证、RTL↔网表形式等价)。签核全绿,这套 GDSII 才送工厂制掩膜进入 ⑩ 流片;任一项不过,就回 ⑧ 做 ECO、重提取、重打包再签核——后端与签核来回拉锯,直到所有项目全部转绿。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 440\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"26\">产出与交接:后端把收敛后的版图打成一套移交包(GDSII/OASIS 版图 + SPEF 寄生 + 最终网表 + 各类报告)→ 交 ⑨ 签核做最终验证 → 全绿才到 ⑩ 流片</text><g class=\"cs-part\" data-k=\"backend\" data-g=\"backend\"><rect class=\"cs-box\" x=\"24\" y=\"52\" width=\"150\" height=\"300\" rx=\"8\"/><text class=\"cs-t\" x=\"99\" y=\"78\">⑧ 物理设计(后端)</text><text class=\"cs-sub\" x=\"99\" y=\"96\">收敛后的 TPU 版图</text><text class=\"cs-sub\" x=\"99\" y=\"120\">脉动阵列 / 24MiB UB</text><text class=\"cs-sub\" x=\"99\" y=\"138\">700MHz / 28nm</text><text class=\"cs-sub\" x=\"99\" y=\"162\">布局/CTS/布线/ECO</text><text class=\"cs-sub\" x=\"99\" y=\"180\">已收敛(本系列前几节)</text><text class=\"cs-sub\" x=\"99\" y=\"216\">→ 在此打包移交</text></g><line class=\"cs-arr\" x1=\"174\" y1=\"92\" x2=\"232\" y2=\"92\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"174\" y1=\"160\" x2=\"232\" y2=\"160\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"174\" y1=\"228\" x2=\"232\" y2=\"228\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"174\" y1=\"300\" x2=\"232\" y2=\"300\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"pkg\" data-g=\"pkg\"><rect class=\"cs-box\" x=\"236\" y=\"52\" width=\"220\" height=\"300\" rx=\"8\"/><text class=\"cs-t\" x=\"346\" y=\"78\">后端移交包(handoff)</text><g class=\"cs-part\" data-k=\"gds\" data-g=\"gds\"><rect class=\"cs-cell\" x=\"252\" y=\"94\" width=\"188\" height=\"46\"/><text class=\"cs-cellt\" x=\"346\" y=\"112\">GDSII / OASIS 版图</text><text class=\"cs-cellt\" x=\"346\" y=\"130\">最终几何:多边形/层/掩膜数据</text></g><g class=\"cs-part\" data-k=\"spef\" data-g=\"spef\"><rect class=\"cs-cell\" x=\"252\" y=\"148\" width=\"188\" height=\"46\"/><text class=\"cs-cellt\" x=\"346\" y=\"166\">SPEF 寄生</text><text class=\"cs-cellt\" x=\"346\" y=\"184\">每条线真实 RC(含耦合 Cc)</text></g><g class=\"cs-part\" data-k=\"netlist\" data-g=\"netlist\"><rect class=\"cs-cell\" x=\"252\" y=\"202\" width=\"188\" height=\"46\"/><text class=\"cs-cellt\" x=\"346\" y=\"220\">最终网表 + SDC</text><text class=\"cs-cellt\" x=\"346\" y=\"238\">布线后门级 netlist / 约束</text></g><g class=\"cs-part\" data-k=\"reports\" data-g=\"reports\"><rect class=\"cs-cell\" x=\"252\" y=\"256\" width=\"188\" height=\"80\"/><text class=\"cs-cellt\" x=\"346\" y=\"274\">报告集</text><text class=\"cs-cellt\" x=\"346\" y=\"292\">STA 时序 / 功耗</text><text class=\"cs-cellt\" x=\"346\" y=\"310\">DRC / LVS 干净证据</text><text class=\"cs-cellt\" x=\"346\" y=\"328\">IR-drop / EM / 拥塞</text></g></g><line class=\"cs-arr\" x1=\"456\" y1=\"202\" x2=\"520\" y2=\"202\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"462\" y=\"194\">交付</text><g class=\"cs-part\" data-k=\"signoff\" data-g=\"signoff\"><rect class=\"cs-box\" x=\"524\" y=\"92\" width=\"172\" height=\"160\" rx=\"8\"/><text class=\"cs-t\" x=\"610\" y=\"118\">⑨ 签核(sign-off)</text><text class=\"cs-sub\" x=\"610\" y=\"142\">签核级 STA(全 corner)</text><text class=\"cs-sub\" x=\"610\" y=\"162\">功耗 / EM-IR 复核</text><text class=\"cs-sub\" x=\"610\" y=\"182\">物理验证 DRC / LVS</text><text class=\"cs-sub\" x=\"610\" y=\"202\">形式等价(netlist↔RTL)</text><text class=\"cs-sub\" x=\"610\" y=\"226\">全绿才放行</text></g><line class=\"cs-arr\" x1=\"610\" y1=\"252\" x2=\"610\" y2=\"330\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"tapeout\" data-g=\"tapeout\"><rect class=\"cs-box\" x=\"524\" y=\"334\" width=\"172\" height=\"48\" rx=\"8\"/><text class=\"cs-t\" x=\"610\" y=\"358\">⑩ 流片(tape-out)</text><text class=\"cs-sub\" x=\"610\" y=\"374\">版图交工厂制掩膜</text></g><polyline class=\"cs-arr\" points=\"524,230 490,230 490,372 99,372 99,356\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"300\" y=\"366\">不过 → 回 ⑧ ECO 修(改动→重提取→重打包→再签核,来回迭代到全绿)</text><text class=\"cs-note\" x=\"24\" y=\"398\">读法:后端不是只交一张版图,而是交一整套自洽、可被签核独立复核的数据;签核通过即把这套 GDSII 送工厂制掩膜流片</text><text class=\"cs-note\" x=\"24\" y=\"422\">注:GDSII/OASIS、SPEF、SDC、DRC/LVS、EM-IR、形式等价、tape-out 为通行后端/签核实践;TPU v1 不公开其版图/寄生/QoR/报告,图为示意,借已知结构(脉动阵列/24MiB UB/700MHz/28nm)当被打包对象</text></svg>",
+ "legend": [
+  {
+   "k": "backend",
+   "name": "⑧ 后端的收敛成果(打包的来源)",
+   "desc": "走到 3.11,前几节(布局规划→布局→CTS→布线→时序收敛/ECO→寄生提取/SI)已经把 TPU 的门级网表实现成 28nm 上一版时序/拥塞/DRC 都收敛的物理版图:256×256 脉动阵列、24 MiB Unified Buffer SRAM、累加器、700MHz 时钟树与电源网格都已落地。这一节不再动电路本身,而是把这版收敛成果整理成一套对外移交的数据——后端的『交付物』正是在这里成形并封口。"
+  },
+  {
+   "k": "pkg",
+   "name": "后端移交包(交给签核的一整套数据)",
+   "desc": "后端交出的不是孤零零一张版图,而是一套彼此自洽、能让签核独立复核的数据集合:① GDSII/OASIS 版图(最终掩膜几何);② SPEF(从版图提取的每条线真实寄生 RC);③ 布线后最终门级网表 + SDC 约束;④ 一整套报告(STA 时序、功耗、DRC/LVS、IR-drop/EM/拥塞)。这四类缺一不可——签核要拿版图核物理与寄生、拿网表+SPEF+SDC 核时序功耗、拿报告交叉印证后端结论。这是通行后端实践;TPU 不公开其具体移交包内容。"
+  },
+  {
+   "k": "gds",
+   "name": "GDSII / OASIS 版图(本节核心产物)",
+   "desc": "整个后端最终、最关键的产物:把版图里所有标准单元、宏(如 24 MiB UB 的 SRAM 块)、布线、电源网格、填充等,导成业界通行的 GDSII(或体积更小的新格式 OASIS)——本质是一份逐层(每个金属层、通孔层、掩膜层)记录所有几何多边形的数据库,工厂就照这份几何去制每一张光掩膜。它是后端交给制造的『最终图纸』,所以叫 GDSII 准备/handoff。TPU v1 的真实 GDSII 几何不公开,这里仅以其已知结构作示意。"
+  },
+  {
+   "k": "spef",
+   "name": "SPEF 寄生(随版图一起交)",
+   "desc": "从布完线的版图提取出的、逐条网络的真实电阻 R/对地电容 C/线间耦合电容 Cc(见 3.8)。它必须随版图一起移交,因为签核做最终 STA、功耗、EM-IR 时,要用这份真实寄生而非估算值来算延迟与电流——版图、网表、SPEF 三者要对得上(同一版设计),签核才信得过。"
+  },
+  {
+   "k": "signoff",
+   "name": "⑨ 签核(独立复核移交包的下一关)",
+   "desc": "拿到移交包后,签核用签核级工具+签核库做最终、最严格、独立于实现工具的全面验证:全工艺角/OCV 的 STA(时序)、功耗分析、电源完整性(EM 电迁移 + IR-drop)、物理验证(Calibre 这类做 DRC 设计规则检查 + LVS 版图与网表一致)、以及 RTL↔门级网表的形式等价。签核的意义是『换一套独立标尺再核一遍』,后端自己说收敛了不算数。全部通过才放行流片;任一项红,就打回 ⑧。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "backend"
+   ],
+   "cap": "① 确认后端已收敛:布局/CTS/布线/ECO/提取后,TPU 的门级网表在 28nm 上时序(700MHz)、拥塞、DRC 都已收敛——这一节不再改电路,而是把这版成果整理成对外移交物"
+  },
+  {
+   "keys": [
+    "pkg",
+    "gds"
+   ],
+   "cap": "② 导出版图(GDSII 准备):把最终版图(标准单元/UB 等 SRAM 宏/布线/电源网格/填充)导成业界标准 GDSII 或 OASIS——逐层记录所有几何多边形,工厂照此制掩膜,这是后端最终核心产物"
+  },
+  {
+   "keys": [
+    "spef",
+    "netlist"
+   ],
+   "cap": "③ 配齐配套数据:随版图一并打包提取出的 SPEF(真实寄生 RC)、布线后最终门级网表与 SDC 约束——保证版图/网表/SPEF/约束同属一版、彼此自洽,签核才能交叉复核"
+  },
+  {
+   "keys": [
+    "reports"
+   ],
+   "cap": "④ 附上报告集:签核级 STA 时序、功耗、DRC/LVS 干净证据、IR-drop/EM/拥塞等报告一起交,作为后端『已收敛』的可核证据,供 ⑨ 独立印证"
+  },
+  {
+   "keys": [
+    "signoff",
+    "tapeout"
+   ],
+   "cap": "⑤ 交 ⑨ 签核并定去留:签核做全工艺角 STA/功耗/EM-IR/DRC/LVS/形式等价——全绿则这套 GDSII 送工厂制掩膜进 ⑩ 流片;任一项不过则回 ⑧ ECO→重提取→重打包→再签核,来回迭代到全绿"
+  }
+ ],
+ "before": [
+  "<b>先约定移交包的内容清单与格式</b>:和签核/制造方对齐要交哪些文件、用什么格式——版图用 GDSII 还是 OASIS、网表/SDC/SPEF 的版本与命名、报告要覆盖哪些项。后端开工前就把交付物清单钉死,免得收敛完才发现少东西。这是通行后端实践,TPU 不公开其具体交付清单。",
+  "<b>备齐工艺厂的版图/验证资料</b>:导 GDSII 要有工艺厂的层映射(layer map,把工具内部层对到掩膜层号)、做 DRC/LVS 要有工艺厂的规则文件(runset)与器件模型。这些都由 28nm 工艺绑定、由代工厂提供;TPU 用的具体 PDK/runset 不公开。",
+  "<b>提前规划版图层级与数据完整性</b>:大芯片版图层级深、数据量大(尤其 256×256 阵列的重复结构、24 MiB UB 的 SRAM 阵列),要规划好层级展平/保留策略、确保所有宏(UB 等)的 GDS 都已合入、没有缺块或悬空引用——导出前就要想清楚,否则 GDSII 不完整签核直接卡住。",
+  "<b>明确签核的判据(收敛标准)</b>:和签核约定什么算『全绿』——STA 在哪些角全 ≥0、DRC/LVS 必须零违例(或仅允许已豁免项)、IR-drop/EM 的阈值。判据先定清,后端才知道收敛到什么程度才能交、签核才有客观放行线。",
+  "<b>诚实标注边界</b>:GDSII/OASIS 导出、SPEF/SDC/网表移交、Calibre 这类 DRC/LVS、IR-drop/EM、形式等价、tape-out 都是通行后端/签核 EDA 实践;TPU v1 不公开其版图、寄生、QoR、报告或移交包细节。本案以 TPU 已知结构(256×256 脉动阵列、24 MiB UB、700MHz、28nm)作为被打包/被签核的对象来讲『产出与交接』概念,所有设置与数值均为示意。"
+ ],
+ "during": [
+  "<b>这一节是『封口打包』,不是再设计</b>:走到产出与交接时,电路收敛已基本完成,本节的活是把成果整理成一套可移交、可复核的数据——导版图、配齐配套文件、出报告、做内部预检。心态要从『改电路』切到『确保交出去的东西自洽、完整、能被独立验证』。",
+  "<b>GDSII/OASIS 是给制造的最终几何图纸</b>:把版图所有几何(单元、UB 等 SRAM 宏、布线、电源网格、填充、密度填充)逐层导成 GDSII 或 OASIS——这份文件里只有『形状在哪一层』,没有时序/逻辑概念;工厂就照它制掩膜。OASIS 是更紧凑的新格式,大芯片常用以压数据量。导出后要核文件完整、层映射对、无缺失。",
+  "<b>版图、网表、SPEF、SDC 必须是同一版、对得上</b>(铁律):移交包里这几样若不同步(比如 ECO 改了网表但版图/SPEF 没重导),签核会算出自相矛盾的结果或 LVS 直接不一致。每次 ECO 后要连带重提取 SPEF、重导版图、更新网表,保证整包自洽——『一改全改、一版到底』。",
+  "<b>交付前先做后端内部预检,别把脏包甩给签核</b>(示意,通行实践):交出去前,后端自己先跑一轮 DRC/LVS 和签核级 STA,把明显的违例、版图-网表不一致先清掉;移交包要附上这些干净证据。预检不是替代签核,而是减少来回——脏包交上去只会被打回、浪费一整轮迭代。",
+  "<b>报告要让签核能交叉印证后端结论</b>:附上的 STA(全角时序)、功耗、DRC/LVS、IR-drop/EM/拥塞报告,既是后端『我已收敛』的证据,也是签核独立复核时的对照基准。报告要可读、可追溯(哪个 corner、哪版数据、哪条违例),签核才能高效核对而非重头摸索。",
+  "<b>诚实边界</b>:上述移交包内容、内部预检、一版到底、报告交叉印证是通行后端工业做法;TPU v1 未公开其 GDSII、SPEF、网表、QoR 或任何签核/移交报告。文中『脉动阵列/24MiB UB SRAM 宏/700MHz/28nm』为该文披露的已知结构,作为被打包/被签核对象,这里未编造任何 TPU 私有的版图、寄生或报告数字。"
+ ],
+ "result": [
+  {
+   "label": "核心产物",
+   "value": "GDSII / OASIS 版图:逐层记录全部几何多边形(单元/UB 等 SRAM 宏/布线/电源网格/填充),工厂照此制掩膜"
+  },
+  {
+   "label": "配套寄生",
+   "value": "SPEF:从版图提取的逐条网络真实 RC(含耦合 Cc),供签核做最终 STA/功耗/EM-IR"
+  },
+  {
+   "label": "配套设计数据",
+   "value": "布线后最终门级网表 + SDC 约束,与版图/SPEF 同属一版,保证整包自洽、可被独立复核"
+  },
+  {
+   "label": "报告集",
+   "value": "签核级 STA 时序、功耗、DRC/LVS 干净证据、IR-drop/EM/拥塞——作为后端『已收敛』的可核证据(示意)"
+  },
+  {
+   "label": "交接去向",
+   "value": "整包交 ⑨ 签核:全工艺角 STA / 功耗 / EM-IR / 物理验证(DRC/LVS)/ RTL↔网表形式等价,逐项独立复核"
+  },
+  {
+   "label": "放行 / 打回出口",
+   "value": "全绿 → 这套 GDSII 送工厂制掩膜进 ⑩ 流片;任一项不过 → 回 ⑧ ECO → 重提取 → 重打包 → 再签核,迭代到全绿"
+  }
+ ],
+ "after": [
+  "<b>跟签核的最终 STA / 功耗 / EM-IR 结果</b>:看签核用独立工具在全工艺角/OCV 重核后,TPU 的关键路径时序(700MHz 示意)、功耗预算、电迁移与 IR-drop 是否都在判据内;有任何角或任何项超标,列清交回 ⑧ 做 ECO。",
+  "<b>盯物理验证 DRC / LVS 必须干净</b>:Calibre 这类工具按工艺厂 runset 复核设计规则(DRC)和版图-网表一致(LVS),签核要求零违例(或仅剩已正式豁免项);只要 DRC/LVS 还红,GDSII 绝不能流片——这是制造可行性的硬门槛。",
+  "<b>确认形式等价(网表↔RTL)</b>:签核要核布线后门级网表与原始 RTL 逻辑等价(形式验证),确保后端一路 ECO/优化没有改变功能;等价不过说明实现走样,必须查清修正,不能带着功能偏差流片。",
+  "<b>不过则回 ⑧ 迭代,且整包同步重做</b>:任一签核项打回,后端做 ECO 修复后,要连带重提取 SPEF、重导 GDSII、更新网表与报告,再整包交签核——后端与签核来回拉锯,直到全部项目转绿;切忌只改一处而让移交包内部不再自洽。",
+  "<b>全绿后交 ⑩ 流片</b>:所有签核项通过,这套封口的 GDSII(连同确认无误的配套数据)正式移交工厂,进入第 ⑩ 步 tape-out——工厂据此制光掩膜、上线流片。至此后端的产出与交接完成,设计从『数据』走向『硅片』。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(256×256 8-bit MAC 脉动阵列、24 MiB Unified Buffer、700MHz、28nm 为该文披露的已知结构,作为被打包/被签核对象;GDSII/OASIS 导出、SPEF/SDC/网表移交、Calibre 这类 DRC/LVS、IR-drop/EM、形式等价、签核与 tape-out 为通行后端/签核 EDA 实践,图与所有设置/报告均为示意,非 TPU v1 公开的版图、寄生、QoR 或移交/签核报告)"
+}

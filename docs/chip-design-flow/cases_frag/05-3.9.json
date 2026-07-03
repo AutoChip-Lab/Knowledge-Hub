@@ -1,0 +1,118 @@
+{
+ "secNum": "3.9",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 低功耗 RTL:空闲 PE 列怎么「不干活就不耗动态功耗」——门控与功耗意图",
+ "oneLine": "TPU 那 256×256 个 MAC 不是每拍都满负荷,空闲的整列若还跟着 700 MHz 时钟白翻转,就是纯烧动态功耗;低功耗 RTL 的正解是「写带 enable 的更新、把时钟门控交给综合工具自动插 ICG」,而不是手写一行 clk & en —— 手写门控时钟会带来毛刺、坏 DFT、坏时序,是 RTL 里最常见的「自作聪明」翻车点。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">低功耗 RTL:写带 enable 的更新,门控单元 ICG 由工具自动插入 —— 别手写门控时钟</text><g class=\"cs-part\" data-k=\"en\" data-g=\"src\"><rect class=\"cs-box\" x=\"40\" y=\"70\" width=\"150\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"115\" y=\"94\">使能 enable</text><text class=\"cs-sub\" x=\"115\" y=\"112\">这一列要不要干活</text></g><g class=\"cs-part\" data-k=\"clk\" data-g=\"src\"><rect class=\"cs-box\" x=\"40\" y=\"150\" width=\"150\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"115\" y=\"174\">源时钟 clk</text><text class=\"cs-sub\" x=\"115\" y=\"192\">700 MHz 自由跑</text></g><line class=\"cs-arr\" x1=\"190\" y1=\"98\" x2=\"270\" y2=\"120\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"190\" y1=\"178\" x2=\"270\" y2=\"156\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"icg\" data-g=\"icg\"><rect class=\"cs-box\" x=\"272\" y=\"100\" width=\"150\" height=\"76\" rx=\"8\"/><text class=\"cs-t\" x=\"347\" y=\"126\">ICG 门控单元</text><text class=\"cs-sub\" x=\"347\" y=\"146\">latch + AND</text><text class=\"cs-sub\" x=\"347\" y=\"164\">综合时自动插入</text></g><text class=\"cs-note\" x=\"278\" y=\"192\">enable 低 → gated_clk 不翻 → 无毛刺</text><line class=\"cs-arr\" x1=\"422\" y1=\"138\" x2=\"500\" y2=\"138\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"430\" y=\"128\">gated_clk</text><g class=\"cs-part\" data-k=\"regs\" data-g=\"regs\"><rect class=\"cs-box\" x=\"502\" y=\"100\" width=\"178\" height=\"76\" rx=\"8\"/><path d=\"M502,176 L502,160 L518,176 Z\" fill=\"#8b5cf6\"/><text class=\"cs-t\" x=\"591\" y=\"126\">一组累加寄存器</text><text class=\"cs-sub\" x=\"591\" y=\"146\">空闲 PE 列</text><text class=\"cs-sub\" x=\"591\" y=\"164\">不翻转 = 不耗动态功耗</text></g><g class=\"cs-part\" data-k=\"iso\" data-g=\"iso\"><rect class=\"cs-box\" x=\"40\" y=\"234\" width=\"320\" height=\"74\" rx=\"8\"/><text class=\"cs-t\" x=\"200\" y=\"260\">操作数隔离 operand isolation</text><text class=\"cs-sub\" x=\"200\" y=\"282\">用不到的乘法器:输入钉成常量</text><text class=\"cs-sub\" x=\"200\" y=\"298\">组合逻辑停翻转,省无谓动态功耗</text></g><g class=\"cs-part\" data-k=\"upf\" data-g=\"upf\"><rect class=\"cs-box\" x=\"380\" y=\"234\" width=\"300\" height=\"74\" rx=\"8\"/><text class=\"cs-t\" x=\"530\" y=\"260\">UPF 功耗意图(旁路文件)</text><text class=\"cs-sub\" x=\"530\" y=\"282\">电源域 / 隔离单元 / 电平移位</text><text class=\"cs-sub\" x=\"530\" y=\"298\">RTL 不写电源线,意图写在 UPF 里</text></g><g class=\"cs-part\" data-k=\"bad\" data-g=\"bad\"><rect class=\"cs-box\" x=\"40\" y=\"324\" width=\"640\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"348\">反例:手写 assign gated = clk &amp; en; —— 毛刺、坏 DFT、坏时序</text><text class=\"cs-sub\" x=\"360\" y=\"368\">RTL 只写 if(en) q&lt;=d; 把门控时钟这件事交给综合工具</text></g></svg>",
+ "legend": [
+  {
+   "k": "src",
+   "name": "使能 enable + 源时钟 clk",
+   "desc": "一列 PE「这拍要不要干活」由一个 enable 信号决定;源时钟 clk(TPU 核心域 700 MHz)始终自由跑。低功耗 RTL 的写法是:在 RTL 里只描述「enable 为真才更新寄存器」这个意图,绝不在 RTL 里自己拿 clk 和 enable 去与一个门。"
+  },
+  {
+   "k": "icg",
+   "name": "ICG 集成门控时钟单元(工具自动插入)",
+   "desc": "Integrated Clock Gating cell —— 库里专门的门控单元,内部是「先用 latch 在时钟低电平锁住 enable、再与时钟相与」,从结构上消除毛刺。关键:它不是你手写的,而是综合工具识别到你写的「带 enable 的寄存器」后自动替你插进去的。enable 为低时它让 gated_clk 不再翻转。"
+  },
+  {
+   "k": "regs",
+   "name": "被门控的寄存器组(空闲 PE 列)",
+   "desc": "接 gated_clk 的一组累加寄存器,比如阵列中暂时不参与计算的整列 PE。时钟被关掉后这些触发器整拍不翻转 —— 动态功耗 ≈ 翻转活动 × 电容 × 电压²,翻转停了,这一列的动态功耗就基本归零(只剩漏电)。这正是「不干活就不耗动态功耗」。"
+  },
+  {
+   "k": "iso",
+   "name": "操作数隔离(operand isolation)",
+   "desc": "门控管住的是寄存器(时序);组合逻辑(如这拍用不到的乘法器)即使时钟门了,输入一变它照样翻转耗功耗。操作数隔离是在用不到时把组合块的输入钉成固定常量,让它停止无谓翻转 —— 与时钟门控互补,共同压低动态功耗。"
+  },
+  {
+   "k": "upf",
+   "name": "UPF 功耗意图(旁路于 RTL)",
+   "desc": "更激进的低功耗(关整块电源域、调电压)不写在 RTL 里,而写在独立的 UPF/CPF 功耗意图文件:声明哪些是电源域、域间要插隔离单元(isolation)和电平移位(level shifter)、关电后状态怎么保持。RTL 保持「只描述逻辑」,电源结构由 UPF 描述,二者分离。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "en",
+    "regs"
+   ],
+   "cap": "① RTL 里只写意图:always_ff @(posedge clk) if(en) acc<=acc+prod;(示意)。你描述的是『enable 为真才更新这一列累加器』,完全不碰时钟本身。"
+  },
+  {
+   "keys": [
+    "icg",
+    "clk"
+   ],
+   "cap": "② 综合工具识别到这个『带 enable 的寄存器』,自动在 clk 和这组寄存器之间插入一个 ICG 门控单元 —— latch+AND 的标准结构,你不用、也不该自己写。"
+  },
+  {
+   "keys": [
+    "regs"
+   ],
+   "cap": "③ enable 为低(这列 PE 空闲)时,ICG 让 gated_clk 整拍不翻转,这组触发器静止;动态功耗随翻转一起停 —— 空闲列『不干活就不耗动态功耗』。"
+  },
+  {
+   "keys": [
+    "iso"
+   ],
+   "cap": "④ 补操作数隔离:门控只管住寄存器,这拍用不到的乘法器等组合逻辑要把输入钉成常量,否则输入一抖它照样翻转白烧功耗 —— 与门控互补。"
+  },
+  {
+   "keys": [
+    "upf",
+    "bad"
+   ],
+   "cap": "⑤ 要关电源域、调电压等更强的功耗管理写进 UPF 功耗意图文件,RTL 保持纯逻辑。铁律:绝不手写 assign gated=clk&en;(毛刺/坏 DFT/坏时序),门控时钟交给工具。"
+  }
+ ],
+ "before": [
+  "<b>先定低功耗的「写法约定」:门控只写 enable,不写门控时钟</b>。团队规范里写死:所有需要时钟门控的寄存器,RTL 一律写成 always_ff @(posedge clk) if(en) q<=d; 的形式,由综合工具自动插 ICG;任何手写的 clk & en、自己例化 latch 去造门控时钟,都在评审里禁止 —— 这是低功耗 RTL 最重要的一条前置纪律。",
+  "<b>识别哪些块值得门控</b>:TPU 256×256 阵列不是每拍都满载,空闲的整列 PE、暂不用的缓冲区都是动态功耗大户,适合做粗粒度时钟门控(整列一个 enable);而那些几乎每拍都翻的核心通路门控收益小、反而增延迟。动手前就把『门控对象 + 粒度』圈出来。",
+  "<b>定门控粒度与 enable 来源</b>:是按 PE 列门、还是按更大的块门?enable 从哪来(调度 FSM 给的『本列本拍是否参与』信号)?粒度太细会插一堆 ICG 反而增面积/功耗,太粗又省不动 —— 这个取舍要在编码前定。",
+  "<b>把电源结构的事交给 UPF,不污染 RTL</b>:明确『RTL 只描述逻辑功能,不写任何电源/地线、不写关电逻辑』;电源域划分、隔离单元、电平移位、状态保持(retention)等功耗意图,统一在 UPF/CPF 文件里描述。先约定这条分工,避免后期 RTL 里混进电源细节。",
+  "<b>明确诚实边界</b>:TPU v1 用脉动阵列、空闲单元做时钟门控属合理且通行的低功耗设计取向(28nm、TDP 仅 28–40W 也佐证其重视功耗),但 TPU 不公开其门控粒度、ICG 用量、UPF 等具体实现 —— 以下写法是这类大规模 ASIC 的通行低功耗 RTL 实践,以 TPU 结构作载体讲概念。"
+ ],
+ "during": [
+  "<b>把门控写成『带 enable 的更新』,让工具去插 ICG</b>:示意 always_ff @(posedge clk) if(en) acc<=acc+prod; —— 你描述的是行为意图,综合工具(clock_gating 流程)会自动把它实现成『ICG 门控单元 + 寄存器』。这是最关键的一句:门控是综合出来的,不是手写的。",
+  "<b>铁律:绝不手写门控时钟</b>。assign gated_clk = clk & en; 看着省事,实际三宗罪 —— ① 毛刺:enable 在时钟高电平变化会在时钟线上劈出尖刺,误触发下游;② 坏 DFT:手搓门控时钟扫描链插不进、可测性崩;③ 坏时序:这条人造时钟工具不当真正时钟收敛,偏斜失控。ICG 单元内部用 latch 锁 enable 正是为了消这些。",
+  "<b>补上操作数隔离,管组合逻辑</b>:时钟门控只让寄存器不翻,但前面的乘法器是组合逻辑,只要输入变它就翻、就耗功耗。对这拍用不到的运算块,用 enable 把其输入多路选成固定常量(operand isolation),让它静下来 —— 门控 + 操作数隔离才覆盖了时序与组合两类动态功耗。",
+  "<b>取舍:门控不是越多越好</b>。每个 ICG 自己也有面积、漏电和一点插入延迟;对翻转率本来就高的信号门控,enable 评估逻辑的功耗可能盖过省下的。通行做法是只对有明显空闲、翻转率低的块门控,粒度适中 —— 把 enable 算清楚比到处撒门控更重要。",
+  "<b>电源意图写进 UPF,RTL 保持纯逻辑</b>:要做电源门控(power gating,直接断电整块)、多电压域、保持寄存器,这些用 UPF/CPF 描述:定义电源域、在域边界插隔离单元(防关电域输出浮空乱传)和电平移位器,RTL 本身一行电源代码都不写。这样同一份 RTL 能配不同功耗策略。",
+  "<b>诚实边界</b>:以上 if(en) 写法、禁止手写门控、操作数隔离、UPF 流程都是通行低功耗 RTL 实践;能确定为 TPU 事实的只是结构与功耗规格(256×256 阵列、700 MHz、28nm、28–40W TDP、weight-stationary),其门控的具体粒度与实现未公开。"
+ ],
+ "result": [
+  {
+   "label": "门控写法(示意)",
+   "value": "always_ff @(posedge clk) if(en) q<=d;(只写 enable)"
+  },
+  {
+   "label": "工具自动产物",
+   "value": "综合插入 ICG 门控单元(latch+AND),非手写"
+  },
+  {
+   "label": "明令禁止(反例)",
+   "value": "assign gated_clk = clk & en; → 毛刺/坏 DFT/坏时序"
+  },
+  {
+   "label": "组合逻辑省功耗",
+   "value": "操作数隔离:空闲乘法器输入钉常量,停翻转"
+  },
+  {
+   "label": "电源意图载体",
+   "value": "UPF/CPF:电源域 + 隔离单元 + 电平移位(旁路 RTL)"
+  },
+  {
+   "label": "对应到 TPU",
+   "value": "空闲 PE 列时钟门控:不翻转 ≈ 动态功耗归零(仅余漏电)"
+  }
+ ],
+ "after": [
+  "<b>跑 lint 与低功耗结构检查</b>:用 lint/低功耗检查工具扫出『手写门控时钟』『未隔离的电源域边界』『缺保持的关电寄存器』等违例;确认所有门控都走的是 if(en) 这条让工具插 ICG 的路,没有人肉拿 clk 去与门 —— 这类问题仿真常看不出,得靠静态检查拦。",
+  "<b>做功耗仿真 / 估算验证收益</b>:跑带翻转活动(VCD/SAIF)的功耗分析,确认门控真的在空闲列把动态功耗压下去了,且 enable 评估逻辑没有反噬;对比门控前后功耗,验证粒度选得合适、有正收益而非负收益。",
+  "<b>验证 ICG 插入与时序收敛</b>:综合后检查工具是否在该插的地方插了 ICG、gated_clk 是否被当真正时钟做时钟树综合与时序分析;确认门控没有引入意外的时序违例或功能改变(enable 与数据的时序关系正确)。",
+  "<b>跑 UPF 一致性与可测性(DFT)检查</b>:做功耗意图(UPF)与 RTL/网表的一致性检查 —— 隔离单元、电平移位、保持是否都按意图就位;并确认时钟门控对扫描链友好(ICG 自带测试使能),没有因门控破坏 DFT 覆盖率。",
+  "<b>交验证团队复核关电/唤醒场景</b>:把『某列门控关闭→重新使能』『电源域关→开』的时序、状态保持、隔离释放顺序列成验证点交给验证 —— 低功耗逻辑的 bug 多藏在关/开的边界时刻,必须专门覆盖,别等硅后才发现唤醒时数据丢了。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(256×256 阵列、700 MHz、28nm、28–40W TDP、weight-stationary 为 v1 披露;时钟门控写 enable 交工具插 ICG、禁手写门控时钟、操作数隔离、UPF 功耗意图等为通行低功耗 RTL 实践,TPU 未公开其门控具体实现)"
+}

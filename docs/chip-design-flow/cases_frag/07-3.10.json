@@ -1,0 +1,118 @@
+{
+ "secNum": "3.10",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 综合产出与交接(给后端):28nm 门级网表 + 综合后 SDC + 时序/面积/功耗报告 + Scan/DFT 打包成交接包,交 ⑧ 物理设计开始布局布线",
+ "oneLine": "综合的终点是一个能交给后端的『交接包』:把 256×256 阵列、UB、累加器等 RTL 综合成的 28nm 门级网表(后端布局布线的起点)、随网表一起的综合后 SDC(700MHz 时钟与 IO/例外约束,后端原样复用做布局/CTS/布线)、QoR 报告(时序 WNS/TNS、面积、功耗、单元数——供评估这版 QoR 够不够格进后端)、以及 Scan/DFT 信息(scan 链、SDF、库与版本清单),四样冻结并附 LEC 通过证据一起交给 ⑧ 物理设计;网表+SDC 是后端的硬输入,报告是放行/退回的判据,后端若 STA 报出新违例还要带真实寄生回综合迭代。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">综合收尾:把四样产物打包成『交接包』→ 交给 ⑧ 物理设计开始布局布线</text><g class=\"cs-part\" data-k=\"net\" data-g=\"net\"><rect class=\"cs-box\" x=\"40\" y=\"56\" width=\"280\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"180\" y=\"82\">门级网表 Netlist</text><text class=\"cs-sub\" x=\"180\" y=\"100\">28nm 标准单元 + 连线(后端起点)</text></g><g class=\"cs-part\" data-k=\"sdc\" data-g=\"sdc\"><rect class=\"cs-box\" x=\"40\" y=\"124\" width=\"280\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"180\" y=\"150\">综合后 SDC 约束</text><text class=\"cs-sub\" x=\"180\" y=\"168\">700MHz 时钟 / IO 延迟 / 例外(后端复用)</text></g><g class=\"cs-part\" data-k=\"rpt\" data-g=\"rpt\"><rect class=\"cs-box\" x=\"40\" y=\"192\" width=\"280\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"180\" y=\"218\">QoR 报告</text><text class=\"cs-sub\" x=\"180\" y=\"236\">时序 WNS/TNS · 面积 · 功耗 · 单元数</text></g><g class=\"cs-part\" data-k=\"scan\" data-g=\"scan\"><rect class=\"cs-box\" x=\"40\" y=\"260\" width=\"280\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"180\" y=\"286\">Scan / DFT 信息</text><text class=\"cs-sub\" x=\"180\" y=\"304\">scan 链 / SDF / DEF / 库与版本清单</text></g><g class=\"cs-part\" data-k=\"pack\" data-g=\"pack\"><rect class=\"cs-box\" x=\"356\" y=\"150\" width=\"150\" height=\"100\" rx=\"8\"/><text class=\"cs-t\" x=\"431\" y=\"194\">综合交接包</text><text class=\"cs-sub\" x=\"431\" y=\"214\">四样冻结打包</text><text class=\"cs-sub\" x=\"431\" y=\"232\">+LEC 通过证据</text></g><line class=\"cs-arr\" x1=\"320\" y1=\"85\" x2=\"360\" y2=\"168\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"320\" y1=\"153\" x2=\"360\" y2=\"182\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"320\" y1=\"221\" x2=\"360\" y2=\"216\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"320\" y1=\"289\" x2=\"360\" y2=\"230\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"pd\" data-g=\"pd\"><rect class=\"cs-box\" x=\"542\" y=\"150\" width=\"150\" height=\"100\" rx=\"8\"/><text class=\"cs-t\" x=\"617\" y=\"194\">⑧ 物理设计</text><text class=\"cs-sub\" x=\"617\" y=\"214\">布局 / 时钟树 / 布线</text><text class=\"cs-sub\" x=\"617\" y=\"232\">网表+SDC 为输入</text></g><line class=\"cs-arr\" x1=\"506\" y1=\"200\" x2=\"538\" y2=\"200\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"512\" y=\"280\">交接前 LEC:网表 ≡ RTL</text><polyline class=\"cs-arr\" points=\"617,250 617,300 431,300 431,254\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"356\" y=\"332\">后端 STA 报新违例 → 带真实寄生回综合迭代</text></svg>",
+ "legend": [
+  {
+   "k": "net",
+   "name": "门级网表(Netlist)——后端的起点",
+   "desc": "综合的核心产物:把 TPU 的 256×256 脉动阵列、24 MiB Unified Buffer 控制、4 MiB 累加器等 RTL 全部映射成 28nm 工艺标准单元(与/或/触发器等具体单元)及它们之间连线的网表(Verilog 门级)。它取代 RTL 成为物理设计的输入——布局布线对着这张网表摆单元、连金属线。网表里每个 cell 都是库里真实存在的标准单元,这是『可制造』的第一份描述。"
+  },
+  {
+   "k": "sdc",
+   "name": "综合后 SDC 约束——后端原样复用",
+   "desc": "综合用的时序约束(create_clock 定义 700MHz、set_input/output_delay 定义边界、false_path/multicycle 等例外)随网表一起交给后端。后端做布局、时钟树综合(CTS)、布线、签核 STA 时不重写一套,而是复用并细化这份 SDC——保证综合和后端对『什么是关键路径、跑多快、哪些是假路径』的理解一致。约束若不随网表交付,后端会用错误的时序意图优化,前功尽弃。"
+  },
+  {
+   "k": "rpt",
+   "name": "QoR 报告——进后端的放行判据",
+   "desc": "时序(WNS/TNS,最差/总负裕量)、面积(标准单元总面积、单元数)、功耗(动态+漏电)三张报告,是评估这版综合 QoR 够不够格进后端的客观依据。综合阶段时序就一堆负 slack、或面积/功耗远超预算,说明 RTL 或约束还有问题,不该硬塞给后端——后端只会让寄生和偏差把情况变得更糟。报告达标(留足后端裕量)才放行。"
+  },
+  {
+   "k": "scan",
+   "name": "Scan / DFT 信息 + 配套文件",
+   "desc": "综合阶段插入的可测性结构(scan 链:把触发器串成移位链便于量产测试)的连接信息,连同时序标注 SDF、物理约束 DEF、以及『用了哪个工艺库、哪个版本、哪些单元』的库与版本清单一起交付。后端要靠这些做 scan 链重排序、反标时序、对齐库版本——缺一样都可能让后端用错数据或测试结构失效。"
+  },
+  {
+   "k": "pack",
+   "name": "综合交接包(含 LEC 证据)",
+   "desc": "把上面四样冻结、版本化打包成一个交接包,并附上形式等价检查(LEC)通过的证据——证明门级网表与 RTL 逻辑等价、综合只改了实现没改功能。打包冻结意味着这一版网表/约束/报告对应同一次综合,后端拿到的是自洽的一套,而非东拼西凑的不同版本。交接包随后交给 ⑧ 物理设计:它以网表+SDC 为硬输入做布局/CTS/布线,在真实寄生下重做签核 STA,若报出新违例则带真实信息回综合迭代。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "net"
+   ],
+   "cap": "① 出网表:综合把 256×256 阵列、UB 控制、累加器等 RTL 映射成 28nm 标准单元门级网表——它取代 RTL 成为后端布局布线的起点,每个 cell 都是库里真实存在的可制造单元"
+  },
+  {
+   "keys": [
+    "net",
+    "sdc"
+   ],
+   "cap": "② 配约束:把综合用的 SDC(700MHz 时钟、IO 延迟、false/multicycle 例外)随网表一起交付,后端做布局/CTS/布线/STA 时原样复用并细化,保证时序意图一致"
+  },
+  {
+   "keys": [
+    "rpt"
+   ],
+   "cap": "③ 看 QoR 决定放行:用时序 WNS/TNS、面积、功耗、单元数三张报告判断这版 QoR 够不够进后端——达标(留足后端裕量)才放行,负 slack 一堆就该退回修 RTL/约束"
+  },
+  {
+   "keys": [
+    "scan",
+    "pack"
+   ],
+   "cap": "④ 带齐 DFT 与配套打包:把 scan 链/DFT 信息、SDF、DEF、库与版本清单一并附上,连同 LEC 通过证据冻结成版本化的『综合交接包』"
+  },
+  {
+   "keys": [
+    "pack",
+    "pd"
+   ],
+   "cap": "⑤ 交后端并留迭代回路:把交接包交给 ⑧ 物理设计开始布局布线;后端在真实寄生下重做签核 STA,若报出新违例,带真实信息回综合迭代——这条回路让综合与后端协同收敛"
+  }
+ ],
+ "before": [
+  "<b>先约定交接清单与版本规则</b>:在收口前就定清交接包必须含哪几样——门级网表、综合后 SDC、QoR 报告(时序/面积/功耗)、Scan/DFT 信息及 SDF/DEF、库与版本清单、LEC 证据——并约定全部对应同一次综合、统一打 tag。清单不明,后端极易拿到版本对不上的网表与约束。",
+  "<b>定『够格进后端』的 QoR 验收线</b>:写清放行门槛——700MHz 下时序 WNS≥0(或留好后端裕量)、面积/功耗在预算内、无 hold 等基础问题。这条线让『放行 or 退回修 RTL/约束』有客观判据,而不是综合一跑完就硬塞给后端。",
+  "<b>明确 SDC 要随网表交付且口径一致</b>:确认交给后端的 SDC 与综合实际所用一致(时钟、IO 延迟、false/multicycle 例外齐全),并约定后端复用而非另起一套。综合和后端时序约束口径不一,是两边各说各话、反复返工的常见根源。",
+  "<b>定好 DFT/scan 的交付内容</b>:确认 scan 链结构、scan 配置、SDF 反标信息、DEF 物理约束这些后端要用的 DFT 产物都在交付范围内,并对齐它们与网表的版本。后端要靠这些做 scan 重排序和反标,缺失会让测试结构或时序标注失效。",
+  "<b>诚实边界</b>:门级网表、SDC、Liberty 库、QoR 报告、scan/DFT、SDF/DEF、LEC 以及综合→物理设计的交接流程都是通行 EDA 综合实践,Design Compiler/Genus/Yosys、Conformal/Formality 等工具都支持。TPU v1 不会公开其网表、约束脚本、单元库或 QoR/DFT 数字。这里用 TPU 的已知结构(256×256 脉动阵列、24 MiB UB、4 MiB 累加器、700MHz、28nm、weight-stationary)作为被综合对象来讲交接产物,所有脚本/数字均为示意。"
+ ],
+ "during": [
+  "<b>固化门级网表为后端起点</b>:导出映射到 28nm 标准单元的门级 Verilog 网表,确认阵列由同一 PE 网表例化复用、UB/累加器等块都已落到真实库单元上。这张网表从此取代 RTL——后端所有布局布线动作都对着它做,网表一旦交付就是物理实现的事实基准。",
+  "<b>随网表交付综合后 SDC,口径与综合一致</b>:示意 —— create_clock -period 1.43 [get_ports clk](700MHz)、set_input_delay/set_output_delay 定边界、必要的 set_false_path/set_multicycle_path 例外。约束要与综合实际所用完全一致并交后端复用;后端据此做布局、CTS、布线和签核 STA,避免两边时序意图分叉。",
+  "<b>生成三张 QoR 报告并据此放行</b>:report_timing 出 WNS/TNS、report_area 出面积/单元数、report_power 出动态+漏电(均示意)。三表联合判读:时序无负 slack(或留足后端裕量)、面积/功耗在预算,才判这版 QoR 够格进后端;否则退回查 RTL 或约束,不把问题甩给后端放大。",
+  "<b>带齐 Scan/DFT 与配套物理文件</b>:交付 scan 链连接信息与 DFT 配置,附时序标注 SDF、物理约束 DEF,以及『用了哪个工艺库哪个版本、含哪些单元』的库/版本清单。后端要靠这些做 scan 链重排序、反标时序、对齐库版本——任一缺失都可能让后端用错数据或测试结构失效。",
+  "<b>交接前做 LEC 并附通过证据</b>:用形式等价检查(LEC,如 Conformal/Formality)证明门级网表与 RTL 逻辑等价,确认综合(映射/优化/retiming/DFT 插入)只改了实现没改功能;把 LEC 通过报告随包交付,后端拿到的是一份已证等价的网表,而非可能藏功能 bug 的产物。",
+  "<b>铁律:冻结打包,版本必须自洽</b>。网表、SDC、报告、scan/DFT、库清单、LEC 证据必须全部对应同一次综合并统一冻结打 tag——后端拿到的是一套自洽的输入,绝不能网表是这版、约束是那版、报告是另一版。版本错位是后端踩坑、问题难追溯的头号来源。"
+ ],
+ "result": [
+  {
+   "label": "门级网表(产物)",
+   "value": "28nm 标准单元 Verilog 网表;阵列由同一 PE 网表例化复用——后端布局布线的起点"
+  },
+  {
+   "label": "综合后 SDC(示意)",
+   "value": "create_clock -period 1.43 [get_ports clk]  // 700MHz,随网表交后端复用,示意"
+  },
+  {
+   "label": "QoR 报告(示意)",
+   "value": "report_timing(WNS/TNS)+ report_area + report_power(动态/漏电)+ 单元数 —— 进后端的放行判据"
+  },
+  {
+   "label": "Scan / DFT 信息",
+   "value": "scan 链结构 / DFT 配置 + SDF 反标 + DEF 物理约束 + 库与版本清单"
+  },
+  {
+   "label": "LEC 通过证据",
+   "value": "门级网表 ≡ RTL 等价检查报告,证明只改实现未改功能,随包交付"
+  },
+  {
+   "label": "交接包",
+   "value": "上述全部冻结、统一打 tag 版本化打包 → 交 ⑧ 物理设计开始布局布线"
+  }
+ ],
+ "after": [
+  "<b>交付前自检交接包完整且自洽</b>:核对网表、SDC、三张 QoR 报告、scan/DFT、SDF/DEF、库与版本清单、LEC 证据是否齐全,且全部对应同一次综合的同一 tag。任何一样缺失或版本对不上,先补齐再交——别让后端在缺料的输入上空跑半天。",
+  "<b>用 QoR 报告做放行/退回决策</b>:三表联合判读——时序无负 slack(且留足后端布线寄生/CTS/OCV 要吃掉的裕量)、面积/功耗在预算,才放行进后端。若综合阶段就一堆违例或超预算,退回查 RTL/约束,不把放大后的难题甩给后端。",
+  "<b>确认 SDC 与 DFT 能被后端正确接手</b>:跟后端对齐 SDC 是被复用细化而非另写一套、scan 链能正确重排序、SDF/DEF 与网表版本匹配。交接处的口径对齐做实了,后端才不会一上来就因约束/数据不一致而返工。",
+  "<b>留好综合↔后端迭代回路</b>:后端在真实寄生下重做签核 STA,可能报出综合阶段看不到的新违例(布线延迟、CTS 偏差、OCV)。约定好这些违例带着真实寄生回综合迭代(调约束/局部优化/微调网表),每轮只动一处、可追溯,直至两端时序联合收敛。",
+  "<b>冻结基线并归档</b>:本版交接包放行后冻结为基线,归档网表、综合脚本与约束、QoR 报告、LEC 证据及版本清单;后续 ECO 或后端回迭代都从这个可追溯的基线出发,保证『改了什么、为什么改、相对哪一版』全程清楚。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(256×256 8-bit MAC 脉动阵列、700MHz、24 MiB Unified Buffer、4 MiB 累加器、weight-stationary、28nm 为 v1 披露,作为被综合对象;门级网表、综合后 SDC、QoR 报告、Scan/DFT、SDF/DEF、Liberty 库、LEC 及综合→物理设计交接流程、所有脚本/数字为通行 EDA 综合实践与示意,非 TPU v1 私有披露)"
+}

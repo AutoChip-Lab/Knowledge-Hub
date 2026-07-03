@@ -1,0 +1,125 @@
+{
+ "secNum": "3.7",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 用断言(SVA)给握手/FIFO/脉动阵列装哨兵——bug 当拍当地抓住,还能喂形式化",
+ "oneLine": "断言(assertion/SVA)是写进 RTL 接口的「永真合同」:把「valid 拉高后到握手前数据不许变」「Weight FIFO 永不溢出」「阵列装填未完不许输出」写成 assert property,仿真里 bug 一发生就在那一拍、那个信号上当场报红,把调试从「追错误结果倒推几千拍」变成「看现场」——而同一条断言还能直接喂给形式化工具做穷举证明,正是本小节断言的样板。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">断言(SVA)挂在 RTL 接口上当哨兵:bug 一出现,在那一拍、那个位置当场抓住并报红</text><g class=\"cs-part\" data-k=\"drv\" data-g=\"drv\"><rect class=\"cs-box\" x=\"40\" y=\"60\" width=\"130\" height=\"78\" rx=\"8\"/><text class=\"cs-t\" x=\"105\" y=\"92\">激励(Driver)</text><text class=\"cs-sub\" x=\"105\" y=\"112\">灌握手/装填序列</text><text class=\"cs-sub\" x=\"105\" y=\"128\">含定向+随机背压</text></g><line class=\"cs-arr\" x1=\"170\" y1=\"99\" x2=\"252\" y2=\"99\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"dut\" data-g=\"dut\"><rect class=\"cs-box\" x=\"256\" y=\"48\" width=\"210\" height=\"170\" rx=\"8\"/><text class=\"cs-t\" x=\"361\" y=\"74\">DUT:被验证 RTL</text><g class=\"cs-part\" data-k=\"hs\" data-g=\"hs\"><rect class=\"cs-cell\" x=\"276\" y=\"90\" width=\"170\" height=\"30\"/><text class=\"cs-cellt\" x=\"361\" y=\"109\">valid/ready 握手接口</text></g><g class=\"cs-part\" data-k=\"fifo\" data-g=\"fifo\"><rect class=\"cs-cell\" x=\"276\" y=\"128\" width=\"170\" height=\"30\"/><text class=\"cs-cellt\" x=\"361\" y=\"147\">Weight FIFO(满/空)</text></g><g class=\"cs-part\" data-k=\"arr\" data-g=\"arr\"><rect class=\"cs-cell\" x=\"276\" y=\"166\" width=\"170\" height=\"34\"/><text class=\"cs-cellt\" x=\"361\" y=\"187\">256×256 脉动阵列</text></g></g><g class=\"cs-part\" data-k=\"sva\" data-g=\"sva\"><rect class=\"cs-box\" x=\"510\" y=\"48\" width=\"180\" height=\"170\" rx=\"8\"/><text class=\"cs-t\" x=\"600\" y=\"72\">断言哨兵(SVA)</text><text class=\"cs-sub\" x=\"600\" y=\"94\">assert property @(clk)</text><text class=\"cs-sub\" x=\"600\" y=\"112\">A1 valid→数据稳定</text><text class=\"cs-sub\" x=\"600\" y=\"130\">A2 FIFO 不溢出</text><text class=\"cs-sub\" x=\"600\" y=\"148\">A3 装填未完不输出</text><g class=\"cs-part\" data-k=\"red\" data-g=\"red\"><rect class=\"cs-cell\" x=\"528\" y=\"162\" width=\"144\" height=\"44\"/><text class=\"cs-cellt\" x=\"600\" y=\"180\">违反 = 红灯</text><text class=\"cs-cellt\" x=\"600\" y=\"196\">当拍当地定位</text></g></g><polyline class=\"cs-arr\" points=\"466,105 490,105 490,120 508,120\" fill=\"none\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"466,143 490,143 490,128 508,128\" fill=\"none\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"466,183 490,183 490,136 508,136\" fill=\"none\" marker-end=\"url(#csar)\"/><text class=\"cs-sub\" x=\"478\" y=\"240\">观测探针(只读,不驱动 DUT)</text><g class=\"cs-part\" data-k=\"formal\" data-g=\"formal\"><rect class=\"cs-box\" x=\"40\" y=\"262\" width=\"300\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"190\" y=\"288\">同一条断言 → 喂形式化工具</text><text class=\"cs-sub\" x=\"190\" y=\"308\">穷举证明:任意输入下永不违反</text></g><line class=\"cs-arr\" x1=\"510\" y1=\"180\" x2=\"344\" y2=\"294\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><g class=\"cs-part\" data-k=\"cov\" data-g=\"cov\"><rect class=\"cs-box\" x=\"392\" y=\"262\" width=\"298\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"541\" y=\"288\">cover property:这条情景跑到没有</text><text class=\"cs-sub\" x=\"541\" y=\"308\">背压/满空边界/装填完成 都被命中</text></g><text class=\"cs-note\" x=\"40\" y=\"352\">价值:断言把「错误结果」变成「错误那一刻的现场」——缩短调试,且 assert/cover 复用到形式化与覆盖</text><text class=\"cs-note\" x=\"40\" y=\"382\">注:SVA 片段为通行验证实践的示意;TPU v1 不公开其验证环境,此处借其已知结构作被验证对象</text></svg>",
+ "legend": [
+  {
+   "k": "dut",
+   "name": "DUT:被验证 RTL(握手/FIFO/阵列)",
+   "desc": "本小节的被验证对象——TPU 已知结构的 RTL:主机经 PCIe 下发 CISC 指令后,数据沿 valid/ready 握手进 Weight FIFO,再装填进 256×256 脉动阵列。这些接口和状态正是要被断言盯住的地方。断言不改 DUT 行为,只在旁边观测。"
+  },
+  {
+   "k": "sva",
+   "name": "断言哨兵(SVA / assert property)",
+   "desc": "挂在接口上的若干条 assert property,每个时钟沿检查一个「必须永真」的性质:握手数据稳定性、FIFO 不溢出、阵列装填序。任一拍被违反,仿真当场报错并打印是哪条断言、哪一拍、哪个信号——bug 在发生那一刻、那个位置被抓住,而非顺着错误结果倒查。"
+  },
+  {
+   "k": "red",
+   "name": "违反即红灯(当拍当地定位)",
+   "desc": "断言的核心价值:把「输出对不对」这种事后判断,提前成「内部约束在哪一拍先破的」现场报警。它大幅缩短调试——直接指到根因附近的那一拍,而不是从错误输出往回扒几千个周期。"
+  },
+  {
+   "k": "formal",
+   "name": "同一断言喂形式化",
+   "desc": "assert property 不只在仿真里被动检查,还能交给形式化(属性证明)工具:不靠激励,而是数学穷举所有输入序列,证明该性质在任何情况下都不会被违反(或给出反例)。一条断言两用——仿真当哨兵、形式化当证明。"
+  },
+  {
+   "k": "cov",
+   "name": "cover property(情景被命中没有)",
+   "desc": "与 assert 对偶的 cover property:assert 问「坏事有没有发生」,cover 问「想测的好场景到底跑到没有」。例如「FIFO 真的满过」「真的施加过背压」「装填真的完成过」——若 cover 没命中,说明激励没覆盖到,断言再多也是空守。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "drv",
+    "dut"
+   ],
+   "cap": "① 激励驱动 DUT:Driver 沿 valid/ready 灌入握手与权重装填序列(含随机拉低 ready 的背压),让 TPU 这部分 RTL 真正跑起来、产生各种时序场景"
+  },
+  {
+   "keys": [
+    "dut",
+    "hs",
+    "sva"
+   ],
+   "cap": "② 断言盯握手:A1「valid 拉高后,在 ready 到来、握手成立前,数据/valid 不得改变」——属性挂在握手接口上,数据中途一变,这一拍立刻报红"
+  },
+  {
+   "keys": [
+    "dut",
+    "fifo",
+    "sva"
+   ],
+   "cap": "③ 断言盯 FIFO:A2「FIFO 满(full)时不得再写、写指针不得越过读指针」——一旦溢出风险出现,在写入那一拍当场抓住,而不是等若干拍后数据被覆盖才暴露"
+  },
+  {
+   "keys": [
+    "dut",
+    "arr",
+    "sva",
+    "red"
+   ],
+   "cap": "④ 断言盯阵列:A3「权重装填未完成(load 未拉 done)时,阵列不得吐出结果」——违反即红灯,直接定位到「过早输出」那一拍那个控制信号"
+  },
+  {
+   "keys": [
+    "sva",
+    "formal",
+    "cov"
+   ],
+   "cap": "⑤ 一断言多用:同一条 assert 喂形式化工具做穷举证明(找反例或证永真);配套 cover property 反过来确认满/空、背压、装填完成这些场景真的被激励命中"
+  }
+ ],
+ "before": [
+  "<b>先列「被验证对象 + 要守的不变量」</b>:把这部分 RTL 的接口与状态(valid/ready 握手、Weight FIFO 满空、阵列装填→输出时序、多时钟域跨越点)逐条列出,再为每条写出一句「无论何时都必须成立」的性质——这些性质就是要写成断言的候选。",
+  "<b>定断言三类形态</b>:即时断言(组合关系,如 full && wr_en 永不同真)、并发断言(时序蕴含,如 valid 高 ⇒ 直到握手前数据稳定)、以及 cover(场景必须被触达)。先想清每条性质属于哪类,避免把时序性质误写成即时检查。",
+  "<b>定参考预期与完成判据</b>:断言只判「内部约束有没有破」,不替代和参考模型(scoreboard)对最终数值——要写清哪些交给断言守不变量、哪些交给比对模型守结果。完成判据写成可量化:全部 assert 在回归中零违反、且关键 cover 100% 命中。",
+  "<b>定哪些断言要进形式化</b>:挑出「安全性」类(永不发生坏事:不溢出、不越界、不过早输出)优先交形式化穷举;再标注证明的边界条件/假设(assume),例如复位后、指令合法的前提,免得形式化在不可能的输入上报假反例。",
+  "<b>约定诚实边界</b>:写明 TPU v1 不公开其验证环境,本案例的 SVA 片段、covergroup 均为这类设计的通行验证实践示意,仅以 TPU 已知结构(脉动阵列/UB/握手/CISC 接口)作为被验证对象讲断言概念,不编造 TPU 私有断言或数字。"
+ ],
+ "during": [
+  "<b>握手稳定性写成时序蕴含</b>(示意,通行实践):<br><code>property p_hold; @(posedge clk) disable iff(!rst_n)<br>&nbsp;&nbsp;(valid && !ready) |=> (valid && $stable(data)); endproperty<br>assert property(p_hold);</code><br>含义:valid 高而握手未成立时,下一拍 valid 仍高且 data 不变——这一拍数据偷改,断言当场失败。",
+  "<b>FIFO 不溢出写成即时/并发安全断言</b>(示意):<br><code>assert property(@(posedge clk) !(full && wr_en));<br>assert property(@(posedge clk) (wr_ptr - rd_ptr) <= DEPTH);</code><br>满了还写、水位越过深度,在写入那一拍即报红,而不是等被覆盖的数据若干拍后算错才暴露。",
+  "<b>装填序写成蕴含</b>(示意):<br><code>assert property(@(posedge clk) array_out_valid |-> load_done);</code><br>阵列吐结果时必须 load_done 已置位——「装填未完就输出」这一刻被精确定位到那个控制信号,省去从错误结果倒推的几千拍。",
+  "<b>断言只观测、绝不驱动 DUT</b>:断言/探针挂在接口上读信号,不能反过来改 DUT 的行为或时序,否则验证对象就被污染了。跨多时钟域的接口上写断言要在正确的采样时钟域里写、避免对未对齐信号做 $stable 这类误报。",
+  "<b>assert 与 cover 成对写,避免「假绿」</b>:只写 assert 全过可能是激励根本没触达危险场景(空守也全过)。每条关键断言配一条 cover(如 cover「full 出现过」「ready 被拉低过」「load_done 切换过」),用命中率确认断言真的被有意义地考验过。",
+  "<b>诚实边界</b>:以上 property/assert/cover 写法是 SystemVerilog Assertion 的通行工业实践,均为示意;TPU v1 未公开验证环境与具体断言,这里只借其握手/FIFO/脉动阵列/CISC 接口的已知结构当被验证对象,未编造 TPU 专属断言、覆盖率或环境数字。"
+ ],
+ "result": [
+  {
+   "label": "断言载体",
+   "value": "SystemVerilog Assertion(assert property / cover property),挂接口当哨兵"
+  },
+  {
+   "label": "A1 握手稳定(示意)",
+   "value": "(valid && !ready) |=> (valid && $stable(data)) —— 握手前数据/valid 不得变"
+  },
+  {
+   "label": "A2 FIFO 不溢出(示意)",
+   "value": "!(full && wr_en) 且 (wr_ptr-rd_ptr) <= DEPTH —— 满则不写、不越深度"
+  },
+  {
+   "label": "A3 装填序(示意)",
+   "value": "array_out_valid |-> load_done —— 装填未完不得输出"
+  },
+  {
+   "label": "核心收益",
+   "value": "违反即红灯,在出错那一拍那个信号定位,大幅缩短调试链"
+  },
+  {
+   "label": "一断言多用",
+   "value": "同条 assert 喂形式化做穷举证明;配 cover 确认场景真被命中"
+  }
+ ],
+ "after": [
+  "<b>断言纳入回归,目标零违反</b>:每次 RTL 变更后的仿真回归都开启全部断言,任何一条失败都当作功能 bug 阻断签核;失败时凭断言报的「哪条/哪拍/哪信号」直奔现场,修完再回归确认不复发。",
+  "<b>看 cover 命中率补激励</b>:统计每条 cover property 是否被命中——满/空边界、最坏背压、装填刚完成等关键场景若长期 0 命中,说明激励没造出来,补定向或约束随机激励,直到关键 cover 全部点亮再谈收敛。",
+  "<b>把安全性断言交形式化签核</b>:对 A2(不溢出)、A3(不过早输出)这类安全性质跑形式化,要么拿到「在合法指令前提下全空间永真」的证明,要么拿到反例修 RTL;形式化通过的性质可在回归里降频检查、省仿真时间。",
+  "<b>断言随接口规格固化、随设计走</b>:把这些 assert/cover 连同接口时序规格一并固化,作为 DMA→UB→Weight FIFO→脉动阵列整链集成时的活契约;上层把模块拼起来时,这些断言继续在集成回归里守住边界行为。",
+  "<b>bug 收敛与交综合</b>:跟踪断言抓到的 bug 收敛曲线(新 bug 率趋零、回归连续全绿、关键 cover 满)作为本小节签核依据;签核后接口与不变量稳定,RTL 才交下游综合,避免把功能 bug 带进门级。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(脉动阵列、Unified Buffer、Weight FIFO、CISC 指令接口为该文披露;SVA assert/cover property、形式化证明、覆盖率收敛等为通行验证实践,图与 HDL 片段为示意,非 TPU v1 公开的验证环境或私有数字)"
+}

@@ -1,0 +1,121 @@
+{
+ "secNum": "3.5",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 把分块 GEMM 控制状态图写成两段式 FSM(Idle→LoadW→Stream→Accumulate→WriteBack)",
+ "oneLine": "状态机的 RTL 编码本质是「让一个寄存器记住现在在哪一步、让一坨组合逻辑算下一步和发什么控制信号」——TPU v1 驱动那块脉动阵列做一块矩阵乘,要走「装权重→泵激活→累加→写回」这条流程,这正好是把 ④ 画的状态转移图按两段式拆成 always_ff 更新现态、always_comb 算次态与输出的范本(注:TPU 的具体 FSM 未公开,此处用其已知的分块 GEMM 流程作载体讲通行 RTL 写法)。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">上半:状态转移图(④画的状态图,圆角盒=状态)</text><g class=\"cs-part\" data-k=\"idle\" data-g=\"state\"><rect class=\"cs-box\" x=\"40\" y=\"44\" width=\"104\" height=\"50\" rx=\"22\"/><text class=\"cs-t\" x=\"92\" y=\"68\">Idle</text><text class=\"cs-sub\" x=\"92\" y=\"84\">空闲·等指令</text></g><g class=\"cs-part\" data-g=\"edge\"><line class=\"cs-arr\" x1=\"144\" y1=\"69\" x2=\"178\" y2=\"69\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-k=\"loadw\" data-g=\"state\"><rect class=\"cs-box\" x=\"180\" y=\"44\" width=\"104\" height=\"50\" rx=\"22\"/><text class=\"cs-t\" x=\"232\" y=\"68\">LoadW</text><text class=\"cs-sub\" x=\"232\" y=\"84\">灌权重入阵列</text></g><g class=\"cs-part\" data-g=\"edge\"><line class=\"cs-arr\" x1=\"284\" y1=\"69\" x2=\"318\" y2=\"69\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-k=\"stream\" data-g=\"state\"><rect class=\"cs-box\" x=\"320\" y=\"44\" width=\"104\" height=\"50\" rx=\"22\"/><text class=\"cs-t\" x=\"372\" y=\"68\">Stream</text><text class=\"cs-sub\" x=\"372\" y=\"84\">逐拍泵激活</text></g><g class=\"cs-part\" data-g=\"edge\"><line class=\"cs-arr\" x1=\"424\" y1=\"69\" x2=\"458\" y2=\"69\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-k=\"accum\" data-g=\"state\"><rect class=\"cs-box\" x=\"460\" y=\"44\" width=\"108\" height=\"50\" rx=\"22\"/><text class=\"cs-t\" x=\"514\" y=\"68\">Accumulate</text><text class=\"cs-sub\" x=\"514\" y=\"84\">部分和累加</text></g><g class=\"cs-part\" data-g=\"edge\"><line class=\"cs-arr\" x1=\"568\" y1=\"69\" x2=\"602\" y2=\"69\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-k=\"wb\" data-g=\"state\"><rect class=\"cs-box\" x=\"604\" y=\"44\" width=\"104\" height=\"50\" rx=\"22\"/><text class=\"cs-t\" x=\"656\" y=\"68\">WriteBack</text><text class=\"cs-sub\" x=\"656\" y=\"84\">写回 UB</text></g><g class=\"cs-part\" data-g=\"edge\"><polyline class=\"cs-arr\" points=\"656,94 656,128 92,128 92,96\" fill=\"none\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"300\" y=\"124\">块算完 → 回 Idle / 取下一块</text><line x1=\"40\" y1=\"156\" x2=\"708\" y2=\"156\" stroke=\"#e2e8f0\" stroke-dasharray=\"5 4\"/><text class=\"cs-note\" x=\"40\" y=\"180\">下半:同一张图怎样落成两段式 RTL(状态被一个寄存器编码)</text><g class=\"cs-part\" data-k=\"sreg\" data-g=\"ff\"><rect class=\"cs-box\" x=\"40\" y=\"196\" width=\"300\" height=\"92\" rx=\"8\"/><path d=\"M40,288 L56,288 L48,272 Z\" fill=\"#8b5cf6\"/><text class=\"cs-t\" x=\"190\" y=\"222\">state_reg(时序块)</text><text class=\"cs-sub\" x=\"190\" y=\"244\">always_ff @(posedge clk)</text><text class=\"cs-sub\" x=\"190\" y=\"262\">if(rst) state&lt;=Idle;</text><text class=\"cs-sub\" x=\"190\" y=\"280\">else state&lt;=next_state;</text></g><g class=\"cs-part\" data-k=\"ncomb\" data-g=\"comb\"><rect class=\"cs-box\" x=\"380\" y=\"196\" width=\"328\" height=\"92\" rx=\"8\"/><text class=\"cs-t\" x=\"544\" y=\"222\">next_state + 输出(组合块)</text><text class=\"cs-sub\" x=\"544\" y=\"244\">always_comb begin</text><text class=\"cs-sub\" x=\"544\" y=\"262\">  next=state; ... case(state)...</text><text class=\"cs-sub\" x=\"544\" y=\"280\">  default: next=Idle; end  // 防 latch</text></g><line class=\"cs-arr\" x1=\"380\" y1=\"242\" x2=\"344\" y2=\"242\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"350\" y=\"236\">next_state</text><line class=\"cs-arr\" x1=\"340\" y1=\"270\" x2=\"376\" y2=\"270\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"346\" y=\"306\">当前 state →（喂回组合块算转移/输出）</text><g class=\"cs-part\" data-k=\"outs\" data-g=\"out\"><rect class=\"cs-box\" x=\"380\" y=\"320\" width=\"328\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"544\" y=\"344\">控制输出(组合译码)</text><text class=\"cs-sub\" x=\"544\" y=\"362\">load_w_en / stream_en / acc_en / wb_en</text></g><line class=\"cs-arr\" x1=\"544\" y1=\"288\" x2=\"544\" y2=\"316\" marker-end=\"url(#csar)\"/></svg>",
+ "legend": [
+  {
+   "k": "state",
+   "name": "状态(④状态图里的圆角盒)",
+   "desc": "Idle / LoadW / Stream / Accumulate / WriteBack 这几个圆角盒,就是控制器的「现态」。RTL 里它们被编码成一个 state_reg(如 typedef enum 或几位独热/二进制),每个盒对应一个枚举值。状态本身不算东西,只决定「这一拍该发哪些控制信号」。"
+  },
+  {
+   "k": "edge",
+   "name": "状态转移(边/箭头)",
+   "desc": "图里盒与盒之间的箭头是「在什么条件下从这态跳到那态」。RTL 里它们落在组合块的 case(state) 各分支里:每个分支根据握手/计数器条件给 next_state 赋值。转移条件未满足就停在原态(next=state)。"
+  },
+  {
+   "k": "ff",
+   "name": "时序块 state_reg(always_ff <=)",
+   "desc": "两段式的第一段:唯一带时钟沿的块。只做一件事——每个上升沿把 next_state 锁进 state_reg,复位时拉回 Idle。它是这台 FSM 里唯一的状态存储(左下角小三角表示时钟沿/寄存器)。"
+  },
+  {
+   "k": "comb",
+   "name": "组合块 next_state+输出(always_comb,带 default)",
+   "desc": "两段式的第二段:纯组合、无时钟。读当前 state 算出 next_state,并译码出本态该发的控制信号。开头先给 next=state、所有输出赋默认值,case 末尾必有 default——这是防止综合出意外锁存器(latch)的铁律。"
+  },
+  {
+   "k": "out",
+   "name": "控制输出(组合译码出的使能)",
+   "desc": "FSM 对外吐的就是一组控制使能:load_w_en 让权重灌进阵列、stream_en 逐拍泵激活、acc_en 开累加器累加、wb_en 把 4 MiB 累加器结果写回 24 MiB Unified Buffer。它们由当前状态组合译码而来,是「状态」真正驱动数据通路的手。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "idle"
+   ],
+   "cap": "① Idle:复位后停在 Idle,所有使能拉低、阵列不动;state_reg 里存的就是 Idle。等主机经 PCIe 发来一条 CISC 指令(如「做一块矩阵乘」),组合块才把 next_state 指向 LoadW"
+  },
+  {
+   "keys": [
+    "loadw",
+    "comb"
+   ],
+   "cap": "② LoadW:组合块在 case(Idle) 分支判到「有活」,置 next=LoadW;进入后拉高 load_w_en,把这一块的权重灌进 256×256 阵列(weight-stationary)。灌满的计数条件满足 → next=Stream"
+  },
+  {
+   "keys": [
+    "stream",
+    "accum",
+    "out"
+   ],
+   "cap": "③ Stream + Accumulate:stream_en 让激活逐拍从 Unified Buffer 泵入阵列,acc_en 让 32-bit 累加器把每拍部分和累上去——这两态常是流水重叠的稳态,FSM 在此停留多拍直到这一块的所有激活流完"
+  },
+  {
+   "keys": [
+    "wb",
+    "ff"
+   ],
+   "cap": "④ WriteBack:激活流完 → next=WriteBack,拉高 wb_en 把 4 MiB 累加器里的结果写回 24 MiB Unified Buffer。每一态的切换都发生在 always_ff 的那个上升沿:next_state 被锁进 state_reg"
+  },
+  {
+   "keys": [
+    "idle",
+    "ff",
+    "comb"
+   ],
+   "cap": "⑤ 回环:WriteBack 完,组合块的 default/末分支把 next 指回 Idle(或直接取下一块);state_reg 在下一拍更新。整张 ④ 状态图就这样被「一个寄存器 + 一坨带 default 的组合逻辑」精确实现"
+  }
+ ],
+ "before": [
+  "<b>先定语言与状态编码</b>:用 SystemVerilog 还是 Verilog?状态用 typedef enum logic[2:0] 命名(Idle/LoadW/Stream/Accumulate/WriteBack),还是独热(one-hot,省译码、利于时序但多用触发器)?5 个状态用二进制 3 位即可,可读性优先——先把这件事拍死,后面所有块都依赖它。",
+  "<b>定复位风格</b>:同步复位还是异步复位?复位有效电平?整套设计必须统一。FSM 的铁律是「复位后必须落在一个确定的初态(Idle)」,不能让 state_reg 上电后是 X。这条要在编码前写进设计规范。",
+  "<b>定位宽与接口</b>:列清 FSM 的输入(主机指令/启动信号、各阶段完成的计数器或握手 done 信号)与输出(load_w_en/stream_en/acc_en/wb_en 等控制使能)的位宽和有效电平,画成端口表;这是组合块要 case 的依据。",
+  "<b>定可综合约束</b>:明确「只用可综合子集」——时序块只用非阻塞赋值 <=、组合块只用阻塞赋值 =,不允许在组合块里推出锁存器,不允许两个 always 块驱动同一信号。把这些写成 lint 规则,编码即受约束。",
+  "<b>定成功判据</b>:写成可验证的——「FSM 能完整走 Idle→LoadW→Stream→Accumulate→WriteBack→Idle 一圈」「复位后必到 Idle」「lint 零 latch、零多驱动」「综合无意外锁存器」,而不是模糊地说「把状态机写出来」。"
+ ],
+ "during": [
+  "<b>用两段式(或三段式)拆,别写一段式</b>:把「现态存储」和「次态/输出计算」分到两个 always 块。第一段 always_ff @(posedge clk) 只更新 state_reg;第二段 always_comb 算 next_state 与输出。一段式(在时序块里同时算次态和输出)虽少一个块,但混在一起难读、难改、输出会延迟一拍,工业 RTL 普遍首选两段/三段式。",
+  "<b>时序块极简、只做一件事</b>:always_ff @(posedge clk) begin if(rst) state<=Idle; else state<=next_state; end —— 这一段几乎是模板,只负责把 next_state 在时钟沿锁进 state_reg。用非阻塞赋值 <=,严禁在这里掺组合逻辑。",
+  "<b>组合块开头先赋默认值,这是防 latch 的命根</b>:always_comb 一进来先写 next_state = state;(默认停在原态)再把所有控制输出赋默认(通常全 0/无效)。然后 case(state) 里只覆盖「要变」的分支。漏赋默认 → 某条路径下信号没被赋值 → 综合器为「保持原值」推出锁存器,这是 FSM 最常见、最致命的坑。",
+  "<b>case 必须有 default 分支</b>:case(state) 末尾写 default: next_state = Idle;(或 next=state)。哪怕枚举值已穷举,default 仍要写——它兜住「状态寄存器被干扰跳到非法编码」时能回到安全态(尤其独热编码,非法码很多),也再加一道防 latch 保险。",
+  "<b>分清 Moore 与 Mealy 输出</b>:输出只由当前状态决定(Moore,如「在 Stream 态就 stream_en=1」)还是也由输入决定(Mealy,响应快但易产生组合毛刺、跨块时序更难收)。控制阵列的使能多用 Moore——稳、无毛刺、时序好分析;需要早一拍响应的握手才考虑 Mealy。",
+  "<b>诚实标注「这是通行写法、非 TPU 私有」</b>:TPU v1 论文给了分块 GEMM 的流程与「主机发十几条 CISC 指令驱动」的事实,但没公开其控制器的具体 RTL 与状态编码。上面的状态名/使能名是据其已知数据通路(灌权重→泵激活→累加→写回)合理命名的示意,落地写法是通行 RTL 实践,不应被当成 TPU 披露的私有细节。"
+ ],
+ "result": [
+  {
+   "label": "编码风格",
+   "value": "两段式 FSM(时序块更新现态 + 组合块算次态/输出)"
+  },
+  {
+   "label": "状态集合",
+   "value": "Idle → LoadW → Stream → Accumulate → WriteBack"
+  },
+  {
+   "label": "时序块(示意)",
+   "value": "always_ff @(posedge clk) if(rst) state<=Idle; else state<=next_state;"
+  },
+  {
+   "label": "组合块(示意)",
+   "value": "always_comb begin next=state; ...case(state)...; default: next=Idle; end"
+  },
+  {
+   "label": "防 latch 铁律",
+   "value": "组合块开头赋默认 + case 必带 default"
+  },
+  {
+   "label": "对外控制输出",
+   "value": "load_w_en / stream_en / acc_en / wb_en(由现态组合译码)"
+  }
+ ],
+ "after": [
+  "<b>跑 lint 查 latch 与风格</b>:用 lint 工具专门扫「组合块推出锁存器」「always 块多驱动同一信号」「阻塞/非阻塞用错块」「case 缺 default」——FSM 编码错误绝大多数能在 lint 阶段抓出,先过 lint 再仿真。",
+  "<b>功能仿真覆盖每条转移与每个状态</b>:写 testbench 驱动 FSM 走完整圈,并覆盖每条边(含转移条件不满足时停在原态、含 default 兜底路径);用波形或覆盖率工具确认「每个状态都进过、每条转移都触发过」,无死状态、无不可达状态。",
+  "<b>专项验复位与非法态恢复</b>:仿真确认复位后必落 Idle、state_reg 上电不为 X;对独热编码额外注入非法码,确认 default 能把 FSM 拉回安全态。",
+  "<b>做 CDC 检查(多时钟域)</b>:TPU 这类设计有 PCIe 主机域、核心计算域、DDR3 接口域等多个时钟域,FSM 若采样跨域信号,要确认有正确的同步器(多级触发器/握手),用 CDC 工具检查无亚稳态隐患。",
+  "<b>试综合 + 交验证</b>:跑一次逻辑综合,确认综合出的是纯触发器+组合逻辑、无意外锁存器,关键路径满足目标频率(700 MHz 量级);然后把状态定义、转移表、控制使能时序固化为规格,连同 RTL 一起移交验证团队做更全面的覆盖。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(分块 GEMM 流程、weight-stationary、24 MiB Unified Buffer、4 MiB 累加器、主机经 PCIe 发约十几条 CISC 指令为该文披露;两段式 FSM 编码、防 latch 的默认值/default 写法、HDL 片段均为通行 RTL 实践,TPU 控制器的具体状态编码与 RTL 未公开)"
+}

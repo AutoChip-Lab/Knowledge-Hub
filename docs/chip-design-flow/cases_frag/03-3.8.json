@@ -1,0 +1,117 @@
+{
+ "secNum": "3.8",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 700 MHz 核心阵列域与跨域时钟架构",
+ "oneLine": "时钟架构这一节,看 TPU 怎么把一颗大数据通路 ASIC 切成「700 MHz 核心阵列域 + PCIe 域 + DDR3 域」三类时钟域,并在边界用 CDC 缝合——而脉动阵列的规则结构,恰恰是「好布时钟树、好达 700 MHz」的天然友军。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 380\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"30\" y=\"24\">外部参考时钟 →</text><g class=\"cs-part\" data-k=\"pll\" data-g=\"pll\"><rect class=\"cs-box\" x=\"30\" y=\"150\" width=\"110\" height=\"60\" rx=\"8\"/><text class=\"cs-t\" x=\"85\" y=\"176\">PLL / 时钟</text><text class=\"cs-t\" x=\"85\" y=\"191\">发生</text><text class=\"cs-sub\" x=\"85\" y=\"206\">倍频·分频</text></g><line class=\"cs-arr\" x1=\"60\" y1=\"30\" x2=\"85\" y2=\"148\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"180\" y=\"40\">─── 时钟域 A:核心阵列域 700 MHz ───</text><g class=\"cs-part\" data-k=\"core\" data-g=\"core\"><rect class=\"cs-box\" x=\"180\" y=\"52\" width=\"370\" height=\"92\" rx=\"8\"/><text class=\"cs-t\" x=\"365\" y=\"80\">核心阵列域 · 700 MHz</text><text class=\"cs-sub\" x=\"365\" y=\"100\">MXU 256×256 脉动阵列 · Unified Buffer · 累加器</text><text class=\"cs-sub\" x=\"365\" y=\"118\">规则结构 + 局部短互连 → 时钟树好布、好达 700 MHz</text></g><line class=\"cs-arr\" x1=\"140\" y1=\"172\" x2=\"365\" y2=\"148\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"pcie\" data-g=\"pcie\"><rect class=\"cs-box\" x=\"180\" y=\"250\" width=\"220\" height=\"80\" rx=\"8\"/><text class=\"cs-t\" x=\"290\" y=\"280\">时钟域 B:PCIe 接口域</text><text class=\"cs-sub\" x=\"290\" y=\"300\">PCIe 3.0 链路时钟</text><text class=\"cs-sub\" x=\"290\" y=\"316\">主机经此发 CISC 指令</text></g><g class=\"cs-part\" data-k=\"ddr\" data-g=\"ddr\"><rect class=\"cs-box\" x=\"440\" y=\"250\" width=\"220\" height=\"80\" rx=\"8\"/><text class=\"cs-t\" x=\"550\" y=\"280\">时钟域 C:DDR3 接口域</text><text class=\"cs-sub\" x=\"550\" y=\"300\">片外 8 GiB DDR3</text><text class=\"cs-sub\" x=\"550\" y=\"316\">~30 GB/s 权重供给</text></g><polyline class=\"cs-arr\" points=\"120,180 120,290 178,290\" fill=\"none\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"110,210 110,345 450,345 450,332\" fill=\"none\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"150\" y=\"360\">PLL 时钟分发至各域</text><g class=\"cs-part\" data-k=\"cdc\" data-g=\"cdc\"><rect class=\"cs-box\" x=\"250\" y=\"178\" width=\"240\" height=\"40\" rx=\"8\" stroke-dasharray=\"6 4\"/><text class=\"cs-t\" x=\"370\" y=\"203\">CDC 跨时钟域同步(异步 FIFO / 握手)</text></g><polyline class=\"cs-arr\" points=\"290,250 290,220\" fill=\"none\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"550,250 550,220 490,220\" fill=\"none\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"370,178 370,146\" fill=\"none\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"500\" y=\"172\">域间数据须过 CDC</text></svg>",
+ "legend": [
+  {
+   "k": "pll",
+   "name": "PLL / 时钟发生",
+   "desc": "从外部参考时钟倍频出芯片内各域所需频率,并把时钟分发到核心域、PCIe 域、DDR3 域。注:TPU v1 论文披露 700 MHz 主频,但具体 PLL 数量/锁相方案未公开——此处按数据中心 ASIC 通行做法画示意。"
+  },
+  {
+   "k": "core",
+   "name": "核心阵列域 700 MHz",
+   "desc": "已披露的硬数字:700 MHz。MXU 256×256 阵列 + Unified Buffer + 累加器都跑在这个域。规则的阵列结构、相邻 PE 间的局部短互连,让时钟树容易做平衡、容易达到 700 MHz。"
+  },
+  {
+   "k": "pcie",
+   "name": "PCIe 接口域",
+   "desc": "主机经 PCIe 3.0 把 CISC 指令送进来——这套链路有自己的时钟节奏,和核心域不同源,是一个独立时钟域(通行划法,非 v1 披露细节)。"
+  },
+  {
+   "k": "ddr",
+   "name": "DDR3 接口域",
+   "desc": "片外 8 GiB DDR3(~30 GB/s)供权重,其 PHY/接口由 DDR 协议的时钟驱动,自成一域(通行划法)。"
+  },
+  {
+   "k": "cdc",
+   "name": "CDC 跨域同步",
+   "desc": "凡是数据/控制要从一个时钟域跨到另一个,都必须过异步 FIFO 或握手同步,避免亚稳态——这是任何多时钟域 ASIC 的通行必备,不是 TPU 专属机制。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "pll"
+   ],
+   "cap": "① PLL 从外部参考时钟倍频/分频,生成并分发各域时钟(核心域目标 700 MHz)"
+  },
+  {
+   "keys": [
+    "core"
+   ],
+   "cap": "② 核心阵列域跑在 700 MHz:阵列规则、互连短,时钟树易平衡、skew 小,频率好压上去"
+  },
+  {
+   "keys": [
+    "pcie",
+    "ddr"
+   ],
+   "cap": "③ PCIe 接口域、DDR3 接口域各按其协议自有的时钟节奏运行,与核心域不同源"
+  },
+  {
+   "keys": [
+    "cdc"
+   ],
+   "cap": "④ 三个域之间任何数据/控制跨越,都先过 CDC(异步 FIFO / 握手)再交付,防亚稳态"
+  },
+  {
+   "keys": [
+    "cdc",
+    "core"
+   ],
+   "cap": "⑤ 指令与权重经 CDC 同步进核心域,使阵列在稳定的 700 MHz 下持续满拍计算"
+  }
+ ],
+ "before": [
+  "<b>先确定要回答的问题</b>:这颗芯片要分几个时钟域?核心算力域目标多高频?——TPU v1 给出的硬约束是核心要跑到 700 MHz(由此 × 65,536 个 MAC × 2 得 ~92 TOPS)。",
+  "<b>要拍板的设计量(旋钮)</b>:主时钟目标频率、域的划分粒度(把哪些块归一个域)、各接口域频率(由 PCIe 3.0、DDR3 协议反过来定)、PLL 数量与时钟分发拓扑、跨域同步策略。",
+  "<b>必备输入</b>:目标算力(§3.3 的阵列规模决定「频率 × MAC 数」要凑到多少 TOPS)、工艺库的时序/功耗特征、PCIe 与 DDR3 接口 IP 自带的时钟规格。",
+  "<b>必须卡住的约束</b>:功耗(频率越高动态功耗越大,要在 28–40W TDP 内)、时序收敛能力(skew/抖动预算)、外部接口协议强制的时钟频率(不能随便改)。",
+  "<b>诚实边界</b>:TPU v1 公开资料里只有 700 MHz 这一个硬时钟数字;具体时钟域个数、PLL 方案、时钟树结构均未披露,下面的多域划分按数据中心推理 ASIC 的通行实践来讲。"
+ ],
+ "during": [
+  "<b>为什么要分域</b>:核心阵列能跑 700 MHz,但 PCIe、DDR3 这些接口的时钟由各自协议/PHY 决定、和核心不同步——把它们硬塞进一个域既不现实也浪费,所以按「核心算力域 + 各接口域」切分(通行做法)。",
+  "<b>核心域为何敢冲 700 MHz</b>:脉动阵列是高度规则的二维网格,数据只在相邻 PE 间短距传递、没有长跨芯片的随机互连 → 时钟负载均匀、时钟树容易做平衡、skew 小、布线压力小,频率天然好上去。",
+  "<b>频率 × 规模的耦合权衡</b>:算力 = 频率 × MAC 数。256×256 已经把面积吃满,剩下靠频率;700 MHz 是在「再高就顶不住功耗/时序收敛」和「再低就喂不出 ~92 TOPS」之间夹出来的折中。",
+  "<b>跨域怎么缝</b>:域边界一律放 CDC——异步 FIFO 缓冲带宽不匹配(如 ~30 GB/s 的 DDR3 供数 vs 阵列的消耗节奏)、握手同步单 bit 控制信号,杜绝亚稳态(这是任何多域 ASIC 的通行铁律,不是 TPU 独有)。",
+  "<b>把复杂度推给软件</b>:TPU 是 host-driven、指令只有十几条、Unified Buffer 软件管理 → 控制路径简单,核心域内几乎是确定性的满拍数据流,这让时序收敛和时钟设计都更省心。",
+  "<b>留功耗与时序余量</b>:高频域用门控/合理的时钟分发控功耗;关键路径留 margin 以应对工艺/电压/温度波动——这些是通行的实现手段,具体参数 v1 未公开。"
+ ],
+ "result": [
+  {
+   "label": "核心阵列域频率",
+   "value": "700 MHz(已披露硬数字)"
+  },
+  {
+   "label": "由此得峰值算力",
+   "value": "~92 TOPS(INT8)"
+  },
+  {
+   "label": "时钟域划分",
+   "value": "核心阵列域 / PCIe 域 / DDR3 域(通行做法)"
+  },
+  {
+   "label": "核心域时钟树",
+   "value": "规则阵列+短互连 → 易平衡、低 skew(定性)"
+  },
+  {
+   "label": "跨域策略",
+   "value": "CDC:异步 FIFO + 握手同步(通行铁律)"
+  },
+  {
+   "label": "功耗包络",
+   "value": "整片 28–40W TDP 内(28nm)"
+  }
+ ],
+ "after": [
+  "<b>验证时序收敛</b>:对核心域做 STA(静态时序分析),确认 700 MHz 下 setup/hold 满足、skew/抖动在预算内;不收敛就回去调时钟树或降目标频率。",
+  "<b>专项验 CDC</b>:跨时钟域是 bug 重灾区——用 CDC 静态检查 + 形式/仿真专门验异步 FIFO 与握手,确认无亚稳态、无数据丢失/重复。",
+  "<b>把约束往下游传</b>:给物理实现(⑤后端)交时钟树综合(CTS)的频率/skew 目标、给接口 IP 交各自的时钟规格、给验证交跨域用例清单。",
+  "<b>留可测试与可观测钩子</b>:DFT 扫描链需要时钟控制,埋入时钟门控/分频的测试模式;再埋性能计数器观测各域是否被 stall(这些是通行实践)。",
+  "<b>诚实交接</b>:对外文档明确区分——「700 MHz 是 v1 披露事实」与「多域划分/CDC 是按数据中心 ASIC 通行做法的推断示意」,不把通行实践当成 TPU 专属披露。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(仅 700 MHz 主频为披露事实;时钟域划分与 CDC 为数据中心推理 ASIC 通行实践)"
+}

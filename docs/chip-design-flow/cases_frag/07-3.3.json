@@ -1,0 +1,118 @@
+{
+ "secNum": "3.3",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 用 SDC 约束给综合下指挥棒:700MHz 时钟、IO 延迟、跨域 false/multicycle path",
+ "oneLine": "逻辑综合不会自己知道这块芯片要跑多快、外面接了什么、哪些路径不必按一拍算——这些全靠 SDC 约束告诉它。把 TPU 那块 256×256 脉动阵列综合成门级网表时,SDC 就是综合器的「指挥棒」:create_clock 钉死 700MHz(周期≈1.43ns,示意值)定义优化目标,set_input/output_delay 交代芯片外占了多少时间,false_path/multicycle_path 把跨时钟域和多拍才稳的路径排除在「一拍必到」之外。约束写错或写漏,工具就朝错误方向卖力优化——garbage in, garbage out。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">综合的「指挥棒」:同一坨 RTL,SDC 写什么,综合就朝什么方向优化</text><g class=\"cs-part\" data-k=\"clk\" data-g=\"sdc\"><rect class=\"cs-box\" x=\"40\" y=\"48\" width=\"208\" height=\"58\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"144\" y=\"72\">create_clock 700MHz</text><text class=\"cs-sub\" x=\"144\" y=\"92\">period 1.43ns(示意)·定义时钟</text></g><g class=\"cs-part\" data-k=\"idel\" data-g=\"sdc\"><rect class=\"cs-box\" x=\"40\" y=\"120\" width=\"208\" height=\"58\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"144\" y=\"144\">set_input/output_delay</text><text class=\"cs-sub\" x=\"144\" y=\"164\">告诉工具芯片外占了多少时间</text></g><g class=\"cs-part\" data-k=\"fp\" data-g=\"sdc\"><rect class=\"cs-box\" x=\"40\" y=\"192\" width=\"208\" height=\"58\" rx=\"8\" fill=\"#fefce8\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"144\" y=\"216\">false / multicycle path</text><text class=\"cs-sub\" x=\"144\" y=\"236\">跨域/慢路径:别按一拍算</text></g><g class=\"cs-part\" data-k=\"exc\" data-g=\"sdc\"><rect class=\"cs-box\" x=\"40\" y=\"264\" width=\"208\" height=\"58\" rx=\"8\" fill=\"#fef2f2\" stroke=\"#fca5a5\"/><text class=\"cs-t\" x=\"144\" y=\"288\">set_clock_uncertainty</text><text class=\"cs-sub\" x=\"144\" y=\"308\">扣抖动/裕量·set_load 等</text></g><line class=\"cs-arr\" x1=\"248\" y1=\"77\" x2=\"318\" y2=\"120\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"248\" y1=\"149\" x2=\"318\" y2=\"160\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"248\" y1=\"221\" x2=\"318\" y2=\"190\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"248\" y1=\"293\" x2=\"318\" y2=\"200\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"262\" y=\"100\">SDC 约束</text><text class=\"cs-note\" x=\"262\" y=\"116\">= 指挥棒</text><g class=\"cs-part\" data-k=\"path\" data-g=\"path\"><rect class=\"cs-box\" x=\"320\" y=\"128\" width=\"380\" height=\"120\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\"/><text class=\"cs-t\" x=\"510\" y=\"150\">被约束的一条时序路径(脉动阵列内)</text><path d=\"M352,190 l16,0 l-8,-14 z\" fill=\"#8b5cf6\"/><rect x=\"345\" y=\"186\" width=\"22\" height=\"22\" rx=\"3\" fill=\"#ede9fe\" stroke=\"#8b5cf6\"/><text class=\"cs-sub\" x=\"356\" y=\"222\">FF(发)</text><line class=\"cs-arr\" x1=\"372\" y1=\"197\" x2=\"470\" y2=\"197\" marker-end=\"url(#csar)\"/><text class=\"cs-sub\" x=\"430\" y=\"190\">组合逻辑(MAC)</text><rect x=\"540\" y=\"186\" width=\"22\" height=\"22\" rx=\"3\" fill=\"#ede9fe\" stroke=\"#8b5cf6\"/><path d=\"M547,190 l16,0 l-8,-14 z\" fill=\"#8b5cf6\"/><text class=\"cs-sub\" x=\"551\" y=\"222\">FF(收)</text><text class=\"cs-sub\" x=\"510\" y=\"240\">两拍之间≤1.43ns 才不违例</text></g><text class=\"cs-note\" x=\"320\" y=\"118\">↑ 约束钉住这条路径「几拍内必须到」</text><g class=\"cs-part\" data-k=\"goal\" data-g=\"goal\"><rect class=\"cs-box\" x=\"320\" y=\"268\" width=\"184\" height=\"100\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"412\" y=\"296\">约束对 → 优化对方向</text><text class=\"cs-sub\" x=\"412\" y=\"320\">工具按 1.43ns 收时序</text><text class=\"cs-sub\" x=\"412\" y=\"340\">该快的快·该省的省</text><text class=\"cs-sub\" x=\"412\" y=\"360\">QoR 报告可信</text></g><g class=\"cs-part\" data-k=\"gigo\" data-g=\"gigo\"><rect class=\"cs-box\" x=\"516\" y=\"268\" width=\"184\" height=\"100\" rx=\"8\" fill=\"#fef2f2\" stroke=\"#fca5a5\"/><text class=\"cs-t\" x=\"608\" y=\"296\">约束错 → 优化错目标</text><text class=\"cs-sub\" x=\"608\" y=\"320\">漏 false_path→白堆门</text><text class=\"cs-sub\" x=\"608\" y=\"340\">周期写松→芯片跑不到</text><text class=\"cs-sub\" x=\"608\" y=\"360\">garbage in, garbage out</text></g><line class=\"cs-arr\" x1=\"412\" y1=\"248\" x2=\"412\" y2=\"266\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"560\" y1=\"248\" x2=\"600\" y2=\"266\" marker-end=\"url(#csar)\"/></svg>",
+ "legend": [
+  {
+   "k": "clk",
+   "name": "create_clock(主时钟,定义优化目标)",
+   "desc": "一句 create_clock 定义时钟的周期与波形,等于告诉综合器「全设计要按这个节拍收时序」。TPU v1 跑 700 MHz,对应周期约 1.43 ns(示意值;TPU 不公开其约束脚本)。这条是 SDC 的根:周期写多大,工具就以多大为目标去插缓冲、调门、复制逻辑;周期是后面所有 setup/hold 计算的标尺。"
+  },
+  {
+   "k": "idel",
+   "name": "set_input_delay / set_output_delay(IO 时序预算)",
+   "desc": "芯片的输入不是在时钟沿那一刻才到、输出也不是收到就算完——前级/后级在片外已经吃掉了一部分周期。set_input_delay/set_output_delay 把这部分外部延迟告诉工具,综合才知道留给片内逻辑的真实预算只剩多少。漏掉它,边界路径的时序就是凭空乐观或悲观,优化跟着跑偏。"
+  },
+  {
+   "k": "fp",
+   "name": "set_false_path / set_multicycle_path(时序例外)",
+   "desc": "不是每条路径都该按「一拍必到」分析。真正不存在或无所谓时序的路径(如 PCIe 主机域到阵列核心域之间经过同步器的跨时钟路径)用 set_false_path 排除;本就允许多拍才稳的路径用 set_multicycle_path 放宽到 N 拍。这两条是「告诉工具哪里不用拼命」——漏写会让工具在不该使劲的地方狂堆门(过约束),错写又会放过真违例(欠约束)。"
+  },
+  {
+   "k": "path",
+   "name": "被约束的时序路径(发 FF → 组合逻辑 → 收 FF)",
+   "desc": "综合器眼里的世界,就是无数条「从一个触发器出发、穿过一坨组合逻辑、落到下一个触发器」的路径。脉动阵列里每个 MAC 之间都是这样一段。SDC 约束最终全落到这些路径上:周期 1.43 ns 减去外部延迟、时钟不确定度后,剩下的就是这段组合逻辑必须在内算完的时间窗。"
+  },
+  {
+   "k": "gigo",
+   "name": "约束错=优化错目标(garbage in, garbage out)",
+   "desc": "综合是「奉约束之命」优化,它无条件相信 SDC。周期写松→工具轻松达标但芯片实际跑不到 700 MHz;漏写 false_path→工具为一条根本不存在的路径反复插缓冲、白堆门、徒增面积功耗;约束矛盾→报告全绿却是假象。约束是综合质量的天花板,约束错了,再强的工具也只是高效地做错事。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "clk",
+    "path"
+   ],
+   "cap": "① 先立时钟:create_clock 给阵列核心域定 700MHz(周期≈1.43ns,示意)。这一条就把「每条 FF→逻辑→FF 路径必须在 1.43ns 内算完」这个目标钉在了所有路径上,是整套约束的标尺"
+  },
+  {
+   "keys": [
+    "idel"
+   ],
+   "cap": "② 再交代边界:set_input_delay/set_output_delay 告诉工具芯片外(PCIe 接口、DDR3 控制器侧)已经占了多少周期,综合才知道留给片内的真实时间预算,边界路径不再凭空乐观/悲观"
+  },
+  {
+   "keys": [
+    "fp",
+    "path"
+   ],
+   "cap": "③ 标时序例外:PCIe 主机域↔阵列核心域经同步器的跨时钟路径用 set_false_path 排除;天生多拍才稳的慢路径用 set_multicycle_path 放宽到 N 拍——把工具的力气从不该使的地方撤下来"
+  },
+  {
+   "keys": [
+    "exc"
+   ],
+   "cap": "④ 扣裕量与负载:set_clock_uncertainty 预扣时钟抖动/偏斜与综合阶段的悲观裕量,set_load/set_driving_cell 交代输出负载与输入驱动,让时序计算贴近真实而非理想"
+  },
+  {
+   "keys": [
+    "goal",
+    "gigo"
+   ],
+   "cap": "⑤ 见分晓:约束齐且对,工具就朝 1.43ns 这个真目标收时序、该快的快该省的省,QoR 报告可信;少一条 false_path 或周期写松,工具立刻朝错误目标卖力——garbage in, garbage out"
+  }
+ ],
+ "before": [
+  "<b>定时钟与周期(优化目标)</b>:列清这块要综合的逻辑有几个时钟域(TPU 至少有 PCIe 主机域、阵列核心域、DDR3 接口域),各自周期多少。核心域目标 700 MHz → create_clock -period 1.43(示意值)。周期是 SDC 的根,先拍死它,否则工具无从知道「快」是多快。",
+  "<b>定 IO 时序预算(set_input/output_delay)</b>:把芯片边界外、上下游已经吃掉的延迟以预算形式写进 SDC。没有 IO 约束的边界路径,综合器只能瞎猜,边界时序必然失真——这是初学者最常漏的一类约束。",
+  "<b>盘点时序例外(false/multicycle path)</b>:在写约束前先和设计/验证一起列出:哪些是真正的跨时钟域路径(走同步器、不该做单拍 setup 分析)、哪些是本就允许多拍的慢路径。这张清单决定了 set_false_path / set_multicycle_path 怎么写,漏一条就是一处过约束或欠约束。",
+  "<b>定时钟不确定度与运行条件</b>:在没有真实时钟树前,用 set_clock_uncertainty 预留抖动/偏斜与综合期悲观量;选好 PVT 运行条件(operating condition)和对应工艺库,使时序计算有统一前提。",
+  "<b>定约束的成功判据</b>:写成可检查的——「约束能被工具完整读入、无语法错与无对象找不到的告警」「没有被遗漏(unconstrained)的端口与路径」「时序例外有书面理由、可追溯」,而不是模糊地说「把约束写一下」。"
+ ],
+ "during": [
+  "<b>铁律:综合无条件服从约束,所以「约束=优化目标本身」</b>。综合器不懂设计意图,它只照 SDC 优化。周期写 1.43ns 它就奔 700MHz、写 2ns 它就只奔 500MHz 还轻松达标;你写什么,它就把面积/功耗/逻辑复制全押在那个方向。约束对不对,直接等于优化方向对不对。",
+  "<b>先时钟、后例外,顺序不能乱</b>。SDC 的因果是:create_clock 定基准节拍 → set_input/output_delay 切走边界预算 → set_clock_uncertainty 扣裕量 → 最后才用 false/multicycle path 把不该按基准节拍分析的路径挑出来。例外永远是在已建立的时钟关系上做减法,先有时钟才谈得上例外。",
+  "<b>欠约束比报告难看更危险</b>。漏写一条边界 IO 约束、漏标一条真违例路径,工具会以为「这里没要求」而不去优化它,综合报告甚至一片绿——但那是假绿。检查有没有 unconstrained 的端口/路径,和看违例一样重要。",
+  "<b>过约束(乱写 false_path)是另一种毒</b>。把本该收的路径错标成 false_path,等于告诉工具「这里随便」,真违例被永久放过;反过来周期定得过紧又会逼工具疯狂插缓冲、复制逻辑,面积功耗爆炸却还是收不住。时序例外必须有据,不能为了让报告好看而乱标。",
+  "<b>跨时钟域路径必须显式处理</b>。PCIe 主机域↔阵列核心域这类异步关系,要么用 set_clock_groups/set_false_path 声明为异步、要么对走同步器的路径单独约束;放任不管,工具会拿两个无关时钟去做单拍 setup,报出一堆假违例、或更糟地优化掉本不该动的逻辑。",
+  "<b>诚实标注「约束方法是通行 EDA 实践、数字为示意」</b>。create_clock/set_input_delay/false_path/multicycle_path 与 SDC 格式是 Synopsys Design Compiler、Cadence Genus 等通行综合流程的标准约束;TPU v1 的 700MHz、28nm、脉动阵列结构由论文披露,但其具体约束脚本与周期数(此处 1.43ns 为 700MHz 的换算示意)从未公开,不可当成 TPU 私有数据。"
+ ],
+ "result": [
+  {
+   "label": "约束格式",
+   "value": "SDC(Synopsys Design Constraints,综合/STA 通用)"
+  },
+  {
+   "label": "主时钟(示意)",
+   "value": "create_clock -period 1.43 -name core_clk [get_ports clk]  // 700MHz 换算示意"
+  },
+  {
+   "label": "IO 延迟(示意)",
+   "value": "set_input_delay 0.4 -clock core_clk [all_inputs];  set_output_delay 0.4 -clock core_clk [all_outputs]"
+  },
+  {
+   "label": "时序例外(示意)",
+   "value": "set_false_path -from [get_clocks pcie_clk] -to [get_clocks core_clk]  // 跨域走同步器"
+  },
+  {
+   "label": "裕量/不确定度(示意)",
+   "value": "set_clock_uncertainty 0.1 [get_clocks core_clk]  // 预扣抖动/偏斜"
+  },
+  {
+   "label": "约束的作用",
+   "value": "= 综合的优化目标本身;约束错则优化方向错(GIGO)"
+  }
+ ],
+ "after": [
+  "<b>查约束是否被完整读入</b>:综合器读 SDC 后第一件事是看日志里有没有「对象找不到 / 端口名不匹配 / 时钟未定义」之类告警——约束脚本里一个写错的端口名,会让整条约束静默失效,后面优化全建在错误前提上。",
+  "<b>查 unconstrained 路径/端口</b>:用 report_constraint / check_timing 之类命令专门找「没被任何时钟约束到」的端口和路径。欠约束的地方工具不会优化,是假绿的来源,必须补齐或显式声明例外。",
+  "<b>核对时序例外的合理性</b>:逐条复查 false_path/multicycle_path 是否都有书面理由、是否真是跨域或多拍路径,确认没有把该收的路径错标成例外(过约束放过真违例)。",
+  "<b>看 QoR 报告判方向对不对</b>:综合后看 report_timing(WNS/TNS,即最差/总负裕量)、面积、功耗,判断违例是真的需要改 RTL/架构,还是约束本身写得不合理导致的假违例;约束改一版、综合跑一版,迭代收敛。",
+  "<b>把约束交给后端与 STA</b>:确认无误的 SDC 连同门级网表一起移交布局布线与签核 STA;后端会基于同一套约束(再叠加真实时钟树、寄生参数)做更精确的时序收敛,SDC 是贯穿综合→后端→签核的同一根指挥棒。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(256×256 脉动阵列、700MHz、28nm、PCIe 主机接口、weight-stationary 等结构由该文披露;SDC 约束的 create_clock/set_input_delay/false_path/multicycle_path 写法与本节所有 SDC 片段、1.43ns 周期换算均为通行 EDA 综合实践之示意,TPU 不公开其约束脚本与具体 QoR 数字)"
+}

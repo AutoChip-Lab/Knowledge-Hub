@@ -1,0 +1,129 @@
+{
+ "secNum": "3.5",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · NRE 与流片成本:把 28nm 掩模(大头)+工程+IP+流片服务费算进商业模型,用 first silicon success 护住『~15 个月部署』(数字为业界量级示意)",
+ "oneLine": "本案例映射『⑩ 流片 · NRE 与流片成本』:tape-out 不只是把 GDSII 寄出去,它一次性砸下整个项目最贵的一笔 NRE(Non-Recurring Engineering,一次性工程费)——其中先进节点的『掩模(mask set)』是绝对大头,28nm 全套光罩可达千万美元量级,再叠上设计/验证/签核的工程人月、PCIe/DDR3 等接口 IP 的授权费、以及 EDA、流片(MPW 或 full-mask)、测试程序开发等流片服务费。这笔钱与产量无关:做 1 颗和做 100 万颗,NRE 一样要先付,因此它必须进商业模型——只有当出货量大到把 NRE 摊薄、单颗成本压下来,这颗芯片在数据中心才划算。灵魂来自 TPU 自身的节奏:Jouppi 团队约 15 个月从立项到部署、且公开发布前已在数据中心跑了一年多,这种节奏经不起多次 re-spin——每错一轮就要再付一次(或部分)掩模钱、重跑整条后端、白丢几百万美元和几个月日历。所以流片这一步真正买的是『一次过』:first silicon success(首版硅一次点亮成功)的价值巨大,它直接决定了 NRE 是花一份还是花两三份、上市窗口是守住还是错过。(所有掩模/NRE 金额均为这类 28nm 大芯片、PCIe 加速卡的业界通行量级示意,TPU v1 不公开其私有成本数据。)",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"30\" y=\"24\">流片 NRE 构成:掩模(mask set)是 28nm 大芯片的大头,叠工程+IP+流片服务费;一次 re-spin = 再付一次掩模钱 + 几个月日历(数字为业界量级示意,非 TPU 私有披露)</text><g class=\"cs-part\" data-k=\"mask\" data-g=\"mask\"><rect class=\"cs-box\" x=\"60\" y=\"120\" width=\"96\" height=\"232\" rx=\"6\" fill=\"#fca5a5\"/><text class=\"cs-t\" x=\"108\" y=\"248\" fill=\"#7f1d1d\">掩模</text><text class=\"cs-sub\" x=\"108\" y=\"268\" fill=\"#7f1d1d\">mask set</text><text class=\"cs-sub\" x=\"108\" y=\"372\">28nm 全套光罩</text><text class=\"cs-note\" x=\"108\" y=\"112\">最大头(千万美元量级)</text></g><g class=\"cs-part\" data-k=\"eng\" data-g=\"eng\"><rect class=\"cs-box\" x=\"170\" y=\"232\" width=\"96\" height=\"120\" rx=\"6\" fill=\"#fde68a\"/><text class=\"cs-t\" x=\"218\" y=\"290\" fill=\"#713f12\">工程</text><text class=\"cs-sub\" x=\"218\" y=\"372\">设计+验证+签核人月</text></g><g class=\"cs-part\" data-k=\"ip\" data-g=\"ip\"><rect class=\"cs-box\" x=\"280\" y=\"262\" width=\"96\" height=\"90\" rx=\"6\" fill=\"#bfdbfe\"/><text class=\"cs-t\" x=\"328\" y=\"312\" fill=\"#1e3a8a\">IP</text><text class=\"cs-sub\" x=\"328\" y=\"372\">PCIe/DDR3 接口授权</text></g><g class=\"cs-part\" data-k=\"svc\" data-g=\"svc\"><rect class=\"cs-box\" x=\"390\" y=\"288\" width=\"96\" height=\"64\" rx=\"6\" fill=\"#bbf7d0\"/><text class=\"cs-t\" x=\"438\" y=\"322\" fill=\"#14532d\">流片服务</text><text class=\"cs-sub\" x=\"438\" y=\"372\">EDA+流片+测试程序</text></g><line class=\"cs-arr\" x1=\"60\" y1=\"352\" x2=\"510\" y2=\"352\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"500\" y=\"372\">→ 单次流片 NRE 合计</text><line class=\"cs-arr\" x1=\"500\" y1=\"120\" x2=\"500\" y2=\"352\"/><text class=\"cs-note\" x=\"492\" y=\"112\" text-anchor=\"end\">成本 ↑</text><g class=\"cs-part\" data-k=\"first\" data-g=\"first\"><rect class=\"cs-box\" x=\"528\" y=\"120\" width=\"170\" height=\"96\" rx=\"8\"/><text class=\"cs-t\" x=\"613\" y=\"150\">first silicon success</text><text class=\"cs-sub\" x=\"613\" y=\"172\">一次点亮成功</text><text class=\"cs-sub\" x=\"613\" y=\"192\">省下整轮掩模+几个月</text><text class=\"cs-sub\" x=\"613\" y=\"208\">护住 ~15 个月部署节奏</text></g><g class=\"cs-part\" data-k=\"respin\" data-g=\"respin\"><rect class=\"cs-box\" x=\"528\" y=\"232\" width=\"170\" height=\"120\" rx=\"8\" fill=\"#fee2e2\" stroke=\"#dc2626\"/><text class=\"cs-t\" x=\"613\" y=\"260\" fill=\"#7f1d1d\">re-spin 代价</text><text class=\"cs-sub\" x=\"613\" y=\"282\" fill=\"#7f1d1d\">改 RTL→重跑后端</text><text class=\"cs-sub\" x=\"613\" y=\"302\" fill=\"#7f1d1d\">再付一套(或部分)掩模</text><text class=\"cs-sub\" x=\"613\" y=\"322\" fill=\"#7f1d1d\">+ 数百万 + 几个月日历</text><text class=\"cs-sub\" x=\"613\" y=\"342\" fill=\"#7f1d1d\">几轮就拖垮上市窗口</text></g><line class=\"cs-arr\" x1=\"528\" y1=\"180\" x2=\"490\" y2=\"180\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"430\" y=\"176\">一次过=省整柱</text><polyline class=\"cs-arr\" points=\"528,292 500,292 500,140 158,140\" fill=\"none\" stroke=\"#dc2626\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"300\" y=\"134\" fill=\"#b91c1c\">re-spin=掩模这根大柱再来一次</text></svg>",
+ "legend": [
+  {
+   "k": "mask",
+   "name": "掩模成本(mask set,NRE 最大头)",
+   "desc": "一套光罩(掩模组)是把 GDSII 图形转印到晶圆所必需的物理模板,每一层金属/扩散/多晶都要一张精密掩模。节点越先进、层数越多、写掩模(尤其多重曝光)越贵——28nm 这类节点全套掩模可达千万美元量级,是流片 NRE 里压倒性的大头。它一次性付清、与产量无关,也正是 re-spin 最痛的那根成本柱。(金额为业界量级示意,非 TPU 披露。)"
+  },
+  {
+   "k": "eng",
+   "name": "工程费(设计/验证/签核人月)",
+   "desc": "从架构、RTL、验证、综合到布局布线与签核所投入的工程师人月,以及服务器/license 的折算。对 TPU 这种从立项到部署约 15 个月的项目,工程费是持续累积的另一大块 NRE;它和掩模一样属于『不管造几颗都要先花』的一次性投入。"
+  },
+  {
+   "k": "ip",
+   "name": "IP 授权费(接口/外设)",
+   "desc": "自研之外要外购的成熟 IP——TPU v1 做成 PCIe 3.0 加速卡、外挂 8 GiB DDR3,这类 PCIe PHY/控制器、DDR3 PHY 等高速接口 IP 通常向 IP 厂授权,计入 NRE。买现成 IP 省了自研工时与风险,但授权费本身也是一次性成本的一部分。"
+  },
+  {
+   "k": "svc",
+   "name": "流片服务费(EDA/流片/测试程序)",
+   "desc": "把设计真正送进 fab 所需的外部服务:EDA 工具 license、foundry 的流片费(整版 full-mask 或多项目晶圆 MPW 拼片)、PDK/特征化、以及 ATE 测试程序开发等。相对掩模偏小,但样样必付,是 NRE 清单里不可省的固定项。"
+  },
+  {
+   "k": "first",
+   "name": "first silicon success(首版一次点亮成功)",
+   "desc": "首版硅回来后能直接 bring-up 通过、功能/性能达标、无需改版即可推进——这正是流片真正想买到的东西。它意味着只花了一份掩模 NRE、守住了上市节奏,对 TPU『约 15 个月部署、发布前已运行一年多』这种紧节奏价值巨大。"
+  },
+  {
+   "k": "respin",
+   "name": "re-spin 代价(改版重流)",
+   "desc": "首版有功能性 bug 就得 re-spin:改 RTL→重跑综合/布局布线/签核→再付一次(或部分)掩模费,通常损失数百万美元量级、加几个月日历。掩模这根最贵的成本柱要再来一次,几轮 re-spin 足以拖垮整个上市窗口——这是把『一次过』看得极重的根本原因。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "mask",
+    "eng",
+    "ip",
+    "svc"
+   ],
+   "cap": "① 拆 NRE 构成:把流片这笔一次性钱拆成四块——28nm 掩模(大头)+ 工程人月 + PCIe/DDR3 接口 IP 授权 + EDA/流片/测试程序服务费,逐项报价,得到『单次流片要先砸多少钱』"
+  },
+  {
+   "keys": [
+    "mask"
+   ],
+   "cap": "② 盯住掩模这根大柱:先进节点全套光罩可达千万美元量级,是 NRE 里压倒性的最大头、也是 re-spin 最痛的一项——所有『一次过』的努力本质都在保这根柱子只付一次"
+  },
+  {
+   "keys": [
+    "mask",
+    "eng",
+    "ip",
+    "svc",
+    "first"
+   ],
+   "cap": "③ 把 NRE 摊进商业模型:NRE 与产量无关,必须靠足够出货量摊薄到单颗成本里;再用 first silicon success 把『只花一份 NRE』变成现实,这颗 TPU 在数据中心才划算"
+  },
+  {
+   "keys": [
+    "respin",
+    "mask"
+   ],
+   "cap": "④ 量化 re-spin 代价并据此定决策:一次改版=再付一套(或部分)掩模 + 重跑整条后端 + 几百万美元 + 几个月日历;算清这笔账,才会舍得在流片前多投验证/签核去换『一次过』"
+  },
+  {
+   "keys": [
+    "first",
+    "respin"
+   ],
+   "cap": "⑤ 守住部署节奏:TPU 约 15 个月从立项到部署、发布前已跑一年多,这节奏经不起多次 re-spin——first silicon success 直接决定 NRE 花一份还是两三份、窗口守住还是错过"
+  }
+ ],
+ "before": [
+  "<b>先把 NRE 清单逐项列全并报价</b>:掩模(按节点/层数/是否多重曝光估)、工程人月(设计+验证+签核)、外购 IP 授权(PCIe 3.0 PHY/控制器、DDR3 PHY 等)、流片服务(EDA license、foundry 流片费、PDK、ATE 测试程序)。一项漏报,后面的商业模型就站不住。",
+  "<b>定流片方式与对应掩模策略</b>:是走 full-mask 整版流片(掩模贵但单颗便宜、适合量产),还是先上 MPW 多项目晶圆拼片(分摊掩模、适合验证/小批)?这一步的选择直接决定掩模这根成本柱的量级,必须在 tape-out 前拍板。",
+  "<b>把 NRE 摊销假设写进商业模型</b>:NRE 是一次性、与产量无关的,必须先估出货量,才能把它摊成单颗成本——只有量大到摊薄,这颗芯片在数据中心才划算。摊销曲线(盈亏平衡产量)要在投片前算清楚。",
+  "<b>给 first silicon success 设硬目标、给 re-spin 设预算</b>:把『首版一次点亮成功』作为流片前签核的总验收目标;同时预先估算一次 re-spin 的金额与日历代价(再付掩模+重跑后端+数月),作为『要不要再多投一轮验证』的决策依据。",
+  "<b>诚实边界</b>:掩模/NRE/re-spin 的具体金额、foundry 流片报价、测试程序成本等均为这类 28nm 大芯片、PCIe 加速卡的业界通行量级,TPU v1 不公开其私有成本数据,也未公开其代工厂。本案例以 TPU 已知结构(256×256 阵列、24MiB UB、700MHz、28nm、≤331mm²、PCIe 卡、8GiB DDR3、TF/XLA 栈)作为被流片对象来讲 NRE 概念,所有金额为示意。"
+ ],
+ "during": [
+  "<b>掩模是大头,先把它的量级摸准</b>:28nm 全套光罩可达千万美元量级,远超工程/IP/服务费之和,是 NRE 里压倒性的最大头。报价要落实到层数、关键层是否需多重曝光、是否需修正/补光罩——这根柱子的高度基本决定了整笔 NRE 的量级。",
+  "<b>工程费按真实人月累计、别低估签核尾段</b>:从架构到布局布线再到签核(时序/功耗/DRC/LVS)的人月要据实计入;越接近流片,签核迭代越烧人月。对 TPU 这种约 15 个月周期的项目,工程费是与掩模并列的另一大块,不能只盯掩模。",
+  "<b>IP 用买的换工时,但授权费要进账</b>:PCIe 3.0、DDR3 这类高速接口若自研风险高、周期长,通常向 IP 厂授权——买现成省了大量验证工时和流片风险,但授权费本身是 NRE 的一部分,要和『自研工时成本』做对比后再决定买还是造。",
+  "<b>流片服务费样样小但样样必付</b>:EDA license、foundry 流片费、PDK/特征化、ATE 测试程序开发……单项相对掩模不大,但缺一不可、且都要先付。把它们一并计入,NRE 才完整,商业模型才不会算漏。",
+  "<b>把『一次过』当成省钱手段,而非运气</b>:first silicon success 的经济价值=省下整轮掩模(那根千万量级的大柱)+ 重跑后端的工程费 + 几个月日历。正因如此,流片前在验证/签核上多投的钱,本质是用『确定的小投入』去换『不确定但巨大的 re-spin 损失』的期望——这笔账几乎总是划算。",
+  "<b>用 re-spin 代价反推决策门槛</b>:一次功能性 re-spin≈再付一套(或部分)掩模 + 重跑综合/PnR/签核 + 数百万美元 + 几个月日历。把这笔账摆在桌上,就能客观回答『现在投不投得起再多一轮验证 / 要不要等某个 corner 跑完再投片』,而不是凭感觉拍板。"
+ ],
+ "result": [
+  {
+   "label": "NRE 四大构成",
+   "value": "掩模(大头)+ 工程人月 + 接口 IP 授权 + 流片服务费"
+  },
+  {
+   "label": "掩模量级(示意)",
+   "value": "28nm 全套光罩 ~ 千万美元量级,占 NRE 压倒性大头"
+  },
+  {
+   "label": "NRE 性质",
+   "value": "一次性、与产量无关 → 必须靠出货量摊薄到单颗成本"
+  },
+  {
+   "label": "first silicon success 价值",
+   "value": "只花一份 NRE + 守住 ~15 个月部署节奏"
+  },
+  {
+   "label": "re-spin 代价(示意)",
+   "value": "再付(部分)掩模 + 重跑后端 + 数百万美元 + 几个月"
+  },
+  {
+   "label": "进商业模型",
+   "value": "盈亏平衡产量 = NRE ÷(单颗售价 − 单颗变动成本)"
+  }
+ ],
+ "after": [
+  "<b>冻结 NRE 预算并锁定投片决策</b>:四块成本报价齐了、摊销曲线算清了、first-silicon 目标与 re-spin 预算都定了,才正式批准 tape-out 把 GDSII 寄 fab;一旦掩模开写,这笔钱基本不可退,投片前的『再确认』极其值钱。",
+  "<b>把『一次过』的赌注押在签核证据上</b>:投片前回看时序/功耗/DRC/LVS/电源完整性等签核是否全绿、关键 corner 是否跑完——first silicon success 不是靠运气,而是靠流片前每一道签核都达标换来的;任一项存疑,宁可推迟投片也别赌一轮 re-spin。",
+  "<b>留好 re-spin 的应急路径与预算</b>:即便全力求一次过,也要预先想清『若首版有 bug,改哪、重跑哪条后端、要不要 metal-only ECO(只改金属层、省部分掩模)』,把最坏情况的金额与日历提前纳入计划,避免真出问题时手忙脚乱。",
+  "<b>把 NRE 摊销与出货量持续对账</b>:量产爬坡后,用真实出货量回看当初的摊销假设是否成立、是否过了盈亏平衡点;若出货不及预期,NRE 摊不动,单颗成本就压不下来——这关系到这颗 TPU 在数据中心是否真的划算。",
+  "<b>交付制造/封测下一步</b>:tape-out 与 NRE 批准后,掩模进 fab 开始制造,设计进入流片后等待首版硅;把测试程序、bring-up 计划与 first-silicon 验收标准一并交给 ⑪ 制造 / ⑫ 封测,等首版回来按既定标准点亮、判是否一次过。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(256×256 8-bit MAC 脉动阵列、24 MiB Unified Buffer、700MHz/~92 TOPS、28nm/die ≤331mm²、PCIe 3.0 加速卡、片外 8 GiB DDR3、TensorFlow/XLA、约 15 个月从立项到部署且发布前已运行一年多,为 v1 披露的被流片对象;掩模/NRE/IP 授权/流片服务/re-spin 的具体金额与代工厂均为这类 28nm 大芯片、PCIe 加速卡的通行制造/交付实践量级与示意,非 TPU v1 私有披露)"
+}

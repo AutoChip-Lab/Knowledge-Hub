@@ -1,0 +1,119 @@
+{
+ "secNum": "3.6",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 成品测试(FT)与 ATE:封装好的 TPU 加速卡放进测试座,由 ATE 自动测试设备跑一套测试程序——scan/逻辑 BIST 图样、阵列/SRAM 的 MBIST 自测、at-speed 满速功能、IO 与参数测试,逐颗确认这颗 256×256 脉动阵列、24MiB UB 的大芯片『造得对、跑得到 700MHz』,判 pass/fail 后才放行出货",
+ "oneLine": "本案例落到「成品测试(FT)与 ATE」小节:芯片封装完之后、出货之前,要在自动测试设备(ATE)上做最终的成品测试(Final Test, FT)。封装好的 TPU(做成 PCIe 加速卡)作为被测件(DUT)坐进 ATE 的测试座(socket),ATE 按预先编好的测试程序给它加激励、收响应、和黄金期望比对,跑四类测项:① scan / 逻辑 BIST——移入测试向量、捕获、移出比对,专查封装/制造引入的逻辑缺陷,漏检率由 ⑦DFT 阶段做进去的可测性和测试覆盖率决定;② MBIST——对 24 MiB Unified Buffer、4 MiB 累加器这类海量 SRAM 做内建自测,高效遍历存储单元;③ at-speed 功能——让芯片在 700 MHz 满速跑功能图样,验『不只造得对,还跑得到额定速度』;④ IO + 参数测试——测 PCIe 3.0 / DDR3 接口和电压、电流、漏电等电气参数。核心取舍是『测试覆盖率 vs 测试时间』:覆盖率越高漏检越少,但 ATE 上每颗多耗的秒数乘以海量芯片就是真金白银的测试成本,海量 SRAM/逻辑必须测得既全又快。逐颗判 pass/fail，合格入库出货、失败剔除或分箱。这里把 TPU 已知结构(256×256 8-bit MAC 脉动阵列、24 MiB UB、4 MiB 累加器、700 MHz、PCIe 卡、DDR3)当作『被 ATE 点测、判好坏』的对象来讲 FT 概念;ATE 机型、测试座、具体测试程序/向量、实际覆盖率、测试时间与良率分箱均为这类大芯片/PCIe 卡的通行成品测试实践,TPU v1 不公开其私有 FT 流程与数据。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 415\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"26\">成品测试(FT):已封装的 TPU 加速卡放进测试座,用 ATE 自动测试设备跑测试程序 → scan/BIST 图样 + at-speed 功能 + IO + 参数 → 逐颗判 pass/fail</text><g class=\"cs-part\" data-k=\"dut\" data-g=\"dut\"><rect class=\"cs-box\" x=\"24\" y=\"60\" width=\"150\" height=\"120\" rx=\"8\"/><text class=\"cs-t\" x=\"99\" y=\"86\">封装好的 TPU</text><text class=\"cs-sub\" x=\"99\" y=\"106\">PCIe 卡 / 封装件(DUT)</text><rect class=\"cs-cell\" x=\"50\" y=\"122\" width=\"98\" height=\"40\"/><text class=\"cs-cellt\" x=\"99\" y=\"146\">256×256 阵列</text><text class=\"cs-sub\" x=\"99\" y=\"174\">坐进测试座</text></g><line class=\"cs-arr\" x1=\"174\" y1=\"120\" x2=\"214\" y2=\"120\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"ate\" data-g=\"ate\"><rect class=\"cs-box\" x=\"218\" y=\"60\" width=\"200\" height=\"120\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"318\" y=\"86\">ATE 自动测试设备</text><text class=\"cs-sub\" x=\"318\" y=\"106\">测试座(socket)夹住 DUT</text><g class=\"cs-part\" data-k=\"prog\" data-g=\"prog\"><rect class=\"cs-cell\" x=\"240\" y=\"122\" width=\"156\" height=\"40\"/><text class=\"cs-cellt\" x=\"318\" y=\"140\">测试程序 / pattern</text><text class=\"cs-sub\" x=\"318\" y=\"156\">加激励、收响应、比对</text></g></g><line class=\"cs-arr\" x1=\"418\" y1=\"120\" x2=\"458\" y2=\"120\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"judge\" data-g=\"judge\"><rect class=\"cs-box\" x=\"462\" y=\"60\" width=\"234\" height=\"120\" rx=\"8\" fill=\"#dcfce7\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"579\" y=\"86\">逐颗判 pass / fail</text><text class=\"cs-sub\" x=\"579\" y=\"106\">合格入库,失败剔除/分箱</text><rect class=\"cs-cell\" x=\"486\" y=\"122\" width=\"86\" height=\"40\" fill=\"#bbf7d0\"/><text class=\"cs-cellt\" x=\"529\" y=\"146\">PASS 合格</text><rect class=\"cs-cell\" x=\"588\" y=\"122\" width=\"86\" height=\"40\" fill=\"#fecaca\"/><text class=\"cs-cellt\" x=\"631\" y=\"146\">FAIL 剔除</text></g><text class=\"cs-note\" x=\"24\" y=\"210\">测试程序里跑四类图样 / 测项:</text><g class=\"cs-part\" data-k=\"scan\" data-g=\"scan\"><rect class=\"cs-box\" x=\"24\" y=\"222\" width=\"160\" height=\"74\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"104\" y=\"248\">scan / 逻辑 BIST</text><text class=\"cs-sub\" x=\"104\" y=\"268\">移位测试向量查制造缺陷</text><text class=\"cs-sub\" x=\"104\" y=\"286\">靠 ⑦DFT,定测试覆盖率</text></g><g class=\"cs-part\" data-k=\"mbist\" data-g=\"mbist\"><rect class=\"cs-box\" x=\"190\" y=\"222\" width=\"160\" height=\"74\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"270\" y=\"248\">MBIST 阵列/SRAM</text><text class=\"cs-sub\" x=\"270\" y=\"268\">自测 24MiB UB+4MiB 累加</text><text class=\"cs-sub\" x=\"270\" y=\"286\">海量 SRAM 高效自测</text></g><g class=\"cs-part\" data-k=\"func\" data-g=\"func\"><rect class=\"cs-box\" x=\"356\" y=\"222\" width=\"160\" height=\"74\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"436\" y=\"248\">at-speed 功能</text><text class=\"cs-sub\" x=\"436\" y=\"268\">满速跑,验 700MHz 正常</text><text class=\"cs-sub\" x=\"436\" y=\"286\">CISC 指令/数据通路</text></g><g class=\"cs-part\" data-k=\"io\" data-g=\"io\"><rect class=\"cs-box\" x=\"522\" y=\"222\" width=\"174\" height=\"74\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"609\" y=\"248\">IO + 参数测试</text><text class=\"cs-sub\" x=\"609\" y=\"268\">PCIe/DDR3 接口、电压电流</text><text class=\"cs-sub\" x=\"609\" y=\"286\">查接口与电气参数</text></g><g class=\"cs-part\" data-k=\"tradeoff\" data-g=\"tradeoff\"><rect class=\"cs-box\" x=\"24\" y=\"312\" width=\"672\" height=\"44\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"334\">核心取舍:测试覆盖率 ↑(少漏检)  vs  测试时间 ↑(直接进成本)——海量 SRAM/逻辑要测得既全又快</text><text class=\"cs-sub\" x=\"360\" y=\"350\">覆盖率由 ⑦DFT 决定;每颗在 ATE 上的秒数 × 海量芯片 = 测试成本</text></g><text class=\"cs-note\" x=\"24\" y=\"378\">FT 验证两件事:① 造得对(无制造缺陷,scan/BIST/参数测项通过)② 跑得到速(at-speed 满速功能在 700MHz 下正常)</text><text class=\"cs-note\" x=\"24\" y=\"400\">诚实边界:ATE 机型、测试座、具体测试程序/向量、覆盖率指标、测试时间与良率分箱均为这类大芯片/PCIe 卡的通行成品测试实践;TPU v1 不公开其私有 FT 流程与数据,本图借其已知结构作被测对象讲概念</text></svg>",
+ "legend": [
+  {
+   "k": "ate",
+   "name": "ATE 自动测试设备(把芯片逐颗点测一遍的机器)",
+   "desc": "成品测试的主角:ATE(Automated Test Equipment)是一台能给芯片精确加电、按时序施加大量数字激励、采集每个引脚的响应、并和『黄金期望』逐位比对的自动化测试机。被测的封装件(DUT)坐进 ATE 上的测试座(socket)与之电气接触,ATE 按工程师编好的测试程序一项项跑,几百毫秒到几秒内对这一颗给出 pass/fail。它一次只测一颗(或几颗并测),海量芯片就靠它一颗颗过——因此 ATE 机时与每颗测试时长直接决定测试成本。TPU v1 这类做成 PCIe 加速卡的大芯片,封装后同样要上 ATE 做 FT,具体机型/测试座/程序为业界通行实践、TPU 不公开。"
+  },
+  {
+   "k": "scan",
+   "name": "scan / 逻辑 BIST(查逻辑制造缺陷,覆盖率靠 ⑦DFT)",
+   "desc": "查『逻辑造得对不对』的主力测项。芯片在 ⑦DFT 阶段把成千上万触发器串成扫描链(scan chain),FT 时 ATE 通过扫描链把自动生成的测试向量(ATPG pattern)移入芯片内部、跑一拍捕获、再移出和期望比对,从而探出封装/制造引入的固定型(stuck-at)、跳变(transition)等缺陷;逻辑 BIST 则把图样生成与比对也做进片内。能探出多大比例的潜在缺陷叫『测试覆盖率』,它由 ⑦DFT 做进去的可测性结构决定——覆盖率不够,坏芯就会漏检流到客户手里。TPU 不公开其覆盖率与向量,scan/BIST 机制为通行 DFT/测试实践。"
+  },
+  {
+   "k": "mbist",
+   "name": "MBIST 阵列/SRAM 自测(高效测海量存储)",
+   "desc": "专测『海量片上存储』的测项。TPU v1 片上有 24 MiB 的 Unified Buffer 和 4 MiB 的 32-bit 累加器,这类大块 SRAM 用外部向量一格格测既慢又占引脚,于是片内放一个内建自测控制器(MBIST):它自动按 March 等算法对存储阵列写入再读回特定数据图样,遍历每个单元查写不进、读错、相邻干扰、保持失效等缺陷,只把最终 pass/fail 报给 ATE。海量 SRAM 必须靠 MBIST 才能高效测全。TPU 不公开其 MBIST 配置与结果,自测机制为通行实践;此处借其 24MiB UB / 4MiB 累加器作被测存储对象。"
+  },
+  {
+   "k": "func",
+   "name": "at-speed 功能测试(验 700MHz 满速跑得动)",
+   "desc": "验『不只造得对,还跑得到额定速度』。scan/BIST 多在较慢时钟下查静态缺陷,而 at-speed 测试让芯片在 700 MHz 的额定频率下真正跑功能图样——驱动 256×256 脉动阵列做乘累加、跑主机经 PCIe 发来的那十几条 CISC 指令的数据通路、走 weight-stationary 的数据流,确认在满速时序下结果仍正确。它专抓『慢速能过、满速就错』的速度相关缺陷(路径延迟、跳变故障)。只有 at-speed 通过,才能保证这颗 TPU 在数据中心里以 ~92 TOPS 的额定算力正常工作。TPU 不公开其功能向量,at-speed 机制为通行实践。"
+  },
+  {
+   "k": "io",
+   "name": "IO + 参数测试(接口与电气参数)",
+   "desc": "测『对外接口和电气底盘』。IO 测试验证芯片对外的物理接口收发正常——TPU v1 经 PCIe 3.0 与主机通信、外挂 8 GiB DDR3(~30 GB/s),这些高速 IO 的电平、时序、收发要逐路确认;参数测试(DC/AC parametric)则量供电电压下的工作电流、漏电流、各引脚电平门限、待机功耗等电气指标,确认落在 28–40W、规格窗口之内。逻辑功能再对,IO 接不通或电参数超标,这颗卡照样不能用。TPU 不公开其私有 IO/参数测试项与限值,测试类别与方法为通行成品测试实践。"
+  },
+  {
+   "k": "tradeoff",
+   "name": "覆盖率 vs 测试时间(测得全 ↔ 测得起)",
+   "desc": "FT 贯穿始终的核心取舍。测试覆盖率越高,漏检的坏芯越少、出货质量越稳——但要测得更全,就得跑更多向量、更多测项,ATE 上每颗芯片耗的秒数随之上升;而每颗多花的测试时间乘以海量芯片,就是直接计入单颗成本的测试费用。TPU v1 这种带 24 MiB UB、4 MiB 累加器和大片逻辑的大芯片,存储与逻辑都海量,尤其要靠 ⑦DFT 的可测性设计(扫描压缩、BIST、并行测)把覆盖率做上去的同时压住测试时间,做到『既测得全又测得快/便宜』。覆盖率指标与实际测试时间为 TPU 私有、不公开,这层权衡是通行测试经济学。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "dut",
+    "ate"
+   ],
+   "cap": "① 上机:把封装好的 TPU(PCIe 卡 / 封装件,DUT)放进 ATE 的测试座(socket),建立电气接触,加载预先编好的测试程序——FT 就是在 ATE 上对每颗逐项点测、自动判好坏"
+  },
+  {
+   "keys": [
+    "scan",
+    "mbist",
+    "prog"
+   ],
+   "cap": "② 跑结构测试查『造得对』:ATE 经扫描链移入 scan/逻辑 BIST 向量查逻辑制造缺陷(漏检率由 ⑦DFT 的覆盖率定),并触发 MBIST 对 24MiB UB、4MiB 累加器这类海量 SRAM 高效自测"
+  },
+  {
+   "keys": [
+    "func",
+    "io"
+   ],
+   "cap": "③ 跑功能与接口测试查『跑得到速』:at-speed 让芯片在 700MHz 满速跑功能图样验时序正确,再测 PCIe 3.0/DDR3 等 IO 与电压电流漏电等参数——逻辑、速度、接口、电气全过才算合格"
+  },
+  {
+   "keys": [
+    "tradeoff",
+    "judge"
+   ],
+   "cap": "④ 判 pass/fail 并平衡成本:逐颗给出合格/失败,合格入库出货、失败剔除或按 fail 类型分箱;全程在『覆盖率(少漏检)』与『测试时间(进成本)』之间取平衡——海量 SRAM/逻辑要测得既全又快"
+  }
+ ],
+ "before": [
+  "<b>拿到已封装、CP 已筛过的好芯</b>:FT 是封装之后的最终测试,前提是裸 die 在晶圆级电测(CP)已筛过、坏 die 已剔,送来 FT 的是封装好的 TPU(做成 PCIe 卡 / 封装件);开工前确认这批 DUT 来历、封装良好,免得拿封坏的件白测。",
+  "<b>测试程序与向量已就绪</b>:FT 跑的 scan/ATPG 向量、逻辑 BIST、MBIST 配置、at-speed 功能图样、IO/参数测项,都要在测试前编好、在 ATE 上调通并和黄金期望对齐;这些向量的质量与 ⑦DFT 阶段做进去的可测性直接挂钩,决定能查出多大比例缺陷(覆盖率)。",
+  "<b>定测试覆盖率与 pass/fail 判据</b>:开测前要定这批要做到多高的测试覆盖率(由 ⑦DFT 能力托底)、每个测项的合格门限(频率、电压、电流、漏电、IO 时序等)、以及失败如何分箱(bin);判据定得松会漏检、定得严会误杀好芯,要按规格与质量目标定。",
+  "<b>备好 ATE 资源与测试座</b>:安排 ATE 机时、配适配这颗封装的测试座(socket)/接口板(load board),保证 DUT 与 ATE 引脚精确接触、供电与高速 IO 通道齐备;海量芯片要排产能,ATE 机时本身就是成本。",
+  "<b>对齐覆盖率 vs 测试时间预算</b>:FT 前就要权衡『测多全』与『测多久』——多跑向量提覆盖率会拉长每颗测试时间、推高单颗成本;对 TPU 这类带海量 SRAM/逻辑的大芯片,要靠扫描压缩、BIST、并行测等把覆盖率做上去的同时压住测试时长,定好这条平衡线。"
+ ],
+ "during": [
+  "<b>DUT 上座、ATE 接管</b>。封装好的 TPU 作为被测件(DUT)放进测试座,ATE 与它的引脚建立电气接触并供电,然后按测试程序自动一项项跑:对每个测项,ATE 施加规定激励、采集芯片在各引脚/扫描链上的响应、和事先算好的黄金期望逐位比对,任一项不符即记为该测项 fail。整套对人无需逐颗干预,所以叫『自动』测试。",
+  "<b>scan / 逻辑 BIST:查『逻辑造得对』</b>。ATE 通过 ⑦DFT 串好的扫描链把测试向量(ATPG pattern)移入芯片内部触发器,跑一拍让组合逻辑响应、把结果捕获回触发器,再移出和期望比对——探出封装/制造引入的固定型、跳变等逻辑缺陷;逻辑 BIST 则把图样生成与比对做进片内、只报结果。能探出多大比例缺陷就是『测试覆盖率』,由 ⑦DFT 决定,覆盖率不够坏芯就漏检。",
+  "<b>MBIST:高效测海量 SRAM</b>。TPU 片上 24 MiB Unified Buffer、4 MiB 累加器这类大块存储,若用外部向量逐格测既慢又占引脚,于是用片内 MBIST 控制器自动按 March 等算法对存储阵列写入/读回特定图样,遍历每个单元查写不进、读错、相邻干扰、保持失效,只把 pass/fail 报给 ATE——这是把海量 SRAM 测全又测快的关键手段。",
+  "<b>at-speed 功能:查『跑得到 700MHz』</b>。结构测试多在慢时钟下查静态缺陷,而 at-speed 让芯片在 700 MHz 额定频率下真正跑功能图样——驱动 256×256 脉动阵列做乘累加、跑主机经 PCIe 发来的十几条 CISC 指令的数据通路、走 weight-stationary 数据流,确认满速时序下结果仍对。它专抓『慢速能过、满速就错』的速度相关缺陷,验的是这颗 TPU 能否以 ~92 TOPS 额定算力正常工作。",
+  "<b>IO + 参数:查接口与电气底盘</b>。IO 测试验芯片对外接口收发正常——TPU 经 PCIe 3.0 通主机、外挂 8 GiB DDR3(~30 GB/s),这些高速 IO 要逐路确认电平/时序;参数测试量工作电流、漏电流、引脚电平门限、功耗等电气指标,确认落在 28–40W 与规格窗内。逻辑再对,IO 接不通或电参超标,这颗卡照样判废。",
+  "<b>覆盖率 vs 测试时间是贯穿取舍(并守诚实边界)</b>。覆盖率越高漏检越少、出货越稳,但向量越多、测项越全,ATE 上每颗耗的秒数越长;每颗多花的测试时间乘海量芯片就是直接入成本的测试费,FT 全程都在『测得全』与『测得起』之间拿捏——TPU 这类海量 SRAM/逻辑大芯片尤其要靠扫描压缩、BIST、并行测把覆盖率与时长一起优化。诚实边界:ATE 自动加激励/收响应/比对判 pass-fail、scan/ATPG/逻辑 BIST 查逻辑缺陷、MBIST 自测 SRAM、at-speed 满速功能、IO/参数测试、覆盖率由 DFT 决定且与测试时间/成本权衡等,都是这类大芯片/PCIe 加速卡的业界通行成品测试实践;TPU v1 不公开其私有 FT 测试程序、向量、实际覆盖率、测试时间、良率分箱或所用 ATE 机型/测试座/封测厂。本节只借其已知结构(256×256 阵列、24 MiB UB、4 MiB 累加器、700 MHz、~92 TOPS、PCIe 3.0、DDR3、28–40W)作为被 ATE 点测、判好坏的对象讲 FT 概念,不杜撰 TPU 私有的测试/良率数字。"
+ ],
+ "result": [
+  {
+   "label": "本步产物",
+   "value": "每一颗封装好的 TPU 都在 ATE 上跑完测试程序、拿到逐颗 pass/fail 结论:合格入库出货,失败剔除或按 fail 类型分箱"
+  },
+  {
+   "label": "测的两件事",
+   "value": "① 造得对(scan/逻辑 BIST/MBIST/参数无缺陷)② 跑得到速(at-speed 满速功能在 700MHz 下正常)"
+  },
+  {
+   "label": "四类测项",
+   "value": "scan/逻辑 BIST 查逻辑缺陷 · MBIST 测 24MiB UB+4MiB 累加器等海量 SRAM · at-speed 验 700MHz · IO+参数测 PCIe/DDR3 与电压电流漏电"
+  },
+  {
+   "label": "覆盖率来源",
+   "value": "漏检率由测试覆盖率决定,而覆盖率靠 ⑦DFT 做进去的可测性(扫描链、BIST)托底——覆盖率不够坏芯就漏检"
+  },
+  {
+   "label": "核心取舍",
+   "value": "覆盖率↑少漏检 vs 测试时间↑进成本;每颗 ATE 秒数 × 海量芯片 = 测试成本,海量 SRAM/逻辑要测得既全又快"
+  },
+  {
+   "label": "诚实边界",
+   "value": "ATE 机型/测试座/测试程序/向量/实际覆盖率/测试时间/良率分箱均为通行成品测试实践,非 TPU v1 公开数据;以其已知结构作被测对象"
+  }
+ ],
+ "after": [
+  "<b>合格放行、失败分箱(binning)</b>:pass 的 TPU 入库、进入出货流程做成 PCIe 加速卡装机;fail 的按失败测项分箱——scan 失效、MBIST 失效、at-speed 失速、IO/参数超标各归各类,既是质量把关也为后续分析留线索。分箱判据为通行实践,TPU 不公开其具体 bin 定义。",
+  "<b>失效分析(FA)定位根因</b>:对典型/批量失败件做失效分析,判是封装引入(键合/基板/翘曲)、制造缺陷还是测试本身的问题,定位到具体单元或工序;FA 结论回喂 ⑩~⑫各环节,是制造/封测的迭代闭环。具体 FA 数据为 TPU 私有、不公开。",
+  "<b>回看覆盖率与漏检</b>:若客户端或可靠性测出 FT 没拦住的缺陷,要回看测试覆盖率是否不足、向量是否要补、⑦DFT 可测性是否要加强;反之误杀偏高则放宽门限——持续校准 pass/fail 判据。覆盖率/漏检数据为 TPU 私有,机制为通行做法。",
+  "<b>优化测试程序压成本</b>:把每颗测试时间、各测项耗时、良率分布回喂,删冗余向量、上扫描压缩/并行测、调测项顺序(先跑最易筛掉坏芯的项),在不掉覆盖率的前提下压测试时长与 ATE 机时——直接降单颗测试成本。",
+  "<b>诚实留痕,交可靠性/出货</b>:本批的 pass 率、失败分箱、覆盖率、测试时间等记入封测档案供复查与良率分析;合格 TPU 进入(老化/可靠性)与出货环节,最终在数据中心上线。这些数据为 TPU 私有、本节不杜撰,记录与放行流程为通行封测/量产实践。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(256×256 8-bit MAC 脉动阵列、24 MiB Unified Buffer、4 MiB 32-bit 累加器、700 MHz/~92 TOPS、外挂 8 GiB DDR3(~30 GB/s)、weight-stationary、主机经 PCIe 3.0 发约十几条 CISC 指令、做成 PCIe 加速卡、28nm/die ≤331mm²/28–40W 为该文披露的 TPU v1 已知结构,作为成品测试 FT 中被 ATE 点测/判好坏的对象;封装后用 ATE 跑 scan/ATPG/逻辑 BIST 查逻辑缺陷、MBIST 自测海量 SRAM、at-speed 满速功能验额定频率、IO/参数测试,测试覆盖率由 ⑦DFT 决定且与测试时间/成本权衡,逐颗判 pass/fail 并分箱等均为这类 28nm 大芯片/PCIe 加速卡的 OSAT/业界通行成品测试与量产实践,TPU v1 不公开其私有 FT 测试程序、向量、实际测试覆盖率、测试时间、良率/分箱数据与所用 ATE 机型/测试座/封测厂,图中测项与 pass/fail 为示意,非 TPU v1 私有披露)"
+}

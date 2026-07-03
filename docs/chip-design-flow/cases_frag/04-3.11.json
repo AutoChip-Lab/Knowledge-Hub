@@ -1,0 +1,122 @@
+{
+ "secNum": "3.11",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 用时钟门控让空闲 PE 列「不干活就不耗电」",
+ "oneLine": "推理小负载时 256×256 阵列常大面积空转——低功耗微架构的核心就是让这些空闲 PE 列被时钟门控关停、不产生动态功耗,再叠加操作数隔离与「不访存即省电」。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"44\">脉动阵列(每列共享一个时钟门控使能)</text><g class=\"cs-part\" data-k=\"ck\" data-g=\"ck\"><rect class=\"cs-box\" x=\"40\" y=\"60\" width=\"92\" height=\"44\" rx=\"8\"/><text class=\"cs-t\" x=\"86\" y=\"80\">时钟根</text><text class=\"cs-sub\" x=\"86\" y=\"96\">clk / en</text></g><g class=\"cs-part\" data-g=\"active\"><line class=\"cs-arr\" x1=\"132\" y1=\"82\" x2=\"180\" y2=\"82\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-k=\"g0\" data-g=\"active\"><rect class=\"cs-cell\" x=\"182\" y=\"64\" width=\"44\" height=\"44\" rx=\"5\"/><text class=\"cs-cellt\" x=\"204\" y=\"90\">PE</text></g><g><rect class=\"cs-cell\" x=\"232\" y=\"64\" width=\"44\" height=\"44\" rx=\"5\"/><text class=\"cs-cellt\" x=\"254\" y=\"90\">PE</text></g><g><rect class=\"cs-cell\" x=\"282\" y=\"64\" width=\"44\" height=\"44\" rx=\"5\"/><text class=\"cs-cellt\" x=\"304\" y=\"90\">PE</text></g><g class=\"cs-part\" data-k=\"d0\" data-g=\"gated\"><rect x=\"332\" y=\"64\" width=\"44\" height=\"44\" rx=\"5\" fill=\"#eef2f7\" stroke=\"#cbd5e1\" stroke-dasharray=\"4 3\"/><text x=\"354\" y=\"86\" text-anchor=\"middle\" font-size=\"12\" fill=\"#94a3b8\">PE</text><text x=\"354\" y=\"100\" text-anchor=\"middle\" font-size=\"9\" fill=\"#94a3b8\">gated</text></g><g><rect x=\"382\" y=\"64\" width=\"44\" height=\"44\" rx=\"5\" fill=\"#eef2f7\" stroke=\"#cbd5e1\" stroke-dasharray=\"4 3\"/><text x=\"404\" y=\"86\" text-anchor=\"middle\" font-size=\"12\" fill=\"#94a3b8\">PE</text><text x=\"404\" y=\"100\" text-anchor=\"middle\" font-size=\"9\" fill=\"#94a3b8\">gated</text></g><g><rect x=\"432\" y=\"64\" width=\"44\" height=\"44\" rx=\"5\" fill=\"#eef2f7\" stroke=\"#cbd5e1\" stroke-dasharray=\"4 3\"/><text x=\"454\" y=\"86\" text-anchor=\"middle\" font-size=\"12\" fill=\"#94a3b8\">PE</text><text x=\"454\" y=\"100\" text-anchor=\"middle\" font-size=\"9\" fill=\"#94a3b8\">gated</text></g><g><rect class=\"cs-cell\" x=\"182\" y=\"114\" width=\"44\" height=\"44\" rx=\"5\"/><text class=\"cs-cellt\" x=\"204\" y=\"140\">PE</text></g><g><rect class=\"cs-cell\" x=\"232\" y=\"114\" width=\"44\" height=\"44\" rx=\"5\"/><text class=\"cs-cellt\" x=\"254\" y=\"140\">PE</text></g><g><rect class=\"cs-cell\" x=\"282\" y=\"114\" width=\"44\" height=\"44\" rx=\"5\"/><text class=\"cs-cellt\" x=\"304\" y=\"140\">PE</text></g><g><rect x=\"332\" y=\"114\" width=\"44\" height=\"44\" rx=\"5\" fill=\"#eef2f7\" stroke=\"#cbd5e1\" stroke-dasharray=\"4 3\"/><text x=\"354\" y=\"136\" text-anchor=\"middle\" font-size=\"12\" fill=\"#94a3b8\">PE</text><text x=\"354\" y=\"150\" text-anchor=\"middle\" font-size=\"9\" fill=\"#94a3b8\">gated</text></g><g><rect x=\"382\" y=\"114\" width=\"44\" height=\"44\" rx=\"5\" fill=\"#eef2f7\" stroke=\"#cbd5e1\" stroke-dasharray=\"4 3\"/><text x=\"404\" y=\"136\" text-anchor=\"middle\" font-size=\"12\" fill=\"#94a3b8\">PE</text><text x=\"404\" y=\"150\" text-anchor=\"middle\" font-size=\"9\" fill=\"#94a3b8\">gated</text></g><g><rect x=\"432\" y=\"114\" width=\"44\" height=\"44\" rx=\"5\" fill=\"#eef2f7\" stroke=\"#cbd5e1\" stroke-dasharray=\"4 3\"/><text x=\"454\" y=\"136\" text-anchor=\"middle\" font-size=\"12\" fill=\"#94a3b8\">PE</text><text x=\"454\" y=\"150\" text-anchor=\"middle\" font-size=\"9\" fill=\"#94a3b8\">gated</text></g><g><rect class=\"cs-cell\" x=\"182\" y=\"164\" width=\"44\" height=\"44\" rx=\"5\"/><text class=\"cs-cellt\" x=\"204\" y=\"190\">PE</text></g><g><rect class=\"cs-cell\" x=\"232\" y=\"164\" width=\"44\" height=\"44\" rx=\"5\"/><text class=\"cs-cellt\" x=\"254\" y=\"190\">PE</text></g><g><rect class=\"cs-cell\" x=\"282\" y=\"164\" width=\"44\" height=\"44\" rx=\"5\"/><text class=\"cs-cellt\" x=\"304\" y=\"190\">PE</text></g><g><rect x=\"332\" y=\"164\" width=\"44\" height=\"44\" rx=\"5\" fill=\"#eef2f7\" stroke=\"#cbd5e1\" stroke-dasharray=\"4 3\"/><text x=\"354\" y=\"186\" text-anchor=\"middle\" font-size=\"12\" fill=\"#94a3b8\">PE</text><text x=\"354\" y=\"200\" text-anchor=\"middle\" font-size=\"9\" fill=\"#94a3b8\">gated</text></g><g><rect x=\"382\" y=\"164\" width=\"44\" height=\"44\" rx=\"5\" fill=\"#eef2f7\" stroke=\"#cbd5e1\" stroke-dasharray=\"4 3\"/><text x=\"404\" y=\"186\" text-anchor=\"middle\" font-size=\"12\" fill=\"#94a3b8\">PE</text><text x=\"404\" y=\"200\" text-anchor=\"middle\" font-size=\"9\" fill=\"#94a3b8\">gated</text></g><g><rect x=\"432\" y=\"164\" width=\"44\" height=\"44\" rx=\"5\" fill=\"#eef2f7\" stroke=\"#cbd5e1\" stroke-dasharray=\"4 3\"/><text x=\"454\" y=\"186\" text-anchor=\"middle\" font-size=\"12\" fill=\"#94a3b8\">PE</text><text x=\"454\" y=\"200\" text-anchor=\"middle\" font-size=\"9\" fill=\"#94a3b8\">gated</text></g><text class=\"cs-note\" x=\"182\" y=\"228\">↑ 活跃列:小负载只占满左侧少数列</text><text class=\"cs-note\" x=\"332\" y=\"228\">↑ 空闲列:门控关停,不耗动态功耗</text><g class=\"cs-part\" data-k=\"cg\" data-g=\"cg\"><rect class=\"cs-box\" x=\"40\" y=\"262\" width=\"196\" height=\"60\" rx=\"8\"/><text class=\"cs-t\" x=\"138\" y=\"286\">① 细粒度时钟门控</text><text class=\"cs-sub\" x=\"138\" y=\"304\">空闲 PE 列停拍 → 零翻转</text></g><g class=\"cs-part\" data-k=\"oi\" data-g=\"oi\"><rect class=\"cs-box\" x=\"262\" y=\"262\" width=\"196\" height=\"60\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"286\">② 操作数隔离</text><text class=\"cs-sub\" x=\"360\" y=\"304\">无效输入钳住,不毛刺乘法器</text></g><g class=\"cs-part\" data-k=\"mem\" data-g=\"mem\"><rect class=\"cs-box\" x=\"484\" y=\"262\" width=\"196\" height=\"60\" rx=\"8\"/><text class=\"cs-t\" x=\"582\" y=\"286\">③ 减少访存</text><text class=\"cs-sub\" x=\"582\" y=\"304\">不访存即省电(片上复用)</text></g><text class=\"cs-note\" x=\"40\" y=\"350\">三招叠加:大头是「让不干活的逻辑彻底不翻转」+「能在片上算就别去 DDR3 取数」</text><text class=\"cs-note\" x=\"40\" y=\"372\">注:门控/隔离为低功耗通行实践,TPU v1 未逐项公开其门控粒度;阵列利用率低是其论文实测现象</text></svg>",
+ "legend": [
+  {
+   "k": "active",
+   "name": "活跃 PE 列(在算)",
+   "desc": "真正参与当前矩阵乘的列,正常收时钟、每拍翻转、做 8-bit 乘累加;动态功耗几乎都花在这里。"
+  },
+  {
+   "k": "gated",
+   "name": "被门控关停的空闲 PE 列",
+   "desc": "本拍没数据流过的列(decode/小矩阵/batch 不满阵列时大量出现):时钟被门掉,寄存器不翻转 → 动态功耗≈0,只剩极小漏电。"
+  },
+  {
+   "k": "cg",
+   "name": "① 细粒度时钟门控",
+   "desc": "按列(或更细)给每组 PE 配一个时钟门控使能;空闲就停拍。动态功耗 ∝ 翻转活动,停拍=停翻转=省电,这是数据中心推理 ASIC 省动态功耗的头号手段。"
+  },
+  {
+   "k": "oi",
+   "name": "② 操作数隔离",
+   "desc": "当某拍输入无效时,用使能寄存器/与门把乘法器输入钳在恒定值,避免无用数据在宽组合逻辑(乘法器)里来回翻转产生毛刺功耗。属低功耗通行实践。"
+  },
+  {
+   "k": "mem",
+   "name": "③ 减少访存(不访存即省电)",
+   "desc": "片外 DDR3(~30 GB/s)每次取数都很贵;weight-stationary + 24 MiB Unified Buffer 让权重/激活尽量在片上复用,少去 DDR3 取数本身就是省电。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "active",
+    "gated"
+   ],
+   "cap": "① 看现象:推理一个小矩阵 / batch 不满时,256×256 阵列只有左侧少数列在算,右侧大片 PE 整拍空转——这是 TPU 论文实测的低利用率场景"
+  },
+  {
+   "keys": [
+    "ck",
+    "cg",
+    "gated"
+   ],
+   "cap": "② 第一招·细粒度时钟门控:从时钟根按列分发门控使能,空闲列停拍 → 寄存器零翻转 → 这部分动态功耗直接归零"
+  },
+  {
+   "keys": [
+    "active",
+    "oi"
+   ],
+   "cap": "③ 第二招·操作数隔离:对仍收时钟但本拍输入无效的 PE,把乘法器输入钳住,挡掉无用翻转/毛刺,省下宽乘法器里的虚耗"
+  },
+  {
+   "keys": [
+    "mem"
+   ],
+   "cap": "④ 第三招·减少访存:weight-stationary 让权重灌一次反复用、激活留在 24 MiB UB 里复用,能片上算就别去 ~30 GB/s 的 DDR3 取数——一次访存的能耗远高于一次 MAC"
+  },
+  {
+   "keys": [
+    "ck",
+    "active",
+    "gated",
+    "cg",
+    "mem"
+   ],
+   "cap": "⑤ 合起来:三招叠加,使 28~40 W 的 TDP 主要花在「真在算的列」上,空闲面积几乎不吃动态功耗——这正是低功耗微架构的目标"
+  }
+ ],
+ "before": [
+  "<b>先确定要省的是哪种功耗</b>:动态功耗(∝ 频率 × 翻转活动 × 电容 × 电压²)还是静态漏电?本小节主攻动态——因为推理负载下阵列大面积空转,空转却照样翻转就是纯浪费。先量出「典型负载下阵列利用率有多低」。",
+  "<b>要拍板的设计量</b>:时钟门控的粒度(整阵列 / 按列 / 按 PE)、门控使能从哪来(控制 FSM 的状态、激活有效信号、tile 边界)、操作数隔离放在哪些数据通路、片上缓冲容量与复用策略。",
+  "<b>必备输入</b>:架构给的功耗预算(TPU v1 TDP 28~40 W)与目标频率(700 MHz);各类真实负载(MLP/LSTM/CNN)的阵列利用率分布——这决定门控能省多少。",
+  "<b>诚实约束</b>:TPU v1 未逐项公开它的门控粒度与具体省电数字。本案例的门控/隔离手段是数据中心推理 ASIC 的低功耗通行实践;可引的硬事实是论文实测的低阵列利用率(很多负载远用不满 65,536 个 MAC)与 28~40 W 的 TDP。"
+ ],
+ "during": [
+  "<b>目标先摆正</b>:不是让 PE 算得更省,而是让「不该算的 PE 一点电都别耗」。动态功耗几乎全来自翻转活动,所以低功耗微架构第一原则=砍掉无用翻转。",
+  "<b>门控粒度的取舍</b>:粒度越细(按列甚至按 PE)省得越多,但每组要多一个门控单元 + 使能逻辑,带来面积/时序/验证开销;脉动阵列天然按列流水,所以「按列共享一个门控使能」往往是性价比最高的折中。",
+  "<b>使能信号从哪来</b>:不要新发明一套——直接复用现成的确定性信号:控制 FSM 的状态(Idle、LoadWeights、WriteBack 时阵列本就不算)、激活有效/tile 边界。脉动阵列数据流是静态可算的,空/忙边界可预先确定,门控使能干净无毛刺。",
+  "<b>操作数隔离 vs 时钟门控分工</b>:时钟门控管「整组停拍」;操作数隔离管「仍在收时钟、但这一拍输入是垃圾」的情况——用与门/保持寄存器把乘法器输入钳住,防止无效数据在宽组合逻辑里乱翻。两者互补,叠加用。",
+  "<b>「不访存即省电」的权衡</b>:一次片外 DDR3 访存的能耗远高于一次片上 MAC,所以 weight-stationary(权重灌一次反复用)+ 24 MiB Unified Buffer 片上复用,既提性能也直接省电;代价是片上 SRAM 面积——这是面积换功耗/带宽的经典取舍。",
+  "<b>别破坏时序与功能</b>:门控时钟必须用标准时钟门控单元(ICG/集成门控时钟 cell)而非手搓与门,避免毛刺误触发;唤醒要留够建立时间。门控是「省电」不能变成「算错」——功能等价是红线。这一条属通行实践,非 v1 披露细节。"
+ ],
+ "result": [
+  {
+   "label": "主攻功耗",
+   "value": "动态功耗(空转翻转)"
+  },
+  {
+   "label": "门控粒度",
+   "value": "按列/按组共享使能(典型折中;v1 未公开具体粒度)"
+  },
+  {
+   "label": "使能来源",
+   "value": "控制 FSM 状态 + 激活有效/tile 边界"
+  },
+  {
+   "label": "三招",
+   "value": "时钟门控 + 操作数隔离 + 减少访存"
+  },
+  {
+   "label": "整芯片 TDP",
+   "value": "28~40 W(v1 实测)"
+  },
+  {
+   "label": "省电定性效果",
+   "value": "空闲列动态功耗≈0,功耗集中在活跃列(机制属通行实践)"
+  }
+ ],
+ "after": [
+  "<b>做功耗分析验省电</b>:用门级仿真翻转活动(VCD/SAIF)喂功耗工具,在典型低利用率负载下确认门控真把空闲列动态功耗压下去了;对照未门控版本看省了多少。",
+  "<b>查门控时序与功能等价</b>:静态时序检查门控使能的建立/保持,确认无毛刺误门控;跑等价性检查(LEC)确认插入门控后逻辑功能不变——省电不能改变计算结果。",
+  "<b>补低功耗验证用例</b>:覆盖「满阵列 / 半阵列 / 单列」各利用率档、Idle↔忙态切换的唤醒、操作数隔离边界,确认每种空忙模式下门控都正确开关。",
+  "<b>交给 ⑤ RTL / 后端</b>:RTL 里用标准 ICG cell 例化门控(综合工具也能据使能自动插入);后端做时钟树时把门控点纳入 CTS,并在 UPF/power-intent 里声明(若用电源域)。",
+  "<b>诚实交接说明</b>:文档里写清门控粒度、使能来源与「这是低功耗通行实践、非 TPU v1 逐项披露的数字」,避免下游把定性机制误当成 v1 实测指标。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(论文披露低阵列利用率与 28~40 W TDP;时钟门控/操作数隔离的具体粒度与省电数字未公开,为数据中心推理 ASIC 低功耗通行实践)"
+}

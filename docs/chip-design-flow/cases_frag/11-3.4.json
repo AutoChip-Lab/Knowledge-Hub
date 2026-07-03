@@ -1,0 +1,114 @@
+{
+ "secNum": "3.4",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 前道 FEOL(Front-End-Of-Line):在硅表面一步步「做晶体管」——挖阱掺杂、挖沟隔离、长栅氧+做栅极、注源漏、引接触,把 256×256 脉动阵列的 65,536 个 8-bit MAC、那堆 CISC 控制逻辑、以及 24 MiB Unified Buffer/累加器里的全部 SRAM 单元,统统从一片硅长成一个个能开关的晶体管;晶体管做得快不快、漏不漏电、全片一不一致,直接定了 700MHz/92 TOPS 跑不跑得动、良率高不高——这是整条工艺的核心竞争力所在",
+ "oneLine": "本案例落到「前道 FEOL:做晶体管」小节:制造分前道(FEOL)和后道(BEOL),FEOL 干的就是在硅表面把一个个晶体管(MOS 开关)做出来——按『阱→隔离→栅极(栅氧+栅)→源漏→接触』的次序,在硅上掺杂、挖沟、长极薄的栅氧、做栅、注源漏、再引出接触端子;TPU v1 那 65,536 个 8-bit MAC 的脉动阵列、发约十几条 CISC 指令的控制逻辑、占近 29% die 的 24 MiB Unified Buffer 与 4 MiB 累加器里的每一个 SRAM 位,本质上都是成千上万到上亿个这样的晶体管,全部在 FEOL 这一层成形。为什么这层是工艺核心竞争力:晶体管的速度(决定能不能跑到 700MHz)、漏电(决定 28–40W 功耗)、以及全片一致性(决定 ≤331mm² 大 die 的良率),都在这里一锤定音——先进节点拼的 FinFET、GAA 也正是在 FEOL 这一层改晶体管结构。这里把 TPU 已知结构当作『被做成晶体管的对象』讲 FEOL 怎么组织;阱/隔离/栅氧/源漏/接触的具体工艺、注入配方、栅氧厚度、应变/高 K 金属栅(HKMG)选型与良率均为这类 28nm 大芯片的 foundry 通行实践,TPU v1 不公开其私有 FEOL 工艺与代工厂。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 420\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"26\">前道 FEOL = 在硅表面「做晶体管」:阱 → 隔离 → 栅极(栅氧+栅) → 源漏 → 接触;6.5 万个 MAC + 控制逻辑 + SRAM 的晶体管全在这一层成形,晶体管的速度/漏电/一致性直接定芯片性能与良率</text><g class=\"cs-part\" data-k=\"well\" data-g=\"well\"><rect class=\"cs-box\" x=\"24\" y=\"56\" width=\"150\" height=\"58\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"99\" y=\"80\">① 阱 Well</text><text class=\"cs-sub\" x=\"99\" y=\"100\">注入掺杂,划出</text></g><line class=\"cs-arr\" x1=\"174\" y1=\"85\" x2=\"206\" y2=\"85\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"iso\" data-g=\"iso\"><rect class=\"cs-box\" x=\"210\" y=\"56\" width=\"150\" height=\"58\" rx=\"8\" fill=\"#f0f9ff\" stroke=\"#7dd3fc\"/><text class=\"cs-t\" x=\"285\" y=\"80\">② 隔离 STI</text><text class=\"cs-sub\" x=\"285\" y=\"100\">器件间挖沟填氧</text></g><line class=\"cs-arr\" x1=\"360\" y1=\"85\" x2=\"392\" y2=\"85\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"gate\" data-g=\"gate\"><rect class=\"cs-box\" x=\"396\" y=\"56\" width=\"150\" height=\"58\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"471\" y=\"80\">③ 栅极 Gate</text><text class=\"cs-sub\" x=\"471\" y=\"100\">栅氧 + 栅(开关)</text></g><line class=\"cs-arr\" x1=\"546\" y1=\"85\" x2=\"578\" y2=\"85\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"sd\" data-g=\"sd\"><rect class=\"cs-box\" x=\"540\" y=\"128\" width=\"156\" height=\"52\" rx=\"8\" fill=\"#fce7f3\" stroke=\"#f9a8d4\"/><text class=\"cs-t\" x=\"618\" y=\"152\">④ 源漏 S/D</text><text class=\"cs-sub\" x=\"618\" y=\"170\">注入,栅两侧通道</text></g><polyline class=\"cs-arr\" points=\"471,114 471,154 540,154\" fill=\"none\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"contact\" data-g=\"contact\"><rect class=\"cs-box\" x=\"356\" y=\"128\" width=\"156\" height=\"52\" rx=\"8\" fill=\"#dcfce7\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"434\" y=\"152\">⑤ 接触 Contact</text><text class=\"cs-sub\" x=\"434\" y=\"170\">引出端子,交后道</text></g><line class=\"cs-arr\" x1=\"540\" y1=\"154\" x2=\"512\" y2=\"154\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"24\" y=\"208\">晶体管剖面示意(一个 MOS 开关,FEOL 的产物;结构示意,非按比例)：</text><rect class=\"cs-box\" x=\"120\" y=\"320\" width=\"480\" height=\"48\" rx=\"0\" fill=\"#f1f5f9\" stroke=\"#cbd5e1\"/><text class=\"cs-sub\" x=\"360\" y=\"349\">硅衬底 + 阱(已掺杂的 P/N 阱)</text><g class=\"cs-part\" data-k=\"iso\" data-g=\"iso\"><rect class=\"cs-cell\" x=\"120\" y=\"296\" width=\"64\" height=\"24\" fill=\"#dbeafe\"/><rect class=\"cs-cell\" x=\"536\" y=\"296\" width=\"64\" height=\"24\" fill=\"#dbeafe\"/><text class=\"cs-cellt\" x=\"152\" y=\"312\">STI</text><text class=\"cs-cellt\" x=\"568\" y=\"312\">STI</text></g><g class=\"cs-part\" data-k=\"sd\" data-g=\"sd\"><rect class=\"cs-cell\" x=\"184\" y=\"296\" width=\"120\" height=\"24\" fill=\"#fbcfe8\"/><rect class=\"cs-cell\" x=\"416\" y=\"296\" width=\"120\" height=\"24\" fill=\"#fbcfe8\"/><text class=\"cs-cellt\" x=\"244\" y=\"312\">源 S</text><text class=\"cs-cellt\" x=\"476\" y=\"312\">漏 D</text></g><g class=\"cs-part\" data-k=\"gate\" data-g=\"gate\"><rect class=\"cs-cell\" x=\"304\" y=\"290\" width=\"112\" height=\"6\" fill=\"#a16207\"/><rect class=\"cs-cell\" x=\"312\" y=\"262\" width=\"96\" height=\"28\" fill=\"#fde047\"/><text class=\"cs-cellt\" x=\"360\" y=\"280\">栅 Gate</text><text class=\"cs-note\" x=\"424\" y=\"284\">↑ 栅氧(薄绝缘层)</text></g><g class=\"cs-part\" data-k=\"contact\" data-g=\"contact\"><rect class=\"cs-cell\" x=\"226\" y=\"244\" width=\"14\" height=\"46\" fill=\"#16a34a\"/><rect class=\"cs-cell\" x=\"458\" y=\"244\" width=\"14\" height=\"46\" fill=\"#16a34a\"/><rect class=\"cs-cell\" x=\"353\" y=\"244\" width=\"14\" height=\"18\" fill=\"#16a34a\"/><text class=\"cs-cellt\" x=\"233\" y=\"238\">接触</text></g><text class=\"cs-note\" x=\"24\" y=\"396\">诚实边界:阱/STI/栅氧/栅/源漏/接触的具体工艺、注入配方、栅氧厚度、应变/HKMG 选型、良率均为这类 28nm 大芯片的 foundry 通行 FEOL 实践;TPU v1 不公开其私有工艺/代工厂,本图借其已知结构(256×256 阵列、控制逻辑、24MiB UB 内的 SRAM)作被「做成晶体管」的对象讲概念</text></svg>",
+ "legend": [
+  {
+   "k": "well",
+   "name": "① 阱(Well,掺杂划地基)",
+   "desc": "做晶体管的第一步:用离子注入往硅里掺入杂质,在衬底里『划』出 N 阱和 P 阱——NMOS 做在 P 阱里、PMOS 做在 N 阱里(CMOS 互补结构)。阱定义了晶体管底下那块硅的导电类型和掺杂浓度,相当于给每个开关打地基;掺杂浓度直接影响阈值电压和漏电。TPU 的 256×256 阵列、控制逻辑、SRAM 全建在这套阱结构上,具体注入剂量/能量为 28nm 通行配方,TPU 不公开。"
+  },
+  {
+   "k": "iso",
+   "name": "② 隔离(STI,器件间挖沟填氧)",
+   "desc": "把一个个晶体管彼此『隔开』:在相邻器件之间刻出浅沟槽、再填进绝缘的氧化物(浅沟槽隔离 STI),并经 CMP 抛平。没有隔离,挨着的晶体管会漏电、串扰、闩锁(latch-up),整块阵列就乱套了。TPU v1 把 6.5 万个 MAC、控制逻辑和大片 SRAM 挤在 ≤331mm² 的 die 上,器件密度高,隔离做得干净与否直接关系漏电和良率。STI 工艺细节为 foundry 通行实践,TPU 不公开。"
+  },
+  {
+   "k": "gate",
+   "name": "③ 栅极(Gate=栅氧+栅,开关的命门)",
+   "desc": "晶体管的核心、也是 FEOL 最关键最难的一步:先在硅表面长一层极薄的栅氧(栅极绝缘层),再在上面做出栅极(多晶硅或先进节点的金属栅)。栅就是这个开关的『按钮』——给栅加电压就把下面的沟道打开/关上,控制源漏间电流。栅氧厚度、栅长(沟道长度)直接决定晶体管开关多快、漏多少电:这正是 700MHz/92 TOPS 能不能达成、28–40W 功耗高不高的源头。FinFET/GAA 革新的就是这一层。28nm 多用高 K 金属栅(HKMG),具体选型 TPU 不公开。"
+  },
+  {
+   "k": "sd",
+   "name": "④ 源漏(Source/Drain,注出两个端子)",
+   "desc": "在栅极两侧的硅里再做一次重掺杂注入,形成源(Source)和漏(Drain)两个端子——电流从源流到漏,中间那段被栅控制的硅就是沟道。源漏的掺杂、与沟道的结、以及现代工艺给沟道加的应变(strain,提升载流子迁移率让晶体管更快),共同决定这个开关的驱动能力。TPU 阵列里每个 MAC、每个 SRAM 位的晶体管都要做出合格的源漏,注入配方为 28nm 通行实践,TPU 不公开其私有数字。"
+  },
+  {
+   "k": "contact",
+   "name": "⑤ 接触(Contact,把端子引上去交后道)",
+   "desc": "FEOL 的收尾:在源、漏、栅这几个端子上方刻出接触孔、填进金属(钨等),把晶体管的『接线端子』从硅面引到上方——交给后道 BEOL 用十几层金属互连把它们连成 256×256 阵列、控制逻辑与 SRAM。接触做完,一个个独立的晶体管就『就位』了,但还没连成电路。前道做开关、后道连线,接触正是两者的交接点。接触工艺为 foundry 通行实践,TPU 不公开。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "well"
+   ],
+   "cap": "① 挖阱:用离子注入在硅衬底里掺出 N 阱/P 阱,给 NMOS、PMOS 各打好导电类型对的『地基』——阱的掺杂浓度从源头定了阈值电压和漏电。"
+  },
+  {
+   "keys": [
+    "iso"
+   ],
+   "cap": "② 隔离:在器件之间刻浅沟槽、填氧化物(STI)再抛平,把一个个晶体管彼此隔开,防漏电/串扰/闩锁——TPU 那么高的器件密度,隔离干不干净直接关系良率。"
+  },
+  {
+   "keys": [
+    "gate"
+   ],
+   "cap": "③ 栅极:在硅面长极薄栅氧、再做栅(28nm 多用高 K 金属栅)——这是开关的『按钮』,栅氧厚度与栅长一锤定音晶体管多快、漏多少电,决定 700MHz/92 TOPS 与 28–40W 能不能兑现。FinFET/GAA 革的就是这层。"
+  },
+  {
+   "keys": [
+    "sd"
+   ],
+   "cap": "④ 源漏:在栅两侧重掺杂注入做出源/漏两端子,中间被栅控制的硅就是沟道;现代工艺还给沟道加应变提升驱动能力——每个 MAC、每个 SRAM 位的晶体管都在此成形。"
+  },
+  {
+   "keys": [
+    "contact"
+   ],
+   "cap": "⑤ 接触:在源/漏/栅上方刻接触孔、填金属,把端子引到上方,交给后道 BEOL 去连线——FEOL 到此把 6.5 万 MAC + 控制逻辑 + 全部 SRAM 的晶体管全部『做』了出来。"
+  }
+ ],
+ "before": [
+  "<b>晶体管目标先于工艺定好</b>:进 FEOL 前,工艺要按设计目标定下晶体管的目标速度、阈值电压、漏电与驱动能力——TPU v1 要在 700MHz 下跑满 256×256 阵列、又把功耗压在 28–40W,这意味着 FEOL 要做出『够快又不太漏电』的晶体管,这个折中在做阱/栅之前就要定。",
+  "<b>选定器件结构与材料栈</b>:这一层用平面 MOS 还是 FinFET/GAA、栅氧用什么、栅是多晶硅还是高 K 金属栅(HKMG)、要不要加应变,都要先定。28nm 这代多走 HKMG;先进节点改晶体管结构(FinFET、GAA)改的正是 FEOL 这一层。TPU v1 不公开其具体器件/材料选型。",
+  "<b>注入与栅氧的配方、热预算约定好</b>:阱注入、源漏注入的剂量/能量,栅氧厚度,以及后续退火的热预算,都要事先标定——热预算花超了会让前面注好的掺杂扩散跑掉,晶体管特性就偏了。这些是 28nm 通行 FEOL 配方,TPU 不公开私有数字。",
+  "<b>对接上游光刻/版图与一致性预算</b>:FEOL 每一步(阱、隔离、栅、源漏、接触)都要靠光刻把图形定到位,所以要和 3.2/3.3 的光刻、刻蚀对齐;同时定下全片晶体管参数的一致性预算——256×256 阵列要求成千上万个 MAC 的晶体管彼此几乎一样,飘移大了阵列就跑不齐。"
+ ],
+ "during": [
+  "<b>FEOL 的任务一句话:在硅表面把一个个晶体管(MOS 开关)做出来</b>。制造分前道(FEOL)/后道(BEOL):前道做晶体管,后道连线。TPU v1 的 65,536 个 8-bit MAC、那十几条 CISC 指令背后的控制逻辑、24 MiB Unified Buffer 与 4 MiB 累加器里的每一个 SRAM 位——本质都是大量晶体管,全部在这一层、按统一次序成形。",
+  "<b>五步成器,次序不可乱:阱→隔离→栅极→源漏→接触</b>。先掺杂划出 N/P 阱(地基)→ 挖沟填氧把器件隔开(STI)→ 长极薄栅氧、做栅(开关按钮)→ 栅两侧重掺杂做源漏(两端子+沟道)→ 在端子上刻接触孔填金属(引出去)。每一步都靠『光刻定图形 + 注入/沉积/刻蚀实现』完成,层层依赖,顺序错则全废。",
+  "<b>栅极是命门:栅氧厚度与栅长一锤定音性能与漏电</b>。给栅加电压就开关下面的沟道——栅氧越薄、栅长(沟道)越短,开关越快,但太薄/太短漏电飙升。TPU 要 700MHz/92 TOPS(快)又要 28–40W(省),这对矛盾就压在栅这一步;28nm 用高 K 金属栅(HKMG)缓解栅氧漏电,先进节点干脆把平面栅改成 FinFET/GAA 来同时要速度和低漏。",
+  "<b>晶体管质量 = 速度 / 漏电 / 一致性,这三样定芯片成败</b>。速度不够→跑不到 700MHz;漏电太大→功耗破 40W、发热失控;全片不一致→256×256 阵列里各 MAC 的晶体管参差,时序对不齐、SRAM 读写余量不足、die 报废。所以 FEOL 的核心竞争力就是把这三样同时做好做稳——这也是各家工艺真正拉开差距的地方。",
+  "<b>SRAM 与逻辑共用这套 FEOL,但 SRAM 位最娇贵</b>。24 MiB UB + 4 MiB 累加器是海量 SRAM 单元(每个位 6 个晶体管),占了近 29% die;SRAM 对晶体管的匹配/一致性极敏感,一点参数飘移就读写出错。大面积 SRAM 的晶体管能不能全片做得整齐,是这种『一大半面积是片上存储』的 AI 芯片良率的关键战场。",
+  "<b>诚实边界(贯穿)</b>:阱/STI/栅氧/栅/源漏/接触的具体工艺、离子注入剂量与能量、栅氧厚度、应变与 HKMG 选型、退火热预算、缺陷与良率,均为这类 28nm 大芯片/PCIe 加速卡的 foundry 通行 FEOL 实践;TPU v1 不公开其私有 FEOL 工艺、器件/材料选型、代工厂与良率数字。本节只借 TPU 已知结构(256×256 阵列、CISC 控制逻辑、24MiB UB/4MiB 累加器内的 SRAM、700MHz、28nm、28–40W、≤331mm²)作为被『做成晶体管』的对象讲 FEOL 概念,剖面图为示意,不杜撰 TPU 私有制造数字。"
+ ],
+ "result": [
+  {
+   "label": "FEOL 产物",
+   "value": "硅表面上一个个做好的晶体管(MOS 开关):TPU v1 的 65,536 个 MAC、CISC 控制逻辑、24MiB UB/4MiB 累加器的全部 SRAM 位,其晶体管都在此成形(但还没连成电路)"
+  },
+  {
+   "label": "五步次序",
+   "value": "阱 Well(掺杂划地基)→ 隔离 STI(挖沟填氧隔开)→ 栅极 Gate(栅氧+栅,开关)→ 源漏 S/D(注入两端子+沟道)→ 接触 Contact(引出端子)"
+  },
+  {
+   "label": "栅极=命门",
+   "value": "栅氧厚度+栅长定晶体管多快、漏多少电;28nm 多用高 K 金属栅(HKMG);先进节点改 FinFET/GAA 正是改这一层"
+  },
+  {
+   "label": "晶体管质量三指标",
+   "value": "速度(能否到 700MHz/92 TOPS)、漏电(能否守住 28–40W)、一致性(决定 ≤331mm² 大 die 与占近 29% die 的海量 SRAM 良率;SRAM 每位 6 晶体管,对匹配/一致性最敏感)——FEOL 的核心竞争力"
+  },
+  {
+   "label": "交棒对象",
+   "value": "晶体管做好、接触引出后,交给后道 BEOL,用十几层金属互连把它们连成 256×256 阵列、控制逻辑与片上存储(前道做开关,后道连线)"
+  },
+  {
+   "label": "诚实边界",
+   "value": "TPU v1 不公开其 FEOL 工艺/注入配方/栅氧厚度/HKMG 选型/代工厂/良率;以上为 foundry 通行 FEOL 实践与示意,非 TPU 私有数字"
+  }
+ ],
+ "after": [
+  "<b>测晶体管,看做得对不对</b>:FEOL 关键步后做工艺监控,用测试结构量晶体管的阈值电压、驱动电流、漏电、栅氧完整性等参数,看是否落在目标窗口;同时检查全片一致性——256×256 阵列要求各处晶体管几乎一样。不达标要回溯是阱、栅还是源漏哪一步出的偏。",
+  "<b>合格才交后道 BEOL 连线</b>:晶体管做好、接触引出且参数达标后,这片晶圆才进后道,用十几层金属互连把这些孤立的开关连成脉动阵列、控制逻辑与 SRAM——前道做的开关,要后道连起来才成为电路。FEOL 出错,后面连线再漂亮也救不回。",
+  "<b>把速度/漏电/一致性数据反馈调工艺</b>:若晶体管偏慢、偏漏、或全片飘移,要把数据回喂工艺端微调注入剂量、栅氧、退火热预算等;持续偏移则可能要调器件结构或材料(平面↔HKMG↔FinFET)。这是 FEOL 良率与性能持续迭代的闭环。",
+  "<b>SRAM 与大 die 一致性专项盯</b>:重点核查占近 29% die 的海量 SRAM 位的晶体管匹配度、以及 ≤331mm² 大 die 从中心到边缘的参数均匀性——这两处最易因晶体管不一致而失效,是良率的薄弱点,要单独统计、定位、整改。",
+  "<b>诚实留痕</b>:本层晶体管参数、工艺监控与一致性数据记入制造工艺档案(供后续制造/封测/良率分析复查),作为这颗 die 可追溯的前道制造证据;具体数据为 foundry 私有,非 TPU v1 公开。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(256×256 8-bit MAC 脉动阵列=65,536 个 MAC、控制逻辑发约十几条 CISC 指令、24 MiB Unified Buffer + 4 MiB 累加器内的 SRAM、700MHz/92 TOPS、28nm、≤331mm²、28–40W 为该文披露的 TPU v1 已知结构,作为被『做成晶体管』的对象;前道 FEOL 的阱/STI 隔离/栅氧+栅/源漏/接触五步、离子注入、栅极工艺、高 K 金属栅(HKMG)与 FinFET/GAA、晶体管速度/漏电/一致性→良率,以及栅氧厚度、注入配方、退火热预算等均为这类 28nm 大芯片的 foundry/业界通行 FEOL 制造实践,剖面图与端子均为示意,非 TPU v1 公开的代工厂、私有工艺配方、器件/材料选型或良率数字)"
+}

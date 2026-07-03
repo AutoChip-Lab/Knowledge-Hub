@@ -1,0 +1,119 @@
+{
+ "secNum": "3.1",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 后端全景:把那 256×256 阵列的门级网表「准备数据 → 一路实现」成可制造版图(GDSII)",
+ "oneLine": "物理设计不是「网表一进去就出版图」,而是一条高度迭代的后端流水线:先把网表/LEF/工艺规则/SDC/SRAM 宏五类数据备齐对上,再 floorplan → 电源网络 → 布局 → 时钟树 → 布线 → 收敛 → 出 GDSII;每一步都回看时序/拥塞/功耗,不达标就退回上一步——TPU 那个规整的 65,536-MAC 脉动阵列和占了近三成面积的 24 MiB Unified Buffer SRAM,正是被这条管线一遍遍「摆好、布通、压住」成真实版图的对象。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-t\" x=\"360\" y=\"28\">物理设计(后端)流程管线:从「数据准备」一路实现到 GDSII</text><g class=\"cs-part\" data-k=\"data\" data-g=\"data\"><rect class=\"cs-box\" x=\"20\" y=\"56\" width=\"186\" height=\"120\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"113\" y=\"84\">① 数据准备</text><text class=\"cs-sub\" x=\"113\" y=\"106\">门级网表(⑦)</text><text class=\"cs-sub\" x=\"113\" y=\"124\">标准单元 LEF + .lib</text><text class=\"cs-sub\" x=\"113\" y=\"142\">tech LEF / DRC 规则</text><text class=\"cs-sub\" x=\"113\" y=\"160\">SDC 约束 + SRAM 宏</text></g><line class=\"cs-arr\" x1=\"206\" y1=\"116\" x2=\"246\" y2=\"116\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"fp\" data-g=\"fp\"><rect class=\"cs-box\" x=\"248\" y=\"56\" width=\"150\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"323\" y=\"80\">② Floorplan</text><text class=\"cs-sub\" x=\"323\" y=\"98\">die/核·利用率·宏</text></g><g class=\"cs-part\" data-k=\"pdn\" data-g=\"pdn\"><rect class=\"cs-box\" x=\"248\" y=\"120\" width=\"150\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"323\" y=\"144\">③ 电源网络</text><text class=\"cs-sub\" x=\"323\" y=\"162\">ring/strap/PDN</text></g><line class=\"cs-arr\" x1=\"398\" y1=\"84\" x2=\"430\" y2=\"84\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"398\" y1=\"148\" x2=\"430\" y2=\"116\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"place\" data-g=\"place\"><rect class=\"cs-box\" x=\"432\" y=\"56\" width=\"130\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"497\" y=\"80\">④ 布局</text><text class=\"cs-sub\" x=\"497\" y=\"98\">placement</text></g><line class=\"cs-arr\" x1=\"562\" y1=\"84\" x2=\"594\" y2=\"84\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"cts\" data-g=\"cts\"><rect class=\"cs-box\" x=\"596\" y=\"56\" width=\"104\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"648\" y=\"80\">⑤ CTS</text><text class=\"cs-sub\" x=\"648\" y=\"98\">时钟树</text></g><line class=\"cs-arr\" x1=\"648\" y1=\"112\" x2=\"648\" y2=\"144\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"route\" data-g=\"route\"><rect class=\"cs-box\" x=\"432\" y=\"120\" width=\"268\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"566\" y=\"144\">⑥ 布线 routing</text><text class=\"cs-sub\" x=\"566\" y=\"162\">信号布通 · 抢金属层 M1–Mx(示意)</text></g><line class=\"cs-arr\" x1=\"432\" y1=\"148\" x2=\"400\" y2=\"148\"/><g class=\"cs-part\" data-k=\"conv\" data-g=\"conv\"><rect class=\"cs-box\" x=\"248\" y=\"212\" width=\"452\" height=\"58\" rx=\"8\" fill=\"#fefce8\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"474\" y=\"236\">⑦ 收敛:时序 / 拥塞 / IR-drop / DRC 全部同时成立</text><text class=\"cs-sub\" x=\"474\" y=\"256\">布线后寄生(SPEF)是真账 → 反复迭代,不达标就退回上一步</text></g><line class=\"cs-arr\" x1=\"474\" y1=\"176\" x2=\"474\" y2=\"208\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"gds\" data-g=\"gds\"><rect class=\"cs-box\" x=\"380\" y=\"306\" width=\"320\" height=\"58\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"540\" y=\"330\">⑧ 版图产物 → GDSII</text><text class=\"cs-sub\" x=\"540\" y=\"350\">DEF/SPEF/网表 · DRC/LVS 干净 · 交签核/流片</text></g><line class=\"cs-arr\" x1=\"474\" y1=\"270\" x2=\"474\" y2=\"302\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"iter\" data-g=\"iter\"><rect class=\"cs-box\" x=\"20\" y=\"212\" width=\"206\" height=\"152\" rx=\"8\" fill=\"#fff7ed\" stroke=\"#fdba74\"/><text class=\"cs-t\" x=\"123\" y=\"240\">高度迭代</text><text class=\"cs-sub\" x=\"123\" y=\"264\">每步都回看</text><text class=\"cs-sub\" x=\"123\" y=\"282\">时序 / 拥塞 / 功耗</text><text class=\"cs-sub\" x=\"123\" y=\"304\">不行就退回上一步</text><text class=\"cs-sub\" x=\"123\" y=\"326\">甚至回综合 / 改 RTL</text><text class=\"cs-sub\" x=\"123\" y=\"348\">直到全项收敛</text></g><line class=\"cs-arr\" x1=\"226\" y1=\"288\" x2=\"248\" y2=\"240\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><line class=\"cs-arr\" x1=\"248\" y1=\"320\" x2=\"380\" y2=\"335\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/></svg>",
+ "legend": [
+  {
+   "k": "data",
+   "name": "① 数据准备(后端起点)",
+   "desc": "后端开跑前要把五类数据备齐并对得上:综合(⑦)交来的门级网表 + SDC、标准单元的物理抽象(LEF)与时序库(.lib)、目标工艺的 tech LEF/DRC 规则、以及 SRAM/IP 宏(TPU 的 24 MiB Unified Buffer、4 MiB 累加器等)的 LEF 与时序模型。少一样或版本对不上,后面整条流程都跑不动。"
+  },
+  {
+   "k": "fp",
+   "name": "② 布局规划(floorplan)",
+   "desc": "定 die/核的尺寸形状、利用率,摆 IO/pad 环和大宏(脉动阵列、SRAM、PLL),并预留布线/电源通道。这一步定全局成败:TPU 要把 256×256 阵列摆成规整大块、把巨大的 UB SRAM 沿阵列边摆好,让「喂数据」路径短。"
+  },
+  {
+   "k": "pdn",
+   "name": "③ 电源网络(PDN)",
+   "desc": "搭电源环、电源条/网格,把电流送到每个单元,保证 IR-drop、电迁移(EM)不超标。阵列满负荷时电流巨大,必须铺足够粗的电源网格压住压降——它和布线抢同一批金属资源,要平衡。"
+  },
+  {
+   "k": "place",
+   "name": "④ 布局 + ⑤ CTS",
+   "desc": "placement 把标准单元摆到合法位置(时序驱动 + 拥塞驱动);CTS 真正搭起时钟分发树,把 700 MHz 时钟低偏差地送到成千上万个触发器。阵列的规整性让成排 PE 摆放整齐、拥塞可控。"
+  },
+  {
+   "k": "route",
+   "name": "⑥ 布线 → ⑧ GDSII(产物)",
+   "desc": "routing 把密密麻麻的连线在金属层(示意 M1–Mx)上布通;布通后寄生 RC(SPEF)才是真账,时序/拥塞/IR-drop/DRC 要同时成立;最终吐出版图,做完 DRC/LVS 后导出 GDSII 交签核与流片。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "data"
+   ],
+   "cap": "① 数据准备:把门级网表 + SDC、标准单元 LEF/.lib、tech LEF/DRC 规则、SRAM 宏(UB/累加器)的 LEF 与时序模型五类数据备齐对上——这是后端的入口原料。"
+  },
+  {
+   "keys": [
+    "fp",
+    "pdn"
+   ],
+   "cap": "② 布局规划 + ③ 电源网络:定 die/利用率、摆 256×256 阵列与 UB SRAM 大宏、留好通道,再铺电源环/网格把 IR-drop 与 EM 压住——floorplan 定全局成败。"
+  },
+  {
+   "keys": [
+    "place",
+    "cts"
+   ],
+   "cap": "④ 布局 + ⑤ CTS:标准单元时序/拥塞驱动地摆放并合法化,再搭时钟树把 700 MHz 低偏差地分发到全阵列触发器。"
+  },
+  {
+   "keys": [
+    "route",
+    "conv"
+   ],
+   "cap": "⑥ 布线 + ⑦ 收敛:在金属层上把连线布通,抽出真实寄生(SPEF)后让时序/拥塞/IR-drop/DRC 同时成立——前端的乐观时序到这里才见真章。"
+  },
+  {
+   "keys": [
+    "iter",
+    "gds"
+   ],
+   "cap": "⑧ 迭代到收敛 → 出版图:任一项不达标就退回上一步(甚至回综合/改 RTL),全项收敛后做 DRC/LVS,导出 GDSII 交签核/流片。"
+  }
+ ],
+ "before": [
+  "<b>备齐物理库与工艺文件</b>:标准单元的物理抽象 LEF(给单元尺寸/引脚/阻挡层)+ 时序库 .lib、目标 28nm 工艺的 tech LEF 与 DRC 规则、金属层栈信息——这些是把逻辑网表「摆进物理世界」的地基。",
+  "<b>导入网表与约束</b>:把综合签核过的门级网表连同 SDC(主时钟约 700 MHz、IO 延迟、伪/多周期路径)读进后端工具,确认与综合时的约束一致,避免前后端时序基准漂移。",
+  "<b>准备好所有硬宏</b>:TPU 的 24 MiB Unified Buffer、4 MiB 累加器、PLL/IO 等 SRAM/IP 宏要备好各自的 LEF(物理尺寸/引脚/阻挡)与时序模型,后端才知道这些大块占多大、引脚在哪、怎么连。",
+  "<b>定布局规划与电源方案的输入</b>:die/核尺寸、利用率目标(示意 ~70%,留余量给布线)、IO/pad 位置、大宏摆放约束、电源环/网格的层与宽度策略——这些在数据准备阶段就要和架构/封装对齐。",
+  "<b>声明功耗意图与 DFT</b>:若有多电压域/门控时钟,用 UPF/CPF 表达供后端识别电源意图;同时确认 DFT(扫描链)信息已在网表里,后端布线时一并处理。"
+ ],
+ "during": [
+  "<b>铁律:后端是「在物理现实里还债」</b>。综合时线还没布、线延迟靠模型猜;布线后单元有坐标、线有真实长度和层,寄生 RC(SPEF)才是真账——很多综合阶段「看起来收敛」的设计,布线后原形毕露,这一步就是把前端的乐观假设兑现或返工。",
+  "<b>多目标必须「同时」收敛</b>。时序(跑到 700 MHz)、面积(die 够小)、可布性(不拥塞)、电源完整性(IR-drop/EM 不超标)、物理规则(DRC/LVS 干净)——任何一项崩了都不算收敛,不能只盯时序而让布线或压降爆掉。",
+  "<b>floorplan 定全局成败,先于一切细节</b>。大宏(阵列、UB SRAM)摆得不好,后面必然布线拥塞、时序崩、电源走不通;TPU 的做法是把规整阵列摆成大块、把占近 29% 面积的 UB SRAM 沿阵列边摆好,让数据流与供电路径都短。",
+  "<b>电源网格要按电流强度铺</b>。256×256 阵列满负荷时翻转密集、瞬态电流大,必须用足够粗的电源网格压住 IR-drop,否则阵列「供不上电」会导致时序失效甚至功能错;但 PDN 和信号布线抢同一批金属层,要权衡。",
+  "<b>规整阵列是后端的福音</b>。6.5 万个几乎一样的 PE 成排规则摆放、数据流方向清晰,使布局拥塞可控、时钟树更易做低偏差;关键路径常落在累加链和跨 PE 互连上,布线时优先照顾这些。",
+  "<b>诚实声明方法学来源</b>:数据准备→floorplan→PDN→place→CTS→route→收敛→GDSII 这条管线,以及 LEF/DEF、SDC、SPEF、CTS、IR-drop、DRC/LVS、利用率/金属层 M1–Mx 等,都是通行后端 EDA 实践(Innovus / ICC2、Calibre 等);TPU 不公开其私有 floorplan/PDN/QoR/版图细节,本节以 TPU 已知结构(脉动阵列、24 MiB UB SRAM、700 MHz、28nm、≤331mm²、weight-stationary)为被实现对象讲流程,文中利用率、金属层等均为示意,非 TPU 私有数据。"
+ ],
+ "result": [
+  {
+   "label": "后端八步管线",
+   "value": "数据准备 → floorplan → PDN → 布局 → CTS → 布线 → 收敛 → GDSII"
+  },
+  {
+   "label": "输入数据(五类)",
+   "value": "门级网表 + SDC / 单元 LEF+.lib / tech LEF+DRC 规则 / SRAM 宏 LEF+时序"
+  },
+  {
+   "label": "布局规划设置(示意)",
+   "value": "利用率 ~70% · 阵列与 24 MiB UB SRAM 沿边摆成规整大块 · 留电源/布线通道"
+  },
+  {
+   "label": "电源/布线资源(示意)",
+   "value": "电源网格 + 信号布线共用金属层 M1–Mx,按阵列电流铺粗 PDN"
+  },
+  {
+   "label": "过程产物",
+   "value": "DEF(带坐标版图) · 布线后 SPEF(真实寄生) · 物理网表"
+  },
+  {
+   "label": "最终产物",
+   "value": "DRC/LVS 干净的版图 → GDSII,交签核(⑨)/流片(⑩)"
+  }
+ ],
+ "after": [
+  "<b>每步都回看三件事</b>:时序(slack 有无违例)、拥塞(线布不布得通)、功耗/电源完整性(IR-drop/EM)——后端是高度迭代的,任一项不达标就退回上一步(floorplan/PDN/布局/CTS/布线)重做。",
+  "<b>布线后做带寄生的签核 STA</b>:用 SPEF 抽出真实 RC 后重算时序,确认 700 MHz 在真实互连下仍成立——这是前端估算变成真账的关键检查点。",
+  "<b>物理验证 DRC/LVS</b>:版图必须通过设计规则检查(DRC)与版图—网表一致性(LVS),两者干净才允许往下走;有错就回布局/布线修。",
+  "<b>必要时回炉到综合甚至 RTL</b>:若后端怎么迭代都收敛不了(如某路径物理上达不到 700 MHz、或拥塞无解),要退回综合调约束/库,极端情况改 RTL 结构再走一遍。",
+  "<b>交签核与流片</b>:全项收敛、DRC/LVS 干净后导出 GDSII,连同版图、SPEF、网表交给签核(⑨ STA/功耗/EM-IR/物理验证/等价性)与流片(⑩)。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(物理设计/后端流程与版图数据——数据准备、floorplan、PDN、CTS、布线、SPEF、IR-drop、DRC/LVS、GDSII,以及利用率/金属层等——为通行后端 EDA 实践,均为示意,非 TPU 公开的私有后端数字或版图细节)"
+}

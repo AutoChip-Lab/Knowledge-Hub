@@ -1,0 +1,122 @@
+{
+ "secNum": "3.6",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 24 MiB Unified Buffer 多 bank 宽口喂阵列",
+ "oneLine": "存储器微架构的核心不是「放多大」,而是「每拍能并行吐多宽」:要每拍同时喂脉动阵列 256 行,Unified Buffer 必须切成多个 bank、做成很宽的读口,这正是存储微架构由峰值并发反推端口/bank 数的样板。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><g class=\"cs-part\" data-k=\"ddr\" data-g=\"ddr\"><rect class=\"cs-box\" x=\"30\" y=\"160\" width=\"120\" height=\"62\" rx=\"8\"/><text class=\"cs-t\" x=\"90\" y=\"186\">片外 DDR3</text><text class=\"cs-sub\" x=\"90\" y=\"204\">8 GiB · ~30 GB/s</text></g><line class=\"cs-arr\" x1=\"150\" y1=\"191\" x2=\"186\" y2=\"191\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"148\" y=\"150\">慢·窄</text><g class=\"cs-part\" data-k=\"ub\" data-g=\"ub\"><rect class=\"cs-box\" x=\"190\" y=\"44\" width=\"180\" height=\"300\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#c7d2fe\"/><text class=\"cs-t\" x=\"280\" y=\"34\">Unified Buffer 24 MiB</text><text class=\"cs-sub\" x=\"280\" y=\"362\">软件管理 scratchpad(无硬件 cache)</text></g><g class=\"cs-part\" data-k=\"b0\" data-g=\"bank\"><rect class=\"cs-cell\" x=\"204\" y=\"60\" width=\"152\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"280\" y=\"80\">bank 0</text></g><g class=\"cs-part\" data-k=\"b1\" data-g=\"bank\"><rect class=\"cs-cell\" x=\"204\" y=\"96\" width=\"152\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"280\" y=\"116\">bank 1</text></g><g class=\"cs-part\" data-k=\"b2\" data-g=\"bank\"><rect class=\"cs-cell\" x=\"204\" y=\"132\" width=\"152\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"280\" y=\"152\">bank 2</text></g><g class=\"cs-part\" data-k=\"b3\" data-g=\"bank\"><rect class=\"cs-cell\" x=\"204\" y=\"168\" width=\"152\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"280\" y=\"188\">bank 3</text></g><g class=\"cs-part\" data-k=\"bd\" data-g=\"bank\"><rect class=\"cs-cell\" x=\"204\" y=\"204\" width=\"152\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"280\" y=\"224\">bank …</text></g><g class=\"cs-part\" data-k=\"bn\" data-g=\"bank\"><rect class=\"cs-cell\" x=\"204\" y=\"240\" width=\"152\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"280\" y=\"260\">bank N-1</text></g><text class=\"cs-note\" x=\"204\" y=\"290\">多 bank 并行 → 同拍各取一段</text><text class=\"cs-note\" x=\"204\" y=\"306\">拼成一个很宽的读口</text><g class=\"cs-part\" data-g=\"wide\"><line class=\"cs-arr\" x1=\"370\" y1=\"78\" x2=\"430\" y2=\"78\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"370\" y1=\"114\" x2=\"430\" y2=\"114\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"370\" y1=\"150\" x2=\"430\" y2=\"150\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"370\" y1=\"186\" x2=\"430\" y2=\"186\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"370\" y1=\"222\" x2=\"430\" y2=\"222\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"370\" y1=\"258\" x2=\"430\" y2=\"258\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"372\" y=\"330\">宽口:每拍同喂 256 行</text><g class=\"cs-part\" data-k=\"mxu\" data-g=\"mxu\"><rect class=\"cs-box\" x=\"434\" y=\"60\" width=\"150\" height=\"210\" rx=\"8\"/><text class=\"cs-t\" x=\"509\" y=\"156\">MXU</text><text class=\"cs-sub\" x=\"509\" y=\"174\">256×256 阵列</text><text class=\"cs-sub\" x=\"509\" y=\"192\">左侧 256 行入口</text></g><g class=\"cs-part\" data-g=\"psum\"><line class=\"cs-arr\" x1=\"509\" y1=\"270\" x2=\"509\" y2=\"300\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"516\" y=\"288\">列部分和 ↓</text><g class=\"cs-part\" data-k=\"acc\" data-g=\"acc\"><rect class=\"cs-box\" x=\"434\" y=\"302\" width=\"150\" height=\"60\" rx=\"8\"/><text class=\"cs-t\" x=\"509\" y=\"326\">累加器 4 MiB</text><text class=\"cs-sub\" x=\"509\" y=\"344\">接住每列部分和</text></g><g class=\"cs-part\" data-g=\"wb\"><polyline class=\"cs-arr\" points=\"434,332 410,332 410,300 360,300\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"362\" y=\"294\">激活后写回 UB</text><text class=\"cs-note\" x=\"30\" y=\"392\">注:UB 内部 bank 数 / 端口宽度 TPU v1 未逐位公开;此处按「每拍喂满 256 行」的峰值并发反推,为这类推理 ASIC 的通行设计法</text></svg>",
+ "legend": [
+  {
+   "k": "ub",
+   "name": "Unified Buffer 24 MiB",
+   "desc": "片上软件管理的大 scratchpad(不是硬件 cache,无标签/无命中判定):激活、中间结果、临时数据都住这里。容量大是为了把数据「留在片上」、少回 DDR3,因为片外只有 ~30 GB/s。"
+  },
+  {
+   "k": "bank",
+   "name": "多 bank 切分",
+   "desc": "把 24 MiB 切成多个独立 bank,每个 bank 自带读口、同一拍各取一段;并到一起才能凑出阵列要的超宽位宽——bank 数本质由「每拍要并行送多少数据」反推。"
+  },
+  {
+   "k": "wide",
+   "name": "宽读口(每拍 256 行)",
+   "desc": "脉动阵列左侧有 256 个行入口,稳态下每拍都要同时喂 256 行激活。读口位宽 = 256 行 × 每元素位宽,远宽于普通 SRAM 口,只能靠多 bank 拼。"
+  },
+  {
+   "k": "mxu",
+   "name": "MXU 256×256 阵列",
+   "desc": "存储微架构的「客户」:它对供数的要求(每拍 256 行、never starve)直接定义了 UB 的端口与带宽规格。架构定的峰值算力在这里变成对存储的硬约束。"
+  },
+  {
+   "k": "acc",
+   "name": "4 MiB 累加器",
+   "desc": "阵列底部每列吐出一个部分和,4 MiB 32-bit 累加器要同时接住所有列、并支持「跨 K 维多轮累加不溢出」——它是写侧的宽口对手方。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "ddr",
+    "ub"
+   ],
+   "cap": "① 先把权重/激活从片外 DDR3 搬进 24 MiB Unified Buffer——DDR3 慢且窄(~30 GB/s),所以尽量一次搬够、之后都在片上周转"
+  },
+  {
+   "keys": [
+    "ub",
+    "bank"
+   ],
+   "cap": "② UB 内部切成多个 bank,数据按地址分散到各 bank;读时多个 bank 同拍各出一段,这是「凑出宽口」的物理基础"
+  },
+  {
+   "keys": [
+    "bank",
+    "wide",
+    "mxu"
+   ],
+   "cap": "③ 多 bank 的输出拼成一个超宽读口,一拍同时把 256 行激活喂进 MXU 左侧的 256 个行入口,喂满阵列不让它空转"
+  },
+  {
+   "keys": [
+    "mxu",
+    "psum",
+    "acc"
+   ],
+   "cap": "④ 阵列每列向下吐出部分和,落进 4 MiB 累加器;跨 K 维分块时在累加器里反复累加,最后一轮才定稿"
+  },
+  {
+   "keys": [
+    "acc",
+    "wb",
+    "ub"
+   ],
+   "cap": "⑤ 累加结果经激活/归一化后写回 Unified Buffer,供下一层复用——尽量不回 DDR3,把带宽压力锁在片上"
+  }
+ ],
+ "before": [
+  "<b>先由「客户」反推规格</b>:存储微架构服务于 MXU。MXU 每拍要 256 行激活、阵列底部每拍产出一整列部分和——这两条直接定下读口和写口的峰值位宽,是一切 bank/端口决策的起点。",
+  "<b>要拍板的设计量</b>:UB 总容量(24 MiB)、切多少个 bank、每 bank 多宽、读/写口各几个、累加器容量(4 MiB)与精度(32-bit);以及地址如何映射到 bank 才能避免同拍 bank 冲突。",
+  "<b>必备输入</b>:架构(③)给的峰值算力(~92 TOPS)与目标利用率、片外带宽预算(DDR3 ~30 GB/s)、目标 workload 的层尺寸/数据复用程度、面积与功耗预算(28nm、die ≤331mm²、28–40W)。",
+  "<b>必须想清的取舍方向</b>:这是个典型的「容量 vs 带宽 vs 面积」三角——容量大能少回 DDR3,但 24 MiB 片上 SRAM 已是面积大头;带宽够宽才能喂满阵列,但宽口=更多 bank/更大译码/布线开销。先定带宽下限(喂满阵列),再在容量与面积间配平。"
+ ],
+ "during": [
+  "<b>用多 bank 换宽带宽,而非堆单口</b>:单个 SRAM 宏的端口位宽有限,做不出「每拍 256 行」的超宽口。做法是把 UB 切成多个 bank,每 bank 一个普通读口,同拍并行读、输出拼接成宽口——bank 数 ≈ 所需宽度 ÷ 单 bank 宽度,这就是「端口/bank 数由峰值并发反推」。",
+  "<b>地址映射要避开 bank 冲突</b>:激活按行/按列的访问顺序必须均匀打散到各 bank,保证「同一拍要的 256 个数据落在不同 bank」,否则两个请求挤同一 bank 就得排队、阵列被迫空转。映射方式(交织粒度)是这一步的关键手艺。",
+  "<b>读侧与写侧分开配</b>:读口喂阵列输入(每拍 256 行),写口接累加器回写与下一层结果——两侧并发、位宽和时序不同。常做成多端口或读写分 bank,避免读写争用同一口。",
+  "<b>容量是为「留在片上」服务</b>:24 MiB 不是越大越好,而是要刚好装下当前层的激活+复用数据,使大部分访问命中片上、把 ~30 GB/s 的 DDR3 只用于「初次搬入/最终搬出」。容量与 tiling 策略联动:tile 切太大装不下,切太小复用差、回 DDR 次数多。",
+  "<b>累加器单独定规格</b>:阵列每列每拍产出一个部分和,4 MiB、32-bit 是为了「接住所有列 × 容纳跨 K 维多轮累加而不溢出/不丢精度」——8-bit 算、32-bit 累加是定点推理的通行精度策略。",
+  "<b>软件管理 vs 硬件 cache 的取舍</b>:TPU 选「软件显式管理的 scratchpad」而非 cache——省掉标签阵列/命中逻辑/替换状态机,把面积与功耗全让给容量和 MAC;代价是数据搬运时机要由编译器(XLA)显式调度,确定性强、但不容错放。"
+ ],
+ "result": [
+  {
+   "label": "片上缓冲容量",
+   "value": "24 MiB Unified Buffer(软件管理 scratchpad)"
+  },
+  {
+   "label": "组织方式",
+   "value": "多 bank 并行,凑出宽读口"
+  },
+  {
+   "label": "读口目标",
+   "value": "每拍喂满阵列 256 行,never starve"
+  },
+  {
+   "label": "bank/端口数",
+   "value": "由峰值并发反推(v1 未逐位公开,通行设计法)"
+  },
+  {
+   "label": "累加器",
+   "value": "4 MiB · 32-bit,接住每列部分和"
+  },
+  {
+   "label": "片外带宽",
+   "value": "DDR3 8 GiB · ~30 GB/s(仅初搬/终搬)"
+  }
+ ],
+ "after": [
+  "<b>建带宽/利用率模型核验</b>:用 cycle 模型确认在目标层尺寸下,UB 读口真能「每拍喂满 256 行」、阵列利用率达标;若 bank 冲突或带宽不足导致阵列饿死,回去加 bank、改地址交织或调 tiling。",
+  "<b>验地址映射无冲突</b>:对典型访问序列(逐行/逐列/跨 tile)做 bank 冲突仿真,确认同拍请求散落在不同 bank;边界 case(尾块、非整除尺寸)要专门覆盖。",
+  "<b>核累加器容量与精度</b>:验证最深的跨 K 维累加链下 32-bit 不溢出、4 MiB 能容纳同时在算的所有输出列;必要时回去调 tiling 上限。",
+  "<b>交给 ⑤ RTL 与存储 IP</b>:把 bank 划分、读写口、仲裁/交织逻辑、累加器写成可综合 RTL,并向 SRAM 编译器例化对应的存储宏(确认面积落在 die 预算内)。",
+  "<b>留低功耗钩子</b>:未被本拍访问的 bank 可做时钟门控/低功耗保持;软件管理的访问时序是确定的,正好让门控使能可静态调度——这是这类推理 ASIC 的通行省电手法,非 v1 披露细节。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(UB 内部 bank 数与端口位宽未逐位公开,多 bank 凑宽口、由峰值并发反推为这类推理 ASIC 的通行实践)"
+}

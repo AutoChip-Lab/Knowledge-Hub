@@ -1,0 +1,120 @@
+{
+ "secNum": "3.8",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 综合策略:256×256 阵列层次化综合一个 PE 再复用铺满,关键块局部展平,retiming 平衡 700MHz 流水",
+ "oneLine": "TPU 的 65,536 个 MAC 是同一个 PE 海量复制——这正是「层次化综合」的教科书场景:综合一个 PE、把它的边界保留住,再复用铺满整个 256×256 阵列,既省综合 runtime 和内存,又保证每个 PE 结果完全一致;只对真正卡时序的关键小块做局部展平(ungroup)让工具跨边界联合优化,而绝不把整片阵列一把展平——那会让 runtime/内存爆炸且失去复用。retiming 则在不改功能的前提下挪动寄存器,把过深的组合路径切均匀,帮 700MHz 流水各级时序收敛。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">同一份 RTL,两种综合策略:左=层次化(TPU 256×256 阵列实采),右=展平</text><g class=\"cs-part\" data-k=\"rtl\" data-g=\"rtl\"><rect class=\"cs-box\" x=\"280\" y=\"40\" width=\"160\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"66\">可综合 RTL</text><text class=\"cs-sub\" x=\"360\" y=\"84\">含层级边界(module)</text></g><line class=\"cs-arr\" x1=\"300\" y1=\"98\" x2=\"170\" y2=\"138\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"420\" y1=\"98\" x2=\"552\" y2=\"138\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"hier\" data-g=\"hier\"><rect class=\"cs-box\" x=\"40\" y=\"140\" width=\"262\" height=\"130\" rx=\"8\"/><text class=\"cs-t\" x=\"171\" y=\"166\">层次化:综合一个 PE → 复用</text><text class=\"cs-sub\" x=\"171\" y=\"186\">保留 module 边界,逐块综合</text><text class=\"cs-note\" x=\"60\" y=\"210\" text-anchor=\"start\">综合 1 个 8-bit MAC PE</text><text class=\"cs-note\" x=\"60\" y=\"228\" text-anchor=\"start\">→ 复用铺满 256×256 阵列</text><text class=\"cs-note\" x=\"60\" y=\"246\" text-anchor=\"start\">省 runtime / 内存,结果一致</text></g><g class=\"cs-part\" data-k=\"flat\" data-g=\"flat\"><rect class=\"cs-box\" x=\"420\" y=\"140\" width=\"262\" height=\"130\" rx=\"8\"/><text class=\"cs-t\" x=\"551\" y=\"166\">展平:拆边界一起优化</text><text class=\"cs-sub\" x=\"551\" y=\"186\">ungroup,跨 module 联合优化</text><text class=\"cs-note\" x=\"440\" y=\"210\" text-anchor=\"start\">边界逻辑可合并 / 重定时</text><text class=\"cs-note\" x=\"440\" y=\"228\" text-anchor=\"start\">QoR 略好,但 runtime/内存暴涨</text><text class=\"cs-note\" x=\"440\" y=\"246\" text-anchor=\"start\">只对关键小块局部展平</text></g><line class=\"cs-arr\" x1=\"171\" y1=\"270\" x2=\"300\" y2=\"306\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"551\" y1=\"270\" x2=\"420\" y2=\"306\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"retime\" data-g=\"retime\"><rect class=\"cs-box\" x=\"276\" y=\"300\" width=\"168\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"326\">retiming</text><text class=\"cs-sub\" x=\"360\" y=\"344\">挪寄存器平衡流水级</text></g><g class=\"cs-part\" data-k=\"net\" data-g=\"net\"><rect class=\"cs-box\" x=\"496\" y=\"304\" width=\"196\" height=\"54\" rx=\"8\"/><text class=\"cs-t\" x=\"594\" y=\"328\">门级网表</text><text class=\"cs-sub\" x=\"594\" y=\"346\">700MHz 收敛 / QoR 报告</text></g><line class=\"cs-arr\" x1=\"444\" y1=\"330\" x2=\"496\" y2=\"330\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"warn\" data-g=\"warn\"><rect class=\"cs-box\" x=\"40\" y=\"304\" width=\"200\" height=\"54\" rx=\"8\"/><text class=\"cs-t\" x=\"140\" y=\"328\">铁律</text><text class=\"cs-sub\" x=\"140\" y=\"346\">全展平 = runtime/内存爆炸</text></g></svg>",
+ "legend": [
+  {
+   "k": "hier",
+   "name": "层次化综合(保边界 + 复用)",
+   "desc": "保留 RTL 的 module 层级边界,逐块独立综合。TPU 的 256×256 阵列由同一个 8-bit MAC PE 复制 65,536 份,层次化下只需综合『一个 PE』,再把它作为已综合块复用铺满整片阵列——综合 runtime 与内存占用随『独立块数』而非『总门数』走,且每个 PE 网表完全一致,便于复用、调试、增量 ECO。大芯片默认走层次化就是为了 runtime/内存可控与可复用。"
+  },
+  {
+   "k": "flat",
+   "name": "展平 / ungroup(跨边界联合优化)",
+   "desc": "用 ungroup/flatten 拆掉 module 边界,让工具跨原本的层级一起做逻辑优化与映射,把卡在边界上的逻辑合并、消冗余、做跨级 retiming,QoR(面积/时序)通常更好一点。代价是优化范围一变大,综合 runtime 和峰值内存随规模急剧上升,且失去块复用。因此是『手术刀』而非『大锤』——只对确实卡时序的关键小块局部展平。"
+  },
+  {
+   "k": "retime",
+   "name": "retiming(寄存器重定时)",
+   "desc": "在保持时序功能等价的前提下,自动把寄存器沿组合逻辑前后挪动,把过深、过浅的流水级切均匀——长路径上塞寄存器、短路径上抽寄存器,平衡各级延迟以提主频。对 TPU 这种深流水、靠 700MHz 撑 ~92 TOPS 的设计,retiming 是把『某一级太慢拖垮整条流水』救回来的常用手段。它改的是寄存器位置而非逻辑功能,但会让网表寄存器与 RTL 不再一一对应,LEC 时需用支持 retiming 的等价检查模式。"
+  },
+  {
+   "k": "net",
+   "name": "门级网表 + QoR 报告",
+   "desc": "综合产物:映射到工艺标准单元的门级网表,以及随附的 QoR 报告(时序 slack/WNS、面积、功耗、单元数)。判断该层次化/展平/retiming 策略是否成功的客观依据,就看 700MHz 约束下时序是否收敛、面积/功耗是否在预算内。"
+  },
+  {
+   "k": "warn",
+   "name": "铁律:不要整片阵列一把展平",
+   "desc": "把 256×256=65,536 个 PE 连同上层一起 ungroup,优化范围会膨胀到几十万乃至上百万门,综合 runtime 从几小时变几天、峰值内存可能撑爆机器,还彻底丢掉 PE 复用与增量迭代能力。展平要『按需、局部、可量化收益』,绝不能为了多挤一点 QoR 而无脑全展平。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "rtl",
+    "hier"
+   ],
+   "cap": "① 主体走层次化:对 TPU 这类大设计保留 module 边界,把 256×256 阵列识别为『一个 PE × 海量复制』——只综合一个 8-bit MAC PE,再复用铺满整片阵列,runtime/内存随独立块数走、每个 PE 结果一致"
+  },
+  {
+   "keys": [
+    "rtl",
+    "flat"
+   ],
+   "cap": "② 关键块局部展平:只对真正卡 700MHz 的小块(如累加链、控制译码边界)做 ungroup,让工具跨原边界联合优化挤出那点 QoR——范围可控、收益可量化"
+  },
+  {
+   "keys": [
+    "hier",
+    "flat",
+    "retime"
+   ],
+   "cap": "③ retiming 平衡流水:在功能等价前提下挪寄存器,把过深的组合路径切均匀,帮深流水各级在 700MHz 下时序收敛——长路径塞寄存器、短路径抽寄存器"
+  },
+  {
+   "keys": [
+    "retime",
+    "net"
+   ],
+   "cap": "④ 出网表看 QoR:得到映射到标准单元的门级网表与 QoR 报告,按 700MHz 是否收敛、面积/功耗是否在预算内,判断这套层次化+局部展平+retiming 策略是否成立"
+  },
+  {
+   "keys": [
+    "warn"
+   ],
+   "cap": "⑤ 守住铁律:绝不把整片 65,536-PE 阵列一把展平——那会让 runtime 从几小时变几天、内存撑爆、还丢掉复用;展平永远是按需、局部、收益可量化的手术刀"
+  }
+ ],
+ "before": [
+  "<b>先按层级规划『哪块层次化、哪块展平』</b>:在综合前划清边界——大块(整片阵列、UB 控制、片上互联)默认层次化保边界、走块复用;只把少数确实卡时序的关键小块标记为允许局部展平。这个划分要在综合脚本里显式写死(如对阵列顶层禁止 ungroup、对某加法链允许 ungroup),而不是让工具默认乱展。",
+  "<b>把『一个 PE 复用铺满阵列』作为综合的组织主线</b>:TPU 的 65,536 个 MAC 是同一 PE 的规则复制,综合上要利用这种规则性——综合并复用单个 PE 块,而不是把阵列当成一片无结构的巨网表。明确复用策略后,综合 runtime 与内存才随『PE 一份 + 例化』走,而非随总门数走。",
+  "<b>定 retiming 的开启范围与约束</b>:决定哪些流水块允许 retiming(通常是深流水、时序紧的数据通路),并约束好其边界寄存器、复位/初值语义不被破坏;同时记下『启用 retiming 的块,LEC 要用支持 retiming 的等价检查模式』,避免后续等价检查误报。",
+  "<b>明确 QoR 目标与策略验收口径</b>:写清这套策略要达到的 700MHz 时序收敛、面积/功耗预算、以及可接受的综合 runtime/内存上限——这样『层次化 vs 局部展平 vs retiming』的取舍才有客观验收线,而不是凭感觉。",
+  "<b>诚实边界</b>:层次化/展平(ungroup)/retiming/LEC 是通行 EDA 综合实践,Design Compiler、Genus、Yosys 等工具都支持。TPU v1 不会公开其综合脚本、库或 QoR 数字。这里以 TPU 的已知结构(256×256 脉动阵列、同构 PE、700MHz、28nm、weight-stationary)作为被综合对象来讲综合策略,所有脚本/数字均为示意。"
+ ],
+ "during": [
+  "<b>主体层次化、保住阵列与 PE 的边界</b>:对阵列顶层和 PE 块设 set_dont_touch/禁止 ungroup,让综合以『综合一个 PE → 例化复用铺满 256×256』的方式进行。好处是综合 runtime 与峰值内存随独立块数而非总门数走,65,536 份复制不会把综合变成几十万门的单次巨优化;且每个 PE 网表一致,利于复用与增量 ECO。",
+  "<b>展平只当手术刀:局部、按需、收益可量化</b>:示意 —— ungroup -flatten -start_point u_acc_chain(只展平累加链这一个卡时序的小块,示意)。先看时序报告定位真正卡 700MHz 的路径,确认它跨在某个 module 边界上、且层次化挤不动了,才对那个小块 ungroup 让工具跨边界联合优化;展平前后对比 QoR,收益不明显就回退。",
+  "<b>绝不整片阵列一把展平</b>:把 256×256=65,536 个 PE 连上层一起 ungroup,优化范围膨胀到几十万~上百万门,综合 runtime 从几小时变几天、峰值内存可能撑爆,还彻底丢掉 PE 复用。规则化阵列的正确打开方式永远是『复用一个综合好的块』,而非『展平后让工具从头优化一大片』。",
+  "<b>用 retiming 平衡深流水的各级时序</b>:对深流水数据通路开 retiming(如 set_optimize_registers true,示意),让工具把寄存器沿组合逻辑前后挪——长路径塞进寄存器、短路径抽走寄存器,把各级延迟切均匀,帮 700MHz 收敛。注意 retiming 会让网表寄存器与 RTL 不再一一对应。",
+  "<b>层次化下做好预算分配,避免边界成为时序黑洞</b>:层次化的代价是工具看不到块外情况,容易在 module 边界处过保守。要用合理的边界时序预算(input/output delay、虚拟时钟)把顶层时序按块分配下去,并对跨块关键路径单独核查,防止『每块都说自己收敛、拼起来边界却超时』。",
+  "<b>铁律:策略服务于 QoR 与可迭代性,不是越展平越好</b>。层次化省 runtime/内存又可复用、是大芯片默认;展平能挤 QoR 但范围一大就反噬;retiming 强但改寄存器位置要顾及等价检查。三者按『默认层次化 + 关键局部展平 + 深流水 retiming』组合使用,每一步都要能用 QoR 报告说清收益与代价。"
+ ],
+ "result": [
+  {
+   "label": "层次化(主体)",
+   "value": "保 module 边界:综合一个 PE → 复用铺满 256×256,runtime/内存随独立块数走"
+  },
+  {
+   "label": "局部展平(示意)",
+   "value": "ungroup -flatten -start_point u_acc_chain  // 只对卡时序的累加链跨边界联合优化"
+  },
+  {
+   "label": "retiming(示意)",
+   "value": "set_optimize_registers true  // 深流水块挪寄存器平衡各级,助 700MHz 收敛"
+  },
+  {
+   "label": "门级网表",
+   "value": "映射到 28nm 标准单元;阵列由同一 PE 网表例化 65,536 次复用而成"
+  },
+  {
+   "label": "QoR 报告",
+   "value": "700MHz 时序 slack/WNS、面积、功耗、单元数 —— 判断策略是否成立的客观依据"
+  },
+  {
+   "label": "铁律",
+   "value": "禁止整片阵列一把展平:runtime 几小时→几天、内存爆炸、丢复用"
+  }
+ ],
+ "after": [
+  "<b>看 QoR 报告验收策略</b>:综合后核对 700MHz 下时序是否收敛(WNS≥0)、面积/功耗是否在预算、综合 runtime/内存是否在上限内。若层次化下某边界路径卡住,定位是『该局部展平却没展』还是『预算分配不当』,针对性调整而非盲目加大展平范围。",
+  "<b>对启用 retiming 的块用对的等价检查模式</b>:retiming 改了寄存器位置,RTL↔网表寄存器不再一一对应,LEC 必须用支持 retiming/时序映射的等价检查模式比对,确认逻辑功能仍等价;其余未 retiming 的块走常规 LEC。等价不过,先怀疑 retiming 边界或复位语义。",
+  "<b>验证 PE 复用的一致性</b>:确认 256×256 阵列确实由同一份综合好的 PE 网表例化复用而成(而非各处被独立优化成不同实现),这正是层次化省 runtime 又保一致的价值所在;若发现 PE 被工具拆得各不相同,检查边界约束与 dont_touch 是否生效。",
+  "<b>迭代收口策略</b>:对仍卡时序的少数路径,按『先 retiming、再考虑局部展平、最后才碰边界划分』的顺序微调,每次只动一处并对比 QoR,确保每一步收益可量化、可回退——避免一次改太多导致 runtime/内存失控又说不清谁起了作用。",
+  "<b>冻结并交后端</b>:策略稳定后冻结门级网表与综合脚本(含层次划分、ungroup 范围、retiming 设置、SDC 约束),连同 QoR 报告与 LEC 通过证据一并交布局布线;层次化的边界划分也作为后端做物理层次/区域规划的输入。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(256×256 8-bit MAC 脉动阵列由同构 PE 海量复制、700MHz、28nm、weight-stationary 为 v1 披露,作为被综合对象;层次化 vs 展平(ungroup)、retiming、LEC、QoR 及所有脚本/数字为通行 EDA 综合实践与示意,非 TPU v1 私有披露)"
+}

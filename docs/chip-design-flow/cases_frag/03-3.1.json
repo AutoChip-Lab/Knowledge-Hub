@@ -1,0 +1,117 @@
+{
+ "secNum": "3.1",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 用 Roofline 给数据中心推理负载画像",
+ "oneLine": "立项前先给 Google 数据中心的推理负载画像:把 MLP/CNN/LSTM 都看成矩阵乘,用一张 roofline 看清「哪些层被算力卡、哪些层被带宽卡」——这正是工作负载分析要交付的东西。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 380\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><line class=\"cs-arr\" x1=\"90\" y1=\"320\" x2=\"660\" y2=\"320\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"90\" y1=\"320\" x2=\"90\" y2=\"50\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"430\" y=\"345\">算术强度 = 计算量 / 访存量(FLOP/Byte)→</text><text class=\"cs-note\" x=\"20\" y=\"60\">性能</text><text class=\"cs-note\" x=\"20\" y=\"74\">(TOPS)</text><g class=\"cs-part\" data-k=\"roof-mem\" data-g=\"roof-mem\"><line class=\"cs-arr\" x1=\"90\" y1=\"320\" x2=\"340\" y2=\"95\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-k=\"roof-comp\" data-g=\"roof-comp\"><line class=\"cs-arr\" x1=\"340\" y1=\"95\" x2=\"640\" y2=\"95\"/></g><line x1=\"340\" y1=\"95\" x2=\"340\" y2=\"320\" stroke=\"#cbd5e1\" stroke-width=\"1\" stroke-dasharray=\"4 4\"/><line x1=\"90\" y1=\"95\" x2=\"340\" y2=\"95\" stroke=\"#cbd5e1\" stroke-width=\"1\" stroke-dasharray=\"4 4\"/><text class=\"cs-note\" x=\"105\" y=\"285\">斜屋顶 = 带宽限</text><text class=\"cs-note\" x=\"105\" y=\"299\">~30 GB/s · DDR3 喂不饱</text><text class=\"cs-sub\" x=\"450\" y=\"84\">平屋顶 = 算力限 ~92 TOPS</text><text class=\"cs-note\" x=\"296\" y=\"312\">脊点</text><g class=\"cs-part\" data-k=\"ridge\" data-g=\"ridge\"><circle cx=\"340\" cy=\"95\" r=\"6\" fill=\"#fff\" stroke=\"#7c5cce\" stroke-width=\"2.4\"/></g><g class=\"cs-part\" data-k=\"p-small\" data-g=\"p-small\"><circle cx=\"180\" cy=\"239\" r=\"7\" fill=\"#faf7ff\" stroke=\"#c4b5fd\" stroke-width=\"1.6\"/><text class=\"cs-cellt\" x=\"180\" y=\"243\">A</text></g><text class=\"cs-note\" x=\"200\" y=\"232\">小 batch / 大权重</text><text class=\"cs-note\" x=\"200\" y=\"246\">LSTM·全连接层 → memory-bound</text><g class=\"cs-part\" data-k=\"p-mid\" data-g=\"p-mid\"><circle cx=\"290\" cy=\"140\" r=\"7\" fill=\"#faf7ff\" stroke=\"#c4b5fd\" stroke-width=\"1.6\"/><text class=\"cs-cellt\" x=\"290\" y=\"144\">B</text></g><text class=\"cs-note\" x=\"308\" y=\"138\">中等 batch 卷积层(部分受限)</text><g class=\"cs-part\" data-k=\"p-big\" data-g=\"p-big\"><circle cx=\"520\" cy=\"110\" r=\"7\" fill=\"#faf7ff\" stroke=\"#c4b5fd\" stroke-width=\"1.6\"/><text class=\"cs-cellt\" x=\"520\" y=\"114\">C</text></g><text class=\"cs-note\" x=\"455\" y=\"135\">大矩阵 / 大 batch → 贴近算力屋顶</text><text class=\"cs-note\" x=\"100\" y=\"40\">理论峰值 92 TOPS,但很多真实层落在斜坡上,跑不满</text></svg>",
+ "legend": [
+  {
+   "k": "roof-comp",
+   "name": "平屋顶 = 算力限",
+   "desc": "水平段由峰值算力封顶(TPU v1 256×256 阵列 = 65536 个 MAC @700 MHz ≈ 92 TOPS INT8)。算术强度足够高的层,性能贴着这条线。"
+  },
+  {
+   "k": "roof-mem",
+   "name": "斜屋顶 = 带宽限",
+   "desc": "斜率 = 片外存储带宽(TPU v1 8 GiB DDR3 ≈ 30 GB/s)。算术强度低的层取不来数据、算力闲置,卡在这条斜坡上。"
+  },
+  {
+   "k": "ridge",
+   "name": "脊点(ridge point)",
+   "desc": "斜屋顶与平屋顶的交点,= 峰值算力 ÷ 带宽。它给出「想跑满算力,每访存 1 字节至少要算多少次」的门槛强度。"
+  },
+  {
+   "k": "p-small",
+   "name": "memory-bound 层(A)",
+   "desc": "小 batch、权重又大的层(典型如 LSTM / 全连接):权重读一遍只用一两次,算术强度低,落在脊点左侧的斜坡上——这是 TPU 实测里最常见的瓶颈。"
+  },
+  {
+   "k": "p-big",
+   "name": "compute-bound 层(C)",
+   "desc": "大矩阵 / 大 batch:权重被复用很多次,算术强度高,落在脊点右侧、贴近算力屋顶——这类层才用得上那块脉动阵列的峰值。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "roof-comp",
+    "roof-mem"
+   ],
+   "cap": "① 先画屋顶:平段由峰值算力封顶,斜段由片外带宽封顶——任何负载点都不可能越过这两条线"
+  },
+  {
+   "keys": [
+    "ridge"
+   ],
+   "cap": "② 找脊点:平段与斜段的交点 = 算力 ÷ 带宽,它是「能不能喂饱阵列」的分水岭强度"
+  },
+  {
+   "keys": [
+    "p-big"
+   ],
+   "cap": "③ 把负载点打上去:大矩阵 / 大 batch(C)算术强度高,落在脊点右侧、贴着算力屋顶——理想情况"
+  },
+  {
+   "keys": [
+    "p-mid",
+    "p-small"
+   ],
+   "cap": "④ 关键发现:很多真实层(A 小 batch+大权重、B 中等卷积)落在脊点左侧的斜坡上,被带宽卡死,远没跑满 92 TOPS"
+  },
+  {
+   "keys": [
+    "roof-mem",
+    "p-small"
+   ],
+   "cap": "⑤ 推出结论:推理负载普遍偏 memory-bound → 架构必须既堆算力、又设法抬高有效带宽(大片上 buffer、weight-stationary 复用),否则峰值是「纸面算力」"
+  }
+ ],
+ "before": [
+  "<b>先确定要回答的问题</b>:这颗芯片到底要服务什么负载?——TPU 的目标是 Google 数据中心里跑量最大的「推理」(MLP、CNN、LSTM 三类网络),而不是训练、也不是单一某个模型。",
+  "<b>要采集的画像量(输入)</b>:每类负载的算子构成、矩阵尺寸与 batch 大小、计算量 vs 访存量(→算术强度)、工作集(权重/激活)大小、数值精度容忍度、延迟 SLA。",
+  "<b>必备输入</b>:真实生产 trace / 代表性模型集合、候选工艺能给的算力密度与片外带宽上限、框架生态(TensorFlow/XLA)对数值格式的支持。",
+  "<b>必须卡住的约束</b>:数据中心的功耗与延迟红线(在线推理对尾延迟敏感)、PCIe 加速卡形态、以及「负载会持续演进」——画像不能只贴一个模型。"
+ ],
+ "during": [
+  "<b>统一抽象</b>:观察到 MLP / CNN / LSTM 都能 lower 成矩阵乘(GEMM)→ 决定用「矩阵乘占比 + 算术强度」作为刻画整套负载的统一坐标,而不是逐模型优化。",
+  "<b>量化精度容忍度</b>:实测推理对低精度容忍度高 → 选 INT8(乘)+ INT32(累加),相比浮点省 4× 存储与带宽、MAC 更小更省电——这是后续所有取舍的地基。",
+  "<b>画 roofline 看瓶颈</b>:把每类层按算术强度打到 roofline 上,看清「峰值很高,但很多层因 batch 小 / 权重大而落在带宽斜坡上,memory-bound」——TPU 论文自己就画了这张图。",
+  "<b>权衡算力 vs 带宽</b>:既然不少层卡带宽,光堆 MAC 会变成纸面算力 → 必须同时投资「抬高有效带宽」:大片上 Unified Buffer 缓激活、weight-stationary 最大化权重复用、把脊点尽量左移。",
+  "<b>取舍覆盖面 vs 专一</b>:为常见的大矩阵 / 大 batch 场景吃满算力 vs 为小 batch 低延迟场景兜底——TPU 选择专攻吞吐型推理,把面积压倒性让给矩阵乘,接受小 batch 时利用率偏低。",
+  "<b>留演进余量</b>:负载会变(新模型、更大上下文),画像要给出趋势(算术强度往哪走、带宽缺口多大),供后续抬带宽时参考——这是诚实的通行做法,不是 v1 披露的具体规划。"
+ ],
+ "result": [
+  {
+   "label": "目标负载",
+   "value": "MLP / CNN / LSTM 推理"
+  },
+  {
+   "label": "统一抽象",
+   "value": "全部 lower 成矩阵乘(GEMM)"
+  },
+  {
+   "label": "精度结论",
+   "value": "INT8 乘 / INT32 累加足够"
+  },
+  {
+   "label": "关键发现",
+   "value": "很多层 memory-bound,非 compute-bound"
+  },
+  {
+   "label": "峰值 vs 实测",
+   "value": "纸面 ~92 TOPS,小 batch 层远跑不满"
+  },
+  {
+   "label": "对架构的要求",
+   "value": "堆算力 + 抬有效带宽(大 buffer / 权重复用)"
+  }
+ ],
+ "after": [
+  "<b>把画像传给计算核心(§3.3)</b>:矩阵乘占压倒优势 → 直接把芯片做成脉动阵列;INT8 容忍度 → 定下 8-bit MAC + 32-bit 累加。",
+  "<b>把带宽缺口传给存储层次(§3.4)</b>:roofline 显示带宽是瓶颈 → 要求大容量片上 Unified Buffer(24 MiB)缓激活、用 weight-stationary 抬高算术强度,把脊点往左推。",
+  "<b>定验证基准</b>:用这套代表性负载 + roofline / cycle 级模型作为后续所有架构取舍的「评分卡」,确认阵列利用率与端到端延迟达标。",
+  "<b>对薄弱处诚实标注</b>:负载会持续演进,画像要随新模型滚动更新;v1 用 DDR3 片外存储,后续若想缓解 memory-bound 须抬高片外带宽——这属于这类推理 ASIC 的通行演进方向,而非 v1 论文披露的细节。",
+  "<b>回填产品定义(①/②)</b>:把「专攻吞吐型推理、小 batch 利用率偏低」这一定位回报给规格,确认与产品目标一致。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017"
+}

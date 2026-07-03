@@ -1,0 +1,114 @@
+{
+ "secNum": "3.1",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 选 HDL 与划「可综合子集」:哪段代码能真正变成那 65,536 个 MAC",
+ "oneLine": "RTL 起手第一件事:选语言(Verilog/SystemVerilog 还是 Chisel),并守住「可综合子集」——只有能被综合器推断成门与触发器的写法才进设计,#delay/$display 这类仿真语法只能留在 testbench;TPU 那种 256×256 的规整阵列,正是参数化 generate 一键展开的典型受益者。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><rect x=\"24\" y=\"56\" width=\"320\" height=\"300\" rx=\"10\" fill=\"#f0fdf4\" stroke=\"#86efac\" stroke-dasharray=\"6 4\"/><text class=\"cs-t\" x=\"184\" y=\"44\">可综合子集(能变成电路 → 进设计)</text><rect x=\"376\" y=\"56\" width=\"320\" height=\"300\" rx=\"10\" fill=\"#fef2f2\" stroke=\"#fca5a5\" stroke-dasharray=\"6 4\"/><text class=\"cs-t\" x=\"536\" y=\"44\">仅 testbench(永不综合 → 只验证)</text><g class=\"cs-part\" data-k=\"comb\" data-g=\"synth\"><rect class=\"cs-box\" x=\"48\" y=\"76\" width=\"124\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"110\" y=\"100\">组合逻辑</text><text class=\"cs-sub\" x=\"110\" y=\"118\">always_comb · =</text></g><g class=\"cs-part\" data-k=\"seq\" data-g=\"synth\"><rect class=\"cs-box\" x=\"196\" y=\"76\" width=\"124\" height=\"56\" rx=\"8\"/><path d=\"M196,132 L196,118 L210,132 Z\" fill=\"#8b5cf6\"/><text class=\"cs-t\" x=\"258\" y=\"100\">时序寄存器</text><text class=\"cs-sub\" x=\"258\" y=\"118\">always_ff posedge · &lt;=</text></g><g class=\"cs-part\" data-k=\"gen\" data-g=\"synth\"><rect class=\"cs-box\" x=\"48\" y=\"150\" width=\"272\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"184\" y=\"174\">generate / for 参数化展开</text><text class=\"cs-sub\" x=\"184\" y=\"194\">genvar i,j → 一键拉 256×256 PE 阵列</text></g><g class=\"cs-part\" data-k=\"fsm\" data-g=\"synth\"><rect class=\"cs-box\" x=\"48\" y=\"226\" width=\"124\" height=\"56\" rx=\"8\"/><path d=\"M48,282 L48,268 L62,282 Z\" fill=\"#8b5cf6\"/><text class=\"cs-t\" x=\"110\" y=\"250\">状态机 FSM</text><text class=\"cs-sub\" x=\"110\" y=\"268\">case · 显式 reset</text></g><g class=\"cs-part\" data-k=\"param\" data-g=\"synth\"><rect class=\"cs-box\" x=\"196\" y=\"226\" width=\"124\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"258\" y=\"250\">参数 / 位宽</text><text class=\"cs-sub\" x=\"258\" y=\"268\">parameter logic[N-1:0]</text></g><text class=\"cs-note\" x=\"48\" y=\"312\">规则:可推断成 门 + 触发器 + 连线</text><text class=\"cs-note\" x=\"48\" y=\"330\">的写法才算「在子集内」。</text><text class=\"cs-note\" x=\"48\" y=\"348\">PE = 8bit乘 + 32bit累加,全在此区。</text><g class=\"cs-part\" data-k=\"delay\" data-g=\"tb\"><rect class=\"cs-box\" x=\"400\" y=\"76\" width=\"124\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"462\" y=\"100\">#delay 时延</text><text class=\"cs-sub\" x=\"462\" y=\"118\">#5 clk = ~clk;</text></g><g class=\"cs-part\" data-k=\"init\" data-g=\"tb\"><rect class=\"cs-box\" x=\"548\" y=\"76\" width=\"124\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"610\" y=\"100\">initial 块</text><text class=\"cs-sub\" x=\"610\" y=\"118\">上电激励/读 memh</text></g><g class=\"cs-part\" data-k=\"disp\" data-g=\"tb\"><rect class=\"cs-box\" x=\"400\" y=\"150\" width=\"272\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"536\" y=\"174\">$display / $finish / assert</text><text class=\"cs-sub\" x=\"536\" y=\"194\">系统任务:打印、停真、检查——无对应硬件</text></g><text class=\"cs-note\" x=\"400\" y=\"232\">这些是「描述时间与行为」的语言,</text><text class=\"cs-note\" x=\"400\" y=\"250\">综合器看到会报错或直接忽略。</text><text class=\"cs-note\" x=\"400\" y=\"276\">混进设计 = 仿真过、流片必废。</text><line class=\"cs-arr\" x1=\"184\" y1=\"356\" x2=\"184\" y2=\"384\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"syn\" data-g=\"tool\"><rect class=\"cs-box\" x=\"232\" y=\"360\" width=\"256\" height=\"34\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"360\" y=\"382\">综合器 → 门级网表(只吃左边)</text></g></svg>",
+ "legend": [
+  {
+   "k": "synth",
+   "name": "可综合子集(进设计)",
+   "desc": "组合逻辑(always_comb,阻塞=)、时序寄存器(always_ff posedge,非阻塞<=)、FSM、参数/位宽、以及 generate 展开——共同点是都能被综合器推断成「门 + 触发器 + 连线」。TPU 的 PE(8bit 乘 + 32bit 累加)、Unified Buffer、控制 FSM 都落在这一区。"
+  },
+  {
+   "k": "gen",
+   "name": "generate 参数化展开",
+   "desc": "用 genvar + for 把一个 PE 模板按行列实例化,一行参数 N=256 就能拉出 256×256 整列阵列。规整、同构、可参数化,正是 TPU 脉动阵列适合 SystemVerilog generate(或 Chisel 生成式)的根本原因。"
+  },
+  {
+   "k": "tb",
+   "name": "仅 testbench(不综合)",
+   "desc": "#delay 时延、initial 上电激励、$display/$finish/assert 这些「描述时间与行为」的语法,没有对应硬件,综合器会报错或忽略。它们只用来验证,绝不能混进 RTL 设计。"
+  },
+  {
+   "k": "tool",
+   "name": "综合器只吃可综合子集",
+   "desc": "RTL → 综合器 → 门级网表。这条边界是物理的:左边能落地成电路,右边仿真能跑但流不了片——这正是「可综合子集」存在的意义。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "comb",
+    "seq"
+   ],
+   "cap": "① 定两类基本单元:组合用 always_comb(=),时序用 always_ff @(posedge clk)(<=)。位宽、复位风格在这里就钉死。"
+  },
+  {
+   "keys": [
+    "gen",
+    "param"
+   ],
+   "cap": "② 用 parameter + generate 把 PE 模板参数化展开——TPU 的 256×256 阵列规整同构,一键拉满,不用手写 6.5 万个实例。"
+  },
+  {
+   "keys": [
+    "fsm"
+   ],
+   "cap": "③ 控制路径写成显式 FSM(case + 显式 reset),把「host 发来的十几条 CISC 指令」翻成对阵列/UB 的时序控制。"
+  },
+  {
+   "keys": [
+    "delay",
+    "init",
+    "disp"
+   ],
+   "cap": "④ 把 #delay / initial / $display / assert 全部隔离到 testbench——这些是验证语法,严禁出现在设计里。"
+  },
+  {
+   "keys": [
+    "synth",
+    "tool"
+   ],
+   "cap": "⑤ 守边界:只有左侧子集能过综合器变成门级网表。混进右侧语法 = 仿真过、流片废。"
+  }
+ ],
+ "before": [
+  "<b>选语言</b>:主流是 Verilog / SystemVerilog;对 TPU 这种高度规整、要参数化批量例化的阵列,SystemVerilog 的 generate 或 Chisel(Scala 生成式、编译出 Verilog)更省手。语言选择是工程惯例,无对错,但要全队统一。",
+  "<b>钉死编码规范</b>:复位风格(同步/异步、高/低有效)、组合 vs 时序的写法约定(=/<=)、命名与位宽默认类型(logic[N-1:0]),开工前就定,避免后期返工。",
+  "<b>划可综合子集</b>:明确哪些语法进设计、哪些只准进 testbench;把可综合规则写进 lint 配置,让工具自动卡住 #delay/$display 误入设计。",
+  "<b>对齐上游</b>:从 ④ 微架构拿到要落地的结构——PE = 8bit 乘 + 32bit 累加、256×256 阵列、24 MiB Unified Buffer(软件管理 scratchpad)、4 MiB 累加器、host 经 PCIe 发约十几条 CISC 指令——这些决定模块划分与参数。"
+ ],
+ "during": [
+  "<b>铁律一:可综合才进设计</b>。能被综合器推断成「门 + 触发器 + 连线」的才写进 RTL;#delay、initial、$display、$finish、强制 force 这类只描述时间/行为、无硬件对应的语法,一律留在 testbench。",
+  "<b>铁律二:组合用 = / 时序用 <=</b>。always_comb 内阻塞赋值(=)描述纯组合的乘法/选择;always_ff @(posedge clk) 内非阻塞(<=)描述寄存器更新,如示意:always_ff @(posedge clk) acc <= acc + a*b;(示意写法,非 TPU 私有代码)。",
+  "<b>规整结构用 generate 展开</b>。TPU 阵列同构 → 写一个 PE 模板,用 genvar i,j + generate for 例化成 ROWS×COLS;参数 N 从 16 改到 256 只动一行,这是 TPU 阵列适合 SV/Chisel 的核心理由。",
+  "<b>位宽显式、不靠默认推断</b>。PE 乘法输入按 8-bit、累加器按 32-bit 显式声明([7:0]、[31:0]),让综合器准确推断 DSP/加法器宽度,避免隐式截断或符号扩展出错。",
+  "<b>控制写成显式 FSM</b>。把指令译码、阵列装填/排空、UB 读写时序写成 case 状态机,每个状态、每条转移、复位初值都显式列出——综合器据此生成确定的时序电路。",
+  "<b>取舍诚实说明</b>:语言选择、复位风格、可综合子集的边界多为通行 RTL 工程实践;TPU 不逐行公开 RTL,本节用其已知结构作载体讲写法,不臆造其私有代码细节。"
+ ],
+ "result": [
+  {
+   "label": "设计语言",
+   "value": "SystemVerilog(或 Chisel 生成 → Verilog)"
+  },
+  {
+   "label": "组合写法(示意)",
+   "value": "always_comb prod = a * b;"
+  },
+  {
+   "label": "时序写法(示意)",
+   "value": "always_ff @(posedge clk) acc <= acc + prod;"
+  },
+  {
+   "label": "阵列展开(示意)",
+   "value": "generate for(i;j) pe u(...); → 256×256"
+  },
+  {
+   "label": "位宽",
+   "value": "乘法输入 [7:0]、累加器 [31:0]"
+  },
+  {
+   "label": "进 testbench 而非设计",
+   "value": "#delay / initial / $display / assert"
+  }
+ ],
+ "after": [
+  "<b>跑 lint</b>:用可综合性规则集(如 lint/CDC 工具)扫一遍,确认设计里没有 #delay/$display 等不可综合语法、没有隐式锁存器、没有位宽不匹配。",
+  "<b>RTL 仿真</b>:配 testbench(此处才用 initial/$display/assert)做功能仿真,确认 PE、generate 出的阵列、FSM 行为正确。",
+  "<b>试综合(synthesis trial)</b>:把 RTL 喂综合器,确认能干净映射成门级网表、无不可综合报错,并初看 700 MHz 时序是否可达;不达再回去调写法或流水。",
+  "<b>多时钟域检查</b>:host/PCIe 域与阵列核心域之间的跨时钟信号要过 CDC 检查,确认同步器到位(留给后续 CDC 小节细化)。",
+  "<b>交付验证</b>:把模块清单、参数、可综合子集约定与已知边界条件交给验证团队,作为搭建验证环境的依据。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(RTL 编码/可综合子集部分为通行 RTL 实践)"
+}

@@ -1,0 +1,116 @@
+{
+ "secNum": "3.10",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 后端的低功耗与 DFT 落地:把 UPF 写的电源域意图『版图落地』(电源开关/隔离/电平移位单元就位、always-on 不断电、域边界按 UPF 划),并把 DFT 的 scan 链按物理位置就近重排——让低功耗与可测性在 28nm 版图上真正成形",
+ "oneLine": "本案例落到「后端的低功耗与 DFT 落地」小节:前端用 UPF 写下『谁常通、谁可关断、跨域怎么隔离/转电平』的低功耗意图,DFT 插好 scan 链给可测性——但这些都只是『意图』和『逻辑连接』,真正把它们做成硅,是后端的活:把电源开关(power switch)摆进可关断阵列的供电路径、把隔离单元(isolation)和电平移位器(level shifter)精确摆在两个电源域的边界、把控制/指令/电源管理逻辑划成 always-on 域(永不断电)、严格按 UPF 划清电源域边界并交叉验证;同时把综合时按网表逻辑顺序串起来的 scan 链,在版图上按触发器的物理近邻『重排序(reorder)』就近重连,省 scan 走线、不恶化功能时序;空闲 PE 列的门控/电源管理也在这一步落地。对 TPU 这种 256×256=65,536 个 MAC 的大阵列,『阵列可关断、控制常通、边界单元就位、scan 链短而不扰』正是低功耗与 DFT 在后端兑现的样子。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 412\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"24\">后端把 UPF 写的低功耗意图 + DFT 的 scan 链『版图落地』:电源域边界、隔离/电平移位/电源开关单元就位、always-on 不断电、scan 链就近物理重排</text><g class=\"cs-part\" data-k=\"aon\" data-g=\"aon\"><rect class=\"cs-box\" x=\"24\" y=\"48\" width=\"190\" height=\"150\" rx=\"8\"/><text class=\"cs-t\" x=\"119\" y=\"74\">always-on 域(常通)</text><text class=\"cs-sub\" x=\"119\" y=\"94\">控制/指令/电源管理逻辑</text><text class=\"cs-sub\" x=\"119\" y=\"112\">主机经 PCIe 下 CISC 指令</text><text class=\"cs-sub\" x=\"119\" y=\"132\">这块永不断电</text><g class=\"cs-part\" data-k=\"psw\" data-g=\"psw\"><rect class=\"cs-cell\" x=\"40\" y=\"150\" width=\"158\" height=\"36\"/><text class=\"cs-cellt\" x=\"119\" y=\"166\">电源开关 power switch</text><text class=\"cs-cellt\" x=\"119\" y=\"180\">阵列电源由它通/断</text></g></g><line class=\"cs-arr\" x1=\"214\" y1=\"123\" x2=\"276\" y2=\"123\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"218\" y=\"114\">UPF</text><text class=\"cs-note\" x=\"218\" y=\"148\">边界</text><g class=\"cs-part\" data-k=\"iso\" data-g=\"iso\"><rect class=\"cs-box\" x=\"280\" y=\"48\" width=\"180\" height=\"150\" rx=\"8\"/><text class=\"cs-t\" x=\"370\" y=\"74\">电源域边界单元</text><text class=\"cs-sub\" x=\"370\" y=\"92\">摆在两域交界处</text><g class=\"cs-part\" data-k=\"isocell\" data-g=\"isocell\"><rect class=\"cs-cell\" x=\"296\" y=\"104\" width=\"150\" height=\"38\"/><text class=\"cs-cellt\" x=\"371\" y=\"120\">隔离单元 isolation</text><text class=\"cs-cellt\" x=\"371\" y=\"134\">钳住断电域输出,防浮空</text></g><g class=\"cs-part\" data-k=\"ls\" data-g=\"ls\"><rect class=\"cs-cell\" x=\"296\" y=\"150\" width=\"150\" height=\"38\"/><text class=\"cs-cellt\" x=\"371\" y=\"166\">电平移位 level shifter</text><text class=\"cs-cellt\" x=\"371\" y=\"180\">跨不同电压域转电平</text></g></g><line class=\"cs-arr\" x1=\"460\" y1=\"123\" x2=\"522\" y2=\"123\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"pd\" data-g=\"pd\"><rect class=\"cs-box\" x=\"526\" y=\"48\" width=\"170\" height=\"150\" rx=\"8\"/><text class=\"cs-t\" x=\"611\" y=\"74\">可关断域(switchable)</text><text class=\"cs-sub\" x=\"611\" y=\"94\">256×256 脉动阵列</text><text class=\"cs-sub\" x=\"611\" y=\"112\">65,536 个 MAC</text><g class=\"cs-part\" data-k=\"colgate\" data-g=\"colgate\"><rect class=\"cs-cell\" x=\"542\" y=\"128\" width=\"138\" height=\"20\"/><text class=\"cs-cellt\" x=\"611\" y=\"142\">空闲 PE 列门控</text><rect class=\"cs-cell\" x=\"542\" y=\"152\" width=\"138\" height=\"20\"/><text class=\"cs-cellt\" x=\"611\" y=\"166\">不用时切电/钳输出</text></g><text class=\"cs-sub\" x=\"611\" y=\"188\">用完整阵列才全通电(示意)</text></g><line class=\"cs-arr\" x1=\"611\" y1=\"198\" x2=\"611\" y2=\"214\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><line class=\"cs-arr\" x1=\"119\" y1=\"198\" x2=\"119\" y2=\"214\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><g class=\"cs-part\" data-k=\"scan\" data-g=\"scan\"><rect class=\"cs-box\" x=\"24\" y=\"218\" width=\"672\" height=\"120\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"242\">DFT scan 链『物理重排序』(reorder):按版图位置就近重连,省布线、不破时序</text><text class=\"cs-sub\" x=\"150\" y=\"266\">综合时的逻辑 scan 顺序(按网表,跨片乱跳)</text><g class=\"cs-part\" data-k=\"ffa\" data-g=\"ffa\"><rect class=\"cs-cell\" x=\"60\" y=\"278\" width=\"44\" height=\"26\"/><text class=\"cs-cellt\" x=\"82\" y=\"295\">FF1</text><rect class=\"cs-cell\" x=\"300\" y=\"278\" width=\"44\" height=\"26\"/><text class=\"cs-cellt\" x=\"322\" y=\"295\">FF2</text><rect class=\"cs-cell\" x=\"150\" y=\"278\" width=\"44\" height=\"26\"/><text class=\"cs-cellt\" x=\"172\" y=\"295\">FF3</text></g><polyline class=\"cs-arr\" points=\"104,291 150,291\" fill=\"none\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"194,291 300,291\" fill=\"none\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><text class=\"cs-sub\" x=\"500\" y=\"266\">重排后:沿物理近邻顺序重连(短线)</text><g class=\"cs-part\" data-k=\"ffb\" data-g=\"ffb\"><rect class=\"cs-cell\" x=\"470\" y=\"278\" width=\"44\" height=\"26\"/><text class=\"cs-cellt\" x=\"492\" y=\"295\">FF</text><rect class=\"cs-cell\" x=\"528\" y=\"278\" width=\"44\" height=\"26\"/><text class=\"cs-cellt\" x=\"550\" y=\"295\">FF</text><rect class=\"cs-cell\" x=\"586\" y=\"278\" width=\"44\" height=\"26\"/><text class=\"cs-cellt\" x=\"608\" y=\"295\">FF</text><rect class=\"cs-cell\" x=\"644\" y=\"278\" width=\"40\" height=\"26\"/><text class=\"cs-cellt\" x=\"664\" y=\"295\">FF</text></g><polyline class=\"cs-arr\" points=\"514,291 528,291\" fill=\"none\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"572,291 586,291\" fill=\"none\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"630,291 644,291\" fill=\"none\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"60\" y=\"326\">scan 只换『移位时的串接顺序』,不动功能逻辑;就近重排让 scan 走线短、占用少,且不恶化功能/捕获时序</text></g><text class=\"cs-note\" x=\"24\" y=\"362\">读法:左→右是 UPF 的电源域意图在版图上就位(常通域→边界隔离/电平移位→可关断阵列);下方是 DFT scan 链按物理位置就近重连</text><text class=\"cs-note\" x=\"24\" y=\"384\">注:电源开关/隔离/电平移位/always-on/UPF/scan reorder 均为通行后端低功耗与 DFT 实践;TPU v1 不公开其电源域划分、UPF 或 DFT 版图</text><text class=\"cs-note\" x=\"24\" y=\"404\">本图借 TPU 已知结构(256×256 阵列、24MiB UB、700MHz、28nm、weight-stationary)作被实现对象,所有电源域/列门控/电压均为示意,非 TPU 私有数据</text></svg>",
+ "legend": [
+  {
+   "k": "aon",
+   "name": "always-on 域(常通,永不断电)",
+   "desc": "低功耗设计里要分出一块永远通电的逻辑:电源管理控制器(决定谁断电谁上电)、片上必须常驻的控制/指令接收逻辑、隔离/开关的使能信号源等。TPU 主机经 PCIe 3.0 下十几条 CISC 指令来驱动芯片,接这些指令、管理阵列上电时序的控制路径必须常通——否则没人能把断电的阵列再唤醒。后端要把这块 always-on 逻辑在版图上单独供以不被关断的电源轨,并和可关断域物理隔开。这是通行后端低功耗实践;TPU 不公开其电源域划分。"
+  },
+  {
+   "k": "iso",
+   "name": "电源域边界单元:隔离 + 电平移位(按 UPF 摆在交界)",
+   "desc": "两个电源域交界处必须摆专门的边界单元,后端负责把它们精确就位:①隔离单元(isolation cell)——当一个域断电、它的输出会浮空(既非 0 也非 1),会让还通电的下游逻辑乱套甚至烧电流,隔离单元在断电时把这条信号『钳』到一个确定值(0 或 1);②电平移位器(level shifter)——当两个域用不同电压(如阵列与外围电压不同),信号从低压域进高压域(或反之)电平对不上,移位器把电压电平转换好。这两类单元在 UPF 里声明、在后端按域边界摆放并连好控制信号,摆错位置或漏摆都会导致功能错误。通行实践,数值/划分为示意。"
+  },
+  {
+   "k": "pd",
+   "name": "可关断域(switchable):256×256 脉动阵列",
+   "desc": "把功耗大头划成可关断的电源域:TPU 的 65,536 个 MAC 脉动阵列是动态功耗主力,不用时若能切电可省大量功耗。后端要给这个域接上电源开关、在域内布好可被关断的电源网格、把它和 always-on 域用隔离/电平移位单元在边界隔开。更细一层,空闲的 PE 列还可做列级门控/电源管理——只给用到的列通电。注意这些都是『被后端实现的低功耗结构』,TPU v1 论文未公开其是否如此分域或具体省了多少功耗,这里按通行实践作示意。"
+  },
+  {
+   "k": "psw",
+   "name": "电源开关(power switch,落进供电路径)",
+   "desc": "可关断域不是凭空断电的——后端要在它的供电路径上插入电源开关单元(power-gating switch,通常是一排头/脚开关晶体管),由 always-on 域的电源管理逻辑控制其通/断。落地时有讲究:开关要分布摆放并控制其开启次序(避免一上电瞬间大电流冲击导致 IR-drop 尖峰)、要核算导通压降不能让域内逻辑欠压、还要在版图上占出位置。这是把『这个域可以关』的 UPF 意图变成真实可断电硬件的关键单元。通行后端实践,TPU 不公开。"
+  },
+  {
+   "k": "scan",
+   "name": "DFT scan 链的物理重排序(reorder,就近重连)",
+   "desc": "为可测性,DFT 把触发器串成 scan 链(测试时像移位寄存器一样把测试向量移进/移出)。综合阶段这条链是按网表逻辑顺序连的,触发器在版图上可能东一个西一个,scan 线跨大半个 die 乱跳,既费布线又可能拖时序。后端在布局后做 scan reorder:在不改功能逻辑的前提下,只把『移位时的串接顺序』改成按触发器物理位置就近相连,让 scan 走线短、占用少。对 TPU 这种含 65,536 个 MAC、触发器海量的大阵列,reorder 省下的 scan 布线相当可观。重排后还要确认不破坏移位/捕获时序。通行 DFT/后端实践。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "aon",
+    "pd",
+    "psw"
+   ],
+   "cap": "① 划电源域并落电源开关:把控制/指令/电源管理逻辑划成 always-on 常通域,把 256×256 脉动阵列这块功耗大头划成可关断域,在阵列供电路径上插入电源开关(由常通域控制通/断)"
+  },
+  {
+   "keys": [
+    "iso",
+    "isocell",
+    "ls"
+   ],
+   "cap": "② 域边界单元按 UPF 就位:在常通域与可关断域的交界处,精确摆放隔离单元(断电时把输出钳到确定值,防浮空)和电平移位器(跨不同电压域转电平),并连好它们的使能/控制信号"
+  },
+  {
+   "keys": [
+    "pd",
+    "colgate"
+   ],
+   "cap": "③ 细粒度门控落地:把空闲 PE 列的门控/电源管理在版图上做出来——只给用到的列通电、不用的列切电或钳输出,进一步压低 65,536 个 MAC 阵列的动态/漏电功耗(示意)"
+  },
+  {
+   "keys": [
+    "scan",
+    "ffa",
+    "ffb"
+   ],
+   "cap": "④ scan 链物理重排序:把综合时按网表逻辑顺序串成、在版图上乱跳的 scan 链,按触发器的物理近邻就近重连——只改移位串接顺序、不动功能逻辑,让 scan 走线短、占用少"
+  }
+ ],
+ "before": [
+  "<b>先拿到前端的低功耗意图文件(UPF/CPF)</b>:UPF(Unified Power Format)用脚本声明电源域怎么划、谁 always-on 谁可关断、每个域什么电压、域边界要插哪些隔离/电平移位/电源开关、关断的上下电时序与控制信号。后端不发明这些意图,而是把 UPF 写的意图在版图上实现并验证。这是通行低功耗后端实践;TPU v1 不公开其 UPF 或电源域划分。",
+  "<b>备齐低功耗专用单元的库</b>:标准单元库里要有隔离单元、电平移位器、电源开关(power-gating switch)、保持寄存器(retention FF,断电时存住状态)等专用单元的物理(LEF)与时序(.lib)模型;库里没这些单元,UPF 里写了也无物可摆。28nm 这类成熟节点的低功耗单元库是通行配置。",
+  "<b>定 DFT 结构与 scan 约束</b>:DFT 已插好 scan 链、压缩/解压、边界扫描等可测结构,后端要拿到 scan 链定义、scan 时钟与 scan-enable 的时序约束、以及『哪些链可重排、链的边界在哪』的规则——reorder 只能在允许的范围内换顺序,跨电源域/跨时钟域的链段不能乱并。",
+  "<b>把电源开关网络与 PDN 一起规划进 floorplan</b>:可关断域要预留电源开关的摆放位置、规划好被开关切换的电源网格(switched rail)与常通电源网格(always-on rail)如何并存与隔离;这要在布局规划(3.2)、电源网格(3.3)阶段就一并想好,等到这一步才发现 PDN 没给开关留位就晚了。",
+  "<b>诚实标注边界</b>:UPF、电源开关、隔离单元、电平移位器、always-on 域、保持寄存器、scan reorder 都是通行后端低功耗与 DFT 实践;TPU v1 不公开其电源域划分、UPF、DFT 结构或版图。本案以 TPU 已知结构(256×256 脉动阵列、24 MiB UB、700MHz、28nm、weight-stationary、PCIe 下 CISC 指令)作为被实现对象来讲低功耗/DFT 落地概念,所有电源域、电压、列门控与 scan 设置均为示意,未编造任何 TPU 私有数字。"
+ ],
+ "during": [
+  "<b>后端做的是『落地』不是『发明意图』</b>:谁常通、谁可关断、跨域怎么隔离,都由 UPF 在前端定好;后端的活是把这些意图变成版图上真实的单元与连线——电源开关插进供电路径、隔离/电平移位摆到域边界、always-on 轨与可关断轨分开布。落地时严格以 UPF 为准绳,自己不擅自改电源域结构。",
+  "<b>隔离单元和电平移位器必须摆在域边界、且方向/极性不能错</b>:隔离单元要摆在『断电域→通电域』的信号上,断电时把输出钳到下游能接受的确定值(钳 0 还是钳 1 由功能决定,不能搞反);电平移位器要按信号是『低压→高压』还是『高压→低压』选对类型并摆在跨压边界。摆错位置、漏摆、或选错钳值/方向,断电时就会浮空乱套或电平对不上——这是低功耗后端最易出错处,要靠 UPF 一致性检查兜底。",
+  "<b>always-on 必须真的『always-on』,别被误关</b>:控制阵列上下电的电源管理逻辑、隔离/开关的使能信号路径,必须接在永不被关断的电源轨上,并在版图上和可关断域物理隔离;一旦这块被误划进可关断域,断电后就再也没人能把阵列唤醒。后端要核实 always-on 轨的完整性,使能信号不穿过会被关断的区域。",
+  "<b>电源开关要分布、要管上电次序,防冲击电流</b>(示意,通行实践):可关断的 256×256 阵列重新上电瞬间,大量电容同时充电会拉出巨大冲击电流、压垮局部供电(IR-drop 尖峰)。后端把电源开关分布摆放、并让它们按次序逐步开启(daisy-chain 唤醒),把上电电流摊开;同时核算开关导通压降不让域内逻辑欠压。",
+  "<b>scan reorder 只换串接顺序,绝不动功能逻辑</b>:布局后按触发器物理位置把 scan 链就近重连,目标是 scan 走线短、绕得少;但只允许改『测试移位时的串接顺序』,功能数据路径一根都不能动。重排还要遵守约束:不跨电源域/时钟域乱并、保持链的可测覆盖率、链长均衡。对 65,536 个 MAC 的大阵列,这一步省下的 scan 布线很可观。",
+  "<b>铁律:动了低功耗/DFT 结构,功能时序与覆盖率都要复核</b>。插隔离/电平移位/电源开关会增加延迟与面积、scan reorder 改了链顺序会改 scan 移位/捕获时序;落地后必须回头核——功能时序(700MHz 关键路径)没被这些单元拖垮、scan 移位时序仍满足、测试覆盖率没掉。低功耗、可测性、时序、面积四者耦合,不能只顾一头。"
+ ],
+ "result": [
+  {
+   "label": "always-on 常通域",
+   "value": "控制/指令接收/电源管理逻辑接不被关断的电源轨,负责管阵列上下电(TPU 经 PCIe 下 CISC 指令的控制路径必须常通;划分为示意)"
+  },
+  {
+   "label": "可关断域 + 电源开关",
+   "value": "256×256 脉动阵列划成可关断域,供电路径插电源开关(power switch),由常通域控制通/断,分布摆放+按次序唤醒防冲击电流"
+  },
+  {
+   "label": "域边界单元(按 UPF)",
+   "value": "交界处摆隔离单元(断电钳输出防浮空)+ 电平移位器(跨不同电压域转电平),方向/极性/钳值不可错"
+  },
+  {
+   "label": "细粒度门控(示意)",
+   "value": "空闲 PE 列做列级门控/电源管理——只给用到的列通电,进一步压低 65,536 个 MAC 阵列功耗(示意设置,非 TPU 公开)"
+  },
+  {
+   "label": "scan 链物理重排",
+   "value": "综合按网表逻辑顺序串的 scan 链,布局后按触发器物理近邻就近重连,只改串接顺序不动功能逻辑,省 scan 走线、不破时序"
+  },
+  {
+   "label": "落地后复核项",
+   "value": "UPF 一致性(隔离/电平移位/always-on 是否齐全正确)+ 功能时序 + scan 移位/捕获时序 + 测试覆盖率,均须不被这些结构拖坏"
+  }
+ ],
+ "after": [
+  "<b>跑 UPF/低功耗一致性检查</b>:用低功耗验证工具核对版图与 UPF 是否一致——每条跨域信号该有的隔离单元有没有、钳值对不对,跨压信号该有的电平移位器有没有、方向对不对,always-on 域是否真接在常通轨、使能信号有没有穿过会断电的区域;漏一处、错一处,断电时就功能失效,这是低功耗签核必过项。",
+  "<b>核时序:确认这些单元没拖垮 700MHz</b>:隔离/电平移位/电源开关都在信号路径上引入额外延迟,要回 STA 复核插入它们后关键路径(尤其跨域路径)在 700MHz≈1.43ns 下建立/保持仍满足;若拖出违例,回 3.7 ECO 修。同时核 scan reorder 后的 scan 移位时序也满足。",
+  "<b>核冲击电流与上电 IR-drop</b>:用电源完整性分析核可关断域重新上电瞬间的冲击电流是否被电源开关的分布与上电次序摊开、上电过程中常通域的供电是否被瞬时拉低(IR-drop 尖峰),确认唤醒过程不会让芯片瞬态欠压复位。",
+  "<b>核测试覆盖率与 DFT 规则</b>:scan reorder 后重跑 DFT 检查——确认 scan 链完整、未跨电源/时钟域乱并、链长均衡、测试覆盖率(故障覆盖)没有因重排而下降;可测性是出片后能否筛掉坏片的命脉,reorder 省了布线但不能省了覆盖率。",
+  "<b>把低功耗与 DFT 结构一并交签核(sign-off)与 DRC/LVS</b>:这些隔离/电平移位/电源开关单元和重排后的 scan 链都进最终版图,要在物理签核里随多电源域一起做 DRC/LVS(LVS 还要识别多电源域、核电源连接正确)、随 SDF/UPF 进门级仿真验证上下电与测试模式,直到全绿才交 GDSII 出片。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(256×256 8-bit MAC 脉动阵列、24 MiB Unified Buffer、700MHz、28nm、weight-stationary、主机经 PCIe 下 CISC 指令为该文披露的已知结构,作为被实现对象;UPF、电源开关、隔离单元、电平移位器、always-on 域、保持寄存器、电源门控、scan 链物理重排序、低功耗一致性检查与多电源域 LVS 为通行后端低功耗与 DFT 实践,图与所有电源域划分、电压、列门控及 scan 设置均为示意,非 TPU v1 公开的 UPF、DFT 结构或版图细节)"
+}

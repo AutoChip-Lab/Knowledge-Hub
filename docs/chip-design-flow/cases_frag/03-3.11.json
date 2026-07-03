@@ -1,0 +1,118 @@
+{
+ "secNum": "3.11",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 数据中心推理 ASIC 的安全架构:可信根 → 安全启动 → 固件校验 → 隔离(通行实践)",
+ "oneLine": "安全架构这一节,看一颗插在数据中心服务器里的推理 ASIC 该怎样建立「从加电到运行都可信」的信任链,并在多租户下隔开各用户的模型与数据——TPU v1 论文未强调安全,故本案例按这类 ASIC 的通行做法讲,只把 TPU 的硬事实(host-driven、24 MiB UB、片外 DDR3)当背景。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"30\" y=\"24\">信任链:每一级先被验证、再放行下一级(通行实践,非 TPU v1 公开细节)</text><g class=\"cs-part\" data-k=\"rot\" data-g=\"rot\"><rect class=\"cs-box\" x=\"30\" y=\"48\" width=\"150\" height=\"70\" rx=\"8\"/><text class=\"cs-t\" x=\"105\" y=\"76\">① 可信根 RoT</text><text class=\"cs-sub\" x=\"105\" y=\"94\">不可改的硬件/掩膜逻辑</text><text class=\"cs-sub\" x=\"105\" y=\"110\">内含验签公钥</text></g><line class=\"cs-arr\" x1=\"180\" y1=\"83\" x2=\"232\" y2=\"83\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"boot\" data-g=\"boot\"><rect class=\"cs-box\" x=\"234\" y=\"48\" width=\"150\" height=\"70\" rx=\"8\"/><text class=\"cs-t\" x=\"309\" y=\"76\">② 安全启动</text><text class=\"cs-sub\" x=\"309\" y=\"94\">验首级固件签名</text><text class=\"cs-sub\" x=\"309\" y=\"110\">不过则停机</text></g><line class=\"cs-arr\" x1=\"384\" y1=\"83\" x2=\"436\" y2=\"83\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"fw\" data-g=\"fw\"><rect class=\"cs-box\" x=\"438\" y=\"48\" width=\"150\" height=\"70\" rx=\"8\"/><text class=\"cs-t\" x=\"513\" y=\"76\">③ 固件校验</text><text class=\"cs-sub\" x=\"513\" y=\"94\">逐级度量/验签</text><text class=\"cs-sub\" x=\"513\" y=\"110\">防回滚降级</text></g><line class=\"cs-arr\" x1=\"588\" y1=\"83\" x2=\"640\" y2=\"83\"/><g class=\"cs-part\" data-k=\"run\" data-g=\"run\"><rect class=\"cs-box\" x=\"588\" y=\"138\" width=\"102\" height=\"60\" rx=\"8\"/><text class=\"cs-t\" x=\"639\" y=\"164\">④ 运行</text><text class=\"cs-sub\" x=\"639\" y=\"182\">已知良好态</text></g><polyline class=\"cs-arr\" points=\"640,83 660,83 660,136\" fill=\"none\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"30\" y=\"158\">任一级验签失败 → 拒绝放行(虚线为失败分支)</text><g class=\"cs-part\" data-k=\"halt\" data-g=\"halt\"><rect class=\"cs-box\" x=\"234\" y=\"158\" width=\"150\" height=\"40\" rx=\"8\" stroke-dasharray=\"6 4\"/><text class=\"cs-t\" x=\"309\" y=\"183\">失败:停机/不启动</text></g><polyline class=\"cs-arr\" points=\"309,118 309,156\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"513,118 513,138 386,138 386,156\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"105,118 105,138 232,138 232,178\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"30\" y=\"240\">多租户场景:把「同一时刻不同用户的模型/数据」隔开(通行做法)</text><g class=\"cs-part\" data-k=\"host\" data-g=\"host\"><rect class=\"cs-box\" x=\"30\" y=\"252\" width=\"150\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"105\" y=\"276\">主机/控制面</text><text class=\"cs-sub\" x=\"105\" y=\"294\">经 PCIe 下发任务</text></g><line class=\"cs-arr\" x1=\"180\" y1=\"280\" x2=\"232\" y2=\"280\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"iso\" data-g=\"iso\"><rect class=\"cs-box\" x=\"234\" y=\"240\" width=\"240\" height=\"120\" rx=\"8\" stroke-dasharray=\"6 4\"/><text class=\"cs-t\" x=\"354\" y=\"262\">隔离边界(租户间)</text><g class=\"cs-part\" data-k=\"tA\" data-g=\"iso\"><rect class=\"cs-box\" x=\"250\" y=\"276\" width=\"100\" height=\"70\" rx=\"8\"/><text class=\"cs-t\" x=\"300\" y=\"300\">租户 A</text><text class=\"cs-sub\" x=\"300\" y=\"318\">模型权重 A</text><text class=\"cs-sub\" x=\"300\" y=\"334\">UB 分区/清零</text></g><g class=\"cs-part\" data-k=\"tB\" data-g=\"iso\"><rect class=\"cs-box\" x=\"358\" y=\"276\" width=\"100\" height=\"70\" rx=\"8\"/><text class=\"cs-t\" x=\"408\" y=\"300\">租户 B</text><text class=\"cs-sub\" x=\"408\" y=\"318\">模型权重 B</text><text class=\"cs-sub\" x=\"408\" y=\"334\">切换时擦除</text></g></g><g class=\"cs-part\" data-k=\"mem\" data-g=\"mem\"><rect class=\"cs-box\" x=\"500\" y=\"252\" width=\"190\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"595\" y=\"276\">片上 UB / 片外 DDR3</text><text class=\"cs-sub\" x=\"595\" y=\"294\">分区·复用前擦除·访问检查</text></g><line class=\"cs-arr\" x1=\"474\" y1=\"300\" x2=\"498\" y2=\"300\" marker-end=\"url(#csar)\"/></svg>",
+ "legend": [
+  {
+   "k": "rot",
+   "name": "① 可信根 RoT",
+   "desc": "信任链的「第一块砖」:一段不可篡改的硬件逻辑(掩膜固化/一次性熔丝),内含验签公钥,谁也改不了。后面每一级是否可信,都从它开始往上推。这是数据中心 ASIC 的通行做法,非 TPU v1 公开细节。"
+  },
+  {
+   "k": "boot",
+   "name": "② 安全启动 / 固件完整性",
+   "desc": "加电后由 RoT 先验证第一级固件的数字签名,验过才放行执行;逐级往上「先验后跑」。任一级签名不对就停机、不启动,防止被替换成恶意固件。"
+  },
+  {
+   "k": "iso",
+   "name": "③ 租户隔离边界",
+   "desc": "在多租户/多任务复用同一颗加速器时,要保证 A 用户看不到也碰不到 B 用户的模型权重与中间数据。靠分区、访问检查、以及复用前擦除来划出边界——TPU v1 是 host-driven 批处理,这里讲的是这类 ASIC 的通行隔离思路。"
+  },
+  {
+   "k": "mem",
+   "name": "④ 存储隔离与擦除",
+   "desc": "片上 24 MiB Unified Buffer 与片外 8 GiB DDR3 是被多个任务复用的共享资源:切换租户/任务时把残留数据清零、对访问做边界检查,避免敏感权重「漏」给下一个使用者。"
+  },
+  {
+   "k": "halt",
+   "name": "⑤ 失败即拒绝",
+   "desc": "安全架构的灵魂判据:验证失败时默认是「拒绝/停机」而不是「带病运行」。信任链上任一级校验不通过,就不把控制权交给下一级。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "rot"
+   ],
+   "cap": "① 先锚一个改不动的可信根:用掩膜固化/熔丝里的公钥作为整条信任链的起点"
+  },
+  {
+   "keys": [
+    "boot",
+    "fw"
+   ],
+   "cap": "② 安全启动 + 逐级固件校验:从 RoT 起「先验签再执行」,层层度量,并防回滚降级"
+  },
+  {
+   "keys": [
+    "halt"
+   ],
+   "cap": "③ 任一级验签失败就停机、不放行——默认拒绝,而非带病运行"
+  },
+  {
+   "keys": [
+    "run"
+   ],
+   "cap": "④ 全部验过,芯片进入「已知良好态」开始正常推理"
+  },
+  {
+   "keys": [
+    "iso",
+    "tA",
+    "tB",
+    "mem"
+   ],
+   "cap": "⑤ 多租户时划隔离边界:UB/DDR3 分区、访问检查、切换前擦除,隔开各用户模型与数据"
+  }
+ ],
+ "before": [
+  "<b>先定威胁模型(要防谁、防什么)</b>:数据中心里这颗卡面对的主要风险是——固件被篡改/替换、加电链路被植入恶意代码、(多租户复用时)用户间模型权重或数据互相泄露。TPU v1 论文没展开安全,这一步按这类推理 ASIC 的通行思路来定。",
+  "<b>要拍板的设计量</b>:可信根放哪(掩膜固化还是熔丝)、用什么签名/度量方案、信任链有几级、是否支持防回滚、多租户隔离到什么粒度(分时复用 vs 真正并发)、共享存储(UB/DDR3)如何分区与擦除。",
+  "<b>必备输入</b>:这颗卡的运行形态(TPU v1 是 host-driven、主机经 PCIe 下发 CISC 指令的确定性批处理)、共享资源清单(24 MiB UB、片外 8 GiB DDR3)、上层云平台的多租户与合规要求。",
+  "<b>诚实红线</b>:TPU v1 公开资料几乎不含安全机制细节,绝不杜撰其专属安全数字或具体实现;凡涉及 RoT/安全启动/隔离,均标注为「数据中心推理 ASIC 的通行实践」,只用 TPU 的硬事实(host-driven、UB、DDR3)做背景。"
+ ],
+ "during": [
+  "<b>把信任建在改不动的东西上</b>:可信根必须是无法被软件改写的(掩膜逻辑或一次性熔丝),否则「信任」无从谈起;它内含验签公钥,是整条链的唯一锚点。这是通行做法。",
+  "<b>「先验后跑」逐级推进</b>:加电后 RoT 验第一级固件签名 → 验过才执行 → 该级再验下一级……信任沿链向上传递。关键取舍:验得越多越安全,但启动延迟与逻辑成本上升,需按威胁模型取折中。",
+  "<b>默认拒绝 + 防回滚</b>:任一级校验失败就停机而非降级运行;并禁止把固件回滚到有已知漏洞的旧版本(版本/计数器单调递增)。安全架构宁可不启动,也不带病服务。",
+  "<b>多租户隔离的取舍</b>:TPU v1 实际是 host-driven 的分时批处理,最简单且最稳的隔离是「一次只服务一个任务、切换时彻底清场」;若要并发多租户,则需对 UB/DDR3 做硬分区与访问边界检查——复杂度和面积代价更高。这属通行设计选择,非 v1 披露。",
+  "<b>共享存储是泄露高发区</b>:24 MiB UB 与片外 DDR3 会被不同任务反复复用,务必在复用前清零残留权重/激活,并对地址访问做边界检查,堵住「上一个租户的数据漏给下一个」这类侧信道。",
+  "<b>安全 vs 性能/成本的全局权衡</b>:验签、擦除、隔离都吃延迟、面积与功耗;而 TPU 的卖点是高能效推理(§3.9 的 28–40W 预算很紧)。安全机制要尽量做在控制面/启动期,别拖累 65,536 个 MAC 的稳态吞吐。"
+ ],
+ "result": [
+  {
+   "label": "信任根 RoT",
+   "value": "掩膜/熔丝固化、含公钥(通行实践,非 v1 披露)"
+  },
+  {
+   "label": "安全启动",
+   "value": "逐级先验签再执行,失败即停机"
+  },
+  {
+   "label": "固件完整性",
+   "value": "逐级度量/验签 + 防回滚降级"
+  },
+  {
+   "label": "多租户隔离",
+   "value": "分区/访问检查/切换擦除(通行做法;v1 为 host-driven 批处理)"
+  },
+  {
+   "label": "共享存储",
+   "value": "UB 24 MiB + DDR3 8 GiB 复用前清零"
+  },
+  {
+   "label": "TPU v1 实情",
+   "value": "论文未强调安全,本案例为定性通行实践"
+  }
+ ],
+ "after": [
+  "<b>验证信任链可断</b>:做负向测试——故意改一字节固件、装旧版本回滚,确认芯片如期拒绝放行/停机,而不是带病运行;这是安全架构最该被反复打的点。",
+  "<b>验证隔离不漏</b>:在多租户/多任务切换后检查 UB 与 DDR3 是否真被清零、跨租户能否读到对方残留数据;按这类 ASIC 通行实践拉测试用例,TPU v1 无公开隔离指标可对照。",
+  "<b>把要求往下游传</b>:给物理实现交可信根/熔丝、密钥存储的版图与隔离要求;给固件/软件栈(TensorFlow/XLA 生态)交签名/烧录流程与防回滚版本规则。",
+  "<b>与功耗/性能对账</b>:回填安全机制的延迟与面积代价给 §3.9,确认没有侵蚀 28–40W 预算与稳态吞吐;安全开销应主要落在启动期与任务切换期。",
+  "<b>守住诚实边界</b>:对外文档明确写「RoT/安全启动/隔离为数据中心推理 ASIC 通行实践,非 TPU v1 公开细节」,只引用 host-driven、UB、DDR3 等硬事实,不编造 TPU 专属安全数字。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(该文未强调安全;RoT/安全启动/固件校验/多租户隔离均按数据中心推理 ASIC 通行实践说明,非 TPU v1 公开细节)"
+}

@@ -1,0 +1,119 @@
+{
+ "secNum": "3.12",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · RAS:芯片内 ECC/CRC 保数据完整性,fleet 级冗余保服务可用性",
+ "oneLine": "RAS 在数据中心加速器上分两层落地——芯片内每一跳数据都带校验(内存 ECC、链路 CRC),芯片外靠 fleet 级冗余调度容忍单卡故障;TPU v1 公开资料对 RAS 细节披露很少,这里讲的是这类推理 ASIC 的通行做法。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 410\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"22\">两层 RAS:芯片内「数据完整性」(ECC/CRC) + fleet 级「服务可用性」(冗余调度) ——均为数据中心通行实践,非 v1 披露细节</text><text class=\"cs-note\" x=\"40\" y=\"44\">① 芯片内数据通路:每一跳都带校验</text><g class=\"cs-part\" data-k=\"ddr\" data-g=\"path\"><rect class=\"cs-box\" x=\"40\" y=\"56\" width=\"150\" height=\"60\" rx=\"8\"/><text class=\"cs-t\" x=\"115\" y=\"82\">DDR3 8 GiB</text><text class=\"cs-sub\" x=\"115\" y=\"100\">权重存储</text></g><g class=\"cs-part\" data-k=\"ecc\" data-g=\"ecc\"><rect class=\"cs-box\" x=\"40\" y=\"120\" width=\"150\" height=\"34\" rx=\"8\" fill=\"#ecfeff\" stroke=\"#22d3ee\"/><text class=\"cs-t\" x=\"115\" y=\"142\">内存 ECC(SECDED)</text></g><line class=\"cs-arr\" x1=\"190\" y1=\"100\" x2=\"252\" y2=\"100\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"link\" data-g=\"link\"><rect class=\"cs-box\" x=\"206\" y=\"78\" width=\"44\" height=\"44\" rx=\"8\" fill=\"#fdf4ff\" stroke=\"#d946ef\"/><text class=\"cs-t\" x=\"228\" y=\"98\">CRC</text><text class=\"cs-sub\" x=\"228\" y=\"112\">链路</text></g><g class=\"cs-part\" data-k=\"ub\" data-g=\"path\"><rect class=\"cs-box\" x=\"254\" y=\"56\" width=\"150\" height=\"60\" rx=\"8\"/><text class=\"cs-t\" x=\"329\" y=\"82\">Unified Buffer</text><text class=\"cs-sub\" x=\"329\" y=\"100\">24 MiB SRAM</text></g><g class=\"cs-part\" data-k=\"eccsram\" data-g=\"ecc\"><rect class=\"cs-box\" x=\"254\" y=\"120\" width=\"150\" height=\"34\" rx=\"8\" fill=\"#ecfeff\" stroke=\"#22d3ee\"/><text class=\"cs-t\" x=\"329\" y=\"142\">SRAM ECC / parity</text></g><line class=\"cs-arr\" x1=\"404\" y1=\"86\" x2=\"466\" y2=\"86\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"mxu\" data-g=\"path\"><rect class=\"cs-box\" x=\"468\" y=\"56\" width=\"150\" height=\"60\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#818cf8\"/><text class=\"cs-t\" x=\"543\" y=\"82\">MXU 256×256</text><text class=\"cs-sub\" x=\"543\" y=\"100\">脉动阵列计算</text></g><g class=\"cs-part\" data-k=\"telem\" data-g=\"telem\"><rect class=\"cs-box\" x=\"468\" y=\"120\" width=\"212\" height=\"34\" rx=\"8\" fill=\"#fff7ed\" stroke=\"#fb923c\"/><text class=\"cs-t\" x=\"574\" y=\"142\">遥测:可纠错计数 / 温度 / 心跳</text></g><line class=\"cs-arr\" x1=\"618\" y1=\"86\" x2=\"678\" y2=\"86\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"630\" y=\"72\">→ 写回</text><line class=\"cs-arr\" x1=\"115\" y1=\"154\" x2=\"115\" y2=\"182\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"329\" y1=\"154\" x2=\"329\" y2=\"182\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"574\" y1=\"154\" x2=\"574\" y2=\"182\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"40\" y=\"206\">② fleet 级可用性:一台坏了,调度器绕开(单芯片故障不影响在线服务)</text><g class=\"cs-part\" data-k=\"sched\" data-g=\"sched\"><rect class=\"cs-box\" x=\"270\" y=\"214\" width=\"180\" height=\"50\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#4ade80\"/><text class=\"cs-t\" x=\"360\" y=\"236\">集群调度器</text><text class=\"cs-sub\" x=\"360\" y=\"252\">读遥测 · 健康判定 · 路由</text></g><line class=\"cs-arr\" x1=\"574\" y1=\"154\" x2=\"450\" y2=\"226\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"452\" y=\"200\">遥测/心跳上报</text><polyline class=\"cs-arr\" points=\"300,264 200,300\" fill=\"none\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"360,264 360,300\" fill=\"none\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"420,264 520,300\" fill=\"none\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><g class=\"cs-part\" data-k=\"tpu1\" data-g=\"fleet\"><rect class=\"cs-box\" x=\"120\" y=\"304\" width=\"150\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"195\" y=\"328\">TPU 卡 #1</text><text class=\"cs-sub\" x=\"195\" y=\"346\">健康 · 接请求</text></g><g class=\"cs-part\" data-k=\"tpu2\" data-g=\"fleet\"><rect class=\"cs-box\" x=\"290\" y=\"304\" width=\"150\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"365\" y=\"328\">TPU 卡 #2</text><text class=\"cs-sub\" x=\"365\" y=\"346\">健康 · 接请求</text></g><g class=\"cs-part\" data-k=\"tpu3\" data-g=\"bad\"><rect class=\"cs-box\" x=\"460\" y=\"304\" width=\"150\" height=\"56\" rx=\"8\" fill=\"#fef2f2\" stroke=\"#f87171\" stroke-dasharray=\"5 4\"/><text class=\"cs-t\" x=\"535\" y=\"328\">TPU 卡 #3 ✕</text><text class=\"cs-sub\" x=\"535\" y=\"346\">故障 · 被隔离绕开</text></g><text class=\"cs-note\" x=\"120\" y=\"382\">无状态推理 + N+冗余:坏卡摘除、请求重路由到健康卡,在线服务不中断</text></svg>",
+ "legend": [
+  {
+   "k": "ecc",
+   "name": "内存 ECC(数据完整性·通行实践)",
+   "desc": "DDR3 主存与片上大块 SRAM(24 MiB Unified Buffer / 4 MiB 累加器)是软错误高发处,数据中心硬件普遍上 ECC(SECDED:纠 1 位、检 2 位)。注:这是这类 ASIC 的通行做法,TPU v1 未公开其具体 ECC 方案。"
+  },
+  {
+   "k": "link",
+   "name": "链路 CRC(传输完整性·通行实践)",
+   "desc": "PCIe、片间/板间高速 SerDes 链路天生带 CRC,坏包检出即重传。把「搬运途中出错」和「存储中出错」分开各用一种校验,是 RAS 的基本分工。"
+  },
+  {
+   "k": "telem",
+   "name": "可观测遥测",
+   "desc": "可纠错错误计数、温度、心跳、利用率等持续上报。RAS 的关键不只是「纠错」,更是「让运营侧看得见」——一张卡软错误率飙升就提前换下,把可纠错故障扼杀在变成不可纠错之前。"
+  },
+  {
+   "k": "sched",
+   "name": "集群调度器(可用性大脑)",
+   "desc": "读遥测做健康判定,把请求只路由到健康卡。RAS 里的「可用性/可维护性」主要不在单芯片内实现,而在这一层:故障检测、隔离、重路由、热替换。"
+  },
+  {
+   "k": "bad",
+   "name": "故障卡被隔离绕开",
+   "desc": "推理是无状态的、可重算的 → 单卡故障时,直接把它摘出服务、请求重路由到健康卡(N+ 冗余),在线服务不中断。这是「fleet 级冗余 > 单芯片高可靠」的数据中心范式。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "ddr",
+    "ecc",
+    "eccsram"
+   ],
+   "cap": "① 护存储:给易出软错误的大块存储(DDR3 主存、24 MiB UB、4 MiB 累加器)加 ECC,坏 1 位自动纠正、坏 2 位报出来(通行实践)"
+  },
+  {
+   "keys": [
+    "link"
+   ],
+   "cap": "② 护传输:PCIe 与高速链路用 CRC 把关,搬运途中出错即检出/重传,与存储的 ECC 分工互补"
+  },
+  {
+   "keys": [
+    "telem"
+   ],
+   "cap": "③ 看得见:芯片持续上报可纠错错误计数、温度、心跳——把潜在故障变成可观测信号,而不是等它酿成宕机"
+  },
+  {
+   "keys": [
+    "telem",
+    "sched"
+   ],
+   "cap": "④ 判健康:集群调度器读遥测做健康判定,谁还能接请求、谁该被摘除,由这一层裁决"
+  },
+  {
+   "keys": [
+    "sched",
+    "tpu1",
+    "tpu2",
+    "bad"
+   ],
+   "cap": "⑤ 绕故障:坏卡(#3)被隔离,请求重路由到健康卡(#1/#2)——靠 fleet 级 N+ 冗余把单卡故障对在线服务的影响降为零"
+  }
+ ],
+ "before": [
+  "<b>先定可靠性目标</b>:这是数据中心在线推理芯片,目标不是「单颗永不出错」,而是「整片机群服务可用性」(如多少个 9)与可维护性(坏了能不能不停服换)。先把这个目标和故障预算定下来,RAS 的所有取舍都从它推。",
+  "<b>要拍板的设计量(旋钮)</b>:哪些存储上 ECC、用哪种码(parity / SECDED / 更强)、哪些链路要 CRC/重传、上报哪些遥测、单芯片自愈做到哪、冗余/容错放在芯片层还是 fleet 层。",
+  "<b>必备输入</b>:工艺的软错误率(SER)估计、各存储块容量与暴露面(DDR3 8 GiB、UB 24 MiB、累加器 4 MiB 都是大目标)、目标机群规模与单卡年故障率、运营侧的监控/换件能力。",
+  "<b>必须卡住的约束</b>:ECC/CRC 会吃面积、带宽和延迟,得和 §3.9 功耗预算、§3.4 存储带宽对账;诚实红线——TPU v1 公开资料对 RAS/安全/DFT 等披露极少,不得编造 TPU 专属机制或数字,按通行实践陈述。"
+ ],
+ "during": [
+  "<b>先认清 RAS 的两层结构</b>:芯片内负责「数据完整性」(别算错、别静默损坏),fleet 层负责「服务可用性/可维护性」(一台坏了不停服)。这两层用不同手段,别混在一处堆。",
+  "<b>存储用 ECC(通行实践)</b>:大容量存储是软错误主战场。DDR3 主存通常本就带 ECC;片上大块 SRAM(Unified Buffer、累加器)也宜配 ECC/parity。常用 SECDED——纠 1 位、检 2 位,把绝大多数瞬态翻转就地化解。",
+  "<b>链路用 CRC(通行实践)</b>:PCIe 和高速 SerDes 自带 CRC + 重传,管「搬运途中」的完整性。和存储 ECC 分工:一个守「存着的数据」,一个守「在路上的数据」,各司其职。",
+  "<b>权衡纠错强度 vs 开销</b>:码越强、纠得越多,但 ECC 位、解码逻辑、带宽和延迟开销也越大。推理可重算、容忍偶发错误(整片可重发请求),所以单芯片不必追求电信级容错——把强一致的担子上移给 fleet 层更划算。",
+  "<b>把冗余放对层级</b>:推理是无状态、可重算的 → 与其在单芯片里堆昂贵的双模冗余/自愈,不如在 fleet 层做 N+ 冗余:坏卡隔离、请求重路由、热替换。这是数据中心「用规模换可靠」的核心范式,也是 RAS 的「可用性/可维护性」主场。",
+  "<b>埋遥测让故障可见</b>:可纠错错误一旦计数上升,往往是不可纠错故障的前兆。持续上报 ECC 纠错计数、温度、心跳,让调度器能「在坏之前换下」——可观测性是 RAS 从被动救火转向主动维护的关键。"
+ ],
+ "result": [
+  {
+   "label": "存储完整性(通行)",
+   "value": "DDR3/SRAM 配 ECC,SECDED 纠1检2"
+  },
+  {
+   "label": "传输完整性(通行)",
+   "value": "PCIe/链路 CRC + 重传"
+  },
+  {
+   "label": "可观测性",
+   "value": "纠错计数/温度/心跳遥测上报"
+  },
+  {
+   "label": "可用性策略",
+   "value": "fleet 级 N+ 冗余,坏卡绕开"
+  },
+  {
+   "label": "容错层级",
+   "value": "单芯片轻量 + fleet 重冗余(推理可重算)"
+  },
+  {
+   "label": "TPU v1 披露",
+   "value": "RAS 细节几乎未公开,以上按通行实践,不编造专属数字"
+  }
+ ],
+ "after": [
+  "<b>验证纠错有效</b>:用错误注入(翻位、坏包)验 ECC 真能纠 1 检 2、CRC 真能检出并重传;在真实机群上跟踪可纠错错误率,确认遥测准、阈值合理。",
+  "<b>验证容错切换</b>:演练单卡故障 → 调度器是否及时检测、隔离、重路由,在线请求是否无感(只是被重发到健康卡),换件能否热替换不停服。",
+  "<b>与功耗/带宽对账</b>:把 ECC/CRC 的面积、带宽、延迟开销回填给 §3.4(存储)与 §3.9(功耗),超预算就调码强度或缩保护范围。",
+  "<b>把要求往下游与运营传</b>:给物理实现交 ECC/CRC 逻辑与 DFT 钩子,给 fleet 运营交健康判定阈值、隔离/重路由策略与换件流程;明确标注哪些是 TPU v1 未披露、按数据中心 ASIC 通行实践处理,不杜撰专属机制。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(RAS/ECC/冗余调度等 v1 未披露处,均按数据中心推理 ASIC 通行实践说明,非 v1 专属机制或数字)"
+}

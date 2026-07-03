@@ -1,0 +1,118 @@
+{
+ "secNum": "3.2",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · 数据通路(MXU+累加器+激活)与极简控制通路的清爽切分",
+ "oneLine": "TPU 把「算」和「管」彻底分家:数据通路只管做矩阵乘/累加/激活,控制通路被压到极简——复杂调度全甩给主机软件,芯片面积才能几乎全让给 MAC。",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"60\" y=\"40\">数据通路 Datapath(做实际运算)</text><text class=\"cs-note\" x=\"430\" y=\"40\">控制通路 Control(发控制信号)</text><line x1=\"400\" y1=\"55\" x2=\"400\" y2=\"385\" stroke=\"#cbd5e1\" stroke-width=\"1\" stroke-dasharray=\"3 5\"/><g class=\"cs-part\" data-k=\"ub\" data-g=\"datapath\"><rect class=\"cs-box\" x=\"55\" y=\"60\" width=\"150\" height=\"52\" rx=\"8\"/><text class=\"cs-t\" x=\"130\" y=\"84\">Unified Buffer</text><text class=\"cs-sub\" x=\"130\" y=\"100\">24 MiB 激活/中间值</text></g><g class=\"cs-part\" data-k=\"mxu\" data-g=\"datapath\"><rect class=\"cs-box\" x=\"55\" y=\"150\" width=\"150\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"130\" y=\"178\">MXU 矩阵单元</text><text class=\"cs-sub\" x=\"130\" y=\"196\">256×256 脉动阵列</text></g><g class=\"cs-part\" data-k=\"acc\" data-g=\"datapath\"><rect class=\"cs-box\" x=\"55\" y=\"252\" width=\"150\" height=\"52\" rx=\"8\"/><text class=\"cs-t\" x=\"130\" y=\"276\">累加器 Accumulator</text><text class=\"cs-sub\" x=\"130\" y=\"292\">4 MiB 32-bit</text></g><g class=\"cs-part\" data-k=\"act\" data-g=\"datapath\"><rect class=\"cs-box\" x=\"55\" y=\"334\" width=\"150\" height=\"50\" rx=\"8\"/><text class=\"cs-t\" x=\"130\" y=\"358\">激活单元 Activation</text><text class=\"cs-sub\" x=\"130\" y=\"374\">ReLU / 归一化 / 池化</text></g><line class=\"cs-arr\" x1=\"130\" y1=\"112\" x2=\"130\" y2=\"146\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"130\" y1=\"214\" x2=\"130\" y2=\"248\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"130\" y1=\"304\" x2=\"130\" y2=\"330\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"host\" data-g=\"control\"><rect class=\"cs-box\" x=\"445\" y=\"60\" width=\"200\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"545\" y=\"84\">主机 Host(PCIe)</text><text class=\"cs-sub\" x=\"545\" y=\"100\">发 CISC 指令(约十几条)</text></g><g class=\"cs-part\" data-k=\"seq\" data-g=\"control\"><rect class=\"cs-box\" x=\"445\" y=\"160\" width=\"200\" height=\"60\" rx=\"8\"/><text class=\"cs-t\" x=\"545\" y=\"186\">片上 Sequencer</text><text class=\"cs-sub\" x=\"545\" y=\"204\">取指 / 译码 / 极简控制</text></g><g class=\"cs-part\" data-k=\"ctrl\" data-g=\"control\"><rect class=\"cs-box\" x=\"445\" y=\"262\" width=\"200\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"545\" y=\"286\">控制信号 Control Signals</text><text class=\"cs-sub\" x=\"545\" y=\"302\">读地址 / 使能 / 启动</text></g><line class=\"cs-arr\" x1=\"545\" y1=\"116\" x2=\"545\" y2=\"156\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"545\" y1=\"220\" x2=\"545\" y2=\"258\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-g=\"cw\"><line class=\"cs-arr\" x1=\"445\" y1=\"284\" x2=\"212\" y2=\"86\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-g=\"cw\"><line class=\"cs-arr\" x1=\"445\" y1=\"290\" x2=\"212\" y2=\"182\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-g=\"cw\"><line class=\"cs-arr\" x1=\"445\" y1=\"296\" x2=\"212\" y2=\"278\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-g=\"cw\"><line class=\"cs-arr\" x1=\"445\" y1=\"302\" x2=\"212\" y2=\"359\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"248\" y=\"135\">控制信号(虚线)</text><text class=\"cs-note\" x=\"248\" y=\"150\">→ 驱动数据通路</text><text class=\"cs-note\" x=\"430\" y=\"350\">复杂控制(调度 / 循环 / 分支)</text><text class=\"cs-note\" x=\"430\" y=\"366\">留在主机软件,不进芯片</text></svg>",
+ "legend": [
+  {
+   "k": "datapath",
+   "name": "数据通路(做实际运算)",
+   "desc": "Unified Buffer → MXU → 累加器 → 激活,这条链做的是真正的数值计算(乘、加、ReLU)。TPU 把绝大多数晶体管都砸在这里(65,536 个 8-bit MAC)。"
+  },
+  {
+   "k": "control",
+   "name": "控制通路(发控制信号)",
+   "desc": "主机经 PCIe 发来约十几条 CISC 指令,片上 sequencer 取指/译码后产生控制信号——它本身不算数,只负责「指挥」数据通路何时读、何时算。"
+  },
+  {
+   "k": "cw",
+   "name": "控制信号(虚线)",
+   "desc": "从控制通路射向数据通路的虚线箭头:读地址、各单元使能、矩阵乘启动等。控制信号「流」向数据,但与数据流物理分离。"
+  },
+  {
+   "k": "host",
+   "name": "复杂控制留在主机",
+   "desc": "循环展开、分支、张量调度等复杂控制逻辑被 TensorFlow/XLA 编译进主机侧指令流,不做进芯片——这是 host-driven 设计的灵魂:用软件的灵活换硬件的简单。"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "host"
+   ],
+   "cap": "① 主机发指令:XLA 把整张计算图编译成约十几条 CISC 指令,经 PCIe 推给 TPU——「该做什么」由主机软件决定。"
+  },
+  {
+   "keys": [
+    "seq",
+    "ctrl"
+   ],
+   "cap": "② 片上 sequencer 取指/译码,生成一束控制信号(读地址、使能、启动)——控制通路只做「指挥」,自己不参与算数。"
+  },
+  {
+   "keys": [
+    "cw",
+    "ub",
+    "mxu",
+    "acc",
+    "act"
+   ],
+   "cap": "③ 控制信号(虚线)横跨边界打到数据通路各级:告诉 UB 读哪块、命令 MXU 启动矩阵乘、放行累加器与激活。"
+  },
+  {
+   "keys": [
+    "ub",
+    "mxu",
+    "acc",
+    "act"
+   ],
+   "cap": "④ 数据通路独立流水:激活从 UB 进 MXU,部分和落累加器,再过激活单元写回 UB——数据流与控制流是两条物理分开的路。"
+  },
+  {
+   "keys": [
+    "host",
+    "seq"
+   ],
+   "cap": "⑤ 复杂度的去向:循环/分支/调度这类「难的控制」全压在主机软件,片上控制因此极简——省下的面积换成更多 MAC。"
+  }
+ ],
+ "before": [
+  "<b>先界定两条通路的边界</b>:哪些部件属于「算」(数据通路:存储→运算→写回),哪些属于「管」(控制通路:取指→译码→发控制信号)。TPU 的切分极干净:运算全在 MXU/累加器/激活,控制只剩一个极简 sequencer。",
+  "<b>要拍板的设计量</b>:控制放多少在片上、多少甩给主机软件;指令集风格(TPU 选 CISC、host-driven,指令仅约十几条);控制信号有哪些(读地址、使能、矩阵乘启动等)。",
+  "<b>必备输入</b>:架构(③)定的数据流(weight-stationary)、目标负载(数据中心推理,batch 大、计算图静态可提前编译)、主机接口(PCIe 3.0)。",
+  "<b>必须想清的考量</b>:负载的控制是否可静态化——若计算图能在编译期定死(CNN/MLP 推理正是如此),复杂控制就该外移到主机,片上控制可以做得很薄。"
+ ],
+ "during": [
+  "<b>目标</b>:让数据通路尽量「宽而傻」、控制通路尽量「薄」——把硅片面积最大化地让给 MAC 阵列,这是 TPU 单位面积算力高的根因。",
+  "<b>控制往哪放</b>:TPU 选 host-driven——复杂控制(循环、分支、张量调度)由 TensorFlow/XLA 编译进主机指令流,片上只留取指/译码/发信号的极简 sequencer。代价是依赖主机持续喂指令、灵活性受编译器约束。",
+  "<b>指令粒度怎么定</b>:用 CISC 粗粒度指令(如「做一次大矩阵乘」),一条指令驱动海量 MAC 工作很多拍 → 指令数极少(约十几条)、取指/译码开销几乎可忽略,控制逻辑自然瘦。",
+  "<b>两条通路物理分离</b>:数据沿 UB→MXU→累加器→激活流动;控制信号(图中虚线)从 sequencer 横向打到各级。分离的好处是各自独立优化:数据通路狂堆带宽与并行,控制通路只求时序正确。",
+  "<b>为什么敢砍控制</b>:推理计算图静态、无数据相关分支 → 不需要分支预测、乱序、复杂依赖追踪那一整套(对比通用 CPU 控制通路极其臃肿)。静态可调度,是「控制可以薄」的前提。",
+  "<b>诚实边界</b>:TPU v1 公开资料未细披露 sequencer 的具体微结构(状态数、控制字宽度等);此处「极简片上控制 + 复杂控制留主机」是其论文明确的设计取向,而非逐字披露的 RTL 细节。"
+ ],
+ "result": [
+  {
+   "label": "数据通路核心",
+   "value": "MXU(256×256)+ 4 MiB 累加器 + 激活单元"
+  },
+  {
+   "label": "控制通路",
+   "value": "极简片上 sequencer(host-driven)"
+  },
+  {
+   "label": "指令风格 / 数量",
+   "value": "CISC 粗粒度,约十几条"
+  },
+  {
+   "label": "复杂控制去向",
+   "value": "外移到主机 TensorFlow/XLA 编译"
+  },
+  {
+   "label": "省略的经典控制",
+   "value": "无分支预测 / 乱序(静态计算图)"
+  },
+  {
+   "label": "面积取舍结果",
+   "value": "晶体管几乎全给 MAC,控制占比极小"
+  }
+ ],
+ "after": [
+  "<b>验控制信号时序</b>:确认 sequencer 发出的读地址/使能/启动信号与数据通路各级流水严丝合缝(早一拍或晚一拍都会读错数据或丢结果)。",
+  "<b>验主机—芯片协议</b>:用 cycle 模型确认 PCIe 喂指令的节奏跟得上数据通路吞吐,主机别成为瓶颈(host-driven 的固有风险)。",
+  "<b>定块级验证计划</b>:数据通路与控制通路分别建覆盖点——数据通路覆盖各运算路径,控制通路覆盖指令译码与边界(空指令、背靠背矩阵乘、反压)。",
+  "<b>交给 ⑤ RTL</b>:把数据通路(MXU/累加器/激活)与控制 FSM/sequencer 分别写成可综合 Verilog,接口(控制信号束)先冻结。",
+  "<b>回看可演进性</b>:控制薄意味着新算子主要靠改主机编译器支持;评估这条 host-driven 路线对未来负载(如 RNN/Transformer)的适配代价。"
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(sequencer 微结构细节为通行实践推断,非 v1 逐字披露)"
+}
