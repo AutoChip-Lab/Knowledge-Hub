@@ -1,269 +1,130 @@
 # AutoChip Knowledge Hub
 
-AutoChip Knowledge Hub 是 AutoChip 项目的学习资料与新人入门中心。这个仓库用于集中存放项目成员需要学习的知识材料，尤其是那些可以直接通过浏览器打开的网页型学习文档。
+AutoChip Knowledge Hub 是 AutoChip 项目的学习资料中心，面向新加入项目的成员、准备参与 AutoChip agent 开发的同学，以及希望快速理解芯片设计与 AI agent 系统背景的人。
 
-仓库的核心目标很简单：**让新加入 AutoChip 的成员拿到一个链接，就能系统地学习项目相关的基础知识、工程流程和背景概念。**
+这个仓库的定位不是普通代码仓库，也不是零散资料备份，而是一个 **面向学习和 onboarding 的知识入口**。我们希望把 AutoChip 项目中反复需要讲解的基础概念、工程流程、系统设计思路和背景知识整理成可以直接打开的网页文档。新成员不需要先配置复杂环境，只要打开对应链接，就可以按主题学习。
 
-当前已经发布的学习页面：
+AutoChip 关注的是 **Agentic AI for End-to-End Chip Design**。长期来看，我们希望用多个专门化的 AI agent 参与芯片设计全流程，例如架构探索、RTL 生成、功能验证、综合优化、物理设计、评测基准、任务规划、工具调用和 agent memory 管理等。Knowledge Hub 的作用，就是为这些工作提供共同的知识地基。
 
-| 学习模块 | 网页入口 | 适合对象 |
+## 这个仓库解决什么问题
+
+| 目标 | 说明 |
+| --- | --- |
+| 新人快速入门 | 新成员可以通过网页文档快速理解项目所需的基础知识。 |
+| 团队知识对齐 | 把反复需要解释的概念沉淀下来，减少口头重复讲解。 |
+| 项目背景补齐 | 在写 agent 之前，先理解对应芯片设计环节的工程语境。 |
+| 网页化学习 | 大部分资料以网页形式呈现，适合直接分享链接和浏览器阅读。 |
+| 长期扩展 | 后续可以继续加入更多学习文档，并按同样形式逐块介绍。 |
+
+## 知识文档
+
+### 1. 芯片设计完整流程
+
+🔗 **网页入口**  
+[打开《芯片设计完整流程》](https://autochip-lab.github.io/Knowledge-Hub/chip-design-flow/)
+
+### 文档定位
+
+《芯片设计完整流程》是 Knowledge Hub 当前的第一份学习文档。它面向对芯片设计流程还不熟悉、但后续需要参与 AutoChip agent 设计与开发的成员。
+
+这份文档的目标不是把每个环节都讲到专家级深度，而是先建立一张完整的工程地图：一颗芯片从最早的产品需求，到系统规格、架构、RTL、验证、综合、物理设计、签核、流片、制造、封装测试，再到 bring-up 和量产，中间到底经历了哪些阶段，每个阶段解决什么问题，产出什么东西，又会影响下游哪些环节。
+
+对于 AutoChip 来说，这份文档尤其重要。因为我们后续设计的 agent 不是脱离工程流程的聊天机器人，而是要嵌入芯片设计流程中的具体环节。只有先理解芯片设计全流程，才能判断：
+
+- architecture agent 应该服务哪个阶段；
+- RTL agent 的输入和输出应该是什么；
+- verification agent 为什么必须理解规格、RTL 和 testbench；
+- backend / physical-design agent 为什么要关心 PPA、时序和签核；
+- tapeout 或 bring-up 相关 agent 为什么需要理解真实硅片回片后的问题。
+
+### 适合谁阅读
+
+| 读者 | 阅读收益 |
+| --- | --- |
+| 刚加入 AutoChip 的新成员 | 快速建立芯片设计全流程的基本框架。 |
+| 做 AI agent 但不熟悉芯片流程的成员 | 理解 agent 应该嵌入哪些工程环节。 |
+| 做架构、RTL、验证或后端方向的成员 | 从全局视角理解自己所在环节的上下游关系。 |
+| 负责项目规划或文档建设的成员 | 作为 AutoChip 后续知识体系的基础材料。 |
+
+### 内容总览
+
+这份文档将芯片设计流程拆成 13 个阶段：
+
+```text
+① 产品定义与市场需求
+  ↓
+② 系统规格
+  ↓
+③ 架构设计
+  ↓
+④ 微架构设计
+  ↓
+⑤ RTL 设计
+  ↓
+⑥ 功能验证
+  ↓
+⑦ 逻辑综合
+  ↓
+⑧ 物理设计
+  ↓
+⑨ 签核
+  ↓
+⑩ 流片
+  ↓
+⑪ 制造
+  ↓
+⑫ 封装测试
+  ↓
+⑬ bring-up / 量产
+```
+
+### 每一部分在讲什么
+
+| 阶段 | 核心问题 | 和 AutoChip 的关系 |
 | --- | --- | --- |
-| 芯片设计完整流程 | [打开网页](https://autochip-lab.github.io/Knowledge-Hub/chip-design-flow/) | 对芯片设计流程还不熟悉、需要建立完整工程地图的新成员 |
+| ① 产品定义与市场需求 | 决定为什么要做这颗芯片、给谁用、目标是什么。 | 帮助 agent 理解设计任务背后的产品目标，而不是只优化局部指标。 |
+| ② 系统规格 | 把产品目标翻译成可执行、可验证的工程规格。 | verification agent、architecture agent 都需要以规格为约束。 |
+| ③ 架构设计 | 决定芯片的系统结构、模块划分、数据流和关键权衡。 | architecture agent 的核心工作区。 |
+| ④ 微架构设计 | 把架构细化成流水线、状态机、缓冲、控制逻辑等结构。 | 连接架构决策和 RTL 实现，是 RTL agent 的重要上游。 |
+| ⑤ RTL 设计 | 用硬件描述语言实现可综合的数字逻辑。 | RTL generation / repair agent 的主要工作区。 |
+| ⑥ 功能验证 | 验证 RTL 是否符合规格和预期行为。 | verification agent 的主要工作区。 |
+| ⑦ 逻辑综合 | 把 RTL 转换成门级网表，并进行初步 PPA 优化。 | synthesis-aware agent 需要理解这一阶段的约束和反馈。 |
+| ⑧ 物理设计 | 完成 floorplan、placement、CTS、routing 等后端实现。 | physical-design agent 的核心工作区。 |
+| ⑨ 签核 | 在 tape-out 前完成时序、功耗、物理规则、等价性等检查。 | agent 需要理解什么问题会阻止设计进入流片。 |
+| ⑩ 流片 | 将最终设计交付制造，进入不可轻易回退的阶段。 | 帮助 agent 理解 tapeout readiness 的意义。 |
+| ⑪ 制造 | 晶圆厂根据版图制造真实硅片。 | 让团队理解设计决策如何影响良率、成本和制造风险。 |
+| ⑫ 封装测试 | 将 die 封装成可用芯片，并进行测试、筛选和分级。 | 帮助理解 DFT、测试覆盖率和量产质量之间的关系。 |
+| ⑬ bring-up / 量产 | 回片后点亮、调试、硅验证、良率爬坡并进入量产。 | 让 agent 设计考虑真实硅片调试、可观测性和工程闭环。 |
 
-仓库地址：
+### 推荐阅读顺序
 
-```text
-https://github.com/AutoChip-Lab/Knowledge-Hub
-```
-
-## 项目定位
-
-AutoChip 关注的是 **Agentic AI for End-to-End Chip Design**，也就是用多个专门化的 AI Agent 参与芯片设计全流程。
-
-在长期设想中，AutoChip 会覆盖芯片设计中的多个环节，例如：
-
-- 架构探索与设计空间分析
-- RTL 生成、修复与模块集成
-- 功能验证、测试平台生成与 bug 定位
-- 逻辑综合与综合后优化
-- 物理设计、PPA 分析与后端流程自动化
-- benchmark、数据集与评测体系
-- agent 系统的记忆管理、工具调用、任务规划与协同机制
-
-Knowledge Hub 是这个体系中的“学习入口层”。它不直接承载核心代码，而是帮助成员先建立共识：
-
-- 芯片设计到底有哪些阶段
-- 每个阶段解决什么问题、产出什么东西
-- 哪些知识是设计 Agent 时必须理解的
-- AutoChip 后续每个 Agent 会落在全流程中的哪个位置
-- 新成员应该从哪里开始读、如何逐步补齐背景知识
-
-## 当前知识地图
-
-```mermaid
-flowchart TD
-  KH["AutoChip Knowledge Hub"] --> CDF["芯片设计完整流程"]
-
-  CDF --> P1["① 产品定义与市场需求"]
-  CDF --> P2["② 系统规格"]
-  CDF --> P3["③ 架构设计"]
-  CDF --> P4["④ 微架构设计"]
-  CDF --> P5["⑤ RTL 设计"]
-  CDF --> P6["⑥ 功能验证"]
-  CDF --> P7["⑦ 逻辑综合"]
-  CDF --> P8["⑧ 物理设计"]
-  CDF --> P9["⑨ 签核"]
-  CDF --> P10["⑩ 流片"]
-  CDF --> P11["⑪ 制造"]
-  CDF --> P12["⑫ 封装测试"]
-  CDF --> P13["⑬ bring-up / 量产"]
-```
-
-## 仓库结构
-
-```text
-Knowledge-Hub/
-  README.md
-  docs/
-    .nojekyll
-    chip-design-flow/
-      index.html
-      content.js
-      cases.js
-      secmaps.js
-      assets/
-        marked.min.js
-      01-产品定义与市场需求.md
-      02-系统规格.md
-      ...
-      13-bring-up量产.md
-      build.py
-      assemble_cases.py
-      cases_frag/
-      wf_cases*.js
-```
-
-## 目录说明
-
-### `docs/`
-
-`docs/` 是 GitHub Pages 的发布目录。
-
-如果仓库的 GitHub Pages 设置为：
-
-```text
-Branch: main
-Folder: /docs
-```
-
-那么 GitHub 会把 `docs/` 作为网站根目录发布。也就是说：
-
-```text
-docs/
-```
-
-对应网页根入口：
-
-```text
-https://autochip-lab.github.io/Knowledge-Hub/
-```
-
-后续每一个新的学习模块都可以放在 `docs/` 下的独立文件夹中。只要该文件夹里有 `index.html`，就可以通过浏览器链接直接访问。
-
-### `docs/.nojekyll`
-
-`.nojekyll` 用来告诉 GitHub Pages：这个仓库是普通静态网页，不需要经过 Jekyll 处理。
-
-这样可以减少静态资源路径、自动生成文件、下划线目录等方面的潜在问题。对于这类直接发布 HTML / CSS / JavaScript 的资料型网站，保留 `.nojekyll` 是比较稳妥的做法。
-
-### `docs/chip-design-flow/`
-
-这是当前已经完成并发布的第一个学习模块：**芯片设计完整流程**。
-
-网页入口：
-
-```text
-https://autochip-lab.github.io/Knowledge-Hub/chip-design-flow/
-```
-
-这个模块用交互式网页的形式讲解一颗芯片从想法到量产的大致流程：
-
-```text
-产品定义
-  -> 系统规格
-  -> 架构设计
-  -> 微架构设计
-  -> RTL 设计
-  -> 功能验证
-  -> 逻辑综合
-  -> 物理设计
-  -> 签核
-  -> 流片
-  -> 制造
-  -> 封装测试
-  -> bring-up / 量产
-```
-
-这个模块的作用不是把每个环节都讲成专家级教程，而是帮助新成员先建立一张全局地图。理解这张地图之后，后续再看 AutoChip 的 architecture agent、verification agent、RTL agent、physical-design agent，会更容易知道每个 agent 在全流程中的位置和价值。
-
-## `chip-design-flow` 文件说明
-
-### 网页运行必需文件
-
-这些文件是浏览器打开网页时真正需要加载的运行文件：
-
-| 文件 | 作用 |
-| --- | --- |
-| `index.html` | 网页主入口，包含页面结构、样式、导航逻辑和交互逻辑。 |
-| `content.js` | 由 Markdown 章节生成的内容数据，网页通过它加载正文。 |
-| `cases.js` | 交互案例数据，包含案例图、案例说明和分步展示信息。 |
-| `secmaps.js` | 各章节核心内容之间的流程关系图数据。 |
-| `assets/marked.min.js` | 浏览器端 Markdown 渲染库，用于把章节内容转成 HTML。 |
-
-最小可运行结构如下：
-
-```text
-docs/chip-design-flow/
-  index.html
-  content.js
-  cases.js
-  secmaps.js
-  assets/
-    marked.min.js
-```
-
-如果只是想让网页能被别人访问，至少要保证这些文件在同一个模块目录中，并且路径关系不被破坏。
-
-### 章节源文件
-
-这些 Markdown 文件是芯片设计流程学习模块的源内容：
-
-| 文件 | 内容主题 |
-| --- | --- |
-| `01-产品定义与市场需求.md` | 芯片立项前的产品定义、市场需求、目标客户和商业判断 |
-| `02-系统规格.md` | 如何把产品目标翻译成工程可执行的系统规格 |
-| `03-架构设计.md` | 芯片架构层面的模块划分、数据流、存储层次和系统权衡 |
-| `04-微架构设计.md` | 将架构细化为流水线、状态机、缓冲、控制逻辑等可实现结构 |
-| `05-RTL设计.md` | 使用硬件描述语言实现可综合 RTL 的基本思路 |
-| `06-功能验证.md` | 验证芯片功能正确性的流程、方法和常见验证对象 |
-| `07-逻辑综合.md` | 将 RTL 转换为门级网表并进行时序、面积、功耗优化 |
-| `08-物理设计.md` | floorplan、placement、CTS、routing 等后端实现步骤 |
-| `09-签核.md` | STA、功耗、EM/IR、物理验证、等价性检查等 tape-out 前检查 |
-| `10-流片.md` | tape-out 前后的交付物、掩模、制造准备和工程风险 |
-| `11-制造.md` | 晶圆制造流程及其与设计、良率、工艺节点之间的关系 |
-| `12-封装测试.md` | 封装、晶圆测试、成品测试、binning 与可靠性筛选 |
-| `13-bring-up量产.md` | 回片点亮、硅验证、软件 bring-up、良率爬坡和量产交付 |
-
-这些文件适合做内容维护。如果要修改网页正文，通常应该先改 Markdown 源文件，再重新生成对应的 JavaScript 数据文件。
-
-### 构建与生成文件
-
-这些文件用于把源内容整理成网页可以直接加载的数据：
-
-| 文件或目录 | 作用 |
-| --- | --- |
-| `build.py` | 从 Markdown 章节生成 `content.js`。 |
-| `assemble_cases.py` | 将 `cases_frag/` 中的案例片段合并为 `cases.js`。 |
-| `cases_frag/` | 交互案例的源数据片段。 |
-| `wf_cases*.js` | 用于组织或生成案例内容的辅助脚本。 |
-
-这些文件不一定是网页运行时直接加载的文件，但对长期维护很重要。保留它们可以让后续成员继续扩展内容，而不是只能修改已经生成好的 `content.js` 和 `cases.js`。
-
-## 新成员建议阅读方式
-
-建议按下面顺序使用当前模块：
+如果你是第一次阅读，建议不要跳着看。可以按下面的节奏理解：
 
 ```mermaid
 flowchart LR
-  A["先打开网页总览"] --> B["读 ①-③: 需求、规格、架构"]
-  B --> C["读 ④-⑥: 微架构、RTL、验证"]
-  C --> D["读 ⑦-⑨: 综合、物理设计、签核"]
-  D --> E["读 ⑩-⑬: 流片、制造、封测、bring-up"]
-  E --> F["回到 AutoChip Agent 任务"]
+  A["①-②\n先理解需求和规格"] --> B["③-④\n再理解架构和微架构"]
+  B --> C["⑤-⑥\n进入 RTL 与验证"]
+  C --> D["⑦-⑨\n理解综合、后端和签核"]
+  D --> E["⑩-⑬\n理解流片、制造和量产"]
+  E --> F["回到 AutoChip agent 设计"]
 ```
 
-如果你后续要做某个具体 Agent，可以重点关注对应流程段：
+如果你已经知道自己要做的 agent 方向，可以重点阅读对应部分：
 
-| 未来 Agent 方向 | 建议重点阅读 |
+| 方向 | 优先阅读 |
 | --- | --- |
-| Architecture Agent | ① 产品定义、② 系统规格、③ 架构设计、④ 微架构设计 |
-| RTL Agent | ③ 架构设计、④ 微架构设计、⑤ RTL 设计 |
-| Verification Agent | ② 系统规格、⑤ RTL 设计、⑥ 功能验证 |
-| Synthesis / Backend Agent | ⑤ RTL 设计、⑦ 逻辑综合、⑧ 物理设计、⑨ 签核 |
-| Tapeout / Bring-up Assistant | ⑨ 签核、⑩ 流片、⑪ 制造、⑫ 封装测试、⑬ bring-up / 量产 |
+| Architecture Agent | ①、②、③、④ |
+| RTL Agent | ③、④、⑤ |
+| Verification Agent | ②、⑤、⑥ |
+| Synthesis / Backend Agent | ⑤、⑦、⑧、⑨ |
+| Tapeout / Bring-up Assistant | ⑨、⑩、⑪、⑫、⑬ |
 
-## 如何添加新的学习模块
+### 这份文档的特点
 
-后续如果要加入新的网页型资料，建议每个主题一个独立目录：
+- **网页化**：可以直接通过浏览器访问，不需要本地环境。
+- **流程化**：按芯片从想法到量产的真实顺序组织。
+- **面向新人**：重点是建立全局认知，而不是堆砌细节。
+- **服务 AutoChip**：每个阶段都可以映射到未来可能开发的 agent。
+- **适合反复引用**：之后讨论具体 agent 时，可以直接引用某个流程阶段。
 
-```text
-docs/
-  new-learning-topic/
-    index.html
-    assets/
-    ...
-```
-
-对应访问链接会是：
-
-```text
-https://autochip-lab.github.io/Knowledge-Hub/new-learning-topic/
-```
-
-新增模块时建议遵守：
-
-- 每个模块独立成文件夹。
-- 每个模块的入口文件命名为 `index.html`。
-- 模块内 CSS、JavaScript、图片、字体等资源尽量使用相对路径。
-- 如果有源文件和生成文件，尽量在目录说明中写清楚。
-- 新模块发布后，及时更新本 README。
-
-## 当前状态
-
-当前仓库已经包含并发布：
-
-```text
-docs/chip-design-flow/
-```
-
-其他学习模块暂未加入，因此 README 目前只列出这个已存在的模块。
+后续新的学习文档正式加入仓库后，也会按这种形式作为独立大块补充到 README 中。
