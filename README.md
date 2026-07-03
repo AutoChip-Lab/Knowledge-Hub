@@ -59,64 +59,7 @@ flowchart TD
   CDF --> P13["⑬ bring-up / 量产"]
 ```
 
-## 仓库结构
-
-```text
-Knowledge-Hub/
-  README.md
-  docs/
-    .nojekyll
-    chip-design-flow/
-      index.html
-      content.js
-      cases.js
-      secmaps.js
-      assets/
-        marked.min.js
-      01-产品定义与市场需求.md
-      02-系统规格.md
-      ...
-      13-bring-up量产.md
-      build.py
-      assemble_cases.py
-      cases_frag/
-      wf_cases*.js
-```
-
-## 目录说明
-
-### `docs/`
-
-`docs/` 是 GitHub Pages 的发布目录。
-
-如果仓库的 GitHub Pages 设置为：
-
-```text
-Branch: main
-Folder: /docs
-```
-
-那么 GitHub 会把 `docs/` 作为网站根目录发布。也就是说：
-
-```text
-docs/
-```
-
-对应网页根入口：
-
-```text
-https://autochip-lab.github.io/Knowledge-Hub/
-```
-
-后续每一个新的学习模块都可以放在 `docs/` 下的独立文件夹中。只要该文件夹里有 `index.html`，就可以通过浏览器链接直接访问。
-
-### `docs/.nojekyll`
-
-`.nojekyll` 用来告诉 GitHub Pages：这个仓库是普通静态网页，不需要经过 Jekyll 处理。
-
-这样可以减少静态资源路径、自动生成文件、下划线目录等方面的潜在问题。对于这类直接发布 HTML / CSS / JavaScript 的资料型网站，保留 `.nojekyll` 是比较稳妥的做法。
-
-### `docs/chip-design-flow/`
+## `docs/chip-design-flow/`
 
 这是当前已经完成并发布的第一个学习模块：**芯片设计完整流程**。
 
