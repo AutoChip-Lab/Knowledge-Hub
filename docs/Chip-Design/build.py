@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 生成 content.js —— 把文件夹里的 NN-*.md 原文 + 13 步阶段元数据打包给网页。
-用法:在 chip-design-flow/ 目录下运行  python3 build.py
+用法:在 Chip-Design/ 目录下运行  python3 build.py
 新增 04~13 的文档后,重跑一次即可,网页自动更新。
 """
 import json
