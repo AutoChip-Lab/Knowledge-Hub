@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent 与 Agent Harness · 一门 31 章的课</title>
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/marked.min.js"></script>
+<script src="content.js"></script>
+<script src="cases.js"></script>
+<script src="secmaps.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <button class="brand" onclick="go('overview')" type="button" aria-label="返回课程目录"><span class="dot"></span><span>Agent&nbsp;·&nbsp;Harness</span></button>
+    <div class="topacts">
+      <button class="tbtn" onclick="go('overview')">目录</button>
+      <button class="tbtn" onclick="openPalette()">跳转 <kbd>⌘K</kbd></button>
+    </div>
+  </header>
+  <div class="readbar" id="readbar"></div>
+
+  <div id="stage"></div>
+
+  <div class="palette" id="palette" aria-hidden="true">
+    <div class="palette-box" role="dialog" aria-modal="true">
+      <input id="palInput" placeholder="搜索章节 / 正文术语 / 产品名…" autocomplete="off" spellcheck="false">
+      <div class="palette-list" id="palList"></div>
+      <div class="palette-foot"><kbd>↑</kbd><kbd>↓</kbd> 选择<span>·</span><kbd>↵</kbd> 进入<span>·</span><kbd>esc</kbd> 关闭</div>
+    </div>
+  </div>
+
+  <div class="kbd-hint" id="kbdhint"><kbd>←</kbd><kbd>→</kbd> 切换<span>·</span><kbd>⌘K</kbd> 搜索<span>·</span><kbd>esc</kbd> 目录</div>
+
+<script>
+const SITE = window.SITE || {stages:[], phaseOrder:[]};
+const STAGES = SITE.stages;
+const AVAIL = STAGES.filter(s=>s.available);
+const PHASE_COLOR = {
+  "认识 Agent":{c:"#4f46e5"}, "Agent Harness":{c:"#0d9488"},
+  "主流 Agent 与 Harness 拆解":{c:"#e11d48"}, "融会贯通与落地":{c:"#0284c7"},
+};
+function pcol(ph){ return (PHASE_COLOR[ph]||{}).c || 'var(--accent)'; }
+function chNum(s){ return String(STAGES.indexOf(s)+1).padStart(2,'0'); }
+marked.setOptions({gfm:true, breaks:false});
+let currentPrefix = null;
+function go(k){ location.hash = '#/'+k; }
+const PROGRESS_KEY = 'agent-flow-progress-v2';
+const TERM_BANK = ['agent','harness','agent loop','ReAct','tool use','function calling','MCP','context','memory','RAG','compaction','sandbox','approval','prompt injection','subagent','multi-agent','workflow','benchmark','SWE-bench','ACI','CodeAct','AGENTS.md','CLAUDE.md','OpenHands','Claude Code','Codex','Cursor','Aider','LangGraph','UCAgent','EDA','GDS'];
+const PRACTICE_BY_PREFIX = {
+  "01": {q:"判断一个系统是否更像 agent,最关键看什么?", a:0, choices:["下一步行动是否由模型根据反馈动态决定","界面是不是聊天窗口","模型参数量是否足够大"], why:"L2 workflow 和 L3 agent 的分界线,就是流程由人写死还是模型在循环里现场决定。"},
+  "03": {q:"给 agent 设计工具时,最应该优先优化什么?", a:1, choices:["工具名字越酷越好","反馈短、清楚、可被模型继续利用","尽量把所有能力塞进一个万能工具"], why:"工具是给模型用的界面。好工具要有清晰 schema、合适粒度和可压缩的 observation。"},
+  "09": {q:"高权限 agent 读不可信网页时,最稳妥的第一反应是什么?", a:2, choices:["相信模型能分清数据和指令","直接开全自动提高效率","降权、隔离或先用低权限子代理摘要"], why:"提示注入发生在轨迹中途。读不可信内容时要先收权限,而不是押注模型自觉。"},
+  "21": {q:"比较两个 agent benchmark 分数前,最不能缺的上下文是什么?", a:0, choices:["模型、harness、任务集、预算和跑法是否披露","截图是否足够好看","产品是否来自大公司"], why:"长程任务上 harness 方差可能盖过模型方差。不披露 harness 的横向比较很容易误导。"},
+  "22": {q:"端到端芯片 agent 最现实的目标应该是哪一档?", a:1, choices:["完全无人 L4 一键流片","L3:agent 编排工具,关键节点人在环","只做聊天问答"], why:"芯片流程昂贵、不可逆、验证极严。现实目标是放大工程师,不是跳到无人流片神话。"}
+};
+const PRACTICE_BY_PHASE = {
+  "认识 Agent": {q:"遇到步骤固定、可预测的任务时,优先应该考虑什么?", a:0, choices:["先用 workflow,不要为了潮流硬上全自主 agent","直接上多 agent 团队","只换更强模型"], why:"步骤固定时 workflow 更便宜、更稳、更好调试。agent 适合步骤无法预枚举的任务。"},
+  "Agent Harness": {q:"harness 设计里最该优先落地的不是花哨功能,而是?", a:2, choices:["更多插件入口","更长欢迎文案","循环、上下文、权限和观测这些确定性基础设施"], why:"harness 的价值在把概率模型包成可靠、可控、可审计的执行系统。"},
+  "主流 Agent 与 Harness 拆解": {q:"拆一个真实产品时,最应该避免什么?", a:1, choices:["看它的一次任务怎么流动","只背营销卖点和融资数字","比较它的工具、上下文、权限和取舍"], why:"产品拆解的核心是生命周期、组件和取舍,不是品牌名词堆叠。"},
+  "融会贯通与落地": {q:"自己设计 harness 时,第一步应该是什么?", a:0, choices:["从任务、风险和自主档位倒推","先把所有工具都接上","先设计 logo 和页面"], why:"好的 harness 是在给定任务和风险档下做出的自洽取舍。"}
+};
+
+function esc(v){
+  return String(v ?? '').replace(/[&<>"']/g, ch=>({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[ch]));
+}
+function stripMarkdown(md){
+  return String(md||'')
+    .replace(/```[\s\S]*?```/g,' ')
+    .replace(/`([^`]+)`/g,'$1')
+    .replace(/^#{1,6}\s*/gm,'')
+    .replace(/!\[[^\]]*]\([^)]*\)/g,'')
+    .replace(/\[([^\]]+)]\([^)]*\)/g,'$1')
+    .replace(/[>*_#|~\-]+/g,' ')
+    .replace(/\s+/g,' ')
+    .trim();
+}
+function cleanTitle(t){
+  return String(t||'')
+    .replace(/^[^\dA-Za-z一-龥]+/,'')
+    .replace(/^\d+\s*[.、:：-]\s*/,'')
+    .trim();
+}
+function readProgress(){ try{ return JSON.parse(localStorage.getItem(PROGRESS_KEY) || '{}'); }catch(_){ return {}; } }
+function writeProgress(v){ try{ localStorage.setItem(PROGRESS_KEY, JSON.stringify(v)); }catch(_){} }
+function stageState(prefix){ return readProgress()[prefix] || {}; }
+function setStageState(prefix, patch){
+  const all=readProgress();
+  all[prefix]=Object.assign({}, all[prefix]||{}, patch, {updatedAt:Date.now()});
+  writeProgress(all);
+}
+function stageDone(prefix){ return !!stageState(prefix).done; }
+function completeStage(prefix){
+  setStageState(prefix, {done:true});
+  document.querySelectorAll(`[data-progress-prefix="${prefix}"]`).forEach(el=>el.classList.add('done'));
+  const done=document.querySelector('.practice-done'); if(done) done.textContent='已完成';
+}
+function completionStats(){
+  const all=readProgress();
+  const done=AVAIL.filter(s=>all[s.prefix]?.done).length;
+  return {done,total:AVAIL.length,pct:AVAIL.length?Math.round(done/AVAIL.length*100):0};
+}
+function extractTerms(raw){
+  const low=String(raw||'').toLowerCase();
+  return TERM_BANK.filter(t=>low.includes(t.toLowerCase())).slice(0,10);
+}
+function sourceProfile(raw){
+  const text=String(raw||'');
+  return {
+    snapshot:(text.match(/截至\s*2026|2026\s*年中|快照/g)||[]).length,
+    caution:(text.match(/厂商自报|未核实|不确定|估算|低置信|资料不足|尚未确认/g)||[]).length,
+    papers:(text.match(/arXiv|论文|benchmark|SWE-bench|Terminal-Bench/g)||[]).length
+  };
+}
+
+/* ==================== 文档装饰(复用) ==================== */
+function slugify(t, used){
+  let base = t.trim().toLowerCase().replace(/[^\w一-龥]+/g,'-').replace(/^-+|-+$/g,'') || 'sec';
+  let s = base, i = 2; while(used.has(s)){ s = base+'-'+i; i++; } used.add(s); return s;
+}
+function docIcon(t){
+  if(/位置|全景|概览|地图/.test(t)) return '📍';
+  if(/输入|前提|手里|准备/.test(t)) return '📥';
+  if(/是什么|到底是|什么是|定义/.test(t)) return '🎯';
+  if(/谁来|谁做|由谁|角色/.test(t)) return '👥';
+  if(/核心内容|核心组件|组成|构成|解剖|由哪些|拆开/.test(t)) return '🧩';
+  if(/循环|loop|闭环|工作流|怎么跑|如何运转|一步步|生命周期|流程/.test(t)) return '🔄';
+  if(/工具|tool|函数调用|function/.test(t)) return '🛠️';
+  if(/记忆|上下文|context|memory/.test(t)) return '🧠';
+  if(/权限|安全|沙箱|审批|防护|注入/.test(t)) return '🛡️';
+  if(/提示|prompt|系统提示/.test(t)) return '📝';
+  if(/权衡|取舍|心态|标尺|张力|哲学|设计决策|为什么/.test(t)) return '⚖️';
+  if(/对比|区别|差异|异同|谱系/.test(t)) return '🔀';
+  if(/拆解|剖析|架构|内部/.test(t)) return '🔬';
+  if(/坑|致命|陷阱|误区|忽视|失败|局限/.test(t)) return '⚠️';
+  if(/评测|基准|benchmark|指标|衡量/.test(t)) return '📊';
+  if(/落地|实战|案例|示例|例子/.test(t)) return '🚀';
+  if(/交付|产出|结果/.test(t)) return '📦';
+  if(/小结|总结|下一步|回顾/.test(t)) return '✅';
+  if(/标准|好的|最佳实践|原则/.test(t)) return '⭐';
+  return '›';
+}
+function decorateDoc(container, stage){
+  container.style.setProperty('--accent', pcol(stage.phase));
+  const h1 = container.querySelector('h1'); if(h1) h1.remove();
+  container.querySelectorAll('blockquote').forEach(bq=>{
+    if(/学习系列|全站地图|全流程:/.test(bq.textContent)) bq.classList.add('series-nav');
+  });
+  container.querySelectorAll('h2,h3').forEach(h=>{
+    h.dataset.title = h.textContent;
+    const chip=document.createElement('span'); chip.className='sec-chip'; chip.textContent=docIcon(h.textContent);
+    h.insertBefore(chip, h.firstChild);
+  });
+  container.querySelectorAll('pre').forEach(pre=>{
+    const code=pre.textContent||'';
+    if(/[→←↑↓│└├┌┐┘─➜▸▼]/.test(code)) pre.classList.add('diagram');
+    const btn=document.createElement('button'); btn.className='copy-btn'; btn.textContent='复制';
+    btn.onclick=()=>navigator.clipboard.writeText(code).then(()=>{ btn.textContent='已复制'; setTimeout(()=>btn.textContent='复制',1400); });
+    pre.appendChild(btn);
+  });
+  sectionize(container);
+  try{ injectSecMap(container, stage); }catch(err){ console.warn('secmap', err); }
+  enhanceDocBlocks(container);
+  const hero=buildDocHero(stage);
+  container.insertBefore(hero, container.firstChild);
+  container.insertBefore(buildStudyPanel(stage, container), hero.nextSibling);
+}
+function injectSecMap(container, stage){
+  const map = window.SECMAP && window.SECMAP[stage.prefix]; if(!map) return;
+  for(const sec of container.querySelectorAll('.doc-section')){
+    const h2 = sec.querySelector('h2'); if(!h2) continue;
+    if(/^3\.\s/.test(h2.dataset.title || h2.textContent)){
+      const el = renderSecMap(map);
+      if(h2.nextSibling) sec.insertBefore(el, h2.nextSibling); else sec.appendChild(el);
+      break;
+    }
+  }
+}
+function renderSecMap(map){
+  const wrap=document.createElement('div'); wrap.className='secmap';
+  let html=`<div class="secmap-hd">本章子环节 · 顺序与并行</div><div class="secmap-note">${map.note}</div><div class="secmap-flow">`;
+  (map.flow||[]).forEach((col,ci)=>{
+    if(ci>0) html+=`<div class="smarrow">→</div>`;
+    html+=`<div class="smcol"><div class="smcol-lbl">${col.lbl}</div>`;
+    col.items.forEach(it=>{ html+=`<div class="smchip" data-sec="${it[0]}"><b>${it[0]}</b>${it[1]}</div>`; });
+    html+=`</div>`;
+  });
+  html+=`</div>`;
+  if(map.span){
+    html+=`<div class="secmap-span"><div class="span-lbl">${map.span.lbl}</div><div class="span-items">`;
+    map.span.items.forEach(it=>{ html+=`<div class="smchip" data-sec="${it[0]}"><b>${it[0]}</b>${it[1]}</div>`; });
+    html+=`</div></div>`;
+  }
+  wrap.innerHTML=html;
+  wrap.querySelectorAll('.smchip').forEach(c=> c.onclick=()=>scrollToSec(c.getAttribute('data-sec')));
+  return wrap;
+}
+function scrollToSec(num){
+  for(const h of document.querySelectorAll('.doc-section h3')){
+    const t=h.dataset.title||h.textContent; if(t.indexOf(num+' ')===0){ h.scrollIntoView({behavior:'smooth',block:'start'}); return; }
+  }
+}
+function sectionize(container){
+  const kids=Array.from(container.childNodes); container.innerHTML='';
+  let lead=null, cur=null;
+  kids.forEach(node=>{
+    if(node.nodeType===1 && node.tagName==='H2'){
+      cur=document.createElement('section'); cur.className='doc-section reveal';
+      if(/忽视|坑|致命|陷阱|误区|局限/.test(node.dataset.title||node.textContent)) cur.classList.add('warn-section');
+      container.appendChild(cur); cur.appendChild(node);
+    } else if(cur){ cur.appendChild(node); }
+    else { if(!lead){ lead=document.createElement('div'); lead.className='doc-lead'; container.appendChild(lead);} lead.appendChild(node); }
+  });
+}
+function enhanceDocBlocks(container){
+  container.querySelectorAll('blockquote:not(.series-nav)').forEach(bq=>{
+    const text=bq.textContent || '';
+    if(/一句话|关键直觉|反直觉|务必|注意|⚠️/.test(text)) bq.classList.add('key-quote');
+  });
+  container.querySelectorAll('.doc-section:not(.warn-section) > ul, .doc-section:not(.warn-section) > ol').forEach(list=>{
+    const items=[...list.children].filter(n=>n.tagName==='LI');
+    const textLen=items.reduce((n,li)=>n+li.textContent.length,0);
+    if(items.length>=2 && items.length<=7 && textLen/items.length<130) list.classList.add('card-list');
+  });
+  container.querySelectorAll('.doc-section > p').forEach(p=>{
+    const t=p.textContent || '';
+    if(/^一句话[:：]|^关键|^注意|^所以|^换句话说/.test(t.trim())) p.classList.add('key-p');
+  });
+}
+function buildDocHero(stage){
+  const n=chNum(stage), tot=String(STAGES.length).padStart(2,'0');
+  const mins=Math.max(1, Math.round((stage.raw||'').length/450));
+  const hero=document.createElement('div'); hero.className='doc-hero'; hero.style.setProperty('--accent',pcol(stage.phase));
+  hero.innerHTML=`
+    <div class="dh-kicker"><span class="dh-dot"></span>${stage.phase}<span class="dh-sep">·</span><span class="dh-n">${n}<span class="dh-tot"> / ${tot}</span></span></div>
+    <h1 class="dh-title">${stage.title}</h1>
+    <div class="dh-meta">约 ${mins} 分钟阅读</div>`;
+  return hero;
+}
+function buildStudyPanel(stage, container){
+  const panel=document.createElement('aside'); panel.className='study-panel reveal'; panel.style.setProperty('--accent',pcol(stage.phase));
+  const heads=[...container.querySelectorAll('.doc-section h2')]
+    .map(h=>cleanTitle(h.dataset.title || h.textContent || ''))
+    .filter(Boolean)
+    .slice(0,6);
+  const terms=extractTerms(stage.raw);
+  const prof=sourceProfile(stage.raw);
+  const state=stageState(stage.prefix);
+  const headHtml=heads.map((h,i)=>`<button class="study-step" type="button" data-jump="${i}"><span>${String(i).padStart(2,'0')}</span>${esc(h)}</button>`).join('');
+  const termHtml=(terms.length?terms:['agent','harness','tool use']).map(t=>`<span class="term-chip">${esc(t)}</span>`).join('');
+  const entry=heads[0] || stage.title;
+  const middle=heads.slice(1,3);
+  const takeaway=heads.find(h=>/小结|下一步|坑|心态|结语/.test(h)) || heads[heads.length-1] || '';
+  const chapterSummary=[
+    `这一章先从「${entry}」进入主题。`,
+    middle.length ? `中段会围绕${middle.map(h=>`「${h}」`).join('和')}展开。` : '',
+    takeaway ? `最后收束到「${takeaway}」,帮你形成读后能复用的判断框架。` : `读完后,你应该能把本章的核心概念讲给别人听。`
+  ].filter(Boolean).join('');
+  panel.innerHTML=`
+    <div class="study-head">
+      <div><span class="study-k">学习面板</span><h2>读这一章,先知道讲什么</h2></div>
+      <button class="mini-btn" type="button" data-mark-read>${state.done?'已完成':'标记完成'}</button>
+    </div>
+    <div class="study-grid">
+      <div class="study-stack">
+        <div class="study-card">
+          <span class="study-card-k">目标</span>
+          <p>${esc(stage.summary)}</p>
+        </div>
+        <div class="study-card focus-card">
+          <span class="study-card-k">本章总结</span>
+          <p class="chapter-summary">${esc(chapterSummary)}</p>
+        </div>
+        <div class="study-card">
+          <span class="study-card-k">关键术语</span>
+          <div class="term-list">${termHtml}</div>
+        </div>
+      </div>
+      <div class="study-stack">
+        <div class="study-card">
+          <span class="study-card-k">速读路径</span>
+          <div class="study-steps">${headHtml}</div>
+        </div>
+        <div class="study-card source-card">
+          <span class="study-card-k">事实标注</span>
+          <p>${prof.snapshot?`含 ${prof.snapshot} 处时间快照`: '本章偏概念阐释'} · ${prof.caution?`${prof.caution} 处谨慎/未核实标注`:'暂无显式风险标注'} · ${prof.papers?`${prof.papers} 处论文/评测线索`:'少量外部评测线索'}</p>
+        </div>
+      </div>
+    </div>`;
+  panel.querySelectorAll('[data-jump]').forEach(btn=>{
+    btn.onclick=()=>{ const sec=container.querySelectorAll('.doc-section')[Number(btn.dataset.jump)]; if(sec) sec.scrollIntoView({behavior:'smooth',block:'start'}); };
+  });
+  panel.querySelector('[data-mark-read]').onclick=()=>completeStage(stage.prefix);
+  return panel;
+}
+
+/* ==================== 首页 ==================== */
+function renderIndex(){
+  currentPrefix=null; readbar.classList.remove('show'); document.body.classList.remove('reading');
+  const stage=document.getElementById('stage');
+  const first=(AVAIL[0]||STAGES[0]).prefix;
+  const totalCh=STAGES.length, totalPart=SITE.phaseOrder.length;
+  const stats=completionStats();
+  let ov='', parts='';
+  SITE.phaseOrder.forEach((ph,pi)=>{
+    const chs=STAGES.filter(s=>s.phase===ph); if(!chs.length) return;
+    const col=pcol(ph), pn=String(pi+1).padStart(2,'0');
+    const jump=(chs.find(c=>c.available)||chs[0]);
+    ov+=`<a class="ov-row" href="#/${jump.prefix}" style="--accent:${col}">
+      <span class="ov-n">${pn}</span><span class="ov-dot"></span>
+      <span class="ov-t">${ph}</span><span class="ov-c">${chs.length} 章</span></a>`;
+    let cards='';
+    chs.forEach(s=>{
+      const n=chNum(s);
+      if(s.available){
+        const done=stageDone(s.prefix);
+        cards+=`<a class="ch-card${done?' done':''}" data-progress-prefix="${s.prefix}" href="#/${s.prefix}" style="--accent:${col}">
+          <span class="cc-n">${n}</span><span class="cc-t">${s.title}</span>
+          <span class="cc-d">${s.summary}</span>
+          <span class="cc-status">${done?'已完成':'未完成'}</span>
+          <span class="cc-go">${done?'复习':'开始阅读'}<span class="cc-ar">→</span></span></a>`;
+      } else {
+        cards+=`<span class="ch-card locked" style="--accent:${col}">
+          <span class="cc-n">${n}</span><span class="cc-t">${s.title}</span>
+          <span class="cc-d">${s.summary}</span><span class="cc-go">即将上线</span></span>`;
+      }
+    });
+    parts+=`<section class="part reveal" style="--accent:${col}">
+      <div class="part-head">
+        <span class="part-n">Part ${pn}</span>
+        <h2 class="part-t"><span class="part-dot"></span>${ph}</h2>
+        <span class="part-c">${chs.length} 章</span></div>
+      <div class="card-grid">${cards}</div></section>`;
+  });
+  stage.innerHTML=`
+    <section class="home">
+      <div class="hero">
+        <div class="hero-main">
+          <div class="kicker">AI AGENT · AGENT HARNESS · 系统拆解</div>
+          <h1>把 <em>AI Agent</em> 和它的<br><em>Harness</em> 彻底讲清楚</h1>
+          <p class="lede">先讲透两件事:<b>agent 到底是什么</b>,以及<b>包在它外面的 harness 是什么</b>。再把当下主流的 agent 与 harness —— Claude Code、Cursor、CrewAI、AutoGen、OpenHands、DeerFlow…… —— 逐个拆开:怎么设计、由哪些组件构成、如何一步步运转。</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#/${first}">从第一章开始<span class="ar">→</span></a>
+            <button class="btn btn-ghost" onclick="openPalette()">跳到某一章 <kbd>⌘K</kbd></button>
+          </div>
+          <div class="hero-meta">共 ${totalCh} 章 · ${totalPart} 个部分 · 面向想真正读懂 agent 的人</div>
+        </div>
+        <aside class="hero-side">
+          <div class="hs-lbl">课程总览</div>
+          <div class="progress-card">
+            <div class="pc-top"><span>学习进度</span><b>${stats.pct}%</b></div>
+            <div class="pc-bar"><span style="width:${stats.pct}%"></span></div>
+            <div class="pc-meta">${stats.done} / ${stats.total} 章已完成</div>
+          </div>
+          <div class="ov-list">${ov}</div>
+        </aside>
+      </div>
+      <div class="parts">${parts}</div>
+      <footer class="home-foot"><span>Agent · Harness</span><span>${totalCh} 章 · ${totalPart} 个部分 · 从原理到主流系统拆解</span></footer>
+    </section>`;
+  setupReveal(); window.scrollTo(0,0);
+}
+
+/* ==================== 阅读页 ==================== */
+function renderReader(prefix){
+  const s=STAGES.find(x=>x.prefix===prefix);
+  if(!s || !s.available){ go('overview'); return; }
+  currentPrefix=prefix; document.body.classList.add('reading');
+  const stage=document.getElementById('stage');
+  stage.innerHTML = `<div class="mobile-reader-tools">
+    <button type="button" onclick="openMobilePanel('chapters')">章节</button>
+    <button type="button" onclick="openMobilePanel('toc')">本页</button>
+    <button type="button" onclick="completeStage(currentPrefix)">完成</button>
+  </div>
+  <div class="mobile-drawer" id="mobileDrawer" aria-hidden="true">
+    <div class="drawer-head"><span id="drawerTitle">目录</span><button type="button" onclick="closeMobilePanel()">关闭</button></div>
+    <div class="drawer-body" id="drawerBody"></div>
+  </div>
+  <div class="drawer-shade" id="drawerShade" onclick="closeMobilePanel()"></div>
+  <div class="reader-shell">
+    <aside class="booknav" id="booknav"></aside>
+    <main class="reader-main"><div class="reader-sheet"><article id="content" class="doc"></article></div></main>
+    <aside class="pagetoc" id="pagetoc"></aside>
+  </div>`;
+  const content=stage.querySelector('#content');
+  content.innerHTML = marked.parse(s.raw);
+  try{ decorateDoc(content, s); }catch(err){ console.warn('decorate', err); }
+  buildBookNav(prefix); buildPageToc(content);
+  const idx=STAGES.indexOf(s);
+  const prev=STAGES.slice(0,idx).reverse().find(x=>x.available);
+  const next=STAGES.slice(idx+1).find(x=>x.available);
+  const foot=document.createElement('div'); foot.className='doc-foot';
+  foot.innerHTML=footBtn(prev,'prev','上一篇')+footBtn(next,'next','下一篇');
+  content.appendChild(buildPractice(s));
+  content.appendChild(foot);
+  setupReveal(); window.scrollTo(0,0); onScroll(); showHint();
+}
+function footBtn(stage, cls, lbl){
+  if(!stage) return `<span class="foot-btn ${cls} disabled"><span class="lbl">${lbl}</span><span class="ttl">—</span></span>`;
+  return `<a class="foot-btn ${cls}" href="#/${stage.prefix}"><span class="lbl">${cls==='prev'?'← ':''}${lbl}${cls==='next'?' →':''}</span><span class="ttl">${stage.title}</span></a>`;
+}
+function buildPractice(stage){
+  const data=PRACTICE_BY_PREFIX[stage.prefix] || PRACTICE_BY_PHASE[stage.phase] || PRACTICE_BY_PHASE["认识 Agent"];
+  const saved=stageState(stage.prefix);
+  const wrap=document.createElement('section'); wrap.className='practice-box reveal'; wrap.style.setProperty('--accent',pcol(stage.phase));
+  const choices=data.choices.map((c,i)=>`<label class="quiz-choice"><input type="radio" name="quiz-${stage.prefix}" value="${i}"><span>${esc(c)}</span></label>`).join('');
+  wrap.innerHTML=`
+    <div class="practice-head">
+      <div><span class="study-k">互动练习</span><h2>收尾检查:你是否真的抓住本章?</h2></div>
+      <span class="practice-done">${saved.done?'已完成':'未完成'}</span>
+    </div>
+    <div class="quiz-card">
+      <p class="quiz-q">${esc(data.q)}</p>
+      <div class="quiz-choices">${choices}</div>
+      <div class="quiz-actions">
+        <button class="mini-btn quiz-check" type="button">检查答案</button>
+        <button class="mini-btn ghost quiz-complete" type="button">标记本章完成</button>
+      </div>
+      <div class="quiz-result" aria-live="polite"></div>
+    </div>
+    <label class="note-box">
+      <span>一句话笔记</span>
+      <textarea placeholder="用自己的话写下本章最值得带走的一条原则或一个坑…">${esc(saved.note||'')}</textarea>
+    </label>`;
+  const result=wrap.querySelector('.quiz-result');
+  wrap.querySelector('.quiz-check').onclick=()=>{
+    const picked=wrap.querySelector(`input[name="quiz-${stage.prefix}"]:checked`);
+    if(!picked){ result.className='quiz-result show'; result.textContent='先选一个答案。'; return; }
+    const ok=Number(picked.value)===data.a;
+    result.className='quiz-result show '+(ok?'ok':'bad');
+    result.textContent=(ok?'答对了。':'还不对。')+data.why;
+    if(ok) setStageState(stage.prefix,{quiz:true});
+  };
+  wrap.querySelector('.quiz-complete').onclick=()=>completeStage(stage.prefix);
+  wrap.querySelector('textarea').oninput=e=>setStageState(stage.prefix,{note:e.target.value});
+  return wrap;
+}
+function openMobilePanel(kind){
+  const drawer=document.getElementById('mobileDrawer'), shade=document.getElementById('drawerShade'), body=document.getElementById('drawerBody'), title=document.getElementById('drawerTitle');
+  if(!drawer || !body) return;
+  const source=kind==='toc' ? document.getElementById('pagetoc') : document.getElementById('booknav');
+  title.textContent=kind==='toc' ? '本页目录' : '全部章节';
+  body.innerHTML=source ? source.innerHTML : '';
+  body.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>closeMobilePanel()));
+  drawer.classList.add('open'); shade.classList.add('open'); drawer.setAttribute('aria-hidden','false');
+}
+function closeMobilePanel(){
+  const drawer=document.getElementById('mobileDrawer'), shade=document.getElementById('drawerShade');
+  if(drawer) drawer.classList.remove('open');
+  if(shade) shade.classList.remove('open');
+  if(drawer) drawer.setAttribute('aria-hidden','true');
+}
+function buildBookNav(prefix){
+  const nav=document.getElementById('booknav'); if(!nav) return;
+  let html=`<div class="bn-top"><a class="bn-home" href="#/overview">← 全部章节</a></div>`;
+  SITE.phaseOrder.forEach(ph=>{
+    const chs=STAGES.filter(s=>s.phase===ph); if(!chs.length) return;
+    html+=`<div class="bn-group" style="--accent:${pcol(ph)}"><div class="bn-gh"><span class="bn-gd"></span>${ph}</div>`;
+    chs.forEach(s=>{
+      const on=s.prefix===prefix, tag=s.available?'a':'span';
+      const cls='bn-ch'+(on?' cur':'')+(s.available?'':' locked');
+      const href=s.available?` href="#/${s.prefix}"`:'';
+      html+=`<${tag} class="${cls}"${href}><span class="bn-n">${chNum(s)}</span><span class="bn-t">${s.title}</span></${tag}>`;
+    });
+    html+=`</div>`;
+  });
+  nav.innerHTML=html;
+  const cur=nav.querySelector('.bn-ch.cur'); if(cur) cur.scrollIntoView({block:'nearest'});
+}
+let spyObserver=null;
+function buildPageToc(container){
+  const toc=document.getElementById('pagetoc'); if(!toc) return;
+  const cur=STAGES.find(x=>x.prefix===currentPrefix); if(cur) toc.style.setProperty('--accent', pcol(cur.phase));
+  const heads=container.querySelectorAll('.doc-section h2'); const used=new Set(); const map={};
+  if(!heads.length){ toc.innerHTML=''; return; }
+  let html=`<div class="pt-lbl">本页目录</div><div class="pt-list">`;
+  heads.forEach(h=>{
+    const full=h.dataset.title||h.textContent;
+    h.id=slugify(full, used);
+    html+=`<a class="pt-i" href="#${h.id}" data-target="${h.id}">${full}</a>`;
+  });
+  html+=`</div>`;
+  toc.innerHTML=html;
+  toc.querySelectorAll('.pt-i').forEach(a=>{
+    map[a.dataset.target]=a;
+    a.addEventListener('click',e=>{ e.preventDefault(); const t=document.getElementById(a.dataset.target); if(t) t.scrollIntoView({behavior:'smooth',block:'start'}); });
+  });
+  if(spyObserver) spyObserver.disconnect();
+  const visible=new Set();
+  spyObserver=new IntersectionObserver(es=>{
+    es.forEach(en=> en.isIntersecting ? visible.add(en.target.id) : visible.delete(en.target.id));
+    let top=null, ty=Infinity;
+    visible.forEach(id=>{ const y=document.getElementById(id).getBoundingClientRect().top; if(y<ty){ty=y;top=id;} });
+    Object.values(map).forEach(a=>a.classList.remove('active'));
+    if(top && map[top]) map[top].classList.add('active');
+  }, {rootMargin:'-90px 0px -68% 0px', threshold:0});
+  heads.forEach(h=>spyObserver.observe(h));
+}
+
+/* ==================== 滚动揭示 / 进度 / 提示 ==================== */
+let revealObs=null;
+function setupReveal(){
+  if(revealObs) revealObs.disconnect();
+  revealObs=new IntersectionObserver(es=>{ es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); revealObs.unobserve(e.target);} }); }, {threshold:0, rootMargin:'0px 0px -6% 0px'});
+  document.querySelectorAll('.reveal').forEach(el=>revealObs.observe(el));
+}
+const readbar=document.getElementById('readbar');
+function onScroll(){
+  if(!currentPrefix){ readbar.classList.remove('show'); return; }
+  readbar.classList.add('show');
+  const h=document.documentElement, max=h.scrollHeight-h.clientHeight;
+  readbar.style.width=(max>0 ? (h.scrollTop/max*100):0)+'%';
+}
+window.addEventListener('scroll', onScroll, {passive:true});
+let hintTimer=null;
+function showHint(){ const h=document.getElementById('kbdhint'); h.classList.add('show'); clearTimeout(hintTimer); hintTimer=setTimeout(()=>h.classList.remove('show'),2600); }
+
+/* ==================== 命令面板 ⌘K ==================== */
+const palette=document.getElementById('palette');
+const palInput=document.getElementById('palInput');
+let palFiltered=[], palIdx=0;
+function openPalette(){ palette.classList.add('open'); palette.setAttribute('aria-hidden','false'); palInput.value=''; renderPalList(''); setTimeout(()=>palInput.focus(),20); }
+function closePalette(){ palette.classList.remove('open'); palette.setAttribute('aria-hidden','true'); }
+function makeSnippet(raw, q){
+  const text=stripMarkdown(raw);
+  const i=text.toLowerCase().indexOf(q.toLowerCase());
+  if(i<0) return '';
+  const start=Math.max(0,i-34), end=Math.min(text.length,i+q.length+58);
+  return (start?'…':'')+text.slice(start,end)+(end<text.length?'…':'');
+}
+function searchStages(q){
+  q=(q||'').trim().toLowerCase();
+  if(!q) return AVAIL.map(stage=>({stage,snippet:''}));
+  return AVAIL.map(stage=>{
+    const hayTitle=(chNum(stage)+' '+stage.title+' '+stage.phase).toLowerCase();
+    const haySummary=(stage.summary||'').toLowerCase();
+    const raw=stripMarkdown(stage.raw||'').toLowerCase();
+    let score=-1, snippet='';
+    if(hayTitle.includes(q)) score=30;
+    else if(haySummary.includes(q)){ score=20; snippet=stage.summary; }
+    else if(raw.includes(q)){ score=10; snippet=makeSnippet(stage.raw,q); }
+    return {stage,score,snippet};
+  }).filter(x=>x.score>=0).sort((a,b)=>b.score-a.score || STAGES.indexOf(a.stage)-STAGES.indexOf(b.stage));
+}
+function renderPalList(q){
+  palFiltered = searchStages(q);
+  palIdx=0;
+  const list=document.getElementById('palList');
+  if(!palFiltered.length){ list.innerHTML='<div class="pal-empty">没有匹配的章节</div>'; return; }
+  list.innerHTML=palFiltered.map((hit,i)=>{
+    const s=hit.stage;
+    return `<div class="pal-item${i===0?' sel':''}" data-p="${s.prefix}" data-i="${i}">
+      <span class="pi-num">${chNum(s)}</span>
+      <span class="pi-main"><span class="pi-t">${esc(s.title)}</span>${hit.snippet?`<span class="pi-snippet">${esc(hit.snippet)}</span>`:''}</span>
+      <span class="pi-ph" style="--accent:${pcol(s.phase)}">${esc(s.phase)}</span></div>`;
+  }).join('');
+  list.querySelectorAll('.pal-item').forEach(it=>{
+    it.onmouseenter=()=>{ palIdx=+it.dataset.i; markSel(); };
+    it.onclick=()=>{ go(it.dataset.p); closePalette(); };
+  });
+}
+function markSel(){ const items=document.querySelectorAll('.pal-item'); items.forEach((it,i)=>it.classList.toggle('sel', i===palIdx)); const c=items[palIdx]; if(c) c.scrollIntoView({block:'nearest'}); }
+function palMove(d){ if(!palFiltered.length) return; palIdx=(palIdx+d+palFiltered.length)%palFiltered.length; markSel(); }
+palInput.addEventListener('input', e=>renderPalList(e.target.value));
+palette.addEventListener('click', e=>{ if(e.target===palette) closePalette(); });
+
+/* ==================== 键盘 ==================== */
+document.addEventListener('keydown', e=>{
+  const pOpen=palette.classList.contains('open');
+  if((e.metaKey||e.ctrlKey) && e.key.toLowerCase()==='k'){ e.preventDefault(); pOpen?closePalette():openPalette(); return; }
+  if(pOpen){
+    if(e.key==='Escape') closePalette();
+    else if(e.key==='ArrowDown'){ e.preventDefault(); palMove(1); }
+    else if(e.key==='ArrowUp'){ e.preventDefault(); palMove(-1); }
+    else if(e.key==='Enter'){ e.preventDefault(); const hit=palFiltered[palIdx]; if(hit){ go(hit.stage.prefix); closePalette(); } }
+    return;
+  }
+  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
+  if(e.key==='/'){ e.preventDefault(); openPalette(); return; }
+  if(e.key==='Escape'){
+    const drawer=document.getElementById('mobileDrawer');
+    if(drawer?.classList.contains('open')){ closeMobilePanel(); return; }
+    if(currentPrefix) go('overview'); return;
+  }
+  if(!currentPrefix) return;
+  const i=AVAIL.findIndex(s=>s.prefix===currentPrefix);
+  if(e.key==='ArrowRight' && i<AVAIL.length-1) go(AVAIL[i+1].prefix);
+  else if(e.key==='ArrowLeft' && i>0) go(AVAIL[i-1].prefix);
+});
+
+/* ==================== 路由 ==================== */
+function route(){
+  const hash=location.hash||'#/overview';
+  const m=hash.match(/^#\/(\w+)/); const key=m?m[1]:'overview';
+  if(palette.classList.contains('open')) closePalette();
+  closeMobilePanel();
+  if(key==='overview') renderIndex();
+  else if(/^\d{2}$/.test(key)) renderReader(key);
+  else { const t=document.getElementById(hash.slice(1)); if(t) t.scrollIntoView({behavior:'smooth'}); else renderIndex(); }
+}
+window.addEventListener('hashchange', route);
+if(!STAGES.length){
+  document.getElementById('stage').innerHTML='<p style="padding:80px;color:#999">未找到内容:请先运行 <code>python3 build.py</code>。</p>';
+} else { route(); }
+</script>
+</body>
+</html>
