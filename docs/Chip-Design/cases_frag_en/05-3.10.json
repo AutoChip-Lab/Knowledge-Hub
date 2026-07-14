@@ -1,0 +1,116 @@
+{
+ "secNum": "3.10",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · DFT-friendly RTL: scan-enabling thousands of PE flip-flops and adding MBIST for the UB",
+ "oneLine": "After fabrication, production testers must distinguish good dies from defective ones, but cannot probe every internal flip-flop. DFT makes state controllable and observable by placing a scan mux before each flip-flop and chaining the cells into a shift register in test mode, so arbitrary states can be shifted in and captured results shifted out. Large SRAMs cannot join a scan chain and instead use on-chip MBIST. To support both, RTL must remain synchronous and avoid ad hoc clock gating, combinational loops, latches, and internally generated asynchronous resets—especially across TPU's vast PE array and 24 MiB Unified Buffer.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"30\" y=\"26\">DFT-friendly RTL: chain every flip-flop for external state control and observation</text><text class=\"cs-note\" x=\"30\" y=\"58\">Each FF gets a scan mux: scan_en=0 selects D; scan_en=1 selects scan_in</text><g class=\"cs-part\" data-k=\"si\" data-g=\"si\"><rect class=\"cs-box\" x=\"22\" y=\"92\" width=\"86\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"65\" y=\"118\">scan_in</text><text class=\"cs-sub\" x=\"65\" y=\"136\">Chain input</text></g><g class=\"cs-part\" data-k=\"cell1\" data-g=\"cell\"><rect class=\"cs-box\" x=\"128\" y=\"86\" width=\"150\" height=\"74\" rx=\"8\"/><path d=\"M128,160 L142,160 L128,146 Z\" fill=\"#8b5cf6\"/><text class=\"cs-t\" x=\"203\" y=\"110\">Scan mux + FF</text><text class=\"cs-sub\" x=\"203\" y=\"130\">0:D  1:scan_in</text><text class=\"cs-sub\" x=\"203\" y=\"148\">always_ff posedge clk</text></g><line class=\"cs-arr\" x1=\"108\" y1=\"121\" x2=\"124\" y2=\"121\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"cell2\" data-g=\"cell\"><rect class=\"cs-box\" x=\"298\" y=\"86\" width=\"150\" height=\"74\" rx=\"8\"/><path d=\"M298,160 L312,160 L298,146 Z\" fill=\"#8b5cf6\"/><text class=\"cs-t\" x=\"373\" y=\"110\">Scan mux + FF</text><text class=\"cs-sub\" x=\"373\" y=\"130\">0:D  1:previous Q</text><text class=\"cs-sub\" x=\"373\" y=\"148\">Shared clock</text></g><line class=\"cs-arr\" x1=\"278\" y1=\"121\" x2=\"294\" y2=\"121\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"cell3\" data-g=\"cell\"><rect class=\"cs-box\" x=\"468\" y=\"86\" width=\"150\" height=\"74\" rx=\"8\"/><path d=\"M468,160 L482,160 L468,146 Z\" fill=\"#8b5cf6\"/><text class=\"cs-t\" x=\"543\" y=\"110\">Scan mux + FF</text><text class=\"cs-sub\" x=\"543\" y=\"130\">0:D  1:previous Q</text><text class=\"cs-sub\" x=\"543\" y=\"148\">…thousands of PE FFs</text></g><line class=\"cs-arr\" x1=\"448\" y1=\"121\" x2=\"464\" y2=\"121\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"so\" data-g=\"so\"><rect class=\"cs-box\" x=\"638\" y=\"92\" width=\"62\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"669\" y=\"116\">scan</text><text class=\"cs-t\" x=\"669\" y=\"134\">_out</text></g><line class=\"cs-arr\" x1=\"618\" y1=\"121\" x2=\"634\" y2=\"121\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"mbist\" data-g=\"mbist\"><rect class=\"cs-box\" x=\"22\" y=\"200\" width=\"320\" height=\"76\" rx=\"8\" fill=\"#ecfdf5\" stroke=\"#a7f3d0\"/><text class=\"cs-t\" x=\"182\" y=\"226\">SRAM → MBIST engine</text><text class=\"cs-sub\" x=\"182\" y=\"246\">24 MiB UB / accumulator memory cannot enter scan</text><text class=\"cs-sub\" x=\"182\" y=\"264\">On-chip March patterns; compare every bank</text></g><g class=\"cs-part\" data-k=\"ban\" data-g=\"ban\"><rect class=\"cs-box\" x=\"378\" y=\"200\" width=\"322\" height=\"76\" rx=\"8\" fill=\"#fef3f2\" stroke=\"#fecaca\"/><text class=\"cs-t\" x=\"539\" y=\"224\">DFT anti-patterns</text><text class=\"cs-sub\" x=\"539\" y=\"244\">Ad hoc gated clock · combinational loop · latch</text><text class=\"cs-sub\" x=\"539\" y=\"262\">Internally generated async reset</text></g><g class=\"cs-part\" data-k=\"chk\" data-g=\"chk\"><rect class=\"cs-box\" x=\"22\" y=\"312\" width=\"678\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"361\" y=\"336\">DFT-friendly RTL = synchronous FFs + consistent clocks/resets + no latch/loop/ad hoc gating</text><text class=\"cs-sub\" x=\"361\" y=\"354\">Run DFT/scan-rule lint: any FF excluded from scan is a test blind spot</text></g></svg>",
+ "legend": [
+  {
+   "k": "cell",
+   "name": "Scan mux + flip-flop (scan cell)",
+   "desc": "The basic DFT cell places a 2:1 mux before a functional flip-flop's D input. scan_en=0 selects functional D; scan_en=1 selects scan_in from the previous cell's Q. In test mode, these cells connect end to end as a shift chain. Designers normally code ordinary synchronous flip-flops; synthesis/DFT tools replace them with scan cells during scan insertion—provided the RTL uses recognizable, disciplined structures."
+  },
+  {
+   "k": "si",
+   "name": "scan_in / scan_en (chain input and control)",
+   "desc": "Dedicated test ports: scan_in shifts a test pattern into the chain, while scan_en selects shift versus capture. The tester asserts scan_en to load a known state into all flip-flops, deasserts it for one functional capture cycle, then reasserts it to shift the captured response out. This provides external control and observation of deeply embedded state without physical probes."
+  },
+  {
+   "k": "so",
+   "name": "scan_out (chain output)",
+   "desc": "The tail of the scan chain, which shifts captured responses to the external tester for bitwise comparison with golden values. A mismatch, combined with chain topology, helps localize stuck-at, bridging, or other defects. Scan converts otherwise inaccessible internal state into pin-level controllability and observability."
+  },
+  {
+   "k": "mbist",
+   "name": "SRAM → MBIST (on-chip memory self-test)",
+   "desc": "Large arrays such as the 24 MiB Unified Buffer and 4 MiB accumulator memory are too large and structurally unsuitable for flip-flop scan chains; external bit-by-bit testing would also be too slow. An MBIST engine generates March-style patterns on chip, writes and reads every bank, compares results, and reports go/no-go. SRAM macros therefore need MBIST ports or wrapper logic planned at RTL integration."
+  },
+  {
+   "k": "ban",
+   "name": "DFT anti-patterns (structures that break testability)",
+   "desc": "Four RTL patterns undermine scan and timing: ① ad hoc gated clocks made by combinationally ANDing clk, which may not provide a stable test clock; ② combinational loops, which have no deterministic value and defeat timing analysis; ③ inferred level-sensitive latches, often caused by incomplete if/case logic; and ④ internally generated asynchronous resets, which can unpredictably clear scan state. DFT-friendly RTL avoids all four."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "cell"
+   ],
+   "cap": "① Basic cell: a scan mux before each functional flip-flop selects D or scan_in under scan_en. Write clean synchronous flip-flops in RTL; DFT tools replace them with scan cells during scan insertion."
+  },
+  {
+   "keys": [
+    "si",
+    "cell",
+    "so"
+   ],
+   "cap": "② Form the chain: in test mode, connect all scan cells end to end from scan_in to scan_out. Shift loads an arbitrary known state, capture clocks the functional response once, and a second shift reads it out—making every flip-flop controllable and observable."
+  },
+  {
+   "keys": [
+    "cell"
+   ],
+   "cap": "③ Apply this to TPU: thousands of PE state elements in the 256×256 array—including state around 8-bit multiplication and 32-bit accumulation—must be scannable so production test can determine whether the array is defect-free."
+  },
+  {
+   "keys": [
+    "mbist"
+   ],
+   "cap": "④ Test large memories with MBIST instead: the 24 MiB UB and 4 MiB accumulator memory do not enter scan chains. Connect SRAMs to on-chip test engines that run March patterns, compare each bank, and produce a pass/fail result."
+  },
+  {
+   "keys": [
+    "ban",
+    "chk"
+   ],
+   "cap": "⑤ Enforce DFT-safe rules: use synchronous structures and consistent clock/reset policies; avoid ad hoc gated clocks, combinational loops, latches, and internal asynchronous resets. Run DFT/scan-rule lint—any unscannable flip-flop is a test-coverage blind spot."
+  }
+ ],
+ "before": [
+  "<b>Set testability goals and scan architecture first</b>: define full-scan intent, a target stuck-at coverage such as ≥99%, the number of scan chains, and scan_en/scan_in/scan_out naming and routing. Testability is a day-one RTL constraint, not a pre-tapeout retrofit.",
+  "<b>Standardize synchronous design, clocks, and resets</b>: require flip-flops to use always_ff @(posedge clk) and adopt one reset policy across the team—synchronous reset or a clean top-level asynchronous reset. Prohibit locally constructed clocks and resets. This is the foundation on which scan insertion depends.",
+  "<b>Assign MBIST to each memory instead of scanning it</b>: inventory SRAM blocks such as the UB and accumulator memories; decide whether MBIST engines are shared or dedicated and how test interfaces are exposed. Explicitly separate memory self-test from flip-flop scan.",
+  "<b>Put DFT anti-patterns into coding rules and lint</b>: prohibit ad hoc gated clocks, combinational loops, inferred latches, and internally generated asynchronous resets. Enable corresponding lint rules so violations appear immediately rather than when scan insertion reports that flip-flops cannot join a chain."
+ ],
+ "during": [
+  "<b>Code flip-flops in a clean synchronous form</b>: use reg q; always_ff @(posedge clk) q <= d; (illustrative), with a synchronous enable such as if(en) q<=d; when holding is required. Do not hand-build scan muxes in functional RTL; clean state elements let the DFT tool recognize and replace them reliably.",
+  "<b>Rule: no ad hoc gated clocks</b>: never use assign gclk = clk & en; to clock flip-flops. Use validated integrated clock-gating cells and let synthesis insert them consistently. A hand-gated segment may lack a stable clock in test mode and can drop an entire register bank from the scan chain.",
+  "<b>Rule: eliminate combinational loops and inferred latches</b>: no signal may feed back to itself through combinational logic. Assign every output on every path in always_comb—use else/default branches or block-level defaults—so synthesis does not infer a latch. Loops and latches compromise both static timing and scan shift/capture behavior.",
+  "<b>Asynchronous reset may enter only from the top level</b>: if used, it must be a clean dedicated top-level signal with synchronized deassertion. Never derive an asynchronous reset with internal combinational logic; it can clear scan state unpredictably during test and also introduce metastability.",
+  "<b>Connect large SRAMs to MBIST rather than scan</b>: memory bitcells cannot enter a flip-flop chain. When instantiating an SRAM macro, connect its MBIST engine or wrapper, including test clock, controls, and pass/fail output, so the 24 MiB UB and accumulator memories can run on-chip March tests independently of logic scan.",
+  "<b>Scope note: these are standard DFT practices, not private TPU disclosure</b>: scan muxes, scan chains, MBIST, and the prohibition of ad hoc clock gating, combinational loops, latches, and internal asynchronous resets are standard digital-ASIC practices. TPU v1's scan topology, coverage, and MBIST implementation are not public; its documented PE array and 24 MiB UB provide the example context."
+ ],
+ "result": [
+  {
+   "label": "Scan cell (illustrative)",
+   "value": "DFT-inserted mux before a functional FF: scan_en?scan_in:d → always_ff @(posedge clk) q<=…"
+  },
+  {
+   "label": "Scan-chain interface",
+   "value": "scan_in / scan_en / scan_out; shift in state → capture one cycle → shift out and compare"
+  },
+  {
+   "label": "TPU array state",
+   "value": "Thousands of PE flip-flops in the 256×256 array included in scan"
+  },
+  {
+   "label": "Large SRAMs",
+   "value": "24 MiB UB and 4 MiB accumulator memory → on-chip MBIST, not scan"
+  },
+  {
+   "label": "Clock/reset discipline",
+   "value": "Synchronous design with consistent clocks/resets; asynchronous reset only from top level"
+  },
+  {
+   "label": "Four anti-patterns",
+   "value": "Ad hoc gated clock · combinational loop · inferred latch · internally generated asynchronous reset"
+  }
+ ],
+ "after": [
+  "<b>Run DFT / scan-rule lint (testability checks)</b>: statically verify that every flip-flop can be scanned and detect ad hoc gated clocks, combinational loops, latches, or internal asynchronous resets that exclude cells from a chain. These test blind spots must reach zero at RTL rather than triggering late scan-insertion rework.",
+  "<b>Perform trial scan insertion and measure coverage</b>: run scan insertion plus ATPG, confirm chains shift and capture correctly, and check that stuck-at coverage reaches the target (for example ≥99%). If coverage is low, identify which uncontrollable or unobservable structures block it.",
+  "<b>Simulate both functional and scan modes</b>: verify normal operation as well as scan shift/capture timing, including scan_en transitions, chain order, and test-mode bypass of ICG clock gating. Both functional and test paths must behave correctly.",
+  "<b>Validate MBIST and hand off to physical design and verification</b>: simulate each SRAM's March write/read sequence and correct pass/fail reporting. Deliver scan/MBIST ports and timing constraints for routing and test-clock implementation, along with DFT scenarios for verification, so production testers can reliably classify silicon."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the 256×256 MAC array, 24 MiB Unified Buffer, and 4 MiB accumulator memory are documented architectural facts; scan muxes, scan chains, MBIST, and rules against ad hoc gated clocks, combinational loops, latches, and internal asynchronous resets are standard DFT/RTL practice, not TPU line-level source or private DFT metrics)"
+}

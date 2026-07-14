@@ -1,0 +1,116 @@
+{
+ "secNum": "3.9",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Full-chip software simulation is too slow: emulation and FPGA prototypes reduce real-model inference from years to minutes",
+ "oneLine": "Pure software simulation cannot finish an end-to-end inference that connects a complete TPU to a real model, issues host CISC commands, and moves data through the 256×256 array and Unified Buffer. Three acceleration tiers trade speed for visibility: software simulation is slowest but fully observable for bug hunting; hardware emulation is orders faster for chip-level workloads; FPGA prototypes are fastest and near-real-time for early software/compiler access. Choose by the question being answered, not speed alone.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">One RTL across three tiers: faster to the right, more visible to the left—choose by purpose</text><g class=\"cs-part\" data-k=\"rtl\" data-g=\"rtl\"><rect class=\"cs-box\" x=\"40\" y=\"60\" width=\"640\" height=\"46\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"86\">One chip-level RTL (256×256 array + Unified Buffer + instruction interface + clocks)</text></g><line class=\"cs-arr\" x1=\"150\" y1=\"106\" x2=\"150\" y2=\"146\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"360\" y1=\"106\" x2=\"360\" y2=\"146\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"570\" y1=\"106\" x2=\"570\" y2=\"146\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"sim\" data-g=\"sim\"><rect class=\"cs-box\" x=\"40\" y=\"150\" width=\"220\" height=\"120\" rx=\"8\"/><text class=\"cs-t\" x=\"150\" y=\"178\">① Software simulation</text><text class=\"cs-sub\" x=\"150\" y=\"200\">Speed: slowest (~Hz–kHz)</text><text class=\"cs-sub\" x=\"150\" y=\"220\">Visibility: full (every signal/cycle)</text><text class=\"cs-sub\" x=\"150\" y=\"240\">Use: block/directed debug and waves</text><text class=\"cs-sub\" x=\"150\" y=\"258\">Full-model inference → years, impractical</text></g><g class=\"cs-part\" data-k=\"emu\" data-g=\"emu\"><rect class=\"cs-box\" x=\"270\" y=\"150\" width=\"180\" height=\"120\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"178\">② Hardware emulation</text><text class=\"cs-sub\" x=\"360\" y=\"200\">Speed: orders faster (~MHz)</text><text class=\"cs-sub\" x=\"360\" y=\"220\">Visibility: medium (probes/waves)</text><text class=\"cs-sub\" x=\"360\" y=\"240\">Use: full-chip dataflow and real</text><text class=\"cs-sub\" x=\"360\" y=\"258\">model inference; HW/SW co-verification</text></g><g class=\"cs-part\" data-k=\"fpga\" data-g=\"fpga\"><rect class=\"cs-box\" x=\"460\" y=\"150\" width=\"220\" height=\"120\" rx=\"8\"/><text class=\"cs-t\" x=\"570\" y=\"178\">③ FPGA prototype</text><text class=\"cs-sub\" x=\"570\" y=\"200\">Speed: fastest (tens of MHz)</text><text class=\"cs-sub\" x=\"570\" y=\"220\">Visibility: limited (hard probes/slow compile)</text><text class=\"cs-sub\" x=\"570\" y=\"240\">Use: early software/compiler</text><text class=\"cs-sub\" x=\"570\" y=\"258\">TF/XLA stack and regression</text></g><g class=\"cs-part\" data-k=\"axis\" data-g=\"axis\"><rect class=\"cs-box\" x=\"40\" y=\"300\" width=\"640\" height=\"60\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"360\" y=\"324\">Opposing axes: speed ↑ to the right; visibility ↓ to the right</text><text class=\"cs-sub\" x=\"360\" y=\"346\">Debug → simulation; end-to-end + software access → emulation/FPGA</text></g><line class=\"cs-arr\" x1=\"60\" y1=\"285\" x2=\"660\" y2=\"285\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"300\" y=\"282\">— Increasing speed / decreasing visibility →</text></svg>",
+ "legend": [
+  {
+   "k": "rtl",
+   "name": "One chip-level RTL design (the accelerated object)",
+   "desc": "All three platforms execute the same integrated chip RTL: 256×256 systolic array, 24 MiB Unified Buffer, 4 MiB accumulators, host CISC interface, PCIe/DDR3 interfaces, and multi-clock controls. The question is not whether one PE works, but whether the entire chip runs a real model end to end—a workload software simulation cannot sustain."
+  },
+  {
+   "k": "sim",
+   "name": "① Software simulation (slowest / full visibility)",
+   "desc": "An event-driven RTL simulator evaluates every signal cycle by cycle on CPUs. Any signal and cycle can be probed, waveforms dumped, and breakpoints set, making it ideal for module debug. Full-chip effective speed may be only Hz–kHz, so one real-model inference can require years. Use it for block-level and directed diagnosis, not long chip-level execution."
+  },
+  {
+   "k": "emu",
+   "name": "② Hardware emulation (orders faster / medium visibility)",
+   "desc": "Compile the same RTL into dedicated acceleration hardware such as industry Palladium, ZeBu, or Veloce platforms. Hardware parallelism commonly reaches MHz-class speed—orders faster than simulation. Visibility is reduced but probes and triggered wave capture remain available. It is the main platform for complete chip dataflows, real-model inference, and hardware/software co-verification."
+  },
+  {
+   "k": "fpga",
+   "name": "③ FPGA prototype (fastest / limited visibility)",
+   "desc": "Map the design to one or more FPGAs running at tens of MHz near real time. Internal signals are difficult to inspect, and each revision requires lengthy synthesis and place-and-route. Its greatest value is early delivery, not fine-grain debug: software/compiler teams can exercise TensorFlow/XLA, drivers, and full regressions on runnable hardware before tapeout."
+  },
+  {
+   "k": "axis",
+   "name": "Rule: speed and visibility trade off",
+   "desc": "The rightmost tier is not universally better. Moving right gains speed and loses visibility. Diagnose a specific bug in software simulation; move to emulation/FPGA for real end-to-end workloads or early software access. Selecting only the fastest platform leaves insufficient observability when detailed waveforms are required."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "rtl"
+   ],
+   "cap": "① Start from the same chip-level RTL: array + Unified Buffer + accumulators + CISC interface + multiple clock domains. The goal is real-model end-to-end operation at a scale slow simulation cannot handle."
+  },
+  {
+   "keys": [
+    "sim"
+   ],
+   "cap": "② Software simulation is slowest but fully visible: inspect every signal and dump waveforms for block-level directed debug. A complete chip inference may require years, so it cannot support long end-to-end runs."
+  },
+  {
+   "keys": [
+    "sim",
+    "emu"
+   ],
+   "cap": "③ Move to emulation: compile the RTL into dedicated hardware for orders-of-magnitude, MHz-class speed. Full-chip real dataflows, complete model inference, and hardware/software co-verification become practical with medium visibility."
+  },
+  {
+   "keys": [
+    "emu",
+    "fpga"
+   ],
+   "cap": "④ Move further to an FPGA prototype: tens of MHz, near-real-time, and fastest. Visibility is poorest, but software and compiler teams gain early access to run the TF/XLA stack and regression before silicon."
+  },
+  {
+   "keys": [
+    "axis"
+   ],
+   "cap": "⑤ Apply the selection rule: speed↑ means visibility↓. Move left for bug diagnosis; move right for throughput, end-to-end workloads, and software access. Choose by the verification objective."
+  }
+ ],
+ "before": [
+  "<b>Explain why slow simulation is insufficient before selecting acceleration</b>: separate module/directed goals that software simulation handles from cycle-intensive goals—full-chip real-model inference, hardware/software co-verification, and early software access—that require an accelerated platform. List every scenario that cannot complete in simulation.",
+  "<b>Set platform-specific goals and completion criteria</b>: define real-model inference and chip-level path coverage for emulation, and software regression milestones for FPGA. Emulation closes on end-to-end golden comparison and critical scenarios; FPGA closes on stable software-stack regressions. One criterion does not fit all three tiers.",
+  "<b>Preserve the Reference Model and checking method</b>: a faster platform changes execution speed, not correctness. Compare chip-level outputs from emulation/FPGA against the same independent Golden Model; “does not crash” is not a pass criterion.",
+  "<b>Budget visibility and capture strategy</b>: plan critical probes and trigger conditions in emulation and choose FPGA on-chip debug or logging before bringing up the environment. Observability is scarce on accelerated platforms and cannot be improvised after a failure."
+ ],
+ "during": [
+  "<b>Division of labor: return to software simulation for bugs; use acceleration for end-to-end execution</b>. Reproduce and narrow a suspicious behavior on emulation/FPGA, then replay the short stimulus in simulation with full waveforms. Use each tier's strength instead of trying to inspect one hidden FPGA signal.",
+  "<b>Emulation is the primary platform for real inference and hardware/software co-verification</b>. Its orders-of-magnitude speed enables host CISC commands to drive the full chip, data to cross the array and Unified Buffer, and drivers/runtime to execute real workloads—precisely the chip-level scenarios simulation cannot finish.",
+  "<b>FPGA prototyping provides early access to software teams rather than detailed bug visibility</b>. A near-real-time target before tapeout lets TensorFlow/XLA, drivers, and regression mature while hardware is still changeable, moving integration risk earlier.",
+  "<b>Trade-off: choose speed versus visibility by purpose</b>. Use slower simulation for internal inspection and fast emulation/FPGA for throughput. The wrong tier loses twice: FPGA hides the signal needed for debug, while software simulation never finishes an end-to-end workload. Ask whether each objective needs visibility or throughput.",
+  "<b>Preserve cross-platform consistency</b>. All tiers should use one RTL source. Emulation clock modeling and FPGA mapping, derating, or peripheral models must not silently change behavior. Compare against one Golden Model to prove platform changes do not change function.",
+  "<b>Scope note</b>: simulation → emulation → FPGA prototyping, platforms such as Palladium/ZeBu/Veloce, and early software access are standard large-ASIC practices. TPU v1's specific acceleration hardware, scenarios, and speeds are undisclosed; documented array, Unified Buffer, CISC, and multi-clock structures are only the verification context."
+ ],
+ "result": [
+  {
+   "label": "Three speed tiers (illustrative)",
+   "value": "Software simulation Hz–kHz ≪ emulation ~MHz ≪ FPGA prototype tens of MHz"
+  },
+  {
+   "label": "Visibility comparison",
+   "value": "Software simulation full > emulation medium (probes/wave capture) > FPGA limited"
+  },
+  {
+   "label": "Software simulation role",
+   "value": "Block/directed debug with waveforms; complete inference takes years and is impractical"
+  },
+  {
+   "label": "Emulation role",
+   "value": "Chip-level real dataflow + complete model inference + hardware/software co-verification"
+  },
+  {
+   "label": "FPGA prototype role",
+   "value": "Near-real-time early access for software/compiler TF/XLA stack and regression"
+  },
+  {
+   "label": "Selection criterion",
+   "value": "Need visibility → software simulation; need throughput/end-to-end → emulation/FPGA"
+  }
+ ],
+ "after": [
+  "<b>Pass only after end-to-end Golden Model comparison</b>: after real inference on emulation/FPGA, compare every network output against an independent expected result. Fast and stable means “runs”; equality means “runs correctly.”",
+  "<b>Distribute regression across all three tiers</b>: keep block-level random/directed tests in simulation, chip-level real workloads in emulation, and software-stack regression on FPGA. Route each RTL revision to the appropriate platform.",
+  "<b>Convert acceleration failures into directed tests</b>: minimize chip-level defects found on emulation/FPGA into stimuli reproducible in software simulation, enabling detailed debug and preventing recurrence.",
+  "<b>Close the software feedback loop</b>: interface and behavioral issues found through FPGA early access return to RTL and the verification plan, aligning hardware and software before silicon.",
+  "<b>Hand off only after cross-platform consistency and convergence</b>: require common-source RTL, consistent Golden Model results, closed regressions, and near-zero bug discovery across all tiers. Then freeze the baseline for synthesis (⑦), while retaining acceleration for larger netlist and software/hardware regressions."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (TPU v1 documents a 256×256 systolic array, 24 MiB Unified Buffer, host CISC commands over PCIe, multiple clock domains, and the TensorFlow/XLA stack; simulation→emulation→FPGA tiers, Palladium/ZeBu/Veloce-class platforms, and software early access are standard verification practices, while TPU's private acceleration environment and metrics are not public)"
+}

@@ -1,0 +1,118 @@
+{
+ "secNum": "3.11",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · GDSII Preparation and Handoff: A Self-Consistent Package of Layout, SPEF, Netlist/SDC, and Sign-Off Evidence",
+ "oneLine": "After placement, CTS, routing, and ECO close the 28 nm implementation, the back end freezes and packages the result rather than redesigning it. Export final geometry as GDSII or OASIS, pair it with extracted SPEF, the post-route gate-level netlist and SDC, and reports for sign-off STA, power, DRC/LVS, IR-drop, EM, and congestion. Stage ⑨ independently rechecks all corners, power, EM/IR, physical verification, and RTL↔netlist formal equivalence. All green releases GDSII to ⑩ Tapeout; any failure returns to ⑧ ECO, re-extraction, repackaging, and another sign-off cycle.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 440\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"26\">Output/handoff: package GDSII/OASIS + SPEF + final netlist + reports → ⑨ sign-off → ⑩ Tapeout only when green</text><g class=\"cs-part\" data-k=\"backend\" data-g=\"backend\"><rect class=\"cs-box\" x=\"24\" y=\"52\" width=\"150\" height=\"300\" rx=\"8\"/><text class=\"cs-t\" x=\"99\" y=\"78\">⑧ Physical design (back end)</text><text class=\"cs-sub\" x=\"99\" y=\"96\">Converged TPU layout</text><text class=\"cs-sub\" x=\"99\" y=\"120\">Systolic array / 24 MiB UB</text><text class=\"cs-sub\" x=\"99\" y=\"138\">700 MHz / 28 nm</text><text class=\"cs-sub\" x=\"99\" y=\"162\">Placement / CTS / routing / ECO</text><text class=\"cs-sub\" x=\"99\" y=\"180\">Converged in prior sections</text><text class=\"cs-sub\" x=\"99\" y=\"216\">→ Package for handoff</text></g><line class=\"cs-arr\" x1=\"174\" y1=\"92\" x2=\"232\" y2=\"92\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"174\" y1=\"160\" x2=\"232\" y2=\"160\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"174\" y1=\"228\" x2=\"232\" y2=\"228\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"174\" y1=\"300\" x2=\"232\" y2=\"300\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"pkg\" data-g=\"pkg\"><rect class=\"cs-box\" x=\"236\" y=\"52\" width=\"220\" height=\"300\" rx=\"8\"/><text class=\"cs-t\" x=\"346\" y=\"78\">Back-end handoff package</text><g class=\"cs-part\" data-k=\"gds\" data-g=\"gds\"><rect class=\"cs-cell\" x=\"252\" y=\"94\" width=\"188\" height=\"46\"/><text class=\"cs-cellt\" x=\"346\" y=\"112\">GDSII / OASIS layout</text><text class=\"cs-cellt\" x=\"346\" y=\"130\">Final geometry: polygons/layers/masks</text></g><g class=\"cs-part\" data-k=\"spef\" data-g=\"spef\"><rect class=\"cs-cell\" x=\"252\" y=\"148\" width=\"188\" height=\"46\"/><text class=\"cs-cellt\" x=\"346\" y=\"166\">SPEF parasitics</text><text class=\"cs-cellt\" x=\"346\" y=\"184\">Real RC per net (including Cc)</text></g><g class=\"cs-part\" data-k=\"netlist\" data-g=\"netlist\"><rect class=\"cs-cell\" x=\"252\" y=\"202\" width=\"188\" height=\"46\"/><text class=\"cs-cellt\" x=\"346\" y=\"220\">Final netlist + SDC</text><text class=\"cs-cellt\" x=\"346\" y=\"238\">Post-route gate netlist / constraints</text></g><g class=\"cs-part\" data-k=\"reports\" data-g=\"reports\"><rect class=\"cs-cell\" x=\"252\" y=\"256\" width=\"188\" height=\"80\"/><text class=\"cs-cellt\" x=\"346\" y=\"274\">Report set</text><text class=\"cs-cellt\" x=\"346\" y=\"292\">STA timing / power</text><text class=\"cs-cellt\" x=\"346\" y=\"310\">Clean DRC / LVS evidence</text><text class=\"cs-cellt\" x=\"346\" y=\"328\">IR-drop / EM / congestion</text></g></g><line class=\"cs-arr\" x1=\"456\" y1=\"202\" x2=\"520\" y2=\"202\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"462\" y=\"194\">Deliver</text><g class=\"cs-part\" data-k=\"signoff\" data-g=\"signoff\"><rect class=\"cs-box\" x=\"524\" y=\"92\" width=\"172\" height=\"160\" rx=\"8\"/><text class=\"cs-t\" x=\"610\" y=\"118\">⑨ Sign-off</text><text class=\"cs-sub\" x=\"610\" y=\"142\">Sign-off STA (all corners)</text><text class=\"cs-sub\" x=\"610\" y=\"162\">Power / EM/IR review</text><text class=\"cs-sub\" x=\"610\" y=\"182\">Physical DRC / LVS</text><text class=\"cs-sub\" x=\"610\" y=\"202\">Formal equivalence (netlist↔RTL)</text><text class=\"cs-sub\" x=\"610\" y=\"226\">Release only when all green</text></g><line class=\"cs-arr\" x1=\"610\" y1=\"252\" x2=\"610\" y2=\"330\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"tapeout\" data-g=\"tapeout\"><rect class=\"cs-box\" x=\"524\" y=\"334\" width=\"172\" height=\"48\" rx=\"8\"/><text class=\"cs-t\" x=\"610\" y=\"358\">⑩ Tapeout</text><text class=\"cs-sub\" x=\"610\" y=\"374\">Foundry makes masks from layout</text></g><polyline class=\"cs-arr\" points=\"524,230 490,230 490,372 99,372 99,356\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"300\" y=\"366\">Fail → ⑧ ECO → re-extract → repackage → re-sign-off until green</text><text class=\"cs-note\" x=\"24\" y=\"398\">The back end delivers a self-consistent package, not one layout file; sign-off releases GDSII for mask generation.</text><text class=\"cs-note\" x=\"24\" y=\"422\">Note: formats/checks are standard practice; TPU v1 layout, parasitics, QoR, and reports are not public. Context: systolic array / 24 MiB UB / 700 MHz / 28 nm.</text></svg>",
+ "legend": [
+  {
+   "k": "backend",
+   "name": "⑧ Converged back-end result (source of the package)",
+   "desc": "By 3.11, floorplan, placement, CTS, routing, timing ECO, extraction, and SI have implemented the TPU netlist as a closed 28 nm layout. The 256×256 array, 24 MiB Unified Buffer SRAM, accumulator, 700 MHz clock tree, and PDN are physical. This section freezes and organizes that result into deliverables rather than changing circuitry."
+  },
+  {
+   "k": "pkg",
+   "name": "Back-end handoff package (complete sign-off data)",
+   "desc": "Handoff is a self-consistent set: ① GDSII/OASIS final mask geometry; ② SPEF with extracted RC; ③ post-route gate-level netlist + SDC; and ④ reports for STA, power, DRC/LVS, IR-drop, EM, and congestion. Sign-off cross-checks layout, netlist, parasitics, constraints, and evidence; none of the four classes is optional."
+  },
+  {
+   "k": "gds",
+   "name": "GDSII / OASIS layout (core product)",
+   "desc": "The final physical database contains every standard cell, hard macro such as 24 MiB UB SRAM, route, PDN shape, fill, and mask polygon organized by layer. Foundry mask generation follows this geometry. OASIS is a more compact alternative for large designs. TPU v1’s actual geometry is not public."
+  },
+  {
+   "k": "spef",
+   "name": "SPEF parasitics (delivered with layout)",
+   "desc": "SPEF records real resistance R, ground capacitance C, and coupling Cc for each routed net, as described in 3.8. Sign-off uses it rather than estimates for final STA, power, and EM/IR. Layout, netlist, and SPEF must describe exactly the same design revision."
+  },
+  {
+   "k": "signoff",
+   "name": "⑨ Sign-off (independent review of the package)",
+   "desc": "Qualified sign-off tools and libraries independently rerun all-corner/OCV STA, power, EM and IR-drop, Calibre-class DRC/LVS, and RTL↔gate-netlist formal equivalence. Implementation declaring closure is not sufficient; all independent checks must pass before tapeout, and any red result returns to ⑧."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "backend"
+   ],
+   "cap": "① Confirm back-end closure: after placement/CTS/routing/ECO/extraction, the 28 nm TPU implementation meets 700 MHz timing, congestion, and DRC. This stage packages the frozen revision rather than redesigning it."
+  },
+  {
+   "keys": [
+    "pkg",
+    "gds"
+   ],
+   "cap": "② Export layout: write all standard cells, UB SRAM macros, routing, PDN, and fill as standard GDSII or OASIS polygons by layer. The foundry uses this core back-end product to generate masks."
+  },
+  {
+   "keys": [
+    "spef",
+    "netlist"
+   ],
+   "cap": "③ Include companion data: package extracted SPEF, the post-route gate-level netlist, and SDC, ensuring layout/netlist/SPEF/constraints all belong to one revision and can be cross-checked."
+  },
+  {
+   "keys": [
+    "reports"
+   ],
+   "cap": "④ Include evidence: provide sign-off-grade STA, power, clean DRC/LVS, IR-drop, EM, and congestion reports as auditable proof of back-end closure for independent stage ⑨ review."
+  },
+  {
+   "keys": [
+    "signoff",
+    "tapeout"
+   ],
+   "cap": "⑤ Let ⑨ decide: all-corner STA, power, EM/IR, DRC/LVS, and formal equivalence all green → GDSII enters ⑩ Tapeout; any failure → ⑧ ECO → re-extract → repackage → re-sign-off until green."
+  }
+ ],
+ "before": [
+  "<b>Agree on handoff contents and formats</b>: Align with sign-off and manufacturing on GDSII versus OASIS, naming and revisions for netlist/SDC/SPEF, and required report coverage before back-end work begins. TPU’s actual checklist is not public.",
+  "<b>Collect foundry layout and validation data</b>: GDS export needs the 28 nm layer map from internal tool layers to mask numbers; DRC/LVS requires foundry runsets and device models. TPU’s specific PDK/runsets remain private.",
+  "<b>Plan layout hierarchy and completeness</b>: A 256×256 repeated array and 24 MiB SRAM hierarchy create large data volume. Decide flattening versus preserved hierarchy, merge all macro GDS, and eliminate unresolved references before export.",
+  "<b>Define objective sign-off criteria</b>: Agree which corners require STA slack ≥0, that DRC/LVS have zero violations or only formally waived exceptions, and the IR-drop/EM limits. Back-end closure and sign-off release must use the same pass line.",
+  "<b>Evidence boundary</b>: GDSII/OASIS export, SPEF/SDC/netlist handoff, DRC/LVS, IR-drop/EM, formal equivalence, and tapeout are standard back-end/sign-off EDA practice. TPU v1 does not publish its layout, parasitics, QoR, reports, or package. The disclosed 256×256 array, 24 MiB UB, 700 MHz, and 28 nm provide only the illustrative packaging target."
+ ],
+ "during": [
+  "<b>This stage freezes and packages rather than redesigns</b>: The circuit is substantially closed. Export layout, collect companion files, generate reports, and run internal prechecks so the package is complete, self-consistent, and independently verifiable.",
+  "<b>GDSII/OASIS is the final manufacturing geometry</b>: Export all cells, SRAM macros, routing, PDN, fill, and density shapes layer by layer. The file contains shapes and mask layers, not timing semantics. Verify hierarchy, layer mapping, and completeness; OASIS reduces data volume for large chips.",
+  "<b>Layout, netlist, SPEF, and SDC must be the same revision</b>: If an ECO changes the netlist but layout or SPEF is stale, LVS or timing becomes contradictory. Every ECO requires new extraction, layout export, and netlist/report updates—one change propagates through the entire package.",
+  "<b>Run internal prechecks before external sign-off</b>: Repeat DRC/LVS and sign-off-grade STA internally to clear obvious violations and attach clean evidence. Precheck does not replace independent sign-off; it avoids wasting a full return cycle on a dirty package.",
+  "<b>Reports must support cross-validation</b>: STA, power, DRC/LVS, IR-drop/EM, and congestion results need revision, corner, and traceable violation context so sign-off can compare independent findings efficiently.",
+  "<b>Evidence boundary</b>: Complete package contents, prechecks, one-revision consistency, and report traceability are standard industrial practice. TPU v1 does not publish GDSII, SPEF, netlist, QoR, or sign-off reports. The array, 24 MiB UB, 700 MHz, and 28 nm are disclosed context only."
+ ],
+ "result": [
+  {
+   "label": "Core product",
+   "value": "GDSII / OASIS layout: all polygons by layer for cells, UB SRAM macros, routing, PDN, and fill; foundry uses it for masks"
+  },
+  {
+   "label": "Companion parasitics",
+   "value": "SPEF: real per-net RC including coupling Cc for final STA, power, and EM/IR"
+  },
+  {
+   "label": "Companion design data",
+   "value": "Post-route gate-level netlist + SDC, same revision as layout/SPEF for independent cross-checking"
+  },
+  {
+   "label": "Report set",
+   "value": "Sign-off-grade STA, power, clean DRC/LVS evidence, IR-drop/EM/congestion (illustrative auditable closure evidence)"
+  },
+  {
+   "label": "Handoff destination",
+   "value": "Package to ⑨ sign-off: all-corner STA / power / EM/IR / DRC/LVS / RTL↔netlist formal equivalence"
+  },
+  {
+   "label": "Release / return path",
+   "value": "All green → GDSII to foundry masks and ⑩ Tapeout; any failure → ⑧ ECO → re-extract → repackage → re-sign-off"
+  }
+ ],
+ "after": [
+  "<b>Track final sign-off STA, power, and EM/IR</b>: Independent tools and all corner/OCV cases must confirm 700 MHz timing, power budget, electromigration, and IR-drop limits. Return every failing item to ⑧ ECO.",
+  "<b>Require clean DRC and LVS</b>: Foundry runsets and Calibre-class tools must report zero violations or only formally accepted waivers. A red physical-verification result blocks GDSII tapeout.",
+  "<b>Confirm RTL↔netlist formal equivalence</b>: Prove the post-route gate netlist still implements the original RTL after all ECO and optimization. A mismatch means function changed and must be corrected.",
+  "<b>On failure, rebuild the complete package</b>: After any ECO, regenerate SPEF, export GDSII, update netlist and reports, and resubmit the whole coherent revision. Never patch one artifact while leaving stale companions.",
+  "<b>When all green, release to ⑩ Tapeout</b>: Deliver the frozen GDSII and validated companion data to the foundry for photomask creation and wafer fabrication. The design then moves from implementation data to silicon."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the disclosed 256×256 8-bit MAC array, 24 MiB Unified Buffer, 700 MHz, and 28 nm provide the packaging/sign-off context; GDSII/OASIS export, SPEF/SDC/netlist handoff, Calibre-class DRC/LVS, IR-drop/EM, formal equivalence, sign-off, and tapeout are standard back-end/sign-off EDA practice, while all diagrams, settings, QoR, reports, layout, and handoff details are illustrative or private rather than public TPU v1 data)"
+}

@@ -1,0 +1,115 @@
+{
+  "secNum": "3.2",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · Standard-Cell Libraries: HVT for the MAC Sea, LVT for Critical Paths",
+  "oneLine": "Synthesis builds from foundry-provided 28 nm cells rather than inventing circuits. Each AND, flop, or full adder comes in multiple drive strengths and threshold voltages: LVT is fast but leaky; HVT is slower but efficient. Constraints guide cell choice across TPU's 65K MACs—high-drive LVT on a few critical paths and HVT across noncritical logic to protect the 28–40 W power budget.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 410\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"32\" y=\"28\">28 nm cells: functions × drive × Vt</text><g class=\"cs-part\" data-k=\"lib\" data-g=\"lib\"><rect class=\"cs-box\" x=\"30\" y=\"48\" width=\"280\" height=\"300\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"170\" y=\"72\">Standard-cell library (.lib / Liberty)</text><g class=\"cs-part\" data-k=\"cAND\" data-g=\"cell\"><rect class=\"cs-box\" x=\"50\" y=\"92\" width=\"240\" height=\"56\" rx=\"7\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"170\" y=\"112\">Combinational: AND2 / NAND2 / MUX</text><text class=\"cs-sub\" x=\"170\" y=\"130\">Drive: X1 X2 X4 X8 · Vt: LVT/SVT/HVT</text></g><g class=\"cs-part\" data-k=\"cFF\" data-g=\"cell\"><rect class=\"cs-box\" x=\"50\" y=\"158\" width=\"240\" height=\"56\" rx=\"7\" fill=\"#fefce8\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"170\" y=\"178\">Sequential: DFF / SDFF (scan)</text><text class=\"cs-sub\" x=\"170\" y=\"196\">Multiple setup/hold · drive · Vt versions</text></g><g class=\"cs-part\" data-k=\"cADD\" data-g=\"cell\"><rect class=\"cs-box\" x=\"50\" y=\"224\" width=\"240\" height=\"56\" rx=\"7\" fill=\"#fef2f2\" stroke=\"#fca5a5\"/><text class=\"cs-t\" x=\"170\" y=\"244\">Arithmetic: FA / HA / AOI</text><text class=\"cs-sub\" x=\"170\" y=\"262\">MAC multiply-add built from these</text></g><text class=\"cs-note\" x=\"60\" y=\"304\">Each cell includes delay/slew tables ·</text><text class=\"cs-note\" x=\"60\" y=\"322\">input capacitance · Vt-dependent leakage ·</text><text class=\"cs-note\" x=\"60\" y=\"340\">area · separate .lib files for PVT corners</text></g><line class=\"cs-arr\" x1=\"310\" y1=\"198\" x2=\"372\" y2=\"198\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"316\" y=\"188\">Choose cells under constraints</text><g class=\"cs-part\" data-k=\"syn\" data-g=\"syn\"><rect class=\"cs-box\" x=\"376\" y=\"150\" width=\"156\" height=\"96\" rx=\"8\"/><text class=\"cs-t\" x=\"454\" y=\"184\">Logic synthesis</text><text class=\"cs-sub\" x=\"454\" y=\"204\">Mapping + cell sizing</text><text class=\"cs-sub\" x=\"454\" y=\"222\">Meet timing / power</text></g><line class=\"cs-arr\" x1=\"532\" y1=\"198\" x2=\"594\" y2=\"198\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"critP\" data-g=\"impl\"><rect class=\"cs-box\" x=\"598\" y=\"92\" width=\"98\" height=\"86\" rx=\"8\" fill=\"#fef2f2\" stroke=\"#fca5a5\"/><text class=\"cs-t\" x=\"647\" y=\"124\">Critical paths</text><text class=\"cs-sub\" x=\"647\" y=\"142\">High drive</text><text class=\"cs-sub\" x=\"647\" y=\"160\">LVT (fast)</text></g><g class=\"cs-part\" data-k=\"bulkP\" data-g=\"impl\"><rect class=\"cs-box\" x=\"598\" y=\"218\" width=\"98\" height=\"86\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"647\" y=\"250\">Noncritical</text><text class=\"cs-sub\" x=\"647\" y=\"268\">MAC sea</text><text class=\"cs-sub\" x=\"647\" y=\"286\">HVT (low leakage)</text></g><line class=\"cs-arr\" x1=\"540\" y1=\"170\" x2=\"594\" y2=\"135\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><line class=\"cs-arr\" x1=\"540\" y1=\"226\" x2=\"594\" y2=\"261\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><text class=\"cs-note\" x=\"376\" y=\"276\">Example: set_max_transition / set_leakage_power</text><text class=\"cs-note\" x=\"376\" y=\"294\">Example: set_dont_use excluded cells · link all multi-Vt libraries</text><text class=\"cs-note\" x=\"376\" y=\"330\">Note: foundry libraries define cells;</text><text class=\"cs-note\" x=\"376\" y=\"348\">exact cell data is not TPU-specific;</text><text class=\"cs-note\" x=\"376\" y=\"366\">values shown illustrate standard practice.</text></svg>",
+  "legend": [
+    {
+      "k": "lib",
+      "name": "Standard-cell library (Liberty/.lib)",
+      "desc": "The foundry's 28 nm building-block catalog contains characterized, fixed-layout cells for AND, NAND, MUX, flops, full adders, and more. Each entry supplies delay/slew tables, capacitance, leakage, dynamic power, and area across PVT corners. Synthesis can use only listed cells, so library quality caps QoR."
+    },
+    {
+      "k": "cell",
+      "name": "Multiple drive strengths × multiple Vt options",
+      "desc": "One NAND2 may exist at X1/X2/X4/X8 drive strengths—larger drive is faster under load but costs area and power—and as LVT/SVT/HVT variants. LVT is faster with more leakage; HVT is slower with less leakage. Synthesis searches this speed/power/area product space."
+    },
+    {
+      "k": "syn",
+      "name": "Synthesis: mapping + cell selection",
+      "desc": "During technology mapping and sizing, the tool chooses library cells that meet timing—about a 1.43 ns period for 700 MHz—while minimizing power and area. Static timing slack identifies critical versus relaxed logic and therefore the required drive and Vt."
+    },
+    {
+      "k": "impl",
+      "name": "Result: critical paths versus noncritical logic",
+      "desc": "TPU separates naturally: a few cycle-limiting accumulation or decode paths use high-drive LVT cells, while the large, timing-relaxed 256×256 MAC array uses HVT wherever possible. Multi-Vt optimization is central to meeting a 28–40 W budget."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "lib",
+        "cell"
+      ],
+      "cap": "① Inventory the library: each logic function has X1…X8 drive strengths and LVT/SVT/HVT variants, all characterized for delay, leakage, and area."
+    },
+    {
+      "keys": [
+        "lib",
+        "syn"
+      ],
+      "cap": "② Link all approved multi-Vt libraries and let synthesis choose cells under a 700 MHz (~1.43 ns) timing target and leakage objective."
+    },
+    {
+      "keys": [
+        "syn",
+        "critP"
+      ],
+      "cap": "③ On tight accumulation and control-decode paths, use high-drive LVT cells to close timing first."
+    },
+    {
+      "keys": [
+        "syn",
+        "bulkP"
+      ],
+      "cap": "④ Across the timing-relaxed but area-dominant 256×256 MAC array, replace cells with HVT; small per-cell leakage savings multiply across 65K units."
+    },
+    {
+      "keys": [
+        "critP",
+        "bulkP"
+      ],
+      "cap": "⑤ Produce a mixed-Vt netlist with a small fast critical subset and a large efficient baseline, meeting 700 MHz within the 28–40 W budget."
+    }
+  ],
+  "before": [
+    "<b>Collect complete libraries</b>: Obtain 28 nm Liberty sets from the foundry across slow, typical, and fast process corners and target voltage/temperature, with LVT, SVT, and HVT variants. Synthesis and STA rely on these for delay, leakage, and area.",
+    "<b>Set a Vt policy</b>: Define permitted Vt classes and any cap on LVT usage because excessive LVT can exceed leakage budget. An array-heavy TPU should default toward HVT and reserve LVT for critical paths.",
+    "<b>Constrain timing, slew, and capacitance</b>: Specify the illustrative 1.43 ns/700 MHz clock plus set_max_transition and set_max_capacitance limits. These constraints determine the drive strength required at each node.",
+    "<b>Set power intent</b>: Provide leakage and dynamic-power targets so, after timing closes, synthesis actively swaps relaxed paths to HVT and downsizes cells rather than optimizing speed alone.",
+    "<b>Control the allowed cell set</b>: Apply set_dont_use to cells reserved for clock trees or considered risky, and set_dont_touch where structures must be preserved."
+  ],
+  "during": [
+    "<b>Core rule: synthesis can use only library cells</b>. It performs technology mapping plus sizing/Vt selection, covering RTL Boolean logic with an available standard-cell network. Missing functions or drive options cannot be invented.",
+    "<b>Drive follows load and slack</b>. Higher fanout, longer interconnect estimates, and tighter slack push selection toward X4/X8; lightly loaded, relaxed paths use X1/X2 to save area and power.",
+    "<b>Vt optimization dominates leakage</b>. Close timing with sufficiently fast cells, then recover leakage by swapping all positive-slack paths to HVT and lower drive. At 256×256 scale, moving a large MAC population one Vt class yields substantial chip-level savings.",
+    "<b>Reserve LVT for true critical paths</b>. Because LVT is fast but leaky, use it only where the cycle cannot otherwise close. If LVT proliferates, revisit pipelining or architecture instead of forcing timing through leakage.",
+    "<b>Optimize across corners</b>. Delay is worst at slow corners, while leakage and hold may be worst at fast/hot corners. Cell choices must close setup, hold, and power across all required PVT corners.",
+    "<b>State the source honestly</b>: Standard-cell data comes from the foundry. Multi-Vt/multi-drive selection, SDC constraints, and leakage recovery are standard EDA practices. TPU structure, 700 MHz, 28 nm, and weight-stationary execution provide context; shown cell values are illustrative."
+  ],
+  "result": [
+    {
+      "label": "Input libraries (linked together)",
+      "value": "28 nm Liberty: LVT/SVT/HVT × X1…X8 drive × PVT corners"
+    },
+    {
+      "label": "Timing constraint (example)",
+      "value": "create_clock -period 1.43 [get_ports clk]  # ≈700 MHz"
+    },
+    {
+      "label": "Signal limits (example)",
+      "value": "set_max_transition / set_max_capacitance …"
+    },
+    {
+      "label": "Power / cell controls (example)",
+      "value": "set_max_leakage_power 0; set_dont_use &lt;excluded_cells&gt;"
+    },
+    {
+      "label": "Mixed-Vt netlist",
+      "value": "Critical → high-drive LVT; MAC sea → HVT for leakage"
+    },
+    {
+      "label": "Reports",
+      "value": "Area/timing/power QoR + cell counts by Vt class"
+    }
+  ],
+  "after": [
+    "<b>Review Vt distribution and power</b>: Check LVT/SVT/HVT counts and area. If LVT share or leakage is excessive, tighten policy or revise the architecture and resynthesize.",
+    "<b>Review timing</b>: Confirm setup slack ≥0 at 1.43 ns across corners and eliminate hold risk. Adjust drive/Vt or feed the path back for additional pipelining.",
+    "<b>Run formal equivalence (LEC)</b>: Prove that the selected cell network implements the same function as RTL. Cell sizing and optimization must never alter behavior.",
+    "<b>Iterate leakage recovery</b>: Continue replacing positive-slack logic with HVT and lower drive while preserving timing until both timing and power converge.",
+    "<b>Hand off to backend</b>: Deliver the mixed-Vt netlist, SDC, and library set for place-and-route. Backend optimization will refine sizing and Vt using actual wire delays."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (foundry standard-cell data is not TPU-specific; multi-Vt/multi-drive selection and SDC/power constraints are standard EDA synthesis practices, and exact synthesis figures are not public.)"
+}

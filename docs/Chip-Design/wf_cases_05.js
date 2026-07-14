@@ -7,7 +7,7 @@ export const meta = {
   ],
 }
 
-const DIR = '/Users/sunking/Desktop/Chip-Design/cases_frag';
+const DIR = '/Users/sunking/Desktop/chip-design-flow/cases_frag';
 
 const STYLE = `
 你在为一套中文《芯片设计完整流程》学习网站,补一个小节的「真实芯片案例」。**全系列只用 Google TPU 这一款芯片举例**(主用 TPU v1,ISCA 2017 "In-Datacenter Performance Analysis of a TPU", Jouppi et al.;仅当 v1 确实没有该特性时才可引 TPU v2/v3/v4 pod,仍属 TPU)。绝不引入别的芯片。本篇是「⑤ RTL 设计」,案例要带 RTL 味道——讲"这段硬件用 HDL 怎么写、写出来的结构/信号长什么样"。

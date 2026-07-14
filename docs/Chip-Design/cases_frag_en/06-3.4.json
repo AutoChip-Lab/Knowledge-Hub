@@ -1,0 +1,113 @@
+{
+ "secNum": "3.4",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Proving the systolic array is correct: an independent naive matrix-multiply Golden Model with elementwise Scoreboard checks",
+ "oneLine": "Verification is self-checking, not visual waveform inspection. Feed identical stimulus to the RTL array and a separately written naive matrix-multiply Golden Model; the Scoreboard compares every output element, passing exact matches and immediately reporting the failing (i,j). The essential rule is independent implementation: if the model copies the RTL's interpretation, both can share one defect and produce a green regression despite a real bug—a common-mode error.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"28\">Self-checking: identical stimulus follows two independent paths and reconciles at the Scoreboard</text><g class=\"cs-part\" data-k=\"stim\" data-g=\"stim\"><rect class=\"cs-box\" x=\"40\" y=\"160\" width=\"124\" height=\"62\" rx=\"8\"/><text class=\"cs-t\" x=\"102\" y=\"186\">Stimulus generation</text><text class=\"cs-sub\" x=\"102\" y=\"204\">Same a values / weights</text></g><line class=\"cs-arr\" x1=\"164\" y1=\"178\" x2=\"244\" y2=\"120\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"164\" y1=\"204\" x2=\"244\" y2=\"262\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"dut\" data-g=\"dut\"><rect class=\"cs-box\" x=\"248\" y=\"86\" width=\"180\" height=\"70\" rx=\"8\"/><text class=\"cs-t\" x=\"338\" y=\"114\">DUT systolic array (RTL)</text><text class=\"cs-sub\" x=\"338\" y=\"134\">256×256 weight-stationary</text><text class=\"cs-sub\" x=\"338\" y=\"150\">Cycle accumulation → 32b results</text></g><g class=\"cs-part\" data-k=\"gold\" data-g=\"gold\"><rect class=\"cs-box\" x=\"248\" y=\"244\" width=\"180\" height=\"70\" rx=\"8\"/><text class=\"cs-t\" x=\"338\" y=\"272\">Golden Reference Model</text><text class=\"cs-sub\" x=\"338\" y=\"292\">Independent naive matrix multiply</text><text class=\"cs-sub\" x=\"338\" y=\"308\">Three nested loops / bit-accurate</text></g><line class=\"cs-arr\" x1=\"428\" y1=\"121\" x2=\"528\" y2=\"166\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"440\" y=\"128\">Observed array output</text><line class=\"cs-arr\" x1=\"428\" y1=\"279\" x2=\"528\" y2=\"220\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"440\" y=\"300\">Expected value (independent)</text><g class=\"cs-part\" data-k=\"sb\" data-g=\"sb\"><rect class=\"cs-box\" x=\"532\" y=\"160\" width=\"156\" height=\"78\" rx=\"8\"/><text class=\"cs-t\" x=\"610\" y=\"188\">Scoreboard</text><text class=\"cs-sub\" x=\"610\" y=\"208\">Compare C[i][j] elementwise</text><text class=\"cs-sub\" x=\"610\" y=\"224\">Equal→PASS / unequal→error</text></g><line class=\"cs-arr\" x1=\"610\" y1=\"238\" x2=\"610\" y2=\"286\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"verdict\" data-g=\"verdict\"><rect class=\"cs-box\" x=\"500\" y=\"290\" width=\"220\" height=\"48\" rx=\"8\"/><text class=\"cs-t\" x=\"610\" y=\"312\">Verdict &amp; failure prints (i,j,expected,observed)</text><text class=\"cs-sub\" x=\"610\" y=\"330\">$error localizes the PE</text></g><g class=\"cs-part\" data-k=\"indep\" data-g=\"indep\"><rect class=\"cs-box\" x=\"40\" y=\"262\" width=\"190\" height=\"76\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"135\" y=\"286\">Core rule: independent implementation</text><text class=\"cs-sub\" x=\"135\" y=\"306\">Reference Model ≠ copied RTL interpretation</text><text class=\"cs-sub\" x=\"135\" y=\"324\">Otherwise both fail identically = common-mode blind spot</text></g><line class=\"cs-arr\" x1=\"135\" y1=\"262\" x2=\"135\" y2=\"222\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/></svg>",
+ "legend": [
+  {
+   "k": "dut",
+   "name": "DUT: systolic-array RTL under verification",
+   "desc": "The 256×256 weight-stationary array RTL: weights remain local, activations flow cycle by cycle, and partial sums accumulate down columns into 32-bit results. It is the implementation whose correctness must be demonstrated, never assumed."
+  },
+  {
+   "k": "gold",
+   "name": "Golden Reference Model (independent implementation)",
+   "desc": "A separate, hardware-independent naive matrix multiply using three nested loops to compute C=A×B element by element. It cares only about the mathematical result, not systolic timing or pipelines. Its C[i][j] values are the expected answers. The defining property is independence."
+  },
+  {
+   "k": "sb",
+   "name": "Self-checking Scoreboard",
+   "desc": "Compares DUT observations and Golden Model expectations element by element for identical stimulus. All equal → PASS; any mismatch → immediate FAIL with (i,j), expected value, and observed value. It localizes the failing accumulation without manual waveform inspection."
+  },
+  {
+   "k": "indep",
+   "name": "Independent implementation prevents common-mode blind spots",
+   "desc": "The most dangerous model error is reproducing RTL logic or the same pseudocode for convenience. Then any misunderstanding appears on both sides, the Scoreboard reports PASS, and a real defect escapes. Implement the Golden Model from the requirements, ideally by another person and with a different approach."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "stim",
+    "dut",
+    "gold"
+   ],
+   "cap": "① One stimulus, two independent paths: send the same activations a and weights to both the DUT array and the Golden matrix-multiply model, each computing independently."
+  },
+  {
+   "keys": [
+    "dut"
+   ],
+   "cap": "② The DUT follows hardware behavior—stationary weights and cycle-by-cycle accumulation—to produce 256 columns of 32-bit observed results."
+  },
+  {
+   "keys": [
+    "gold"
+   ],
+   "cap": "③ The Golden Model directly computes C=A×B with three nested loops using bit-accurate integer arithmetic and no floating point, producing expected results."
+  },
+  {
+   "keys": [
+    "sb",
+    "verdict"
+   ],
+   "cap": "④ The Scoreboard compares observed and expected values element by element: match passes; mismatch triggers $error with (i,j), expected, and observed values, localizing the PE."
+  },
+  {
+   "keys": [
+    "indep",
+    "gold"
+   ],
+   "cap": "⑤ Enforce independence: the Golden Model must not copy the RTL's interpretation. Shared defects that leave the Scoreboard green are the most dangerous common-mode blind spot."
+  }
+ ],
+ "before": [
+  "<b>Choose the Reference Model's source of truth</b>: derive the Golden Model from requirements and the mathematical definition C=A×B with integer accumulation, not from RTL design documents. State this explicitly in the plan to prevent a common-mode blind spot at its source.",
+  "<b>Choose bit-accurate versus bit-approximate behavior</b>: INT8 inference uses integer MACs, with 8b×8b accumulated into 32b without rounding. The Golden Model should therefore be bit-accurate and comparisons strictly equal rather than tolerance-based. Fix this criterion before debates about whether a difference of 1 is acceptable.",
+  "<b>Define stimulus and completion criteria</b>: include directed all-zero, full ±127, identity, long vectors that push 32b accumulation into high bits (K=256 terms, magnitude about 2^22), and negative-weight cases, plus many random matrices. Completion requires coverage closure and 0 regression failures.",
+  "<b>Specify Scoreboard diagnostics</b>: PASS/FAIL alone is insufficient. Print failing (i,j), expected value, observed value, and current stimulus. Verification must both detect an error and quickly localize the PE or accumulation segment."
+ ],
+ "during": [
+  "<b>First rule: the Golden Model must be independently implemented</b>. Ideally another engineer writes it from requirements using a different method—naive nested loops rather than systolic behavior. Copying the RTL interpretation creates a common-mode error: the DUT and model agree while both are wrong, the deadliest self-checking failure.",
+  "<b>Second rule: feed exactly the same stimulus to both paths</b>. DUT and Golden Model must receive the identical a values, weights, and operation. Otherwise they solve different problems and neither PASS nor FAIL is meaningful. Use one stimulus source and fan it out.",
+  "<b>Align timing: the array is delayed, the model is immediate</b>. Systolic results emerge after pipeline latency, while the model computes immediately. Match by operation through a transaction id rather than raw cycle number so each observed tile pairs with its own expectation.",
+  "<b>Compare element by element, not only a whole-result digest</b>. Check all 256×256 C[i][j] values and localize the first failure. A hash reports only that something differs; elementwise comparison identifies the exact row and column accumulator.",
+  "<b>Illustrative SystemVerilog Scoreboard snippet, not private TPU code</b>: foreach(C[i][j]) if (dut_C[i][j] !== gold_C[i][j]) $error(\"mismatch (%0d,%0d) exp=%0d got=%0d\", i, j, gold_C[i][j], dut_C[i][j]); Four-state !== also rejects X/Z.",
+  "<b>Scope note</b>: Scoreboards, Golden Models, and independent implementation against common-mode errors are standard digital-verification methodology. TPU's private environment and scripts are not public; the documented 256×256 weight-stationary INT8 array and 32b accumulation are only the DUT context."
+ ],
+ "result": [
+  {
+   "label": "Reference Model (illustrative)",
+   "value": "golden: for i,j,k: C[i][j] += A[i][k]*B[k][j] (integer)"
+  },
+  {
+   "label": "Identical source for two paths",
+   "value": "Same a values / weights → DUT array + Golden Model"
+  },
+  {
+   "label": "Comparison",
+   "value": "Strict elementwise equality of C[i][j] (bit-accurate, !==)"
+  },
+  {
+   "label": "Failure report (illustrative)",
+   "value": "$error(\"mismatch (%0d,%0d) exp=%0d got=%0d\", i,j,...)"
+  },
+  {
+   "label": "Alignment",
+   "value": "Pair observed and expected results by transaction id, not raw cycle"
+  },
+  {
+   "label": "Verdict",
+   "value": "Every element equal → PASS; any mismatch → FAIL with localization"
+  }
+ ],
+ "after": [
+  "<b>Check coverage convergence</b>: a green Scoreboard means only that executed tests passed. Inspect covergroups for boundaries, negative weights, accumulation peaks, and array sizes. Green without coverage target is not complete.",
+  "<b>Test the Scoreboard itself by injecting a known bug</b>: deliberately flip one RTL bit or feed the Golden Model altered data, then confirm the Scoreboard reports FAIL at the correct location. A checker that always passes is more dangerous than none.",
+  "<b>Add every failure to regression</b>: after diagnosing and fixing a mismatch, retain its stimulus as a directed regression case; record random seeds for exact reproduction and bug convergence.",
+  "<b>Sign off on bug convergence</b>: run long random regressions until new-defect rate approaches zero, coverage meets target, and directed + random suites have 0 failures. Archive the Golden Model and coverage report with signoff.",
+  "<b>Freeze the pre-synthesis baseline</b>: hand off self-checked RTL, the Golden Reference Model, and regression suite. Reuse the same Golden Model for post-synthesis and post-layout netlist regression to confirm tools did not alter functionality."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (TPU v1's 256×256 weight-stationary INT8 array and 32-bit accumulation are documented; Scoreboards, Golden Reference Models, and independent implementation to prevent common-mode errors are standard verification practice, not TPU v1 disclosure)"
+}

@@ -1,0 +1,120 @@
+{
+ "secNum": "3.2",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Testbench architecture: Driver → DUT (systolic array) → Monitor → Scoreboard ← Reference Model",
+ "oneLine": "Verifying a 256×256 array is not a matter of running once and inspecting waveforms. A self-checking environment has the Driver apply matrices and the dozen-plus CISC instructions; the DUT computes; the Monitor reconstructs outputs; and the Scoreboard compares every element against an independently implemented Reference Model, automatically declaring PASS or FAIL. These five components turn manual waveform inspection into unattended machine-checked regression across thousands of tests.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 380\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"28\">TPU array testbench: drive stimulus → compute → observe → compare with reference</text><g class=\"cs-part\" data-k=\"drv\" data-g=\"drv\"><rect class=\"cs-box\" x=\"36\" y=\"64\" width=\"156\" height=\"86\" rx=\"8\"/><text class=\"cs-t\" x=\"114\" y=\"92\">Driver / stimulus</text><text class=\"cs-sub\" x=\"114\" y=\"112\">Matrices + weights</text><text class=\"cs-sub\" x=\"114\" y=\"130\">Issue dozen-plus CISC instructions</text></g><line class=\"cs-arr\" x1=\"192\" y1=\"107\" x2=\"262\" y2=\"107\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"dut\" data-g=\"dut\"><rect class=\"cs-box\" x=\"266\" y=\"56\" width=\"184\" height=\"102\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"358\" y=\"84\">DUT</text><text class=\"cs-sub\" x=\"358\" y=\"104\">256×256 systolic-array RTL</text><text class=\"cs-sub\" x=\"358\" y=\"122\">+ Unified Buffer / accumulators</text><text class=\"cs-sub\" x=\"358\" y=\"140\">weight-stationary</text></g><line class=\"cs-arr\" x1=\"450\" y1=\"107\" x2=\"520\" y2=\"107\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"mon\" data-g=\"mon\"><rect class=\"cs-box\" x=\"524\" y=\"64\" width=\"160\" height=\"86\" rx=\"8\"/><text class=\"cs-t\" x=\"604\" y=\"92\">Monitor / capture</text><text class=\"cs-sub\" x=\"604\" y=\"112\">Sample outputs by protocol</text><text class=\"cs-sub\" x=\"604\" y=\"130\">Pack into transactions</text></g><polyline class=\"cs-arr\" points=\"604,150 604,210 472,210\" fill=\"none\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"sb\" data-g=\"sb\"><rect class=\"cs-box\" x=\"266\" y=\"184\" width=\"200\" height=\"76\" rx=\"8\" fill=\"#dcfce7\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"366\" y=\"210\">Scoreboard / checker</text><text class=\"cs-sub\" x=\"366\" y=\"230\">Observed vs. expected → PASS/FAIL</text><text class=\"cs-sub\" x=\"366\" y=\"248\">Compare accumulation element by element</text></g><g class=\"cs-part\" data-k=\"ref\" data-g=\"ref\"><rect class=\"cs-box\" x=\"36\" y=\"184\" width=\"200\" height=\"76\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"136\" y=\"210\">Reference Model</text><text class=\"cs-sub\" x=\"136\" y=\"230\">Independent golden C/Python</text><text class=\"cs-sub\" x=\"136\" y=\"248\">Computes expected matrix product</text></g><line class=\"cs-arr\" x1=\"236\" y1=\"222\" x2=\"262\" y2=\"222\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"114,150 114,210 36,210 36,222\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"40\" y=\"178\">Same stimulus also feeds Reference Model ↓</text><g class=\"cs-part\" data-k=\"cov\" data-g=\"cov\"><rect class=\"cs-box\" x=\"500\" y=\"184\" width=\"184\" height=\"76\" rx=\"8\"/><text class=\"cs-t\" x=\"592\" y=\"210\">Coverage</text><text class=\"cs-sub\" x=\"592\" y=\"230\">covergroup / functional coverage</text><text class=\"cs-sub\" x=\"592\" y=\"248\">Closure metric</text></g><line class=\"cs-arr\" x1=\"466\" y1=\"222\" x2=\"496\" y2=\"222\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"40\" y=\"296\">Core rule: DUT and Reference Model independently implement one specification—never share code, or common defects escape</text><text class=\"cs-note\" x=\"40\" y=\"318\">Self-checking testbench: automatic PASS/FAIL, no manual waveforms; thousands of regression tests run unattended</text><text class=\"cs-note\" x=\"40\" y=\"340\">Scope: standard Driver/Monitor/Scoreboard/Reference Model/Coverage architecture (for example UVM); TPU v1's private environment is not public</text></svg>",
+ "legend": [
+  {
+   "k": "drv",
+   "name": "Driver (stimulus generator)",
+   "desc": "Drives the DUT according to its interface protocol. For TPU-like hardware, it supplies input matrices, weights, and the dozen-plus CISC instructions received from the host over PCIe, such as load weights, multiply matrices, and read results. It drives legal timing but does not judge correctness. The same stimulus also feeds the reference model so both solve the same problem."
+  },
+  {
+   "k": "dut",
+   "name": "DUT (design under test: systolic-array RTL)",
+   "desc": "The 256×256 weight-stationary systolic array RTL together with the Unified Buffer and 32-bit accumulators. It is the component under examination. The verification environment surrounds it and interacts only through ports, remaining independent of its internal implementation."
+  },
+  {
+   "k": "mon",
+   "name": "Monitor (output observer)",
+   "desc": "Passively samples DUT output ports according to the protocol, reconstructs low-level signal activity into a complete output transaction—such as a result tile or accumulator row—and sends it to the Scoreboard. It never drives signals, keeping observation separate from stimulus."
+  },
+  {
+   "k": "ref",
+   "name": "Reference Model (golden model)",
+   "desc": "An independent high-level C/Python implementation of the same matrix-multiply and accumulation specification that computes the expected result. It must not share implementation code with the DUT; otherwise one misunderstanding can affect both sides and let the Scoreboard pass the same defect."
+  },
+  {
+   "k": "sb",
+   "name": "Scoreboard (automatic checker)",
+   "desc": "Compares observed output from the Monitor element by element against expected output from the Reference Model, reports PASS/FAIL automatically, and identifies the first mismatch. This makes the testbench self-checking, so thousands of regression tests can run unattended without manual waveform review."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "drv",
+    "dut"
+   ],
+   "cap": "① The Driver applies input matrices, weights, and the dozen-plus CISC instructions with legal interface timing. The DUT performs weight-stationary matrix multiply-accumulate."
+  },
+  {
+   "keys": [
+    "drv",
+    "ref"
+   ],
+   "cap": "② The same stimulus feeds an independent C/Python Reference Model, which computes the expected matrix-multiply result as the golden answer."
+  },
+  {
+   "keys": [
+    "dut",
+    "mon"
+   ],
+   "cap": "③ The Monitor passively samples DUT outputs according to the protocol, reconstructs a complete transaction from signal activity, and sends it to the Scoreboard."
+  },
+  {
+   "keys": [
+    "mon",
+    "sb",
+    "ref"
+   ],
+   "cap": "④ The Scoreboard compares observed and expected outputs element by element: matching data records PASS; any mismatch immediately records FAIL and location—fully automatic, without visual waveform inspection."
+  },
+  {
+   "keys": [
+    "dut",
+    "cov"
+   ],
+   "cap": "⑤ Coverage simultaneously records which scenarios the stimulus reached—array fill/drain, instruction classes, and numerical boundaries—using covergroups as a closure metric."
+  }
+ ],
+ "before": [
+  "<b>Define the verification plan and DUT boundary</b>: scope this effort to the 256×256 array + Unified Buffer + accumulators + instruction interface. List target features such as matrix-multiply correctness, weight loading, array fill/drain timing, accumulator overflow handling, and instruction decode.",
+  "<b>Choose the golden Reference Model</b>: independently implement the same matrix-multiply plus accumulation specification in C/Python as the Scoreboard's expected-value source. Establish one rule upfront: DUT and model share no implementation code, so common-mode defects cannot hide.",
+  "<b>Choose the stimulus strategy</b>: include directed tests—identity matrix, all zeros, and small hand-checkable weights—to establish basics, plus constrained random matrices/dimensions within 8-bit data and legal instruction-sequence constraints to explore corners at scale.",
+  "<b>Set coverage and completion criteria</b>: measure progress with functional covergroups, not elapsed runtime. Define a gate such as functional coverage at target + all directed tests passing + N consecutive random regressions with zero failures before considering verification complete."
+ ],
+ "during": [
+  "<b>Give each component one responsibility</b>: Driver drives, Monitor observes, Scoreboard checks, and Reference Model predicts. This layering, corresponding to UVM driver/monitor/scoreboard/agent roles, makes components replaceable and debugging ownership clear. Do not combine stimulus and checking in one always block.",
+  "<b>Make the environment self-checking; eliminate manual waveform signoff</b>: the Scoreboard produces a Boolean PASS/FAIL result rather than a waveform for human interpretation. Only self-checking enables thousands of random tests to run unattended in regression.",
+  "<b>Implement the Reference Model independently from the DUT</b>: both follow the specification through separate code paths. If the model copies DUT logic, a shared interpretation error affects both and every comparison passes while the defect survives.",
+  "<b>Align pipeline timing and clock domains</b>: a systolic array has deterministic fill/drain latency as data advances cycle by cycle. The Monitor and Scoreboard must align transactions to that delay. The DUT also spans host PCIe and array-core domains; sample only in the correct domain after handshake stabilization to avoid incomplete data.",
+  "<b>Collect coverage alongside checking</b>: for every stimulus, let the Scoreboard judge correctness and covergroups record array fill, every CISC instruction class, and accumulator saturation boundaries. Coverage reveals what remains unverified.",
+  "<b>Scope note</b>: the Driver/Monitor/Scoreboard/Reference Model/Coverage structure is standard verification practice for large arrays, typically implemented with SystemVerilog/UVM. TPU v1's private environment and metrics are not public; documented structures such as the array, Unified Buffer, handshakes, clock domains, and CISC interface serve only as the DUT context."
+ ],
+ "result": [
+  {
+   "label": "Environment topology",
+   "value": "Driver → DUT (array RTL) → Monitor → Scoreboard ← Reference Model"
+  },
+  {
+   "label": "Scoreboard check (illustrative)",
+   "value": "assert(dut_out === ref_out) else $error(\"mismatch @%0d\", idx);"
+  },
+  {
+   "label": "Functional coverage (illustrative covergroup)",
+   "value": "covergroup cg; cp_instr:coverpoint cisc_op; cp_full:coverpoint array_filled; endgroup"
+  },
+  {
+   "label": "Reference Model",
+   "value": "Independent C/Python matrix-multiply + accumulation implementation; no shared code with DUT"
+  },
+  {
+   "label": "Decision format",
+   "value": "Automatic PASS/FAIL (self-checking), not manual waveform inspection"
+  },
+  {
+   "label": "Completion criteria",
+   "value": "Functional coverage at target + all directed tests pass + multiple consecutive random regressions with zero failures"
+  }
+ ],
+ "after": [
+  "<b>Drive coverage convergence</b>: summarize covergroups, identify missing scenarios—an instruction not issued, an array fill pattern absent, or an accumulation boundary untouched—and add targeted stimulus or adjust random constraints until the signoff threshold is met.",
+  "<b>Build and automate regression</b>: freeze all directed and random tests into a suite that runs daily and on every commit. Self-checking allows thousands of unattended cases and reports either all PASS or the exact failing test and location.",
+  "<b>Track bug convergence</b>: count newly found and fixed defects per round until the curve flattens across multiple rounds. Add a regression test for every fix to prevent recurrence.",
+  "<b>Sign off verification</b>: require coverage target, all-green regression, and converged bug curve together. Archive the plan, coverage report, Reference Model, and regression suite as evidence.",
+  "<b>Hand off to synthesis and physical implementation</b>: deliver signed-off RTL with its testbench, coverage, and regression results so downstream work starts from a functionally verified and reproducible version. Gate-level and formal checks can reuse the same model and tests."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (testbench architecture and UVM/covergroup/assert constructs are standard verification practices; snippets are illustrative, not private TPU v1 disclosure)"
+}

@@ -1,0 +1,118 @@
+{
+  "secNum": "3.3",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · SDC as the Synthesis Control Plane: 700 MHz Clock, I/O Delays, and Timing Exceptions",
+  "oneLine": "Synthesis does not know target speed, external timing, or which paths may take multiple cycles. SDC supplies that intent: create_clock sets an illustrative 1.43 ns/700 MHz target, I/O delays reserve external budget, and false/multicycle paths describe asynchronous or slow behavior. Missing or incorrect constraints make the tool optimize the wrong objective—garbage in, garbage out.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">SDC directs synthesis optimization</text><g class=\"cs-part\" data-k=\"clk\" data-g=\"sdc\"><rect class=\"cs-box\" x=\"40\" y=\"48\" width=\"208\" height=\"58\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"144\" y=\"72\">create_clock 700 MHz</text><text class=\"cs-sub\" x=\"144\" y=\"92\">1.43 ns period (example) · define clock</text></g><g class=\"cs-part\" data-k=\"idel\" data-g=\"sdc\"><rect class=\"cs-box\" x=\"40\" y=\"120\" width=\"208\" height=\"58\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"144\" y=\"144\">set_input/output_delay</text><text class=\"cs-sub\" x=\"144\" y=\"164\">Account for time consumed outside the chip</text></g><g class=\"cs-part\" data-k=\"fp\" data-g=\"sdc\"><rect class=\"cs-box\" x=\"40\" y=\"192\" width=\"208\" height=\"58\" rx=\"8\" fill=\"#fefce8\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"144\" y=\"216\">false / multicycle path</text><text class=\"cs-sub\" x=\"144\" y=\"236\">CDC / slow paths: not one-cycle</text></g><g class=\"cs-part\" data-k=\"exc\" data-g=\"sdc\"><rect class=\"cs-box\" x=\"40\" y=\"264\" width=\"208\" height=\"58\" rx=\"8\" fill=\"#fef2f2\" stroke=\"#fca5a5\"/><text class=\"cs-t\" x=\"144\" y=\"288\">set_clock_uncertainty</text><text class=\"cs-sub\" x=\"144\" y=\"308\">Reserve jitter/skew margin · set_load, etc.</text></g><line class=\"cs-arr\" x1=\"248\" y1=\"77\" x2=\"318\" y2=\"120\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"248\" y1=\"149\" x2=\"318\" y2=\"160\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"248\" y1=\"221\" x2=\"318\" y2=\"190\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"248\" y1=\"293\" x2=\"318\" y2=\"200\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"262\" y=\"100\">SDC constraints</text><text class=\"cs-note\" x=\"262\" y=\"116\">= control plane</text><g class=\"cs-part\" data-k=\"path\" data-g=\"path\"><rect class=\"cs-box\" x=\"320\" y=\"128\" width=\"380\" height=\"120\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\"/><text class=\"cs-t\" x=\"510\" y=\"150\">One constrained path inside the systolic array</text><path d=\"M352,190 l16,0 l-8,-14 z\" fill=\"#8b5cf6\"/><rect x=\"345\" y=\"186\" width=\"22\" height=\"22\" rx=\"3\" fill=\"#ede9fe\" stroke=\"#8b5cf6\"/><text class=\"cs-sub\" x=\"356\" y=\"222\">Launch FF</text><line class=\"cs-arr\" x1=\"372\" y1=\"197\" x2=\"470\" y2=\"197\" marker-end=\"url(#csar)\"/><text class=\"cs-sub\" x=\"430\" y=\"190\">Combinational logic (MAC)</text><rect x=\"540\" y=\"186\" width=\"22\" height=\"22\" rx=\"3\" fill=\"#ede9fe\" stroke=\"#8b5cf6\"/><path d=\"M547,190 l16,0 l-8,-14 z\" fill=\"#8b5cf6\"/><text class=\"cs-sub\" x=\"551\" y=\"222\">Capture FF</text><text class=\"cs-sub\" x=\"510\" y=\"240\">Must complete within 1.43 ns</text></g><text class=\"cs-note\" x=\"320\" y=\"118\">↑ Constraint defines allowed cycles</text><g class=\"cs-part\" data-k=\"goal\" data-g=\"goal\"><rect class=\"cs-box\" x=\"320\" y=\"268\" width=\"184\" height=\"100\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"412\" y=\"296\">Correct constraints → correct optimization</text><text class=\"cs-sub\" x=\"412\" y=\"320\">Close timing to 1.43 ns</text><text class=\"cs-sub\" x=\"412\" y=\"340\">Fast where needed · efficient elsewhere</text><text class=\"cs-sub\" x=\"412\" y=\"360\">Credible QoR reports</text></g><g class=\"cs-part\" data-k=\"gigo\" data-g=\"gigo\"><rect class=\"cs-box\" x=\"516\" y=\"268\" width=\"184\" height=\"100\" rx=\"8\" fill=\"#fef2f2\" stroke=\"#fca5a5\"/><text class=\"cs-t\" x=\"608\" y=\"296\">Wrong constraints → wrong objective</text><text class=\"cs-sub\" x=\"608\" y=\"320\">Missed false_path → wasted cells</text><text class=\"cs-sub\" x=\"608\" y=\"340\">Loose period → misses frequency</text><text class=\"cs-sub\" x=\"608\" y=\"360\">garbage in, garbage out</text></g><line class=\"cs-arr\" x1=\"412\" y1=\"248\" x2=\"412\" y2=\"266\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"560\" y1=\"248\" x2=\"600\" y2=\"266\" marker-end=\"url(#csar)\"/></svg>",
+  "legend": [
+    {
+      "k": "clk",
+      "name": "create_clock (defines the optimization target)",
+      "desc": "create_clock defines period and waveform, telling synthesis the cadence for the design. TPU v1 runs at 700 MHz, about 1.43 ns per cycle; the exact script is unpublished. Period drives buffering, sizing, and replication and anchors setup/hold analysis."
+    },
+    {
+      "k": "idel",
+      "name": "set_input_delay / set_output_delay (I/O budget)",
+      "desc": "Inputs do not arrive exactly at the chip clock edge, and downstream logic consumes part of the output cycle. I/O delays describe time used outside the chip so synthesis knows the remaining internal budget. Omitting them makes boundary timing unrealistically optimistic or pessimistic."
+    },
+    {
+      "k": "fp",
+      "name": "set_false_path / set_multicycle_path (exceptions)",
+      "desc": "Not every path must complete in one cycle. Asynchronous paths crossing through synchronizers can be excluded with set_false_path; intentionally slow paths can receive N cycles with set_multicycle_path. Missing exceptions wastes area through overconstraint, while incorrect exceptions hide real violations."
+    },
+    {
+      "k": "path",
+      "name": "Constrained path: launch FF → logic → capture FF",
+      "desc": "Synthesis sees many register-to-register paths. Every MAC stage in the systolic array fits this model. After subtracting I/O and clock uncertainty from 1.43 ns, the remainder is the delay budget for combinational logic."
+    },
+    {
+      "k": "gigo",
+      "name": "Wrong constraints = wrong optimization (GIGO)",
+      "desc": "The tool trusts SDC. A loose period may report success while silicon misses 700 MHz; a missing false path may trigger pointless buffering and area/power growth. Contradictory or incomplete constraints make clean reports meaningless."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "clk",
+        "path"
+      ],
+      "cap": "① Establish clocks: create_clock sets an illustrative 700 MHz/1.43 ns core target, requiring every ordinary register-to-register path to complete within the cycle."
+    },
+    {
+      "keys": [
+        "idel"
+      ],
+      "cap": "② Define boundaries: set_input_delay and set_output_delay account for time consumed by external PCIe- and DDR3-side logic, leaving a realistic on-chip budget."
+    },
+    {
+      "keys": [
+        "fp",
+        "path"
+      ],
+      "cap": "③ Declare exceptions: mark synchronizer-based PCIe↔core CDC paths false and intentionally slow paths multicycle so the tool does not force one-cycle timing."
+    },
+    {
+      "keys": [
+        "exc"
+      ],
+      "cap": "④ Reserve margin and model loads: set_clock_uncertainty covers jitter/skew, while set_load and set_driving_cell make timing reflect realistic interfaces."
+    },
+    {
+      "keys": [
+        "goal",
+        "gigo"
+      ],
+      "cap": "⑤ With complete constraints, synthesis closes the true 1.43 ns target and QoR is credible; one missing exception or loose period immediately redirects optimization."
+    }
+  ],
+  "before": [
+    "<b>Define every clock and period</b>: Inventory clock domains such as PCIe, core array, and DDR3. For the 700 MHz core, use an illustrative create_clock -period 1.43. Without clocks, the tool cannot define “fast enough.”",
+    "<b>Allocate I/O timing</b>: Encode delay already consumed by upstream and downstream circuitry with set_input_delay and set_output_delay. Unconstrained boundaries force guesses and distort optimization.",
+    "<b>Inventory timing exceptions</b>: Collaborate with design and verification to identify true asynchronous synchronizer crossings and intentionally multicycle paths. This list drives set_false_path and set_multicycle_path; omissions create over- or underconstraint.",
+    "<b>Set uncertainty and operating conditions</b>: Before a real clock tree exists, reserve jitter/skew and synthesis margin with set_clock_uncertainty, and select the appropriate PVT operating condition and library.",
+    "<b>Define constraint acceptance criteria</b>: Require clean parsing, no missing objects, no unconstrained ports or paths, and documented, traceable timing exceptions."
+  ],
+  "during": [
+    "<b>Core rule: constraints are the optimization objective</b>. The tool does not infer intent. A 1.43 ns period targets 700 MHz; 2 ns targets only 500 MHz. Every area, power, buffering, and replication tradeoff follows the written SDC.",
+    "<b>Establish clocks before exceptions</b>. The dependency is clock → I/O budget → uncertainty → exceptions. False and multicycle paths subtract from an already defined clock relationship; exceptions have no meaning without clocks.",
+    "<b>Underconstraint is more dangerous than visible violations</b>. Missing I/O or path constraints can produce clean reports because the tool sees no requirement. Finding unconstrained ports and paths is as important as fixing negative slack.",
+    "<b>Overconstraint and careless exceptions are also harmful</b>. Marking a real path false hides a silicon failure; an unrealistically tight period causes excessive buffering and replication. Every exception needs evidence and must never be added merely to clean a report.",
+    "<b>Treat CDC paths explicitly</b>. Declare PCIe↔core asynchronous clocks with set_clock_groups or false paths, or constrain synchronizer paths individually. Otherwise unrelated clocks create false setup violations or unsafe optimization.",
+    "<b>Label methodology and numbers honestly</b>: SDC commands are standard across Design Compiler and Genus flows. TPU v1 publishes 700 MHz, 28 nm, and the array structure, but not its constraint scripts; 1.43 ns and all snippets here are illustrative conversions."
+  ],
+  "result": [
+    {
+      "label": "Constraint format",
+      "value": "SDC (Synopsys Design Constraints; synthesis/STA standard)"
+    },
+    {
+      "label": "Main clock (example)",
+      "value": "create_clock -period 1.43 -name core_clk [get_ports clk]  // 700 MHz"
+    },
+    {
+      "label": "I/O delays (example)",
+      "value": "set_input_delay 0.4 -clock core_clk [all_inputs]; set_output_delay 0.4 -clock core_clk [all_outputs]"
+    },
+    {
+      "label": "Timing exception (example)",
+      "value": "set_false_path -from [get_clocks pcie_clk] -to [get_clocks core_clk]  // synchronizer CDC"
+    },
+    {
+      "label": "Uncertainty (example)",
+      "value": "set_clock_uncertainty 0.1 [get_clocks core_clk]  // jitter/skew reserve"
+    },
+    {
+      "label": "Role of constraints",
+      "value": "The synthesis objective itself; wrong constraints redirect optimization (GIGO)"
+    }
+  ],
+  "after": [
+    "<b>Confirm all constraints were read</b>: Inspect logs for missing objects, mismatched port names, or undefined clocks. One mistyped name can silently disable a constraint and invalidate optimization.",
+    "<b>Find unconstrained ports and paths</b>: Use report_constraint and check_timing to locate endpoints not covered by clocks. Complete them or declare justified exceptions; otherwise clean timing is false confidence.",
+    "<b>Audit timing exceptions</b>: Review every false and multicycle path for written rationale and verify it truly crosses domains or takes multiple cycles. Never exclude a path that requires closure.",
+    "<b>Check whether QoR reflects the right problem</b>: Review WNS/TNS, area, and power to separate real RTL/architecture failures from artifacts of unreasonable constraints. Revise SDC and resynthesize iteratively.",
+    "<b>Hand SDC to backend and signoff STA</b>: Deliver validated constraints with the gate netlist. Place-and-route and signoff STA reuse the same intent with real clock trees and extracted parasitics, so SDC remains the control plane end to end."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the 256×256 array, 700 MHz, 28 nm, PCIe host interface, and weight-stationary design are published. SDC commands, all snippets, and the 1.43 ns conversion are illustrative standard EDA practice; TPU scripts and QoR are not public.)"
+}

@@ -1,0 +1,121 @@
+{
+  "secNum": "3.5",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · MXU-Centric Wide Datapath Instead of a General-Purpose NoC",
+  "oneLine": "When one dataflow dominates a chip, a wide datapath that delivers full bandwidth plus a narrow control bus outperforms a general mesh NoC; true inter-chip networking (ICI) appears only when scaling across devices.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"24\">Single chip: wide datapath + control bus, not a mesh NoC</text><g class=\"cs-part\" data-k=\"host\" data-g=\"host\"><rect class=\"cs-box\" x=\"30\" y=\"48\" width=\"150\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"105\" y=\"72\">Host</text><text class=\"cs-sub\" x=\"105\" y=\"90\">PCIe 3.0 CISC commands</text></g><g class=\"cs-part\" data-k=\"ctrl\" data-g=\"ctrl\"><rect class=\"cs-box\" x=\"30\" y=\"150\" width=\"150\" height=\"60\" rx=\"8\"/><text class=\"cs-t\" x=\"105\" y=\"174\">Control unit</text><text class=\"cs-sub\" x=\"105\" y=\"192\">Decode / issue control</text></g><line class=\"cs-arr\" x1=\"105\" y1=\"104\" x2=\"105\" y2=\"148\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"cbus\" data-g=\"cbus\"><line class=\"cs-arr\" x1=\"180\" y1=\"180\" x2=\"296\" y2=\"180\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"180\" y1=\"180\" x2=\"296\" y2=\"300\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"190\" y=\"172\">Control bus (narrow: commands / handshakes)</text></g><g class=\"cs-part\" data-k=\"ub\" data-g=\"ub\"><rect class=\"cs-box\" x=\"240\" y=\"140\" width=\"120\" height=\"78\" rx=\"8\"/><text class=\"cs-t\" x=\"300\" y=\"166\">Unified Buffer</text><text class=\"cs-sub\" x=\"300\" y=\"184\">24 MiB SRAM</text><text class=\"cs-sub\" x=\"300\" y=\"200\">Activations / intermediates</text></g><g class=\"cs-part\" data-k=\"wide\" data-g=\"wide\"><polyline class=\"cs-arr\" points=\"360,168 430,168\" fill=\"none\" stroke-width=\"10\" stroke=\"#64748b\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"430,196 360,196\" fill=\"none\" stroke-width=\"10\" stroke=\"#64748b\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"358\" y=\"150\">Wide 256-lane datapath</text><text class=\"cs-note\" x=\"362\" y=\"226\">Peak ~256 B/cycle</text></g><g class=\"cs-part\" data-k=\"mxu\" data-g=\"mxu\"><rect class=\"cs-box\" x=\"432\" y=\"130\" width=\"170\" height=\"100\" rx=\"8\"/><text class=\"cs-t\" x=\"517\" y=\"160\">MXU matrix unit</text><text class=\"cs-sub\" x=\"517\" y=\"180\">256×256 systolic array</text><text class=\"cs-sub\" x=\"517\" y=\"200\">On-chip dataflow convergence point</text></g><g class=\"cs-part\" data-k=\"ddr\" data-g=\"ddr\"><rect class=\"cs-box\" x=\"432\" y=\"260\" width=\"170\" height=\"50\" rx=\"8\"/><text class=\"cs-t\" x=\"517\" y=\"284\">Off-chip 8 GiB DDR3</text><text class=\"cs-sub\" x=\"517\" y=\"300\">~30 GB/s · weights</text></g><line class=\"cs-arr\" x1=\"517\" y1=\"260\" x2=\"517\" y2=\"232\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"ici\" data-g=\"ici\"><rect class=\"cs-box\" x=\"628\" y=\"48\" width=\"70\" height=\"262\" rx=\"8\" stroke-dasharray=\"5 4\"/><text class=\"cs-sub\" x=\"663\" y=\"70\">Multi-chip</text><text class=\"cs-sub\" x=\"663\" y=\"86\">uses ↓</text><rect class=\"cs-cell\" x=\"640\" y=\"100\" width=\"20\" height=\"20\" rx=\"4\"/><rect class=\"cs-cell\" x=\"666\" y=\"100\" width=\"20\" height=\"20\" rx=\"4\"/><rect class=\"cs-cell\" x=\"640\" y=\"126\" width=\"20\" height=\"20\" rx=\"4\"/><rect class=\"cs-cell\" x=\"666\" y=\"126\" width=\"20\" height=\"20\" rx=\"4\"/><line class=\"cs-arr\" x1=\"660\" y1=\"110\" x2=\"666\" y2=\"110\"/><line class=\"cs-arr\" x1=\"660\" y1=\"136\" x2=\"666\" y2=\"136\"/><line class=\"cs-arr\" x1=\"650\" y1=\"120\" x2=\"650\" y2=\"126\"/><line class=\"cs-arr\" x1=\"676\" y1=\"120\" x2=\"676\" y2=\"126\"/><text class=\"cs-sub\" x=\"663\" y=\"172\">ICI</text><text class=\"cs-sub\" x=\"663\" y=\"188\">2D torus</text><text class=\"cs-sub\" x=\"663\" y=\"220\">(v2/v3</text><text class=\"cs-sub\" x=\"663\" y=\"236\">pod)</text></g></svg>",
+  "legend": [
+    {
+      "k": "cbus",
+      "name": "Control bus",
+      "desc": "A narrow path carrying decoded CISC commands and handshakes; TPU v1 has only about a dozen instructions. Control and data are separated, and control traffic remains small."
+    },
+    {
+      "k": "wide",
+      "name": "Wide datapath",
+      "desc": "The main on-chip interconnect: a very wide parallel path between the Unified Buffer and MXU that delivers a full activation row or partial sums each cycle. Its goal is lossless bandwidth, not flexible routing."
+    },
+    {
+      "k": "ub",
+      "name": "Unified Buffer",
+      "desc": "A 24 MiB on-chip SRAM at one end of the datapath. Activations stream directly into the array and results return with almost no intermediate staging."
+    },
+    {
+      "k": "mxu",
+      "name": "MXU (convergence point)",
+      "desc": "The 256×256 systolic array is the single destination for dominant on-chip traffic. Because interconnect serves one compute core, the topology can remain extremely simple."
+    },
+    {
+      "k": "ici",
+      "name": "ICI inter-chip interconnect",
+      "desc": "A single chip does not need a network. ICI and a 2D torus become relevant only when hundreds or thousands of TPU devices form a pod; this belongs to TPU v2/v3, not v1."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "host",
+        "ctrl",
+        "cbus"
+      ],
+      "cap": "① The host sends CISC commands over PCIe; the control unit decodes them and distributes signals on a narrow control bus, separating control from data."
+    },
+    {
+      "keys": [
+        "ub",
+        "wide",
+        "mxu"
+      ],
+      "cap": "② Activations move an entire row at a time from the Unified Buffer to the MXU over the wide datapath, sustaining bandwidth with almost no staging."
+    },
+    {
+      "keys": [
+        "ddr",
+        "mxu"
+      ],
+      "cap": "③ Weights arrive separately from off-chip DDR3. All data converges on the MXU, so general-purpose routing is unnecessary."
+    },
+    {
+      "keys": [
+        "mxu",
+        "wide",
+        "ub"
+      ],
+      "cap": "④ Partial sums and results return over the same wide path to the Unified Buffer for the next layer; one dominant flow needs only one dedicated link."
+    },
+    {
+      "keys": [
+        "ici"
+      ],
+      "cap": "⑤ When one chip can no longer hold a model, connect multiple devices with an ICI 2D torus; networking appears at pod scale in TPU v2/v3."
+    }
+  ],
+  "before": [
+    "<b>First ask whether a network is needed</b>: How many dataflows and endpoints communicate—arbitrary many-to-many traffic, or one dominant stream feeding one core? TPU is the latter, which determines whether a general NoC is justified.",
+    "<b>Decisions to make</b>: Topology (point-to-point link, bus, mesh, or torus), link width and frequency, separation of control and data, buffering and flow control, and provisions for inter-chip expansion.",
+    "<b>Required inputs</b>: Communication pairs, bisection bandwidth, and cadence from compute (§3.3) and memory (§3.4). For TPU, the Unified Buffer must deliver a full activation row to the MXU every cycle.",
+    "<b>Hard constraints</b>: Feed bandwidth, interconnect area and power, deterministic inference latency, and physical routability of an exceptionally wide bus."
+  ],
+  "during": [
+    "<b>Model the communication graph</b>: TPU has one overwhelming on-chip flow, Unified Buffer↔MXU, with few nodes and a fixed pattern. A mesh NoC adds routers, latency, area, and power without useful flexibility.",
+    "<b>Select the simplest topology</b>: Since traffic converges on the MXU, use a dedicated point-to-point wide datapath rather than a routable packet network, eliminating routers, arbitration, and virtual channels.",
+    "<b>Prioritize bandwidth over flexibility</b>: Preserve the Unified Buffer's bandwidth all the way to the array with a very wide, short, nearby link. Flexible routing is not required.",
+    "<b>Separate control and data</b>: A narrow bus easily carries about a dozen CISC commands and handshakes; devote nearly all interconnect area and power to the datapath. This matches host-driven operation and predictable latency.",
+    "<b>Accept the scalability tradeoff</b>: A simple wide datapath does not scale across many on-chip endpoints. TPU keeps one chip minimal and delegates capacity scaling to a separate inter-chip layer.",
+    "<b>Add networking only across chips</b>: At pod scale, a real network is required. TPU v2/v3 use ICI with a regular 2D-torus topology to balance bisection bandwidth and physical layout; this is not a disclosed v1 feature."
+  ],
+  "result": [
+    {
+      "label": "On-chip interconnect",
+      "value": "Wide datapath + narrow control bus (not a mesh NoC)"
+    },
+    {
+      "label": "Traffic pattern",
+      "value": "One dominant flow converging on the MXU"
+    },
+    {
+      "label": "Datapath width",
+      "value": "Very wide parallel path; one activation row per cycle"
+    },
+    {
+      "label": "Control path",
+      "value": "Host-driven; only about a dozen CISC commands"
+    },
+    {
+      "label": "Off-chip bandwidth",
+      "value": "~30 GB/s DDR3 for weights"
+    },
+    {
+      "label": "Inter-chip scaling",
+      "value": "ICI 2D torus · TPU v2/v3 pod"
+    }
+  ],
+  "after": [
+    "<b>Validate bandwidth</b>: Confirm on representative workloads that interconnect keeps the array full. If delivery limits utilization, widen the datapath or revise Unified Buffer bandwidth (§3.4).",
+    "<b>Propagate physical requirements</b>: Give backend design placement and routing constraints for the ultra-wide bus—keep it short and nearby—and provide timing budgets for its critical paths.",
+    "<b>Establish deterministic latency</b>: Verify that separating control and data yields a fixed, modelable datapath delay suitable for predictable data-center inference.",
+    "<b>Plan the scaling layer</b>: Treat single-chip non-scalability as an explicit tradeoff and assign multi-device pod connectivity to an inter-chip network such as ICI.",
+    "<b>Add observability</b>: Include bandwidth and occupancy counters to identify whether compute or interconnect becomes the real bottleneck."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (ICI/2D torus applies to TPU v2/v3 pods; general data-center inference-ASIC interconnect practice is noted separately.)"
+}

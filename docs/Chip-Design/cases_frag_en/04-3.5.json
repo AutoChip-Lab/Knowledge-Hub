@@ -1,0 +1,119 @@
+{
+ "secNum": "3.5",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Weight FIFO and Double-Buffered Unified Buffer Keep the 256×256 Array Busy",
+ "oneLine": "Buffering and flow control decouple producers from consumers so a slow path cannot starve a fast one. TPU uses Weight FIFO depth to hide long DDR3 weight-fetch latency and double buffering in Unified Buffer to overlap activation transfer with array compute, keeping the one-column-per-cycle systolic array close to fully utilized.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 380\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"28\">Weight path: FIFO depth hides fetch latency</text><g class=\"cs-part\" data-k=\"ddr3\" data-g=\"ddr3\"><rect class=\"cs-box\" x=\"40\" y=\"44\" width=\"150\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"115\" y=\"72\">Off-chip DDR3</text><text class=\"cs-sub\" x=\"115\" y=\"90\">8 GiB · ~30 GB/s · high latency</text></g><g class=\"cs-part\" data-g=\"wflow\"><line class=\"cs-arr\" x1=\"190\" y1=\"76\" x2=\"258\" y2=\"76\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"196\" y=\"40\">Fetch weights (long latency)</text><g class=\"cs-part\" data-k=\"wfifo\" data-g=\"wfifo\"><rect class=\"cs-box\" x=\"262\" y=\"40\" width=\"178\" height=\"72\" rx=\"8\"/><text class=\"cs-t\" x=\"351\" y=\"68\">Weight FIFO</text><text class=\"cs-sub\" x=\"351\" y=\"86\">Depth hides fetch latency</text><text class=\"cs-sub\" x=\"351\" y=\"102\">Weight prefetch queue</text></g><g class=\"cs-part\" data-g=\"wflow2\"><line class=\"cs-arr\" x1=\"440\" y1=\"76\" x2=\"512\" y2=\"120\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"446\" y=\"62\">Load when ready</text><g class=\"cs-part\" data-k=\"mxu\" data-g=\"mxu\"><rect class=\"cs-box\" x=\"516\" y=\"118\" width=\"168\" height=\"120\" rx=\"8\"/><text class=\"cs-t\" x=\"600\" y=\"150\">MXU systolic array</text><text class=\"cs-sub\" x=\"600\" y=\"170\">256×256 MACs</text><rect class=\"cs-cell\" x=\"536\" y=\"184\" width=\"20\" height=\"20\"/><rect class=\"cs-cell\" x=\"560\" y=\"184\" width=\"20\" height=\"20\"/><rect class=\"cs-cell\" x=\"584\" y=\"184\" width=\"20\" height=\"20\"/><rect class=\"cs-cell\" x=\"608\" y=\"184\" width=\"20\" height=\"20\"/><rect class=\"cs-cell\" x=\"536\" y=\"208\" width=\"20\" height=\"20\"/><rect class=\"cs-cell\" x=\"560\" y=\"208\" width=\"20\" height=\"20\"/><rect class=\"cs-cell\" x=\"584\" y=\"208\" width=\"20\" height=\"20\"/><rect class=\"cs-cell\" x=\"608\" y=\"208\" width=\"20\" height=\"20\"/><text class=\"cs-sub\" x=\"600\" y=\"232\">Goal: zero idle cycles</text></g><text class=\"cs-note\" x=\"40\" y=\"262\">Activation path: double buffer overlaps transfer and compute</text><g class=\"cs-part\" data-k=\"ubping\" data-g=\"ubping\"><rect class=\"cs-box\" x=\"40\" y=\"276\" width=\"180\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"130\" y=\"302\">UB · Ping buffer</text><text class=\"cs-sub\" x=\"130\" y=\"320\">Now: feed array (read)</text></g><g class=\"cs-part\" data-k=\"ubpong\" data-g=\"ubpong\"><rect class=\"cs-box\" x=\"240\" y=\"276\" width=\"180\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"330\" y=\"302\">UB · Pong buffer</text><text class=\"cs-sub\" x=\"330\" y=\"320\">Now: load next batch (write)</text></g><g class=\"cs-part\" data-g=\"swap\"><line class=\"cs-arr\" x1=\"220\" y1=\"349\" x2=\"240\" y2=\"349\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"240\" y1=\"362\" x2=\"220\" y2=\"362\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"246\" y=\"372\">Ping/pong swap each round</text><g class=\"cs-part\" data-g=\"feed\"><polyline class=\"cs-arr\" points=\"130,276 130,250 516,200\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"300\" y=\"248\">Stream activations →</text></svg>",
+ "legend": [
+  {
+   "k": "ddr3",
+   "name": "Off-chip DDR3 (slow, high-latency source)",
+   "desc": "Weights reside in 8 GiB of off-chip DDR3 with roughly 30 GB/s of bandwidth and high access latency. Buffering must hide this source because the array consumes weights much faster than an individual DDR3 fetch can respond."
+  },
+  {
+   "k": "wfifo",
+   "name": "Weight FIFO (prefetch queue)",
+   "desc": "A first-in, first-out buffer between DDR3 and MXU decouples fetch from consumption. Background prefetch fills the queue, and the array takes weights from its head. Depth is sized from the bandwidth-delay product to cover one memory round trip."
+  },
+  {
+   "k": "mxu",
+   "name": "MXU systolic array (demanding consumer)",
+   "desc": "The 256×256 array contains 65,536 8-bit MACs and consumes new data every cycle at 700 MHz. If either weights or activations miss a cycle, bubbles enter the pipeline and delivered TOPS falls. All buffering serves to keep it running."
+  },
+  {
+   "k": "ubping",
+   "name": "Unified Buffer · Ping (read this round)",
+   "desc": "The half of the 24 MiB software-managed on-chip SRAM currently being read and streamed into the array."
+  },
+  {
+   "k": "ubpong",
+   "name": "Unified Buffer · Pong (write this round)",
+   "desc": "At the same time, the other half receives the next activation batch from DDR3 or the previous layer. The roles swap next round so transfer remains hidden behind compute."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "ddr3",
+    "wfifo"
+   ],
+   "cap": "① Prefetch weights: background requests continuously fill Weight FIFO from high-latency off-chip DDR3. FIFO depth follows the bandwidth-delay product and covers one DDR3 fetch round trip."
+  },
+  {
+   "keys": [
+    "wfifo",
+    "mxu"
+   ],
+   "cap": "② Place weights: when the array needs a new tile, it loads directly from the FIFO head under weight-stationary flow instead of waiting for DDR3, avoiding weight-related stalls."
+  },
+  {
+   "keys": [
+    "ubping",
+    "mxu"
+   ],
+   "cap": "③ Feed activations: the Ping half of Unified Buffer is read every cycle and streams activations into the array to sustain one result column per cycle."
+  },
+  {
+   "keys": [
+    "ubpong"
+   ],
+   "cap": "④ Transfer concurrently: while Ping feeds the array, Pong receives the next activation batch. Data movement and compute overlap in the same cycles, hiding transfer time."
+  },
+  {
+   "keys": [
+    "ubping",
+    "ubpong",
+    "mxu"
+   ],
+   "cap": "⑤ Swap roles: when the round completes, Ping and Pong exchange roles. If both weights and activations remain ready every cycle, the array approaches zero idle cycles and sustains ~92 TOPS."
+  }
+ ],
+ "before": [
+  "<b>Identify who feeds whom and where the bottleneck lies</b>: Draw the producer → buffer → consumer chain. Here, the consumer is a 256×256 array demanding one full column each cycle at 700 MHz, while the producer is off-chip DDR3 at ~30 GB/s. Buffering exists to prevent the slow source from stalling the hungry array.",
+  "<b>Compute the key quantity: bandwidth × latency</b>. Required FIFO depth equals the amount the consumer uses during one source-access delay (Little’s law: work in process = throughput × residence time). Too shallow starves the array; too deep wastes on-chip SRAM.",
+  "<b>Separate the two paths</b>: The weight path (DDR3 → Weight FIFO → array) and activation path (Unified Buffer ↔ array) have different rates and latencies and need separate policies. TPU uses FIFO prefetch for weights and double buffering for activations.",
+  "<b>List the constraints</b>: On-chip SRAM budget (24 MiB UB plus 4 MiB accumulator), measured DDR3 bandwidth and latency, array fill/drain cycles, and bytes per weight tile and activation batch. Together these bound feasible buffer depth.",
+  "<b>Define measurable success</b>: Set explicit targets such as array utilization or bubble-free-cycle ratio above a threshold and stalls from weight or activation waits ≈0, rather than merely saying that buffering should help."
+ ],
+ "during": [
+  "<b>Use FIFO depth to hide latency</b>: Weight FIFO absorbs access latency and jitter rather than increasing steady-state bandwidth. Size it only deep enough to cover one DDR3 round trip; extra depth consumes SRAM without further reducing stalls.",
+  "<b>Use ping-pong buffering for activations</b>: A single buffer serializes transfer and compute, forcing the array to idle. Double buffering reads one half into the array while writing the next batch into the other. The area doubles, but compute never waits for transfer when bandwidth is sufficient.",
+  "<b>Trade prefetch depth against on-chip area</b>: A deeper queue tolerates larger latency excursions, but the 24 MiB UB must also hold activations and intermediates. Worst-case latency sets a lower bound while the SRAM budget sets an upper bound.",
+  "<b>Let weight-stationary flow determine buffer form</b>: Weights are loaded occasionally in large, prefetchable blocks and then remain in the array, making a queued FIFO efficient. Activations are a continuous every-cycle stream, favoring rolling double buffers. The dataflow makes these policies purpose-specific rather than interchangeable.",
+  "<b>Propagate backpressure through watermarks</b>: If the array cannot consume temporarily, upstream prefetch must pause to avoid overwriting unread data. FIFO full and empty indications naturally provide this control, yielding simple, synthesizable, verifiable watermark-based flow control.",
+  "<b>Synchronize ping-pong switching carefully</b>: Swap only after the read side has finished and the write side has completed, or a data race occurs. TPU v1 does not publish the mechanism; tile-boundary counters or completion handshakes are standard practice, not a disclosed v1 detail."
+ ],
+ "result": [
+  {
+   "label": "Buffering objective",
+   "value": "Zero array idle cycles (bubble-free full throughput)"
+  },
+  {
+   "label": "Weight-path buffer",
+   "value": "Prefetching Weight FIFO sized to hide DDR3 latency"
+  },
+  {
+   "label": "Activation-path buffer",
+   "value": "Unified Buffer ping-pong overlap of transfer and compute"
+  },
+  {
+   "label": "Depth-sizing rule",
+   "value": "Bandwidth-delay product / Little’s law"
+  },
+  {
+   "label": "On-chip SRAM budget",
+   "value": "24 MiB UB + 4 MiB accumulator (software-managed)"
+  },
+  {
+   "label": "Ideal peak",
+   "value": "700 MHz × 65,536 MACs ≈ 92 TOPS (INT8)"
+  }
+ ],
+ "after": [
+  "<b>Build a cycle-level bubble model</b>: Simulate weight and activation paths cycle by cycle for target layer sizes and measure stalls caused by waiting for either input. The ratio should be ≈0; any bubble should be traced to insufficient FIFO depth or a gap at buffer handoff.",
+  "<b>Stress worst-case depth</b>: Test maximum DDR3 latency and minimum effective bandwidth to confirm Weight FIFO still prevents starvation, while checking that depth does not waste excessive SRAM.",
+  "<b>Verify race-free double buffering</b>: Cover every Ping/Pong boundary. The writer must not overwrite unread data and the reader must not consume incomplete data; confirm clean synchronization without stale or corrupted reads.",
+  "<b>Hand off to later stages</b>: Freeze FIFO depth, UB partitioning, watermark thresholds, and the backpressure protocol in the microarchitecture specification for RTL and timing closure. Feed capacity and bandwidth assumptions back to architecture (③) to confirm consistency with the overall dataflow budget."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (Weight FIFO, the 24 MiB Unified Buffer, and weight-stationary flow are disclosed; the specific ping-pong synchronization mechanism is not public and follows common inference-ASIC practice)"
+}

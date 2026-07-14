@@ -1,0 +1,116 @@
+{
+  "secNum": "3.10",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · Power-On and Initialization Sequence for a Host-Driven Coprocessor",
+  "oneLine": "This reset and initialization case shows how a coprocessor that cannot boot itself is brought up: power-on reset, host configuration over PCIe, memory-interface initialization and weight loading, then READY before commands are accepted. The sequence must be repeatable and debuggable.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"30\" y=\"24\">Power-on to command-ready · host-driven TPU</text><g class=\"cs-part\" data-k=\"por\" data-g=\"por\"><rect class=\"cs-box\" x=\"30\" y=\"52\" width=\"150\" height=\"74\" rx=\"8\"/><text class=\"cs-t\" x=\"105\" y=\"80\">① Power-on reset (POR)</text><text class=\"cs-sub\" x=\"105\" y=\"100\">Power / clocks stable</text><text class=\"cs-sub\" x=\"105\" y=\"116\">Entire chip in known state</text></g><line class=\"cs-arr\" x1=\"180\" y1=\"89\" x2=\"248\" y2=\"89\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"hostcfg\" data-g=\"hostcfg\"><rect class=\"cs-box\" x=\"250\" y=\"52\" width=\"180\" height=\"74\" rx=\"8\"/><text class=\"cs-t\" x=\"340\" y=\"80\">② Host configures via PCIe</text><text class=\"cs-sub\" x=\"340\" y=\"100\">Enumerate · write configuration</text><text class=\"cs-sub\" x=\"340\" y=\"116\">Establish control / command path</text></g><line class=\"cs-arr\" x1=\"430\" y1=\"89\" x2=\"498\" y2=\"89\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"phy\" data-g=\"phy\"><rect class=\"cs-box\" x=\"500\" y=\"52\" width=\"190\" height=\"74\" rx=\"8\"/><text class=\"cs-t\" x=\"595\" y=\"80\">③ Initialize memory interface</text><text class=\"cs-sub\" x=\"595\" y=\"100\">DDR3 PHY training / calibration</text><text class=\"cs-sub\" x=\"595\" y=\"116\">~30 GB/s channel ready</text></g><polyline class=\"cs-arr\" points=\"595,126 595,160 105,160 105,194\" fill=\"none\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"weights\" data-g=\"weights\"><rect class=\"cs-box\" x=\"30\" y=\"196\" width=\"290\" height=\"72\" rx=\"8\"/><text class=\"cs-t\" x=\"175\" y=\"224\">④ Host loads weights → off-chip DDR3</text><text class=\"cs-sub\" x=\"175\" y=\"244\">8 GiB DDR3 holds model weights</text><text class=\"cs-sub\" x=\"175\" y=\"260\">Prepare weight-stationary dataflow</text></g><line class=\"cs-arr\" x1=\"320\" y1=\"232\" x2=\"388\" y2=\"232\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"ready\" data-g=\"ready\"><rect class=\"cs-box\" x=\"390\" y=\"196\" width=\"300\" height=\"72\" rx=\"8\"/><text class=\"cs-t\" x=\"540\" y=\"224\">⑤ READY: accept CISC commands</text><text class=\"cs-sub\" x=\"540\" y=\"244\">Host issues ~a dozen commands</text><text class=\"cs-sub\" x=\"540\" y=\"260\">Array begins full-rate inference</text></g><g class=\"cs-part\" data-k=\"repro\" data-g=\"repro\"><rect class=\"cs-box\" x=\"30\" y=\"296\" width=\"660\" height=\"84\" rx=\"8\" stroke-dasharray=\"6 4\"/><text class=\"cs-t\" x=\"360\" y=\"322\">Throughout: repeatable · debuggable reset sequence</text><text class=\"cs-sub\" x=\"360\" y=\"344\">Repeatable boot · observable status and handshakes</text><text class=\"cs-sub\" x=\"360\" y=\"362\">Any failure is locatable and restartable from POR · standard practice</text></g></svg>",
+  "legend": [
+    {
+      "k": "por",
+      "name": "① Power-on reset (POR)",
+      "desc": "After power is applied, wait for rails and clocks—including PLL lock—to stabilize, then force all registers and state machines into a known state. TPU v1 did not publish a proprietary reset mechanism; this follows standard data-center ASIC practice."
+    },
+    {
+      "k": "hostcfg",
+      "name": "② Host configuration over PCIe",
+      "desc": "TPU is a coprocessor and does not self-boot. The host enumerates it over PCIe 3.0, writes configuration registers, and establishes control and command channels, making host ownership explicit."
+    },
+    {
+      "k": "phy",
+      "name": "③ Memory-interface initialization",
+      "desc": "Before 8 GiB of DDR3 can deliver ~30 GB/s, its PHY must train and calibrate timing. This is a prerequisite for supplying weights reliably."
+    },
+    {
+      "k": "weights",
+      "name": "④ Load weights into DDR3",
+      "desc": "The host places model weights in 8 GiB of DDR3 before computation, preparing the weight-stationary dataflow in which weights are reused after loading."
+    },
+    {
+      "k": "ready",
+      "name": "⑤ READY permits commands",
+      "desc": "Only after all earlier stages pass does the device enter READY. The host may then issue roughly a dozen CISC commands and begin full-rate inference."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "por"
+      ],
+      "cap": "① Power-on reset: wait for stable rails and clocks, then put the entire chip in a known initial state."
+    },
+    {
+      "keys": [
+        "hostcfg"
+      ],
+      "cap": "② The host enumerates and configures TPU over PCIe, establishing control and command channels; the coprocessor does not self-start."
+    },
+    {
+      "keys": [
+        "phy"
+      ],
+      "cap": "③ Initialize the memory interface by training and calibrating the DDR3 PHY, enabling the ~30 GB/s weight channel."
+    },
+    {
+      "keys": [
+        "weights"
+      ],
+      "cap": "④ Load model weights from the host into 8 GiB of off-chip DDR3 for weight-stationary execution."
+    },
+    {
+      "keys": [
+        "ready",
+        "repro"
+      ],
+      "cap": "⑤ Accept CISC commands only in READY; the entire sequence must be repeatable, observable, and restartable after failure."
+    }
+  ],
+  "before": [
+    "<b>Establish the system role</b>: TPU v1 is a PCIe coprocessor that does not self-boot. The startup owner and ordering must be explicit. Published facts include host-driven operation, PCIe 3.0, about a dozen CISC commands, and 8 GiB DDR3 at ~30 GB/s.",
+    "<b>Decisions to make</b>: Reset hierarchy and scope, synchronous versus asynchronous release, startup ordering and dependencies, host/device handshakes and state machines, memory training, and observability from POR to READY.",
+    "<b>Required inputs</b>: Rail and clock sequencing, PLL lock time, initialization procedures for PCIe and DDR3 IP, reset needs of the core/PCIe/DDR3 domains in §3.8, and the driver configuration flow.",
+    "<b>Hard requirements</b>: Determinism—every boot reaches the same known state—and debuggability—any stuck stage can be identified and reset cleanly. These are prerequisites for production and operation.",
+    "<b>Disclosure boundary</b>: Public v1 material contains little proprietary reset detail. The sequence is standard data-center inference-ASIC practice, using host-driven PCIe, DDR3, and CISC only as disclosed context."
+  ],
+  "during": [
+    "<b>Reset, configure, then release</b>: POR must establish known hardware before host configuration, and READY must follow configuration. Advancing without confirmation hides faults until runtime.",
+    "<b>Make command ownership explicit</b>: A non-self-booting coprocessor needs clear host↔device handshakes, configuration registers, command/response channels, and READY/BUSY status so software always knows the current stage.",
+    "<b>Warm up the memory interface</b>: DDR3 cannot immediately sustain ~30 GB/s. PHY training and calibration align timing and must finish before weights are loaded, or transfers may fail silently.",
+    "<b>Align weight loading with dataflow</b>: Weight-stationary execution needs weights resident first. Populate DDR3 during initialization and enforce “load before compute” so the array never waits for initial data.",
+    "<b>Design a deterministic sequence</b>: Fix startup ordering, define timeouts and retries, and avoid uninitialized dependencies so every reset converges to the same state.",
+    "<b>Build observability and re-entrant reset</b>: Expose status and handshakes at every stage and allow a clean return to POR from any failure. These are standard practices; exact v1 mechanisms were not published."
+  ],
+  "result": [
+    {
+      "label": "Startup role",
+      "value": "Host-driven coprocessor; no self-boot (published)"
+    },
+    {
+      "label": "Configuration path",
+      "value": "Host enumerates/configures over PCIe 3.0 (published)"
+    },
+    {
+      "label": "Initialization sequence",
+      "value": "POR → PCIe config → memory init → load weights → READY"
+    },
+    {
+      "label": "Memory readiness",
+      "value": "DDR3 PHY training/calibration; ~30 GB/s channel"
+    },
+    {
+      "label": "Release condition",
+      "value": "READY before ~a dozen CISC commands are accepted"
+    },
+    {
+      "label": "Engineering baseline",
+      "value": "Repeatable + debuggable: observable and restartable"
+    }
+  ],
+  "after": [
+    "<b>Verify deterministic startup</b>: Repeat power-on and reset across many cycles, confirming the same known state and READY timing. Investigate uninitialized values or sequencing dependencies if behavior varies.",
+    "<b>Stress memory initialization</b>: Confirm DDR3 PHY training across voltage and temperature corners at target bandwidth. Failures need explicit diagnostics and retry paths, never silent degraded operation.",
+    "<b>Propagate constraints</b>: Give physical implementation reset-tree, power-order, and rail-timing requirements; give drivers the host configuration protocol and status definitions; give verification an end-to-end cold-start-to-READY test.",
+    "<b>Preserve observability and re-entry</b>: Add status registers and counters for every stage and support a clean return to POR from any point, essential for field diagnosis of startup failures.",
+    "<b>Document facts versus practice</b>: Distinguish published host-driven/PCIe/DDR3/CISC facts from inferred reset trees, state machines, and training flows based on standard inference-ASIC engineering."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (host-driven operation, PCIe, DDR3, and CISC are published; reset/initialization sequencing, state machines, and memory training are standard data-center inference-ASIC practice.)"
+}

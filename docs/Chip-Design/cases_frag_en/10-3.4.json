@@ -1,0 +1,112 @@
+{
+ "secNum": "3.4",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Tapeout route selection: use the same signed-off GDSII for a dedicated full mask set (expensive, production) or an MPW/shuttle shared wafer (lower-cost prototype volume)—prototype the first revision on MPW to amortize NRE, then switch to full masks after silicon validation",
+ "oneLine": "Tapeout begins with choosing how GDSII reaches silicon. The core trade-off is allocation of non-recurring engineering cost (NRE), dominated by one-time mask fabrication. A full mask set is dedicated to one design and fills the wafer with its dies: high upfront NRE, unconstrained capacity, free die shape, and falling unit cost at volume—appropriate after validation. MPW/shuttle combines multiple designs on shared masks and wafers to amortize NRE, but returns only a few engineering samples in a constrained slot—appropriate for first-silicon debug, bring-up, and prototypes. The common strategy is first revision on MPW, then full masks for production. TPU v1's documented 256×256 array, 24 MiB Unified Buffer occupying nearly 29% of die, 700 MHz, 28 nm / ≤331 mm², PCIe card, and TF/XLA stack provide context; private mask-set, NRE, yield, and foundry data are not claimed.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 420\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"26\">Two Tapeout routes for one signed-off GDSII: dedicated full mask set for production or shared MPW/shuttle for prototypes; MPW first, full masks after validation</text><g class=\"cs-part\" data-k=\"gds\" data-g=\"gds\"><rect class=\"cs-box\" x=\"282\" y=\"56\" width=\"156\" height=\"58\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"360\" y=\"82\">Signed-off GDSII</text><text class=\"cs-sub\" x=\"360\" y=\"102\">TPU v1: 256×256 array / 24 MiB UB / 28 nm</text></g><line class=\"cs-arr\" x1=\"320\" y1=\"114\" x2=\"190\" y2=\"150\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"400\" y1=\"114\" x2=\"528\" y2=\"150\" marker-end=\"url(#csar)\"/><text class=\"cs-sub\" x=\"170\" y=\"138\">Prototype / low volume: reduce risk</text><text class=\"cs-sub\" x=\"556\" y=\"138\">Validated: scale to production</text><g class=\"cs-part\" data-k=\"mpw\" data-g=\"mpw\"><rect class=\"cs-box\" x=\"24\" y=\"152\" width=\"318\" height=\"226\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"183\" y=\"176\">MPW / shuttle multi-project wafer</text><text class=\"cs-sub\" x=\"183\" y=\"196\">Multiple designs share masks + wafer; amortize NRE</text><g class=\"cs-part\" data-k=\"shuttlewafer\" data-g=\"shuttlewafer\"><rect class=\"cs-cell\" x=\"60\" y=\"210\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"80\" y=\"234\">A</text><rect class=\"cs-cell\" x=\"104\" y=\"210\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"124\" y=\"234\">B</text><rect class=\"cs-cell\" x=\"148\" y=\"210\" width=\"40\" height=\"40\" fill=\"#dcfce7\"/><text class=\"cs-cellt\" x=\"168\" y=\"234\">TPU</text><rect class=\"cs-cell\" x=\"192\" y=\"210\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"212\" y=\"234\">C</text><rect class=\"cs-cell\" x=\"236\" y=\"210\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"256\" y=\"234\">D</text><rect class=\"cs-cell\" x=\"60\" y=\"254\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"80\" y=\"278\">E</text><rect class=\"cs-cell\" x=\"104\" y=\"254\" width=\"40\" height=\"40\" fill=\"#dcfce7\"/><text class=\"cs-cellt\" x=\"124\" y=\"278\">TPU</text><rect class=\"cs-cell\" x=\"148\" y=\"254\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"168\" y=\"278\">F</text><rect class=\"cs-cell\" x=\"192\" y=\"254\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"212\" y=\"278\">G</text><rect class=\"cs-cell\" x=\"236\" y=\"254\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"256\" y=\"278\">H</text></g><text class=\"cs-sub\" x=\"183\" y=\"316\">One wafer yields dies for many projects; each receives a few samples</text><text class=\"cs-sub\" x=\"183\" y=\"338\">✔ low NRE, shared schedule  ✘ minimal volume, fixed slot</text><text class=\"cs-sub\" x=\"183\" y=\"358\">Use: first-silicon samples / bring-up / low-volume prototype</text></g><g class=\"cs-part\" data-k=\"full\" data-g=\"full\"><rect class=\"cs-box\" x=\"378\" y=\"152\" width=\"318\" height=\"226\" rx=\"8\" fill=\"#fefce8\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"537\" y=\"176\">Full mask set (dedicated)</text><text class=\"cs-sub\" x=\"537\" y=\"196\">Dedicated masks; entire wafer contains TPU dies</text><g class=\"cs-part\" data-k=\"fullwafer\" data-g=\"fullwafer\"><rect class=\"cs-cell\" x=\"414\" y=\"210\" width=\"40\" height=\"40\" fill=\"#fef9c3\"/><text class=\"cs-cellt\" x=\"434\" y=\"234\">TPU</text><rect class=\"cs-cell\" x=\"458\" y=\"210\" width=\"40\" height=\"40\" fill=\"#fef9c3\"/><text class=\"cs-cellt\" x=\"478\" y=\"234\">TPU</text><rect class=\"cs-cell\" x=\"502\" y=\"210\" width=\"40\" height=\"40\" fill=\"#fef9c3\"/><text class=\"cs-cellt\" x=\"522\" y=\"234\">TPU</text><rect class=\"cs-cell\" x=\"546\" y=\"210\" width=\"40\" height=\"40\" fill=\"#fef9c3\"/><text class=\"cs-cellt\" x=\"566\" y=\"234\">TPU</text><rect class=\"cs-cell\" x=\"590\" y=\"210\" width=\"40\" height=\"40\" fill=\"#fef9c3\"/><text class=\"cs-cellt\" x=\"610\" y=\"234\">TPU</text><rect class=\"cs-cell\" x=\"414\" y=\"254\" width=\"40\" height=\"40\" fill=\"#fef9c3\"/><text class=\"cs-cellt\" x=\"434\" y=\"278\">TPU</text><rect class=\"cs-cell\" x=\"458\" y=\"254\" width=\"40\" height=\"40\" fill=\"#fef9c3\"/><text class=\"cs-cellt\" x=\"478\" y=\"278\">TPU</text><rect class=\"cs-cell\" x=\"502\" y=\"254\" width=\"40\" height=\"40\" fill=\"#fef9c3\"/><text class=\"cs-cellt\" x=\"522\" y=\"278\">TPU</text><rect class=\"cs-cell\" x=\"546\" y=\"254\" width=\"40\" height=\"40\" fill=\"#fef9c3\"/><text class=\"cs-cellt\" x=\"566\" y=\"278\">TPU</text><rect class=\"cs-cell\" x=\"590\" y=\"254\" width=\"40\" height=\"40\" fill=\"#fef9c3\"/><text class=\"cs-cellt\" x=\"610\" y=\"278\">TPU</text></g><text class=\"cs-sub\" x=\"537\" y=\"316\">Mask NRE borne alone, but unit cost falls with volume and capacity scales</text><text class=\"cs-sub\" x=\"537\" y=\"338\">✔ production capacity, free die outline  ✘ high one-time mask NRE</text><text class=\"cs-sub\" x=\"537\" y=\"358\">Use: validated design and volume PCIe accelerator delivery</text></g><line class=\"cs-arr\" x1=\"183\" y1=\"378\" x2=\"183\" y2=\"402\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"537\" y1=\"378\" x2=\"537\" y2=\"402\" marker-end=\"url(#csar)\"/><text class=\"cs-sub\" x=\"183\" y=\"416\">Output: few samples → validation</text><text class=\"cs-sub\" x=\"537\" y=\"416\">Output: full wafers of dies → production</text></svg>",
+ "legend": [
+  {
+   "k": "gds",
+   "name": "Signed-off GDSII (Tapeout object)",
+   "desc": "Both routes use the same GDSII whose five-dimensional signoff passed at step ⑨ and the Tapeout gate released. Only the manufacturing route changes. The context is TPU v1's 256×256 8-bit-MAC array, 24 MiB Unified Buffer, 700 MHz, 28 nm, die ≤331 mm², weight-stationary dataflow, PCIe 3.0 accelerator card, and TF/XLA stack. The large ≤331 mm² die strongly affects route choice because it consumes substantial shuttle area and yields fewer shared samples. TPU-specific mask/NRE data is not public."
+  },
+  {
+   "k": "mpw",
+   "name": "MPW / shuttle multi-project wafer (shared ride, prototype volume)",
+   "desc": "A foundry or aggregator combines multiple customers' designs on shared photomasks and one wafer, amortizing the expensive mask NRE and lowering entry cost. In exchange, each project receives only a few to dozens of engineering samples, must fit a predefined shuttle slot, and follows the shared schedule. It is the cost-efficient route for first-silicon debug, bring-up, and low-volume prototypes. Whether TPU used MPW is not public."
+  },
+  {
+   "k": "shuttlewafer",
+   "name": "Shuttle wafer: multiple designs share one wafer (physical NRE amortization)",
+   "desc": "A single wafer contains dies from many projects—illustrated by A/B/C… and a few TPU slots—exposed with one shared mask set. Each project receives only its allocated dies, naturally limiting volume to engineering samples. A large die such as ≤331 mm² occupies more shuttle area, reduces available samples, and can increase per-die NRE. Actual MPW composition is private."
+  },
+  {
+   "k": "full",
+   "name": "Full mask set (dedicated set, production)",
+   "desc": "Fabricate a complete dedicated mask set, one mask per process layer, and fill every wafer with the project's dies. The design bears all one-time mask NRE, but gains unconstrained capacity, freedom of die outline/dimensions, and falling unit cost as volume amortizes NRE. A data-center-scale TPU v1 PCIe accelerator ultimately requires full-mask production. Exact TPU layer count, NRE, and line are undisclosed."
+  },
+  {
+   "k": "fullwafer",
+   "name": "Full-mask wafer: every die belongs to one design (scalable capacity)",
+   "desc": "The wafer is tiled entirely with the same TPU die. With dedicated masks, good-die count depends on die area and process yield rather than shuttle allocation, and production scales by running more wafers. Large dies intended for volume require this route. Die-per-wafer and yield are foundry-private."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "gds"
+   ],
+   "cap": "① Start with one signed-off GDSII and choose only the manufacturing route. Evaluate scale—a ≤331 mm² TPU-class die intended for data-center PCIe cards—and stage: experimental revision or validated production."
+  },
+  {
+   "keys": [
+    "mpw",
+    "shuttlewafer"
+   ],
+   "cap": "② For first-silicon debug, bring-up, or low-volume prototypes, choose MPW/shuttle. Multiple projects share masks and a wafer, amortizing mask NRE; each receives only a few engineering samples and must fit the shuttle slot."
+  },
+  {
+   "keys": [
+    "full",
+    "fullwafer"
+   ],
+   "cap": "③ After the design is validated and requires volume, choose a full mask set. Dedicated masks fill each wafer with one die design; upfront NRE is high, but capacity is scalable, die outline is free, and unit cost declines with volume."
+  },
+  {
+   "keys": [
+    "shuttlewafer",
+    "fullwafer"
+   ],
+   "cap": "④ Standard strategy: MPW first, full masks second. Use MPW for affordable true-silicon bring-up and package validation, then move the verified design to dedicated-mask production rather than risking full NRE on an unproven revision."
+  }
+ ],
+ "before": [
+  "<b>Characterize the Tapeout object and die scale</b>: confirm the GDSII is the fully signed-off Tapeout revision—here TPU v1's 256×256 array, 24 MiB UB, 700 MHz, 28 nm, and die ≤331 mm²—and recognize it as a large die. Large dies consume more shuttle area, creating a hard MPW constraint. TPU mask/revision details are not public.",
+  "<b>Identify the current phase: experimentation or production</b>: determine whether this revision is an engineering sample for validation or a confirmed design for scale delivery. The economically correct route reverses with phase; first revisions typically validate before production.",
+  "<b>Model NRE versus volume—the fundamental trade-off</b>: MPW shares one-time mask NRE but provides very low volume; full masks bear high NRE alone but offer unlimited wafer starts and declining unit cost. Compare total cost at expected volume rather than only the shuttle entry price. Exact NRE, yield, and prices are foundry-private.",
+  "<b>Check die-outline and packaging constraints</b>: MPW dies must fit predefined shuttle slots; full-mask dies have free outline/dimensions. Confirm compatibility with the target package and TPU v1's PCIe 3.0 accelerator-card form, especially for a large die.",
+  "<b>Plan schedule and foundry/aggregator handoff</b>: MPW must meet a shared shuttle departure and placement rules, while a full mask set follows a project-specific fabrication schedule. Decide route, counterparty, and GDSII delivery date. TPU's foundry and schedule are not public."
+ ],
+ "during": [
+  "<b>Rule: GDSII stays fixed; only the launch route changes</b>. MPW and full masks receive the same signed-off design. Route selection is an engineering/economic decision, not redesign. Any outline adjustment needed to fit a shuttle slot must return through signoff.",
+  "<b>The trade is NRE for volume and freedom</b>. MPW means low NRE, low volume, and slot constraints; full masks mean high NRE, scalable capacity, free outline, and volume-amortized unit cost. Choose from current sample demand and future production, not by applying production economics to prototypes or vice versa.",
+  "<b>Account for large-die MPW allocation</b>. A ≤331 mm² TPU-class die consumes significant shuttle area, yielding fewer samples and potentially higher NRE per sample. MPW serves true-silicon bring-up and package validation, not cheap production.",
+  "<b>Using MPW for a first revision is standard risk reduction</b>. Obtain a few samples, power on, and validate package/bring-up before paying for a dedicated mask set. If first silicon needs a small correction, the loss is limited to the shared run.",
+  "<b>Move to full masks only after validation</b>. Once MPW samples prove function, packaging, and bring-up, dedicated masks scale the verified design. Skipping validation wagers full-mask NRE on unproven silicon.",
+  "<b>Scope note</b>: full mask sets, MPW/shuttle NRE sharing, first-MPW-then-full-mask strategy, slot constraints, and single-design wafer tiling are standard foundry/aggregator practices. TPU v1's MPW history, mask count, NRE, dies per wafer, yield, and foundry are not public. Its 256×256 array, 24 MiB UB, 700 MHz, 28 nm, ≤331 mm², PCIe card, and TF/XLA stack provide only the Tapeout context."
+ ],
+ "result": [
+  {
+   "label": "Decision inputs",
+   "value": "Same signed-off GDSII (TPU v1: 256×256 array / 24 MiB UB / 700 MHz / 28 nm / ≤331 mm² / PCIe card) + large-die profile + experimental or production phase"
+  },
+  {
+   "label": "MPW / shuttle route (prototype volume)",
+   "value": "Multiple projects share masks + wafer, amortizing mask NRE; each receives a few engineering samples within a fixed shuttle slot; ✔ low entry cost/shared schedule  ✘ minimal volume/small allocation for large dies"
+  },
+  {
+   "label": "Full-mask route (production)",
+   "value": "Dedicated full mask set and wafers filled with one design; ✔ scalable capacity/free die outline/volume-amortized unit cost  ✘ high one-time mask NRE borne alone"
+  },
+  {
+   "label": "Fundamental trade-off (NRE ↔ volume)",
+   "value": "MPW = low NRE / low volume / slot-constrained; full mask = high NRE / scalable capacity / free outline; choose the volume cost crossover (figures are foundry-private)"
+  },
+  {
+   "label": "Standard strategy",
+   "value": "First revision on MPW for lowest-cost silicon debug, bring-up, and package validation; after design validation, move to full-mask production"
+  },
+  {
+   "label": "Route outputs",
+   "value": "MPW → a few samples for packaging ⑫ / bring-up; full masks → full wafers of dies for manufacturing ⑪ / production ⑬ and PCIe accelerator deployment"
+  }
+ ],
+ "after": [
+  "<b>Select the route from phase and volume</b>: combine large-die profile, current experimental/production status, and expected volume. Prefer MPW for unvalidated first silicon; use full masks for a verified design entering scale delivery. Record the decision.",
+  "<b>If MPW, use samples for bring-up and package validation</b>: package and power on the few engineering dies, validate function and the PCIe card form, and turn low entry cost into confidence that the silicon is correct.",
+  "<b>If MPW reveals defects, revise and either shuttle again or move after repair</b>: make targeted corrections, repeat signoff, and decide between another MPW or full masks. The loss remains shared-run cost rather than full-mask NRE.",
+  "<b>After validation, move to full masks and production</b>: fabricate a dedicated set, tile wafers with the verified die, and proceed into manufacturing ⑪ / production ⑬ for data-center PCIe accelerator delivery.",
+  "<b>Hand off with traceability</b>: record selected route, revision, associated mask set/schedule, and validation conclusion for manufacturing ⑪ and packaging/test ⑫ so production always uses the correct verified design. TPU-specific set and schedule remain private."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the 256×256 8-bit-MAC systolic array, 24 MiB Unified Buffer, 700 MHz, 28 nm, die ≤331 mm², weight-stationary dataflow, PCIe 3.0 accelerator card, and TF/XLA stack are documented Tapeout context; full mask set versus MPW/shuttle, shared mask NRE, first MPW then full masks, shuttle-slot constraints, and single-design wafer tiling are standard foundry/aggregator practices. All NRE, volume, placement, and yield descriptions are illustrative; TPU v1's MPW history, mask sets/layers, NRE, dies per wafer, yield, and foundry are not public)"
+}

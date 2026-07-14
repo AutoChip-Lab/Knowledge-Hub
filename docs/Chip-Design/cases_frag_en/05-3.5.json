@@ -1,0 +1,121 @@
+{
+ "secNum": "3.5",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Encoding a Tiled-GEMM Controller as a Two-Process FSM",
+ "oneLine": "FSM RTL separates state storage from next-state and output logic. A TPU-like tiled GEMM follows Load Weights → Stream Activations → Accumulate → Write Back; this makes a clear two-process example, with always_ff updating current state and always_comb computing transitions and control outputs. The specific TPU controller RTL is not public.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">Top: state-transition diagram (rounded boxes = states)</text><g class=\"cs-part\" data-k=\"idle\" data-g=\"state\"><rect class=\"cs-box\" x=\"40\" y=\"44\" width=\"104\" height=\"50\" rx=\"22\"/><text class=\"cs-t\" x=\"92\" y=\"68\">Idle</text><text class=\"cs-sub\" x=\"92\" y=\"84\">Wait for command</text></g><g class=\"cs-part\" data-g=\"edge\"><line class=\"cs-arr\" x1=\"144\" y1=\"69\" x2=\"178\" y2=\"69\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-k=\"loadw\" data-g=\"state\"><rect class=\"cs-box\" x=\"180\" y=\"44\" width=\"104\" height=\"50\" rx=\"22\"/><text class=\"cs-t\" x=\"232\" y=\"68\">LoadW</text><text class=\"cs-sub\" x=\"232\" y=\"84\">Load weights</text></g><g class=\"cs-part\" data-g=\"edge\"><line class=\"cs-arr\" x1=\"284\" y1=\"69\" x2=\"318\" y2=\"69\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-k=\"stream\" data-g=\"state\"><rect class=\"cs-box\" x=\"320\" y=\"44\" width=\"104\" height=\"50\" rx=\"22\"/><text class=\"cs-t\" x=\"372\" y=\"68\">Stream</text><text class=\"cs-sub\" x=\"372\" y=\"84\">Stream activations</text></g><g class=\"cs-part\" data-g=\"edge\"><line class=\"cs-arr\" x1=\"424\" y1=\"69\" x2=\"458\" y2=\"69\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-k=\"accum\" data-g=\"state\"><rect class=\"cs-box\" x=\"460\" y=\"44\" width=\"108\" height=\"50\" rx=\"22\"/><text class=\"cs-t\" x=\"514\" y=\"68\">Accumulate</text><text class=\"cs-sub\" x=\"514\" y=\"84\">Accumulate partial sums</text></g><g class=\"cs-part\" data-g=\"edge\"><line class=\"cs-arr\" x1=\"568\" y1=\"69\" x2=\"602\" y2=\"69\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-k=\"wb\" data-g=\"state\"><rect class=\"cs-box\" x=\"604\" y=\"44\" width=\"104\" height=\"50\" rx=\"22\"/><text class=\"cs-t\" x=\"656\" y=\"68\">WriteBack</text><text class=\"cs-sub\" x=\"656\" y=\"84\">Write results to UB</text></g><g class=\"cs-part\" data-g=\"edge\"><polyline class=\"cs-arr\" points=\"656,94 656,128 92,128 92,96\" fill=\"none\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"300\" y=\"124\">Tile done → Idle / next tile</text><line x1=\"40\" y1=\"156\" x2=\"708\" y2=\"156\" stroke=\"#e2e8f0\" stroke-dasharray=\"5 4\"/><text class=\"cs-note\" x=\"40\" y=\"180\">Bottom: two-process RTL implementation (one state register)</text><g class=\"cs-part\" data-k=\"sreg\" data-g=\"ff\"><rect class=\"cs-box\" x=\"40\" y=\"196\" width=\"300\" height=\"92\" rx=\"8\"/><path d=\"M40,288 L56,288 L48,272 Z\" fill=\"#8b5cf6\"/><text class=\"cs-t\" x=\"190\" y=\"222\">state_reg (sequential)</text><text class=\"cs-sub\" x=\"190\" y=\"244\">always_ff @(posedge clk)</text><text class=\"cs-sub\" x=\"190\" y=\"262\">if(rst) state&lt;=Idle;</text><text class=\"cs-sub\" x=\"190\" y=\"280\">else state&lt;=next_state;</text></g><g class=\"cs-part\" data-k=\"ncomb\" data-g=\"comb\"><rect class=\"cs-box\" x=\"380\" y=\"196\" width=\"328\" height=\"92\" rx=\"8\"/><text class=\"cs-t\" x=\"544\" y=\"222\">next_state + outputs (combinational)</text><text class=\"cs-sub\" x=\"544\" y=\"244\">always_comb begin</text><text class=\"cs-sub\" x=\"544\" y=\"262\">  next=state; ... case(state) ...</text><text class=\"cs-sub\" x=\"544\" y=\"280\">  default: next=Idle; end  // no latch</text></g><line class=\"cs-arr\" x1=\"380\" y1=\"242\" x2=\"344\" y2=\"242\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"350\" y=\"236\">next_state</text><line class=\"cs-arr\" x1=\"340\" y1=\"270\" x2=\"376\" y2=\"270\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"346\" y=\"306\">current state → transition/output decode</text><g class=\"cs-part\" data-k=\"outs\" data-g=\"out\"><rect class=\"cs-box\" x=\"380\" y=\"320\" width=\"328\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"544\" y=\"344\">Control outputs</text><text class=\"cs-sub\" x=\"544\" y=\"362\">load_w_en / stream_en / acc_en / wb_en</text></g><line class=\"cs-arr\" x1=\"544\" y1=\"288\" x2=\"544\" y2=\"316\" marker-end=\"url(#csar)\"/></svg>",
+ "legend": [
+  {
+   "k": "state",
+   "name": "States (rounded boxes from the design diagram)",
+   "desc": "Idle, LoadW, Stream, Accumulate, and WriteBack represent current state. RTL encodes them in state_reg using a typed enum or binary/one-hot bits. State does not perform work itself; it selects the control actions for the current cycle."
+  },
+  {
+   "k": "edge",
+   "name": "Transitions (edges and arrows)",
+   "desc": "Each arrow states the condition for moving from one state to another. In RTL, case(state) branches assign next_state from handshake or counter conditions; when no condition is met, next_state remains state."
+  },
+  {
+   "k": "ff",
+   "name": "State register (always_ff with <=)",
+   "desc": "The first FSM process is the only clocked state storage. On each rising edge it captures next_state; reset returns it to Idle. The small triangle denotes clocked flops."
+  },
+  {
+   "k": "comb",
+   "name": "Next-state/output logic (always_comb with defaults)",
+   "desc": "The second process is purely combinational. It reads state, computes next_state, and decodes control outputs. Assign next_state=state and default all outputs before the case statement, then include a default branch to prevent unintended latches and provide recovery."
+  },
+  {
+   "k": "out",
+   "name": "Control outputs (decoded enables)",
+   "desc": "The FSM drives datapath controls: load_w_en loads weights, stream_en injects activations, acc_en enables 32-bit accumulation, and wb_en writes results from the 4 MiB accumulators to the 24 MiB Unified Buffer."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "idle"
+   ],
+   "cap": "① Idle: after reset, all enables are low and the array waits. When the host sends a compact command over PCIe, combinational logic points next_state to LoadW."
+  },
+  {
+   "keys": [
+    "loadw",
+    "comb"
+   ],
+   "cap": "② LoadW: on entry, load_w_en fills the 256 × 256 array with a weight tile for weight-stationary execution. When the load counter completes, next_state becomes Stream."
+  },
+  {
+   "keys": [
+    "stream",
+    "accum",
+    "out"
+   ],
+   "cap": "③ Stream and Accumulate: stream_en supplies activations from the Unified Buffer each cycle while acc_en accumulates partial sums. These phases may overlap as a steady-state pipeline until the tile completes."
+  },
+  {
+   "keys": [
+    "wb",
+    "ff"
+   ],
+   "cap": "④ WriteBack: after streaming completes, wb_en writes results from the 4 MiB accumulator storage into the 24 MiB Unified Buffer. Every state transition occurs when always_ff captures next_state."
+  },
+  {
+   "keys": [
+    "idle",
+    "ff",
+    "comb"
+   ],
+   "cap": "⑤ Loop: after writeback, combinational logic returns next_state to Idle or proceeds directly to the next tile. One state register plus complete combinational logic implements the entire transition diagram."
+  }
+ ],
+ "before": [
+  "<b>Select the language and state encoding</b>: use a SystemVerilog enum or equivalent and choose binary or one-hot encoding. Five states fit in three binary bits; one-hot may reduce decode depth at the cost of more flops. Prioritize a reviewed, readable policy.",
+  "<b>Define reset behavior</b>: choose polarity and assertion/release policy consistently. The FSM must reach a known initial state—Idle—after reset; an X state at power-up is unacceptable.",
+  "<b>Define inputs, outputs, and widths</b>: list host start/command signals, per-phase counters or done handshakes, and load_w_en, stream_en, acc_en, and wb_en with polarity and timing. This port table drives the case logic.",
+  "<b>Constrain coding style</b>: clocked state uses nonblocking <=, combinational logic uses blocking =, one signal has one owner, and no combinational path may leave an output unassigned. Enforce these rules with lint.",
+  "<b>Define success criteria</b>: cover the complete Idle→LoadW→Stream→Accumulate→WriteBack→Idle path, prove reset-to-Idle, and require zero unintended latches or multiple drivers after lint and synthesis."
+ ],
+ "during": [
+  "<b>Use a two- or three-process FSM rather than mixing concerns</b>: one always_ff process stores current state; one always_comb process computes next state and outputs. This separation makes timing, review, and modification clearer than a monolithic clocked controller.",
+  "<b>Keep the sequential process minimal</b>: always_ff @(posedge clk) begin if(rst) state&lt;=Idle; else state&lt;=next_state; end. It only captures next_state using nonblocking assignment.",
+  "<b>Assign combinational defaults first</b>: begin with next_state = state and set every control output inactive, then override only what changes in case(state). Without complete assignment, synthesis must preserve a prior value and infers a latch.",
+  "<b>Include a default case</b>: even when an enum lists legal values, an upset or invalid one-hot code can occur. A default transition to Idle or another defined safe state supplies recovery and guards completeness.",
+  "<b>Choose Moore versus Mealy outputs deliberately</b>: Moore enables derived only from state are stable and easier to time; Mealy outputs can respond in the same cycle but may create longer combinational paths or glitches. Array-control enables generally favor Moore behavior.",
+  "<b>State the evidence boundary</b>: TPU v1 discloses a tiled GEMM datapath and host-controlled compact instruction set, but not controller state names or RTL. The states and enables here are an instructional implementation of the known load/stream/accumulate/writeback behavior."
+ ],
+ "result": [
+  {
+   "label": "Coding style",
+   "value": "Two-process FSM: clocked state + combinational next-state/output logic"
+  },
+  {
+   "label": "State sequence",
+   "value": "Idle → LoadW → Stream → Accumulate → WriteBack"
+  },
+  {
+   "label": "Sequential process (example)",
+   "value": "always_ff @(posedge clk) if(rst) state<=Idle; else state<=next_state;"
+  },
+  {
+   "label": "Combinational process (example)",
+   "value": "always_comb begin next=state; ... case(state) ... default: next=Idle; end"
+  },
+  {
+   "label": "Latch-prevention rule",
+   "value": "Assign defaults first and include a case default"
+  },
+  {
+   "label": "External controls",
+   "value": "load_w_en / stream_en / acc_en / wb_en, decoded from current state"
+  }
+ ],
+ "after": [
+  "<b>Run FSM lint</b>: check for latches, multiple drivers, assignment-style violations, incomplete case behavior, and missing defaults before simulation.",
+  "<b>Cover every state and transition</b>: drive the complete loop, stalled conditions that remain in state, and every exit condition. Use state and transition coverage to find dead or unreachable behavior.",
+  "<b>Verify reset and illegal-state recovery</b>: prove reset reaches Idle with no X state. For one-hot encoding, inject illegal codes and confirm deterministic recovery through default handling.",
+  "<b>Run CDC checks</b>: if FSM inputs come from PCIe, core, or DDR3 clock domains, ensure each is synchronized or handshaken correctly before being sampled.",
+  "<b>Run trial synthesis and hand off</b>: confirm only flops and combinational logic are inferred, no latches exist, and the controller meets the target clock. Freeze state definitions, transition tables, and output timing for verification."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the tiled GEMM flow, weight-stationary execution, 24 MiB Unified Buffer, 4 MiB accumulators, and host-issued compact CISC commands are disclosed; the two-process FSM, defaults, state names, enables, and HDL are standard illustrative RTL, not published TPU controller source)"
+}

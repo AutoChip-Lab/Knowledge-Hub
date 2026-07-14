@@ -1,0 +1,119 @@
+{
+ "secNum": "3.1",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Tapeout data delivery: package signed-off layout as GDSII/OASIS for formal foundry submission",
+ "oneLine": "At tapeout, the circuit is no longer changed. The signed-off full-chip layout—including the 256×256 array, 24 MiB UB, and on-chip SRAM within a ≤331 mm² die—is streamed out as a GDSII/OASIS geometry database. Layer maps, fill/density data, alignment marks, and process/version metadata form one complete technical package for formal foundry submission. Layer, density, fill, and alignment checks are the entire focus because any error reaching masks costs a replacement mask set and weeks.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 360\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><g class=\"cs-part\" data-k=\"layout\" data-g=\"layout\"><rect class=\"cs-box\" x=\"28\" y=\"120\" width=\"150\" height=\"96\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"103\" y=\"150\">Signed-off layout</text><text class=\"cs-sub\" x=\"103\" y=\"168\">signoff layout</text><text class=\"cs-sub\" x=\"103\" y=\"186\">256×256 array · UB · SRAM</text><text class=\"cs-sub\" x=\"103\" y=\"204\">≤331 mm² die · 28 nm</text></g><line class=\"cs-arr\" x1=\"178\" y1=\"168\" x2=\"226\" y2=\"168\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"184\" y=\"158\">Package</text><g class=\"cs-part\" data-k=\"stream\" data-g=\"stream\"><rect class=\"cs-box\" x=\"230\" y=\"86\" width=\"200\" height=\"164\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"330\" y=\"112\">Stream out GDSII / OASIS</text><text class=\"cs-sub\" x=\"330\" y=\"130\">Geometry database</text><g class=\"cs-part\" data-k=\"lmap\" data-g=\"check\"><rect class=\"cs-cell\" x=\"246\" y=\"146\" width=\"168\" height=\"24\" rx=\"4\"/><text class=\"cs-cellt\" x=\"330\" y=\"162\">Layer map (GDS number ↔ layer)</text></g><g class=\"cs-part\" data-k=\"fill\" data-g=\"check\"><rect class=\"cs-cell\" x=\"246\" y=\"176\" width=\"168\" height=\"24\" rx=\"4\"/><text class=\"cs-cellt\" x=\"330\" y=\"192\">Metal fill · uniform density</text></g><g class=\"cs-part\" data-k=\"mark\" data-g=\"check\"><rect class=\"cs-cell\" x=\"246\" y=\"206\" width=\"168\" height=\"24\" rx=\"4\"/><text class=\"cs-cellt\" x=\"330\" y=\"222\">Alignment marks · scribe lanes · process keys</text></g></g><line class=\"cs-arr\" x1=\"430\" y1=\"168\" x2=\"486\" y2=\"168\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"436\" y=\"158\">Formal submission</text><g class=\"cs-part\" data-k=\"foundry\" data-g=\"foundry\"><rect class=\"cs-box\" x=\"490\" y=\"120\" width=\"200\" height=\"96\" rx=\"8\" fill=\"#fefce8\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"590\" y=\"150\">Submit to foundry</text><text class=\"cs-sub\" x=\"590\" y=\"168\">tapeout handoff</text><text class=\"cs-sub\" x=\"590\" y=\"186\">GDS + documents + technical package</text><text class=\"cs-sub\" x=\"590\" y=\"204\">→ masks / manufacturing</text></g><text class=\"cs-note\" x=\"28\" y=\"248\">Submission checklist (GDS/OASIS · layer map ·</text><text class=\"cs-note\" x=\"28\" y=\"266\">fill/antenna/density signoff · alignment/scribe ·</text><text class=\"cs-note\" x=\"28\" y=\"284\">versions/checksums · process/PDK versions)</text><text class=\"cs-note\" x=\"28\" y=\"312\">Note: GDSII/OASIS and tapeout handoff,</text><text class=\"cs-note\" x=\"28\" y=\"330\">fill/alignment/masks are standard practice;</text><text class=\"cs-note\" x=\"28\" y=\"348\">TPU private manufacturing data/foundry are not public.</text></svg>",
+ "legend": [
+  {
+   "k": "layout",
+   "name": "Signed-off layout (the packaged object)",
+   "desc": "The frozen full-chip physical layout after DRC, LVS, antenna, timing, and power signoff: a 256×256 array of 8-bit MACs, 24 MiB software-managed Unified Buffer, 4 MiB accumulators, and peripheral logic implemented as polygons on one ≤331 mm² die in 28 nm. Tapeout delivers this design without circuit changes, loss, or ambiguity."
+  },
+  {
+   "k": "stream",
+   "name": "GDSII / OASIS stream-out (geometry database)",
+   "desc": "Stream the layout database into standard exchange formats. GDSII is the longstanding de facto standard; OASIS is its compressed successor, carrying equivalent geometry in smaller files for large chips. It records the polygons and locations on each layer and is the mask shop's geometric input. Layers, hierarchy, and coordinates must match the signed-off database exactly."
+  },
+  {
+   "k": "check",
+   "name": "Three pre-submission checks (layers / fill / marks)",
+   "desc": "Verify three classes before submission: one-to-one GDS layer-number ↔ process-layer mapping with no missing or extraneous layers; metal fill and windowed density for uniform CMP; and complete alignment marks, scribe lanes, and process-monitor structures. Each is necessary for correct manufacturing, and one error can scrap a lot."
+  },
+  {
+   "k": "fill",
+   "name": "Fill and density",
+   "desc": "Every metal layer of a large chip must meet foundry density windows. Fill polygons in sparse regions make density uniform; otherwise CMP, etch, and lithography become nonuniform. Fill is added during signoff, and tapeout packaging confirms it exists in GDS without antenna or DRC violations."
+  },
+  {
+   "k": "foundry",
+   "name": "Formal foundry submission (tapeout handoff)",
+   "desc": "Package the GDSII/OASIS master with layer map, signoff summary, alignment/scribe information, process and PDK versions, and file checksums, then formally submit it through the foundry-defined channel. Submission freezes the revision for mask generation, so all checks must complete first."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "layout",
+    "stream"
+   ],
+   "cap": "① Stream out the signed-off, frozen full-chip layout—array + UB + SRAM on a ≤331 mm² die—as GDSII/OASIS bit-equivalent to the signoff database."
+  },
+  {
+   "keys": [
+    "stream",
+    "lmap"
+   ],
+   "cap": "② Verify layer mapping: every GDS layer number matches its 28 nm process layer, with no missing, extra, or misnumbered layer. The mask shop turns each mapped layer into a mask."
+  },
+  {
+   "keys": [
+    "fill",
+    "check"
+   ],
+   "cap": "③ Verify fill and density: confirm metal fill exists in GDS, every layer meets a uniform process density window for CMP and yield, and no antenna/DRC rule is broken."
+  },
+  {
+   "keys": [
+    "mark",
+    "check"
+   ],
+   "cap": "④ Verify alignment and scribe information: alignment/overlay marks, scribe lanes, and process-monitor keys (PCM/test structures) are complete and correctly placed for lithography and singulation."
+  },
+  {
+   "keys": [
+    "foundry"
+   ],
+   "cap": "⑤ Formally submit the package: GDS/OASIS + layer map + signoff summary + process/version/checksum data. One submission freezes the mask input."
+  }
+ ],
+ "before": [
+  "<b>Confirm the layout is genuinely signed off and frozen</b>: DRC, LVS, antenna, ERC, timing, and power signoff must all pass; lock the revision. Tapeout delivers this exact database without concurrent edits.",
+  "<b>Align with foundry delivery specifications</b>: use the target 28 nm PDK/rule manual to determine GDSII versus OASIS, required layers and numbers, naming rules, and text-layer requirements. The foundry defines the delivery contract.",
+  "<b>Prepare the layer map</b>: map every design layer to its process GDS layer number/datatype so the mask shop interprets stream-out correctly.",
+  "<b>Confirm fill and density are already in layout</b>: metal/via fill and layer-density correction must be complete and signed off. Tapeout verifies rather than redesigns them.",
+  "<b>Prepare documentation and integrity data</b>: assemble the signoff summary, alignment/scribe data, process and PDK versions, file MD5/checksum, contacts, and revision notes into a traceable package."
+ ],
+ "during": [
+  "<b>Stream out without loss</b>: preserve cell hierarchy, coordinates, layers, and text bit-for-bit when converting the signoff database to GDSII/OASIS. Rerun DRC/LVS on the streamed GDS so the delivered artifact—not only the in-tool database—is clean.",
+  "<b>Lock every layer mapping</b>: compare each GDS layer number/datatype against the process layer. A missing layer omits a mask, an extra layer creates an invalid mask, and a misnumbered layer places geometry incorrectly. One mistake can cost a mask set and weeks.",
+  "<b>Check fill and density against every window</b>: confirm fill is embedded, density is uniform for CMP, and fill introduces no antenna or DRC violation. Sparse and dense regions must both comply to protect yield.",
+  "<b>Include alignment marks and scribe data</b>: place alignment/overlay marks, scribe lines, and process-monitor structures/PCM test keys correctly so layers register, wafers singulate, and manufacturing can be measured.",
+  "<b>Verify file integrity and version identity</b>: independently read back files, check unique cell names and coordinate ranges, and record checksum and process/PDK versions. One submission must resolve to one unambiguous revision.",
+  "<b>Scope note</b>: GDSII/OASIS, tapeout handoff, fill, alignment, masks, and PCM are standard practices. TPU v1's private manufacturing data and foundry are not public; the documented 256×256 array, 24 MiB UB, ≤331 mm² die, and 28 nm node provide only the packaged-design context."
+ ],
+ "result": [
+  {
+   "label": "Primary deliverable",
+   "value": "Full-chip GDSII / OASIS geometry database streamed from signed-off layout"
+  },
+  {
+   "label": "Attachment: layer mapping",
+   "value": "Layer-map table: GDS layer number/datatype ↔ 28 nm process layer"
+  },
+  {
+   "label": "Attachment: fill/density",
+   "value": "Metal fill embedded; density inside process windows; uniform CMP"
+  },
+  {
+   "label": "Attachment: alignment/scribe",
+   "value": "Alignment/overlay marks · scribe lanes · PCM process-monitor structures"
+  },
+  {
+   "label": "Attachment: version/integrity",
+   "value": "Process/PDK versions · file checksum · signoff report summary"
+  },
+  {
+   "label": "Submission action",
+   "value": "Formally submit one complete technical package to the foundry, freezing mask input"
+  }
+ ],
+ "after": [
+  "<b>Foundry incoming verification</b>: the foundry checks format, layers, density, alignment, and its own incoming DRC. Rejection requires repackaging and resubmission, costing turnaround time.",
+  "<b>Archive and freeze the tapeout revision</b>: preserve submitted GDS/OASIS, layer map, checksums, and revision number as the tapeout baseline. Any later change uses a separate ECO/revision.",
+  "<b>Begin mask fabrication</b>: the foundry generates masks/reticles layer by layer from GDSII/OASIS, providing the input to lithography, etch, and deposition.",
+  "<b>Prepare bring-up collateral</b>: develop test programs, PCIe accelerator-card hardware, and first-silicon bring-up plans so packaging, test, and bring-up can start when wafers or bare dies return.",
+  "<b>Review first-pass submission quality</b>: turn layer/fill/alignment lessons into a checklist. A large-chip tapeout error is costly, so the objective is one correct submission."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (GDSII/OASIS stream-out, tapeout handoff, layer mapping, fill/density, alignment marks, masks, PCM, and associated figures are standard manufacturing/delivery practices rather than TPU's public private-manufacturing data; TPU has not named its foundry)"
+}

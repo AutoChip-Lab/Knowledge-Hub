@@ -1,0 +1,112 @@
+{
+  "secNum": "3.2",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · Wafer Backgrinding and Dicing: Thinning the Wafer, Cutting Along Scribe Streets, and Separating Large ≤331 mm² Die Without Chipping or Microcracks",
+  "oneLine": "This case covers the two operations required after CP wafer probe and before package assembly. First, backgrinding protects the circuit side with tape and removes silicon from the wafer backside, reducing its original several-hundred-micrometer thickness so that the die fits the package, has a shorter thermal path, and can support 3D or stacked integration. Second, dicing uses a diamond blade or laser to cut strictly along the scribe streets between die and separate the wafer into individual units. A thin die presents a fundamental tradeoff: reduced thickness improves thermal performance and vertical integration, but lowers mechanical strength and increases warpage, edge chipping, and microcrack risk. The process must never enter active circuitry or fracture a large die. The known TPU v1 configuration—256×256 systolic array, 24 MiB Unified Buffer, ≤331 mm² die, 28 nm process, and PCIe accelerator-card use—is the illustrative object being thinned and separated. Target thickness, dicing method, street width, tapes, and process parameters are standard OSAT choices and are not public TPU v1 data.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 410\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"26\">Front-end assembly: backgrind the wafer → dice along scribe streets → separate intact ≤331 mm² TPU die</text><g class=\"cs-part\" data-k=\"thick\" data-g=\"thick\"><rect class=\"cs-box\" x=\"24\" y=\"62\" width=\"150\" height=\"118\" rx=\"8\"/><text class=\"cs-t\" x=\"99\" y=\"90\">① Probed wafer</text><text class=\"cs-sub\" x=\"99\" y=\"112\">CP map identifies good die</text><rect class=\"cs-cell\" x=\"44\" y=\"126\" width=\"110\" height=\"30\"/><text class=\"cs-cellt\" x=\"99\" y=\"146\">Original thick wafer</text><text class=\"cs-sub\" x=\"99\" y=\"172\">Several hundred µm</text></g><line class=\"cs-arr\" x1=\"174\" y1=\"120\" x2=\"216\" y2=\"120\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"grind\" data-g=\"grind\"><rect class=\"cs-box\" x=\"220\" y=\"62\" width=\"178\" height=\"118\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"309\" y=\"88\">② Backgrind</text><text class=\"cs-sub\" x=\"309\" y=\"108\">Protect front; grind backside</text><rect class=\"cs-cell\" x=\"244\" y=\"124\" width=\"130\" height=\"14\"/><text class=\"cs-cellt\" x=\"309\" y=\"135\">Thinned wafer</text><line class=\"cs-arr\" x1=\"244\" y1=\"152\" x2=\"374\" y2=\"152\"/><text class=\"cs-sub\" x=\"309\" y=\"172\">Remove backside silicon</text></g><line class=\"cs-arr\" x1=\"398\" y1=\"120\" x2=\"440\" y2=\"120\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"dice\" data-g=\"dice\"><rect class=\"cs-box\" x=\"444\" y=\"62\" width=\"252\" height=\"118\" rx=\"8\" fill=\"#dcfce7\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"570\" y=\"88\">③ Dicing</text><text class=\"cs-sub\" x=\"570\" y=\"106\">Cut streets; separate die</text><g class=\"cs-part\" data-k=\"street\" data-g=\"street\"><rect class=\"cs-cell\" x=\"468\" y=\"120\" width=\"40\" height=\"40\"/><rect class=\"cs-cell\" x=\"520\" y=\"120\" width=\"40\" height=\"40\"/><rect class=\"cs-cell\" x=\"572\" y=\"120\" width=\"40\" height=\"40\"/><rect class=\"cs-cell\" x=\"624\" y=\"120\" width=\"40\" height=\"40\"/><line class=\"cs-arr\" x1=\"514\" y1=\"116\" x2=\"514\" y2=\"164\" stroke-dasharray=\"4 3\"/><line class=\"cs-arr\" x1=\"566\" y1=\"116\" x2=\"566\" y2=\"164\" stroke-dasharray=\"4 3\"/><line class=\"cs-arr\" x1=\"618\" y1=\"116\" x2=\"618\" y2=\"164\" stroke-dasharray=\"4 3\"/></g></g><g class=\"cs-part\" data-k=\"die\" data-g=\"die\"><rect class=\"cs-box\" x=\"220\" y=\"210\" width=\"178\" height=\"78\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"309\" y=\"236\">Individual TPU die (≤331 mm²)</text><text class=\"cs-sub\" x=\"309\" y=\"258\">Clean edges; no fracture</text><text class=\"cs-sub\" x=\"309\" y=\"276\">Thin and fragile → package next</text></g><polyline class=\"cs-arr\" points=\"540,180 540,210 398,236 398,250\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"thin\" data-g=\"thin\"><rect class=\"cs-box\" x=\"24\" y=\"210\" width=\"178\" height=\"78\" rx=\"8\"/><text class=\"cs-t\" x=\"113\" y=\"236\">Thin-die tradeoff</text><text class=\"cs-sub\" x=\"113\" y=\"258\">Thin → cooling / 3D stacking</text><text class=\"cs-sub\" x=\"113\" y=\"276\">Thin → warpage / cracking</text></g><g class=\"cs-part\" data-k=\"nocrack\" data-g=\"nocrack\"><rect class=\"cs-box\" x=\"444\" y=\"210\" width=\"252\" height=\"78\" rx=\"8\"/><text class=\"cs-t\" x=\"570\" y=\"236\">Dicing rule: protect die</text><text class=\"cs-sub\" x=\"570\" y=\"258\">Chips / cracks / delamination = risk</text><text class=\"cs-sub\" x=\"570\" y=\"276\">Stay in street; avoid circuitry</text></g><text class=\"cs-note\" x=\"24\" y=\"318\">Why grind first: fit the package, shorten the thermal path, and enable stacking before dicing</text><text class=\"cs-note\" x=\"24\" y=\"340\">Dicing follows only the reserved scribe street; blade or laser must never enter active circuitry</text><text class=\"cs-note\" x=\"24\" y=\"362\">Thin die improve cooling and stacking but increase warpage, chipping, and microcrack risk</text><text class=\"cs-note\" x=\"24\" y=\"392\">Disclosure: thickness, street width, tape, and blade/laser process are standard OSAT choices, not public TPU v1 data</text></svg>",
+  "legend": [
+    {
+      "k": "grind",
+      "name": "Backgrinding (Thin the Wafer from the Backside)",
+      "desc": "The first physical operation before dicing starts with a fabricated and CP-tested wafer that was kept several hundred µm thick to survive hundreds of manufacturing and handling steps. Packaging does not require that thickness. The circuit side is protected with temporary tape, and a grinding wheel removes silicon from the inactive backside in controlled stages. Thinning allows the die to fit the package cavity, shortens the thermal path from silicon to the package, and leaves vertical space for 3D or stacked integration. A large ≤331 mm² die used in a PCIe accelerator also requires thickness appropriate to its package and cooling design. The target and final thickness are standard OSAT choices and are not disclosed for TPU v1."
+    },
+    {
+      "k": "dice",
+      "name": "Dicing (Separate the Wafer into Individual Die)",
+      "desc": "After thinning, the wafer is mounted on framed dicing tape and cut into individual die. A high-speed diamond blade or laser follows horizontal and vertical streets until the die are separated but remain supported by the tape. This is the physical boundary between wafer-level and unit-level processing: before dicing, all die remain one wafer; after dicing, each bare die can be picked and packaged separately. Blade-versus-laser selection, feed rate, depth, and single- or multi-pass strategy are standard OSAT process choices and are not public for TPU v1."
+    },
+    {
+      "k": "street",
+      "name": "Scribe Street (The Reserved Path for Dicing)",
+      "desc": "Layout planning deliberately leaves a narrow, nonfunctional strip between adjacent die—the scribe line or dicing street. It may contain alignment marks and process-control structures but no product circuitry. The blade or laser must remain within this lane; entering either neighboring die can destroy active circuitry and scrap the device. A wider street consumes wafer area, while an overly narrow street leaves insufficient process tolerance, so its width balances die-per-wafer efficiency against manufacturability. TPU v1's street width is not public; the principle is standard layout and assembly practice."
+    },
+    {
+      "k": "thin",
+      "name": "The Thin-Die Tradeoff (Cooling and Stacking vs. Fragility)",
+      "desc": "Thinner is not unconditionally better. Reduced thickness lowers the silicon-to-package thermal resistance, enables a shorter package, and creates room for vertical stacking or 3D integration. It also reduces mechanical stiffness, making the wafer and die more susceptible to warpage, edge chipping, and visually hidden microcracks during handling, dicing, and die attach. Those latent defects can later become reliability failures. The thickness target must therefore balance thermal and integration benefits against assembly yield and mechanical reliability. TPU v1's actual thickness is not public."
+    },
+    {
+      "k": "nocrack",
+      "name": "Dicing Hard Rule: No Die Damage",
+      "desc": "Every large ≤331 mm² TPU die must be separated with clean edges and without chipping, dicing-induced microcracks, or delamination of fragile low-k dielectric layers. Some damage is immediately visible; other damage appears only in later test or field operation, making it a serious yield and reliability risk. Large, thin die are especially difficult because one crack destroys a high-value device. Blade speed, feed, coolant, and optional laser grooving are tuned around this no-damage objective and are standard OSAT practices."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "thick",
+        "grind"
+      ],
+      "cap": "① Backgrind the wafer: protect the circuit side of the CP-tested wafer with tape, then remove backside silicon to reduce the original several-hundred-µm thickness. The thinner wafer fits the package, shortens the thermal path, and leaves room for 3D or stacked integration."
+    },
+    {
+      "keys": [
+        "thin"
+      ],
+      "cap": "② Choose an appropriate final thickness: thinner die improve heat flow and stacking capability but become more prone to warpage, chipping, and microcracks. Set the removal target by balancing sufficient thinness against acceptable mechanical yield."
+    },
+    {
+      "keys": [
+        "dice",
+        "street"
+      ],
+      "cap": "③ Dice the wafer: mount it on dicing tape, then use a blade or laser strictly within the reserved scribe streets to cut all horizontal and vertical lanes and separate the wafer into individual TPU die."
+    },
+    {
+      "keys": [
+        "nocrack",
+        "die"
+      ],
+      "cap": "④ Enforce the no-damage rule: separate each ≤331 mm² die intact, with clean edges, no microcracks, and no low-k delamination. Die that pass inspection proceed to die attach and package assembly for the PCIe accelerator."
+    }
+  ],
+  "before": [
+    "<b>Complete CP wafer probe and map the passing die</b>: Backgrinding and dicing are pre-package operations, so wafer sort must already have tested every die and recorded the passing and failing coordinates. Verify that the incoming wafer and its map match before spending process capacity on it.",
+    "<b>Set the target thickness</b>: Derive final thickness from the package architecture, thermal requirements, and any 3D or stacking objective. Thinner improves heat flow and vertical integration but is more fragile and harder to handle. The value for a large PCIe accelerator such as TPU v1 is package-specific and not public.",
+    "<b>Prepare front-side protection and dicing tape</b>: Apply protective tape before backgrinding to shield circuitry and pads from particles and stress. Before dicing, mount the wafer on framed dicing tape to control warpage, hold each die after separation, and support reliable die pick. Material selection affects all three behaviors.",
+    "<b>Verify the scribe-street coordinates and cut plan</b>: Confirm the layout coordinates of every scribe street and define horizontal and vertical tool paths and depth. The cut must stay inside the nonfunctional street and avoid active circuitry; a deviation on a ≤331 mm² die can destroy an entire high-value device.",
+    "<b>Select the dicing method and parameters</b>: Choose blade or laser processing based on die size, final thickness, and fragile layers such as low-k dielectrics. Define spindle or laser settings, feed, coolant, depth, and whether multiple passes or laser grooving are needed. Every parameter serves the goal of complete separation without chipping or cracking."
+  ],
+  "during": [
+    "<b>Why the wafer is ground before it is diced</b>. A wafer remains several hundred µm thick through fabrication so that it survives repeated handling, clamping, and thermal stress. A finished package neither needs nor has room for all that mechanical reserve. Backgrinding removes the excess silicon from the backside to reach the package's required thickness, improve thermal transport, and create vertical space before separation.",
+    "<b>Backgrinding touches only the backside; the circuit side remains protected</b>. Temporary tape seals the front-side circuitry and pads against slurry, debris, and mechanical stress. Grinding typically progresses from coarse material removal to fine grinding or stress relief that reduces scratches and subsurface damage. The removed material is inactive backside silicon; product circuitry is never ground.",
+    "<b>Thin die are a double-edged design choice</b>. Lower thickness reduces thermal resistance and supports 3D integration, but also reduces stiffness. The wafer can warp, edges can chip, and invisible microcracks can form and later propagate. Selecting the target thickness means trading cooling and stacking benefit against breakage, yield, and long-term reliability.",
+    "<b>Dicing must remain inside the scribe street</b>. Each pair of adjacent die is separated by a deliberately reserved, nonfunctional strip. The blade or laser follows these streets in both directions while the dicing tape supports the separated die. Even a small excursion into active circuitry can destroy the neighboring device, a risk that is especially costly for a large die.",
+    "<b>The hard requirement is to separate each large die without damage</b>. Every ≤331 mm² TPU die needs clean edges, no chipping, no dicing-stress microcracks, and no delamination of low-k layers. A large thin die combines high fragility with high value, so process speed, feed, cooling, blade condition, and optional laser grooving are iterated to achieve complete cuts without latent damage.",
+    "<b>Disclosure boundary</b>: Backgrinding, protective tape, dicing tape, blade or laser dicing, scribe-street control, and low-k delamination prevention are standard OSAT practices for a large 28 nm PCIe accelerator. TPU v1 does not disclose removal amount, final die thickness, dicing method or parameters, street width, or its foundry and OSAT. The known 256×256 array, 24 MiB Unified Buffer, ≤331 mm² die, 28 nm process, and PCIe card provide only the illustrative product context."
+  ],
+  "result": [
+    {
+      "label": "Output of This Step",
+      "value": "An intact wafer becomes individual, thinned TPU bare die held on dicing tape after ① protected backside grinding and ② cutting exclusively along the scribe streets"
+    },
+    {
+      "label": "Purpose of Thinning",
+      "value": "Reduce the original several-hundred-µm thickness to fit the package, shorten the thermal path, and leave vertical space for 3D or stacked integration; the actual target is an undisclosed OSAT choice"
+    },
+    {
+      "label": "Dicing Path",
+      "value": "The blade or laser travels only through the circuit-free scribe line or dicing street reserved between die and must never enter active circuitry"
+    },
+    {
+      "label": "Thin-Die Tradeoff",
+      "value": "Lower thickness improves thermal performance and stacking but increases warpage, edge chipping, and microcrack risk; the target balances “thin enough” against “mechanically robust”"
+    },
+    {
+      "label": "Dicing Hard Rule",
+      "value": "Separate every ≤331 mm² die intact, with no chipping, microcracks, or low-k delamination; one fracture destroys the entire large die"
+    },
+    {
+      "label": "Disclosure Boundary",
+      "value": "Removal amount, die thickness, dicing method, street width, and OSAT are standard implementation details rather than published TPU v1 values; its ≤331 mm² die is used only as the example"
+    }
+  ],
+  "after": [
+    "<b>Inspect separated die for edge damage</b>: Visually or automatically inspect the four edges, quantify chipping, and detect visible cracks or low-k delamination. Reject die outside the limits before package assembly so latent damage is not carried downstream. Criteria are standard OSAT process-control choices.",
+    "<b>Pick only die that passed wafer sort and post-dice inspection</b>: Eject each selected die from the dicing tape and lift it with a vacuum tool, using the CP wafer map to choose only passing coordinates. Large thin die require controlled support to prevent flexure, warpage, or fracture during die pick.",
+    "<b>Transfer intact die to die attach and package assembly</b>: The separated die proceed to substrate attach and package integration, ultimately supporting TPU v1's PCIe 3.0 accelerator card. Their reduced thickness now provides the thermal and mechanical fit intended by the backgrinding decision.",
+    "<b>Feed breakage data back into process tuning</b>: Use chipping, cracking, delamination, and post-dice loss rates to adjust removal depth, grinding wheels, blade or laser conditions, feed, coolant, and optional laser grooving. Persistent damage may require changes to street design or final thickness, closing the design-to-assembly learning loop.",
+    "<b>Preserve process traceability</b>: Record target and measured thickness, dicing method and settings, and edge-damage inspection results in the assembly history for later package, reliability, and yield analysis. This is standard production practice, not public TPU v1 data."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the paper discloses TPU v1's 256×256 8-bit MAC systolic array, 24 MiB Unified Buffer, ≤331 mm² die, 28 nm process, and PCIe accelerator-card implementation, which provide the known product context; backside grinding, front-side protection tape, dicing tape, blade or laser dicing along scribe streets, the cooling-and-stacking versus fragility tradeoff, and prevention of chipping, microcracks, and low-k delamination are standard OSAT and industry practices for a large 28 nm PCIe accelerator, while TPU v1's removal amount, final die thickness, dicing method and parameters, street width, and service providers are not public; depicted thicknesses and layers are illustrative)"
+}

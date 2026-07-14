@@ -1,0 +1,126 @@
+{
+ "secNum": "3.7",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Production Ramp and Yield Learning: Early yield for a new design or node is often low. Use a failure-analysis → process/design/DFM improvement → new-wafer validation loop to raise the fraction of good dies step by step while expanding capacity into high-volume manufacturing (HVM). Yield determines unit cost and supply; economical data-center deployment requires economical volume yield.",
+ "oneLine": "This case supports production ramp and yield improvement. Ramp is not repeated execution of an unchanged process; it increases volume while improving yield through learning cycles from an initially low level. A new design or node often exposes systematic defects, a narrow process window, and insufficient robustness to variation only in manufacturing. Yield learning is the recurring loop: analyze failing dies and identify root causes → adjust the process recipe, revise design, or apply DFM to remove those causes → fabricate another lot and verify improvement. Yield climbs in steps until it crosses the economic-yield threshold, while factory capacity expands into high-volume manufacturing (HVM). This matters because yield directly controls good-die cost—the lower the yield, the more scrap and wafer cost each good die absorbs—and available supply from a fixed wafer start. For TPU v1, economical large-scale data-center deployment of a 28 nm, ≤331 mm² die with a 256×256 array, 24 MiB Unified Buffer, 700 MHz clock, and PCIe-card form depends on manufacturing enough good dies. Known structure is only the ramp target. Yield values, curves, defect density and modes, DFM/process changes, capacity, and foundry identity are private; the methodology is standard for 28 nm-class PCIe accelerators.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 420\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"24\">Production ramp & yield learning: early yield for a new design/node is low. Repeat failure analysis → process/design/DFM improvement → new-wafer validation to raise yield stepwise while scaling into HVM. Yield sets unit cost and supply.</text><g class=\"cs-part\" data-k=\"curve\" data-g=\"curve\"><rect class=\"cs-box\" x=\"24\" y=\"74\" width=\"430\" height=\"232\" rx=\"8\" fill=\"#f8fafc\" stroke=\"#cbd5e1\"/><text class=\"cs-t\" x=\"239\" y=\"98\">Yield-ramp curve: time → stepwise yield increase</text><line class=\"cs-arr\" x1=\"64\" y1=\"282\" x2=\"430\" y2=\"282\" marker-end=\"url(#csar)\"/><text class=\"cs-sub\" x=\"416\" y=\"300\">Production time →</text><line class=\"cs-arr\" x1=\"64\" y1=\"282\" x2=\"64\" y2=\"116\" marker-end=\"url(#csar)\"/><text class=\"cs-sub\" x=\"104\" y=\"120\">Yield ↑</text><path d=\"M72,266 C140,258 175,228 210,210 C250,190 285,166 330,150 C375,136 410,128 440,124\" fill=\"none\" stroke=\"#16a34a\" stroke-width=\"2.5\"/><line class=\"cs-cell\" x1=\"64\" y1=\"138\" x2=\"440\" y2=\"138\" stroke=\"#94a3b8\" stroke-dasharray=\"5 4\"/><text class=\"cs-cellt\" x=\"120\" y=\"132\">Economic-yield threshold (target yield)</text><g class=\"cs-part\" data-k=\"early\" data-g=\"early\"><rect class=\"cs-cell\" x=\"68\" y=\"244\" width=\"92\" height=\"40\" fill=\"#fee2e2\" stroke=\"#fca5a5\"/><text class=\"cs-cellt\" x=\"114\" y=\"262\">Early</text><text class=\"cs-cellt\" x=\"114\" y=\"278\">Low yield</text></g><g class=\"cs-part\" data-k=\"climb\" data-g=\"climb\"><rect class=\"cs-cell\" x=\"180\" y=\"150\" width=\"130\" height=\"120\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-cellt\" x=\"245\" y=\"208\">Ramp</text><text class=\"cs-cellt\" x=\"245\" y=\"226\">Stepwise gains</text></g><g class=\"cs-part\" data-k=\"mature\" data-g=\"mature\"><rect class=\"cs-cell\" x=\"330\" y=\"118\" width=\"108\" height=\"60\" fill=\"#dcfce7\" stroke=\"#86efac\"/><text class=\"cs-cellt\" x=\"384\" y=\"146\">Mature</text><text class=\"cs-cellt\" x=\"384\" y=\"164\">High and stable</text></g></g><g class=\"cs-part\" data-k=\"loop\" data-g=\"loop\"><rect class=\"cs-box\" x=\"470\" y=\"74\" width=\"226\" height=\"232\" rx=\"8\" fill=\"#eff6ff\" stroke=\"#93c5fd\"/><text class=\"cs-t\" x=\"583\" y=\"98\">Yield-learning loop</text><g class=\"cs-part\" data-k=\"analyze\" data-g=\"analyze\"><rect class=\"cs-cell\" x=\"492\" y=\"116\" width=\"182\" height=\"40\" fill=\"#fef2f2\" stroke=\"#fca5a5\"/><text class=\"cs-cellt\" x=\"583\" y=\"134\">① Failure analysis</text><text class=\"cs-cellt\" x=\"583\" y=\"150\">Locate failure and classify defect</text></g><polyline class=\"cs-arr\" points=\"583,156 583,178\" fill=\"none\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"improve\" data-g=\"improve\"><rect class=\"cs-cell\" x=\"492\" y=\"180\" width=\"182\" height=\"44\" fill=\"#fefce8\" stroke=\"#fde047\"/><text class=\"cs-cellt\" x=\"583\" y=\"200\">② Improve process / design / DFM</text><text class=\"cs-cellt\" x=\"583\" y=\"216\">Remove systematic defects; improve manufacturability</text></g><polyline class=\"cs-arr\" points=\"583,224 583,246\" fill=\"none\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"reinvest\" data-g=\"reinvest\"><rect class=\"cs-cell\" x=\"492\" y=\"248\" width=\"182\" height=\"40\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-cellt\" x=\"583\" y=\"266\">③ Re-fabricate and validate</text><text class=\"cs-cellt\" x=\"583\" y=\"282\">Yield rises one step → return to ①</text></g></g><polyline class=\"cs-arr\" points=\"453,190 470,190\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"hvm\" data-g=\"hvm\"><rect class=\"cs-box\" x=\"24\" y=\"324\" width=\"320\" height=\"68\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"184\" y=\"350\">Scale capacity into HVM</text><text class=\"cs-sub\" x=\"184\" y=\"372\">Target yield + factory scale → economical volume</text></g><g class=\"cs-part\" data-k=\"cost\" data-g=\"cost\"><rect class=\"cs-box\" x=\"376\" y=\"324\" width=\"320\" height=\"68\" rx=\"8\" fill=\"#fefce8\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"536\" y=\"350\">Yield → unit cost + supply</text><text class=\"cs-sub\" x=\"536\" y=\"372\">Every yield step lowers good-die cost and increases supply</text></g></svg>",
+ "legend": [
+  {
+   "k": "curve",
+   "name": "Yield-ramp curve (time → stepwise yield improvement)",
+   "desc": "Plot yield—the fraction of qualified dies per wafer—against production time. A typical curve begins low, rises in steps through repeated yield-learning cycles, and stabilizes at a high mature level. Yield does not improve automatically: each failure-analysis → improvement → new-lot cycle removes a defect class and raises the curve. It must eventually cross the economic-yield threshold, above which volume TPU supply is viable in both cost and output. This is a conceptual manufacturing model; TPU v1's measured curve and yield are not public."
+  },
+  {
+   "k": "loop",
+   "name": "Yield-learning loop (failure analysis → improvement → new lot)",
+   "desc": "The engine of ramp is a closed loop. ① Analyze failed dies to identify defect class, physical layer, structure, lot, or process signature. ② Correct the cause through process-recipe/window changes, design revision, or design-for-manufacturability (DFM), making the design more tolerant of variation. ③ Fabricate another lot, verify that yield rises, and return with new data to step ①. Each loop consumes one full manufacturing cycle—weeks to months—and wafers, so changes must be well targeted. Defects, modifications, and per-cycle gains are confidential."
+  },
+  {
+   "k": "improve",
+   "name": "Process / design / DFM improvement (remove root causes)",
+   "desc": "Root-cause evidence drives three complementary remedies. Process changes tune deposition, etch, lithography, implant, and operating windows to suppress systematic defects. Design revisions make vulnerable layout/structures more tolerant. DFM adjusts critical dimensions, redundancy, and density uniformity for easier manufacturing. A 28 nm, ≤331 mm² TPU-class die has more area exposed to random defects, so process and DFM improvement matter greatly. Actual changes are private."
+  },
+  {
+   "k": "hvm",
+   "name": "High-volume manufacturing (HVM): scale factory output",
+   "desc": "A second track expands production from engineering lots to HVM while yield improves. Early ramp uses smaller lots to learn; after yield crosses the economic-yield threshold and the process stabilizes, wafer starts and factory capacity can scale. Scaling too early manufactures scrap at volume; achieving yield without adequate capacity cannot supply data-center deployment. TPU volume requires both target yield and factory scale. Exact wafer starts, capacity, and timing are private."
+  },
+  {
+   "k": "cost",
+   "name": "Yield → unit cost + supply (why ramp matters)",
+   "desc": "Wafer processing cost is largely incurred regardless of how many dies pass. At low yield, each good die absorbs the cost of more failed dies and wafer area; every yield improvement lowers good-die unit cost. At the same wafer starts, higher yield also produces more shippable devices. Yield therefore determines whether the product is affordable and sufficiently available, not merely a process statistic. TPU v1's yield, cost, and supply numbers are not public; the relationship is universal."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "curve",
+    "early"
+   ],
+   "cap": "① Recognize the starting point: early yield for a new design/node is often low because systematic defects, narrow process windows, and sensitivity to variation emerge in manufacturing. The ramp curve begins at this low level."
+  },
+  {
+   "keys": [
+    "loop",
+    "analyze",
+    "improve"
+   ],
+   "cap": "② Run the yield-learning loop: perform failure analysis on bad dies, identify root causes, and change process, design, or DFM to remove them and improve manufacturability. This is where yield actually advances."
+  },
+  {
+   "keys": [
+    "reinvest",
+    "climb"
+   ],
+   "cap": "③ Re-fabricate and validate one step of gain: produce another lot, verify that the change raised yield, and return the new evidence to failure analysis. Repeated cycles create the stepwise ramp."
+  },
+  {
+   "keys": [
+    "hvm",
+    "mature"
+   ],
+   "cap": "④ Scale into HVM: after yield crosses the economic-yield threshold and the process stabilizes, increase wafer starts and capacity. Target yield and volume capacity must progress together."
+  },
+  {
+   "keys": [
+    "cost",
+    "curve"
+   ],
+   "cap": "⑤ Yield determines cost, supply, and deployability: each step lowers unit cost per good die and increases shippable quantity. TPU must reach economical volume yield before large-scale data-center deployment is sustainable."
+  }
+ ],
+ "before": [
+  "<b>Set target yield and the economic-yield threshold</b>: define the yield at which volume TPU manufacturing meets unit-cost and supply objectives. Every learning cycle is measured against this release line. The numeric target is project/foundry confidential.",
+  "<b>Plan for low initial yield and iterative learning</b>: a 28 nm, ≤331 mm² large die has more opportunity to encounter defects. Budget multiple yield-learning cycles, manufacturing time, and wafers instead of expecting the first lot to be mature.",
+  "<b>Prepare failure-analysis capability and data flow</b>: connect wafer electrical test and localization to physical analysis and trace defects by class, layout coordinate, lot, and process step. Improvement cannot be targeted if failing structures remain unknown. Tools and data are private.",
+  "<b>Plan process, design, and DFM levers</b>: establish ownership between foundry process teams and design/layout teams for recipe/window adjustments, design changes, and manufacturability optimization so each learning cycle can respond quickly.",
+  "<b>Coordinate iteration with capacity expansion</b>: each loop consumes a manufacturing cycle and wafers. Plan lot sizes, the number of cycles, and the yield gate for increasing HVM capacity. Do not scale scrap before yield is ready, and do not leave qualified demand without capacity."
+ ],
+ "during": [
+  "<b>Core idea: ramp does not repeat an unchanged process; it raises volume while improving yield through learning cycles from a low starting point.</b> New designs and nodes often begin with low yield. Yield learning, not simple repetition, improves the process while capacity moves toward HVM.",
+  "<b>The yield curve rises in steps rather than becoming high by itself</b>. Against production time it moves from a low early region through successive learning gains to a high, stable mature region. Each step corresponds to removing one class of defects, and the curve must cross the economic-yield threshold before volume is cost-effective.",
+  "<b>Yield learning is failure analysis → improvement → re-fabrication, repeated</b>. ① Analyze bad dies for defect type, layer/structure, and lot/process concentration. ② Change process recipes/windows, design, or DFM to remove the cause and increase tolerance to variation. ③ Fabricate another lot, verify the gain, and feed its data back to ①.",
+  "<b>Use process, design, and DFM changes together</b>. Tune deposition, etch, lithography, and implant recipes/windows; revise vulnerable layout or structures; and optimize critical dimensions, redundancy, and density uniformity for manufacturability. Large TPU-class die area increases defect exposure, making DFM and process optimization especially important.",
+  "<b>Coordinate yield ramp with capacity ramp</b>. Begin with smaller learning lots, then expand wafer starts and factory capacity into HVM after yield crosses the economic-yield threshold and stabilizes. Scaling before yield manufactures scrap; reaching yield without capacity cannot supply deployment.",
+  "<b>Yield directly determines unit cost and supply</b>. A wafer's processing cost is largely fixed. Fewer good dies make each one absorb more scrap cost; every yield step lowers unit cost. At equal wafer starts, higher yield also increases shipment volume. Economical TPU data-center deployment therefore depends on economical yield.",
+  "<b>Evidence boundary</b>: low initial yield, the failure-analysis → process/design/DFM → re-fabrication loop, stepwise yield curves, economic-yield thresholds, HVM capacity ramp, and yield's effect on cost/supply are standard for 28 nm-class PCIe accelerators. TPU v1's yield, curve, defect density/modes, DFM/process changes, capacity, ramp data, and foundry are not public. The 256×256 array, 24 MiB UB, 700 MHz, 28 nm, ≤331 mm² PCIe die and data-center deployment are only the example."
+ ],
+ "result": [
+  {
+   "label": "Role of this step",
+   "value": "The late manufacturing/delivery yield-improvement period: use yield learning to raise yield from its initial low level while scaling capacity into HVM; do not merely repeat production."
+  },
+  {
+   "label": "Yield-ramp curve",
+   "value": "Yield rises stepwise over time: low early → successive mid-ramp gains → high and stable maturity, finally crossing the economic-yield threshold. The curve is illustrative; TPU yield is not public."
+  },
+  {
+   "label": "Yield-learning loop",
+   "value": "Failure analysis (find root cause) → process/design/DFM change → new-wafer validation of one yield step → return to analysis. Each cycle costs a manufacturing cycle plus wafers, so maximize each learning iteration."
+  },
+  {
+   "label": "Three improvement levers",
+   "value": "Process recipes/windows to suppress systematic defects; design/layout changes for robustness; DFM for manufacturability. Large TPU die area raises defect exposure, making process and DFM work important."
+  },
+  {
+   "label": "Ramp × scale",
+   "value": "Yield improvement and HVM capacity grow in parallel: scaling before yield means volume scrap; achieving yield without capacity means insufficient deployment supply."
+  },
+  {
+   "label": "Yield determines cost and supply",
+   "value": "Every yield step lowers unit cost per good die and increases shipment volume. Economical TPU data-center scale requires economical volume yield; numeric relationships are private."
+  },
+  {
+   "label": "Evidence boundary",
+   "value": "Yield values, ramp curves, defect density/modes, DFM/process changes, capacity/ramp data, and foundry identity are standard confidential production information and are not public for TPU v1."
+  }
+ ],
+ "after": [
+  "<b>Compare yield with the economic-yield threshold and decide scale</b>: after every cycle, increase capacity into stable HVM if the target is exceeded; otherwise continue yield learning. Numeric gates are project/foundry confidential.",
+  "<b>Feed defect and failure modes upstream</b>: aggregate defect classes, layout hot spots, and systematic signatures and return them to design for layout/DFM changes and to the foundry for process changes. This data feedback is the essence of yield learning.",
+  "<b>Update unit-cost and supply forecasts</b>: after each yield gain, recompute good-die cost and shipment capacity, then adjust wafer starts and capacity reservations for data-center demand. Exact forecasts are private.",
+  "<b>Institutionalize process/design learning and hold mature yield</b>: freeze validated recipes, design revisions, and DFM rules to prevent regression in the current product and shorten the next product or node ramp. TPU's content is private.",
+  "<b>Preserve an auditable production record</b>: archive the ramp trajectory, per-cycle failure modes and changes, volume gates, and capacity data for later lots and products. These are standard confidential manufacturing artifacts, not public TPU v1 data."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the paper discloses the 256×256 8-bit-MAC systolic array, 24 MiB Unified Buffer, 700 MHz, ~92 TOPS, 28 nm, ≤331 mm² die, PCIe 3.0 host accelerator, and data-center deployment; it also reports approximately 15 months from project start to deployment and more than one year of data-center operation before publication. These facts serve only as the yield-ramp example. Low early yield for new designs/nodes, failure analysis → process/design/DFM improvement → re-fabrication, stepwise ramp curves, an economic-yield threshold, HVM capacity scaling, and yield's direct control of unit cost and supply are standard foundry/industry practices for 28 nm-class PCIe accelerators. The curve, steps, capacity, defects, and yield gains are illustrative, not TPU v1's private yield, defect density/modes, DFM/process changes, capacity/ramp data, or foundry.)"
+}

@@ -1,0 +1,117 @@
+{
+ "secNum": "3.7",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Trading Full Spatial Expansion of 65,536 MACs Against Time Multiplexing",
+ "oneLine": "TPU pushes replicate-for-throughput to the extreme: a fully spatial 256×256 array performs 65,536 MACs each cycle, while weight-stationary reuse reduces the bandwidth required to feed it. This is a canonical trade-off between many hardware copies and repeated use of one unit.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"28\">Spatial parallelism (replicate for throughput)</text><text class=\"cs-note\" x=\"468\" y=\"28\">Time multiplexing (less area, lower throughput)</text><g class=\"cs-part\" data-k=\"spatial\" data-g=\"spatial\"><rect class=\"cs-cell\" x=\"44\" y=\"44\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"59\" y=\"64\">M</text><rect class=\"cs-cell\" x=\"78\" y=\"44\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"93\" y=\"64\">M</text><rect class=\"cs-cell\" x=\"112\" y=\"44\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"127\" y=\"64\">M</text><rect class=\"cs-cell\" x=\"146\" y=\"44\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"161\" y=\"64\">M</text><rect class=\"cs-cell\" x=\"180\" y=\"44\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"195\" y=\"64\">M</text><rect class=\"cs-cell\" x=\"44\" y=\"78\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"59\" y=\"98\">M</text><rect class=\"cs-cell\" x=\"78\" y=\"78\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"93\" y=\"98\">M</text><rect class=\"cs-cell\" x=\"112\" y=\"78\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"127\" y=\"98\">M</text><rect class=\"cs-cell\" x=\"146\" y=\"78\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"161\" y=\"98\">M</text><rect class=\"cs-cell\" x=\"180\" y=\"78\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"195\" y=\"98\">M</text><rect class=\"cs-cell\" x=\"44\" y=\"112\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"59\" y=\"132\">M</text><rect class=\"cs-cell\" x=\"78\" y=\"112\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"93\" y=\"132\">M</text><rect class=\"cs-cell\" x=\"112\" y=\"112\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"127\" y=\"132\">M</text><rect class=\"cs-cell\" x=\"146\" y=\"112\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"161\" y=\"132\">M</text><rect class=\"cs-cell\" x=\"180\" y=\"112\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"195\" y=\"132\">M</text><rect class=\"cs-cell\" x=\"44\" y=\"146\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"59\" y=\"166\">M</text><rect class=\"cs-cell\" x=\"78\" y=\"146\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"93\" y=\"166\">M</text><rect class=\"cs-cell\" x=\"112\" y=\"146\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"127\" y=\"166\">M</text><rect class=\"cs-cell\" x=\"146\" y=\"146\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"161\" y=\"166\">M</text><rect class=\"cs-cell\" x=\"180\" y=\"146\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"195\" y=\"166\">M</text><rect class=\"cs-cell\" x=\"44\" y=\"180\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"59\" y=\"200\">M</text><rect class=\"cs-cell\" x=\"78\" y=\"180\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"93\" y=\"200\">M</text><rect class=\"cs-cell\" x=\"112\" y=\"180\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"127\" y=\"200\">M</text><rect class=\"cs-cell\" x=\"146\" y=\"180\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"161\" y=\"200\">M</text><rect class=\"cs-cell\" x=\"180\" y=\"180\" width=\"30\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"195\" y=\"200\">M</text><text class=\"cs-note\" x=\"44\" y=\"230\">256×256 = 65,536 fully spatial MACs</text><text class=\"cs-note\" x=\"44\" y=\"246\">65,536 MACs/cycle → ~92 TOPS (INT8)</text></g><g class=\"cs-part\" data-k=\"ws\" data-g=\"ws\"><rect class=\"cs-box\" x=\"44\" y=\"262\" width=\"170\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"129\" y=\"286\">weight-stationary</text><text class=\"cs-sub\" x=\"129\" y=\"304\">Resident weights · reuse saves bandwidth</text></g><line class=\"cs-arr\" x1=\"230\" y1=\"130\" x2=\"282\" y2=\"130\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"232\" y=\"118\">Contrast</text><g class=\"cs-part\" data-k=\"tm\" data-g=\"tm\"><rect class=\"cs-box\" x=\"288\" y=\"60\" width=\"120\" height=\"120\" rx=\"8\"/><text class=\"cs-t\" x=\"348\" y=\"110\">1 MAC</text><text class=\"cs-sub\" x=\"348\" y=\"130\">time-multiplexed</text><text class=\"cs-sub\" x=\"348\" y=\"148\">new operands each cycle</text><path class=\"cs-arr\" d=\"M348,190 q22,9 0,18\" fill=\"none\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"288\" y=\"200\">Much less area, but needs 65,536 cycles</text><text class=\"cs-note\" x=\"288\" y=\"216\">to match one spatial cycle → far lower throughput</text><g class=\"cs-part\" data-k=\"knob\" data-g=\"knob\"><rect class=\"cs-box\" x=\"468\" y=\"60\" width=\"222\" height=\"160\" rx=\"8\"/><text class=\"cs-t\" x=\"579\" y=\"86\">PPA controls</text><text class=\"cs-sub\" x=\"579\" y=\"110\">Copies N: ↑area ↑performance</text><text class=\"cs-sub\" x=\"579\" y=\"130\">Reuse rounds R: ↓area ↓throughput</text><text class=\"cs-sub\" x=\"579\" y=\"150\">Data reuse: ↓bandwidth demand</text><text class=\"cs-sub\" x=\"579\" y=\"170\">Utilization: limited by data supply</text><text class=\"cs-sub\" x=\"579\" y=\"190\">Area budget ≤331 mm² / 28 nm</text></g><g class=\"cs-part\" data-k=\"feed\" data-g=\"feed\"><rect class=\"cs-box\" x=\"468\" y=\"244\" width=\"222\" height=\"74\" rx=\"8\"/><text class=\"cs-t\" x=\"579\" y=\"272\">Data supply: 24 MiB UB</text><text class=\"cs-sub\" x=\"579\" y=\"292\">+ 8 GiB DDR3 (~30 GB/s)</text><text class=\"cs-sub\" x=\"579\" y=\"308\">Starved array = wasted replication</text></g><line class=\"cs-arr\" x1=\"466\" y1=\"281\" x2=\"222\" y2=\"290\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><text class=\"cs-note\" x=\"44\" y=\"340\">Core trade-off: many hardware copies or repeated use of one unit—parallelism versus area, bandwidth, and power.</text><text class=\"cs-note\" x=\"44\" y=\"382\">Note: time multiplexing is illustrative, not v1; TPU v1 chooses full spatial expansion.</text></svg>",
+ "legend": [
+  {
+   "k": "spatial",
+   "name": "Spatial MAC array (replicate for throughput)",
+   "desc": "All 256×256 = 65,536 8-bit MACs are physically instantiated and operate concurrently, delivering 65,536 MACs/cycle and ~92 TOPS. The cost is large area: TPU v1 dedicates most of the die to this array."
+  },
+  {
+   "k": "ws",
+   "name": "Weight-stationary reuse (reuse saves bandwidth)",
+   "desc": "A weight is loaded once and remains in a MAC while passing activations reuse it repeatedly. Amortizing each weight across many operations sharply lowers off-chip DDR3 bandwidth demand; this is the data-reuse dimension of the trade-off."
+  },
+  {
+   "k": "tm",
+   "name": "Time multiplexing (contrast: less area, lower throughput)",
+   "desc": "As a counterexample, 1 MAC can process different operands over time. Area is far smaller, but 65,536 cycles are needed to match one cycle of the spatial array. This is illustrative and not TPU v1’s implementation."
+  },
+  {
+   "k": "knob",
+   "name": "PPA controls (copy count / reuse rounds)",
+   "desc": "The central parallel-design controls are copy count N and reuse rounds R. Increasing N raises area and performance; increasing R saves area and reduces throughput. Data reuse lowers bandwidth, while utilization depends on whether supply keeps every copy busy."
+  },
+  {
+   "k": "feed",
+   "name": "Data-supply side (utilization limit)",
+   "desc": "The supply system is a 24 MiB Unified Buffer plus 8 GiB DDR3 at ~30 GB/s. Additional MAC copies provide no benefit if data cannot reach them, so bandwidth and buffering set the practical parallelism limit."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "spatial"
+   ],
+   "cap": "① Replicate for throughput: fully expand the multiply-accumulate into 65,536 physical MACs and perform 65,536 operations per cycle, reaching ~92 TOPS (INT8)."
+  },
+  {
+   "keys": [
+    "tm"
+   ],
+   "cap": "② Contrast time multiplexing: 1 MAC uses minimal area but needs 65,536 cycles to match one spatial-array cycle, collapsing throughput."
+  },
+  {
+   "keys": [
+    "ws"
+   ],
+   "cap": "③ Reuse to save bandwidth: on top of spatial expansion, weight-stationary flow keeps weights resident while activations pass through and reuse them, minimizing off-chip reads."
+  },
+  {
+   "keys": [
+    "knob",
+    "spatial",
+    "tm"
+   ],
+   "cap": "④ Turn the PPA controls: copy count N (↑area, ↑performance) and reuse rounds R (↓area, ↓throughput) form a continuum. TPU v1 pushes N high and hardware reuse rounds low."
+  },
+  {
+   "keys": [
+    "feed",
+    "spatial"
+   ],
+   "cap": "⑤ Respect the real limit: if the 24 MiB UB and ~30 GB/s DDR3 cannot feed the array, utilization falls regardless of MAC count. Data-supply bandwidth, not arithmetic count, becomes the true ceiling."
+  }
+ ],
+ "before": [
+  "<b>Choose the core operation and target throughput</b>: The kernel is matrix-multiply MAC. The datacenter-inference target from architecture (③), on the order of ~90+ TOPS, directly determines how many MAC copies are required.",
+  "<b>Choose the two parallelism controls</b>: Copy count N determines how many units operate in parallel, while reuse rounds R determine how many time slots one unit serves. They express the fundamental duality of area for performance and time for area.",
+  "<b>Required inputs and constraints</b>: Area and power limits (28 nm, die ≤331 mm², TDP 28–40 W), data supply (24 MiB UB + 8 GiB DDR3 at ~30 GB/s), and reuse of each weight and activation.",
+  "<b>Questions to resolve</b>: Is the workload throughput-sensitive or latency-sensitive? Is there enough reuse to keep replication from becoming bandwidth-bound? Does the area budget permit full expansion? These answers set N and R."
+ ],
+ "during": [
+  "<b>Use spatial replication to maximize throughput</b>: Inference is throughput-oriented, and matrix MACs are uniform and largely independent. TPU v1 therefore instantiates 256×256 = 65,536 MACs and computes them concurrently, reaching ~92 TOPS.",
+  "<b>Pay the area cost deliberately</b>: Full expansion gives most of the die to the MAC array. This is feasible because an 8-bit integer MAC is much smaller and lower-power than FP32, allowing roughly 6.5×10⁴ copies within ≤331 mm² and 28–40 W. The INT8 precision choice directly enables density.",
+  "<b>Why time multiplexing is unattractive here</b>: Reusing 1 unit saves area but reduces throughput roughly in proportion to reuse rounds. In a datacenter inference ASIC whose primary KPI is throughput, maximizing concurrency is worth more than the saved area.",
+  "<b>Add an orthogonal dimension: reuse data to save bandwidth</b>: Replication alone would overwhelm data supply. Weight-stationary flow keeps weights in the array while activations reuse them, amortizing each DDR3 read across many MACs and easing the ~30 GB/s constraint.",
+  "<b>Utilization is the true ceiling</b>: Effective performance equals replicated capacity × utilization. If UB or DDR3 cannot feed the array, especially for small batches or low-reuse layers, more MACs are wasted. Array throughput and supply bandwidth must be balanced.",
+  "<b>Evidence boundary</b>: The single-MAC time-multiplexed design is a teaching contrast, not a TPU v1 implementation. TPU v1’s engineering choice is aggressive spatial expansion with minimal hardware time reuse."
+ ],
+ "result": [
+  {
+   "label": "Parallelism style",
+   "value": "Full spatial expansion (spatial, full replicate)"
+  },
+  {
+   "label": "Copy count N",
+   "value": "256×256 = 65,536 8-bit MACs"
+  },
+  {
+   "label": "Peak throughput",
+   "value": "~92 TOPS (INT8) @ 700 MHz"
+  },
+  {
+   "label": "Reuse dimension",
+   "value": "Weight-stationary: resident weights trade reuse for bandwidth"
+  },
+  {
+   "label": "Area / power budget",
+   "value": "28 nm, die ≤331 mm², TDP 28–40 W"
+  },
+  {
+   "label": "Utilization limit",
+   "value": "Set by data supply: 24 MiB UB + ~30 GB/s DDR3"
+  }
+ ],
+ "after": [
+  "<b>Validate balance with roofline and cycle models</b>: Plot the array peak against the ~30 GB/s bandwidth roof for target layers. If most layers are bandwidth-bound, replication is excessive; reduce array size or increase on-chip reuse.",
+  "<b>Measure utilization on real workloads</b>: Run representative inference models and observe average use of all 65,536 MACs. Improve low-utilization layers with larger batches or greater reuse rather than more MACs.",
+  "<b>Close area and power</b>: Confirm the expanded array, accumulator, and UB remain within ≤331 mm² and 28–40 W. If not, reduce copy count or choose a smaller precision/bit width.",
+  "<b>Hand off to later stages</b>: Pass copy count, weight-stationary dataflow, and supply-bandwidth ratios to datapath design (③) and RTL (⑤), while reserving coarse clock-gating hooks for idle array regions.",
+  "<b>Record the rationale</b>: Document why spatial replication and weight-stationary reuse were chosen so later TPU generations can reevaluate N and R under higher bandwidth or precision requirements."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the time-multiplexing contrast is an illustrative common-practice comparison, not a v1 implementation; TPU v1 chooses aggressive spatial expansion)"
+}

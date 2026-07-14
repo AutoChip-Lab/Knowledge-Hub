@@ -7,7 +7,7 @@ export const meta = {
   ],
 }
 
-const DIR = '/Users/sunking/Desktop/Chip-Design/cases_frag';
+const DIR = '/Users/sunking/Desktop/chip-design-flow/cases_frag';
 
 // ---------- 共享风格指南(所有 agent 都注入) ----------
 const STYLE = `

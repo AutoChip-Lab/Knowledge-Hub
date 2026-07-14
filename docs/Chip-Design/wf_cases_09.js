@@ -7,7 +7,7 @@ export const meta = {
   ],
 }
 
-const DIR = '/Users/sunking/Desktop/Chip-Design/cases_frag';
+const DIR = '/Users/sunking/Desktop/chip-design-flow/cases_frag';
 
 const STYLE = `
 你在为一套中文《芯片设计完整流程》学习网站,补一个小节的「真实芯片案例」。**全系列只用 Google TPU 这一款芯片举例**(主用 TPU v1,ISCA 2017 "In-Datacenter Performance Analysis of a TPU", Jouppi et al.)。绝不引入别的芯片。本篇是「⑨ 签核(signoff)」,案例要带签核味道——讲"流片前怎么对 TPU 的版图做这一维度的最终签核、用什么金标准工具/数据、判据是什么"。

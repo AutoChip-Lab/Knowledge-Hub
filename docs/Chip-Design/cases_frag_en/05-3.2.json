@@ -1,0 +1,114 @@
+{
+ "secNum": "3.2",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Coding One PE: Combinational Multiply (=), Sequential Accumulate (<=)",
+ "oneLine": "Each PE in the systolic array pairs a combinational multiply with a sequential accumulation: always_comb with blocking = computes the product, while always_ff @(posedge clk) with nonblocking <= registers the partial sum each cycle. Distinguishing these two forms and their assignment semantics is fundamental RTL discipline.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 360\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"60\" y=\"34\">RTL structure of one systolic MAC PE</text><text class=\"cs-note\" x=\"60\" y=\"86\">Combinational · always_comb · = · no clock</text><text class=\"cs-note\" x=\"425\" y=\"86\">Sequential · always_ff · &lt;= · clocked</text><line x1=\"395\" y1=\"100\" x2=\"395\" y2=\"345\" stroke=\"#cbd5e1\" stroke-width=\"1\" stroke-dasharray=\"3 5\"/><g class=\"cs-part\" data-k=\"a\" data-g=\"in\"><rect class=\"cs-box\" x=\"40\" y=\"120\" width=\"92\" height=\"44\" rx=\"8\"/><text class=\"cs-t\" x=\"86\" y=\"142\">Activation a</text><text class=\"cs-sub\" x=\"86\" y=\"158\">8-bit</text></g><g class=\"cs-part\" data-k=\"w\" data-g=\"in\"><rect class=\"cs-box\" x=\"40\" y=\"190\" width=\"92\" height=\"44\" rx=\"8\"/><text class=\"cs-t\" x=\"86\" y=\"212\">Weight w</text><text class=\"cs-sub\" x=\"86\" y=\"228\">8-bit · stationary</text></g><g class=\"cs-part\" data-k=\"mul\" data-g=\"comb\"><rect class=\"cs-box\" x=\"180\" y=\"150\" width=\"180\" height=\"74\" rx=\"8\"/><text class=\"cs-t\" x=\"270\" y=\"178\">Combinational multiplier</text><text class=\"cs-sub\" x=\"270\" y=\"197\">always_comb</text><text class=\"cs-sub\" x=\"270\" y=\"214\">prod = a * w; (16-bit)</text></g><line class=\"cs-arr\" x1=\"132\" y1=\"142\" x2=\"176\" y2=\"172\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"132\" y1=\"212\" x2=\"176\" y2=\"202\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"acc\" data-g=\"seq\"><rect class=\"cs-box\" x=\"430\" y=\"148\" width=\"210\" height=\"80\" rx=\"8\"/><path d=\"M430,228 L430,210 L448,228 Z\" fill=\"#8b5cf6\"/><text class=\"cs-t\" x=\"535\" y=\"176\">Accumulator register acc</text><text class=\"cs-sub\" x=\"535\" y=\"195\">always_ff @(posedge clk)</text><text class=\"cs-sub\" x=\"535\" y=\"212\">acc &lt;= acc + prod; (32-bit)</text></g><line class=\"cs-arr\" x1=\"360\" y1=\"187\" x2=\"426\" y2=\"187\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"362\" y=\"178\">prod</text><g class=\"cs-part\" data-k=\"clk\" data-g=\"seq\"><rect class=\"cs-box\" x=\"430\" y=\"262\" width=\"120\" height=\"44\" rx=\"8\"/><text class=\"cs-t\" x=\"490\" y=\"284\">Clock clk</text><text class=\"cs-sub\" x=\"490\" y=\"300\">700 MHz</text></g><line class=\"cs-arr\" x1=\"490\" y1=\"262\" x2=\"490\" y2=\"232\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"psum\" data-g=\"seq\"><rect class=\"cs-box\" x=\"595\" y=\"248\" width=\"118\" height=\"44\" rx=\"8\"/><text class=\"cs-t\" x=\"654\" y=\"270\">Partial sum psum</text><text class=\"cs-sub\" x=\"654\" y=\"286\">Down the array</text></g><polyline class=\"cs-arr\" points=\"640,188 668,188 668,244\" fill=\"none\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"60\" y=\"332\">Rule: &lt;= for sequential state, = for combinational logic; misuse can create races and mismatches.</text></svg>",
+ "legend": [
+  {
+   "k": "comb",
+   "name": "Combinational logic (multiplier: always_comb / =)",
+   "desc": "An 8-bit activation multiplied by an 8-bit weight produces a 16-bit product. This is pure combinational logic: it has no clock or state, and its output follows its inputs. Blocking assignment (prod = a*w) describes the dataflow and synthesis builds a multiplier."
+  },
+  {
+   "k": "seq",
+   "name": "Sequential logic (accumulator: always_ff / <=)",
+   "desc": "At each rising edge, the 32-bit accumulator captures old acc plus the new product. A nonblocking assignment models parallel register updates; synthesis creates clocked flops that preserve state across cycles."
+  },
+  {
+   "k": "in",
+   "name": "PE inputs (a / w)",
+   "desc": "Activation a moves across the array while weight w is held for a weight-stationary dataflow. Both are 8-bit inputs to the combinational multiplier. The logic being combinational or sequential—not the input itself—determines whether = or <= is appropriate."
+  },
+  {
+   "k": "clk",
+   "name": "Clock (700 MHz)",
+   "desc": "Only sequential state advances on clk; the combinational multiplier has no clock input. The PE's register-to-register multiply/add path must meet the 1.43 ns period at 700 MHz or be split by additional pipeline registers."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "in",
+    "mul"
+   ],
+   "cap": "① Combinational stage: a and w enter always_comb; prod = a * w uses blocking =. There is no clock or stored state, so the multiplier output follows the inputs."
+  },
+  {
+   "keys": [
+    "mul",
+    "acc"
+   ],
+   "cap": "② Sequential stage: prod feeds always_ff @(posedge clk), where acc <= acc + prod uses nonblocking <=. The expression reads the old acc and captures the new value on the edge."
+  },
+  {
+   "keys": [
+    "clk",
+    "acc"
+   ],
+   "cap": "③ Clocked progression: each rising edge advances acc and preserves it for the next cycle. Combinational logic computes within a cycle; sequential logic carries state across cycles."
+  },
+  {
+   "keys": [
+    "acc",
+    "psum"
+   ],
+   "cap": "④ The registered partial sum advances to the adjacent PE. The register both stores the accumulated value and establishes a clean systolic pipeline boundary."
+  },
+  {
+   "keys": [
+    "mul",
+    "acc"
+   ],
+   "cap": "⑤ Apply the discipline consistently: using sequential and combinational assignment styles incorrectly can create races or simulation/implementation mismatches—among the most subtle RTL defects."
+  }
+ ],
+ "before": [
+  "<b>Classify each block as combinational or sequential</b>: ask whether it must remember prior-cycle state. The PE multiply is combinational; accumulation preserves a partial sum and is sequential.",
+  "<b>Adopt one assignment discipline</b>: use nonblocking <= in clocked always_ff processes and blocking = in always_comb processes. This is not cosmetic style; it preserves clear parallel-register and combinational-dataflow semantics across the design.",
+  "<b>Define reset and widths</b>: decide how acc is initialized and whether reset is synchronous or asynchronous. An 8-bit × 8-bit product needs 16 bits, while repeated accumulation uses 32 bits in TPU v1 to avoid overflow.",
+  "<b>Use only synthesizable constructs</b>: use always_comb/always_ff with complete combinational assignments. Keep delays, initial stimulus, and other testbench-only behavior out of design RTL."
+ ],
+ "during": [
+  "<b>Code the multiplier as combinational logic</b>: always_comb prod = a * w; (illustrative) uses blocking = to express same-cycle dataflow. A combinational process must not depend on stored prior-cycle state, and every output must be assigned on every path.",
+  "<b>Code the accumulator as a register</b>: always_ff @(posedge clk) acc <= acc + prod; (illustrative) uses nonblocking <=. The right-hand side reads the pre-edge acc; all registers in the domain update together after the edge.",
+  "<b>Do not mix the semantics casually</b>: blocking assignments in clocked logic or nonblocking assignments in combinational logic can introduce event-order races, extra-cycle behavior, or mismatches between intent and simulation.",
+  "<b>Make combinational sensitivity complete</b>: always_comb automatically includes all referenced inputs, avoiding legacy sensitivity-list omissions such as always @(a) without w. Complete output assignment also prevents unintended latches.",
+  "<b>Meet the register-to-register timing budget</b>: the multiply/add logic must settle within a 1.43 ns period at 700 MHz. Systolic registers break a long computation into repeated short stages that can sustain frequency.",
+  "<b>Keep the evidence boundary clear</b>: prod=a*w and acc<=acc+prod are standard illustrative MAC RTL, not disclosed TPU v1 source. The published facts are the 8-bit multiply, 32-bit accumulation, and systolic organization."
+ ],
+ "result": [
+  {
+   "label": "Combinational multiplier (example HDL)",
+   "value": "always_comb prod = a * w;  // blocking =, 16-bit"
+  },
+  {
+   "label": "Accumulator register (example HDL)",
+   "value": "always_ff @(posedge clk) acc <= acc + prod;  // nonblocking <=, 32-bit"
+  },
+  {
+   "label": "Core rule",
+   "value": "Use <= for sequential state and = for combinational logic"
+  },
+  {
+   "label": "Synthesized combinational stage",
+   "value": "Multiplier/add logic; no clk and no stored state"
+  },
+  {
+   "label": "Synthesized sequential stage",
+   "value": "Clocked flops holding the partial sum"
+  },
+  {
+   "label": "Single-PE timing target",
+   "value": "Multiply/add path must settle within 1.43 ns at 700 MHz"
+  }
+ ],
+ "after": [
+  "<b>Run lint for assignment-discipline violations</b>: flag blocking assignments in sequential processes, nonblocking assignments in combinational processes, incomplete combinational assignment, unintended latches, and incomplete legacy sensitivity lists.",
+  "<b>Simulate function and cycle boundaries</b>: apply PE vectors and verify acc on every cycle. Toggle inputs around a cycle to confirm that combinational outputs respond within the cycle while registered state advances only on the edge.",
+  "<b>Run trial synthesis and equivalence checks</b>: confirm that the combinational stage maps to multiplier/add logic without latches, the accumulator maps to flops, and timing approaches 700 MHz. Compare RTL and synthesized behavior formally or with gate-level checks.",
+  "<b>Check CDC at the array boundary</b>: the PE itself is in one 700 MHz domain, but the Unified Buffer and host/PCIe interfaces may use other clocks. Verify the synchronizers and handshakes at those boundaries.",
+  "<b>Hand off a trusted building block</b>: provide the combinational/sequential partition, reset policy, widths, timing constraint, and testbench so verification can scale from one PE to the 256 × 256 array."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the combinational/sequential RTL examples follow standard practice and are not line-by-line TPU v1 source)"
+}

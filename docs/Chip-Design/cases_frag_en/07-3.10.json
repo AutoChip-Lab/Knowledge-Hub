@@ -1,0 +1,115 @@
+{
+  "secNum": "3.10",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 Public Structure · How the Synthesis Baseline Drives DFT Implementation and Physical Iteration",
+  "oneLine": "Synthesis does not hand backend an isolated netlist. It freezes a version-consistent baseline of gate netlist, SDC/UPF, libraries, QoR, LEC, and DFT-ready definitions. DFT then inserts scan/compression/MBIST and begins ATPG, producing a test-enabled version for physical design. Scan reorder, timing, congestion, power, and ECO feedback continue to update the controlled netlist, chains, and patterns.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 410\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"26\">Synthesis baseline → DFT ⇄ physical design</text><g class=\"cs-part\" data-k=\"net\" data-g=\"input\"><rect class=\"cs-box\" x=\"24\" y=\"54\" width=\"184\" height=\"70\" rx=\"8\"/><text class=\"cs-t\" x=\"116\" y=\"82\">Gate-level netlist</text><text class=\"cs-sub\" x=\"116\" y=\"103\">28 nm standard cells + connectivity</text></g><g class=\"cs-part\" data-k=\"intent\" data-g=\"input\"><rect class=\"cs-box\" x=\"24\" y=\"134\" width=\"184\" height=\"70\" rx=\"8\"/><text class=\"cs-t\" x=\"116\" y=\"162\">Constraints and intent</text><text class=\"cs-sub\" x=\"116\" y=\"183\">SDC · UPF · libraries / macro models</text></g><g class=\"cs-part\" data-k=\"proof\" data-g=\"input\"><rect class=\"cs-box\" x=\"24\" y=\"214\" width=\"184\" height=\"70\" rx=\"8\"/><text class=\"cs-t\" x=\"116\" y=\"242\">Release evidence</text><text class=\"cs-sub\" x=\"116\" y=\"263\">QoR · LEC · DFT-ready DRC</text></g><g class=\"cs-part\" data-k=\"base\" data-g=\"base\"><rect class=\"cs-box\" x=\"260\" y=\"108\" width=\"168\" height=\"122\" rx=\"10\"/><text class=\"cs-t\" x=\"344\" y=\"142\">Synthesis baseline package</text><text class=\"cs-sub\" x=\"344\" y=\"166\">One tag / one library corner</text><text class=\"cs-sub\" x=\"344\" y=\"188\">Netlist, constraints, reports together</text><text class=\"cs-sub\" x=\"344\" y=\"210\">Reproducible · traceable</text></g><line class=\"cs-arr\" x1=\"208\" y1=\"89\" x2=\"258\" y2=\"140\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"208\" y1=\"169\" x2=\"258\" y2=\"169\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"208\" y1=\"249\" x2=\"258\" y2=\"198\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"dft\" data-g=\"dft\"><rect class=\"cs-box\" x=\"476\" y=\"64\" width=\"220\" height=\"116\" rx=\"10\"/><text class=\"cs-t\" x=\"586\" y=\"94\">DFT</text><text class=\"cs-sub\" x=\"586\" y=\"118\">Scan / compression / MBIST / OCC</text><text class=\"cs-sub\" x=\"586\" y=\"140\">ATPG + coverage + LEC/DRC</text><text class=\"cs-sub\" x=\"586\" y=\"162\">Create backend-start version</text></g><line class=\"cs-arr\" x1=\"428\" y1=\"146\" x2=\"474\" y2=\"122\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"pd\" data-g=\"pd\"><rect class=\"cs-box\" x=\"476\" y=\"220\" width=\"220\" height=\"100\" rx=\"10\"/><text class=\"cs-t\" x=\"586\" y=\"250\">⑧ Physical design</text><text class=\"cs-sub\" x=\"586\" y=\"274\">DFT-enabled netlist + test SDC</text><text class=\"cs-sub\" x=\"586\" y=\"296\">ScanDEF / chain map / macro constraints</text></g><line class=\"cs-arr\" x1=\"586\" y1=\"180\" x2=\"586\" y2=\"218\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"476,270 442,270 442,230 414,230\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"255\" y=\"304\">DFT/backend issue → repair controlled baseline and re-prove</text><text class=\"cs-note\" x=\"24\" y=\"354\">Rule: netlist, SDC/UPF, libraries, QoR, LEC, and DFT definitions must match</text><text class=\"cs-note\" x=\"24\" y=\"382\">Boundary: v1 netlist, DFT/backend package, and scripts are unpublished</text></svg>",
+  "legend": [
+    {
+      "k": "net",
+      "name": "Gate-level netlist",
+      "desc": "The core stage-⑦ output maps RTL to target standard cells and connectivity. It is the common logical baseline for DFT insertion and physical-design iteration."
+    },
+    {
+      "k": "intent",
+      "name": "Constraints, power intent, and models",
+      "desc": "SDC/UPF, Liberty, scan cells, memory test models, and black-box definitions must match the netlist version. DFT and backend must continue from the same functional intent."
+    },
+    {
+      "k": "proof",
+      "name": "QoR / LEC / DFT-ready evidence",
+      "desc": "Timing, area, and power reports justify release; LEC proves function unchanged; DFT-ready DRC shows clocks, resets, black boxes, and macro interfaces are suitable for the main insertion and early ATPG window."
+    },
+    {
+      "k": "base",
+      "name": "Traceable synthesis baseline package",
+      "desc": "Tag netlist, constraints, libraries, reports, and version manifest together. Every later DFT insertion, ECO, or rollback can then identify its parent version, changes, and still-valid evidence."
+    },
+    {
+      "k": "dft",
+      "name": "Main DFT implementation window",
+      "desc": "On the synthesis baseline, insert scan, compression, MBIST/OCC, and other structures; start ATPG, fault coverage, connectivity, and functional-equivalence closure; then produce a test-enabled backend version."
+    },
+    {
+      "k": "pd",
+      "name": "Physical-design / DFT iteration",
+      "desc": "Stage ⑧ starts with the DFT-enabled netlist, functional/test SDC, ScanDEF or chain maps, and macro constraints, then feeds scan reorder, congestion, timing, power, and ECO information back to the controlled baseline."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "net",
+        "intent"
+      ],
+      "cap": "① Freeze netlist and complete intent together: gate netlist, SDC/UPF, process libraries, scan cells, and memory macro models must be version-consistent."
+    },
+    {
+      "keys": [
+        "proof"
+      ],
+      "cap": "② Enforce synthesis exit gates: QoR meets targets, LEC is fully equivalent, and DFT-ready DRC has no blocking issue before test insertion."
+    },
+    {
+      "keys": [
+        "base"
+      ],
+      "cap": "③ Apply one tag to netlist, constraints, libraries, reports, waivers, and version manifest, creating a reproducible, auditable synthesis baseline."
+    },
+    {
+      "keys": [
+        "dft"
+      ],
+      "cap": "④ Enter the main DFT window: insert scan/compression/MBIST/OCC and begin ATPG, fault coverage, connectivity, and LEC, preserving evidence for every change."
+    },
+    {
+      "keys": [
+        "pd"
+      ],
+      "cap": "⑤ Start physical design from the test-enabled version with test SDC and ScanDEF/chain data, then return physical feedback to the controlled baseline."
+    }
+  ],
+  "before": [
+    "<b>Define the handoff contract</b>: Specify required netlist, SDC/UPF, libraries/models, QoR, LEC, DFT-ready DRC, version manifest, waivers, and naming conventions.",
+    "<b>Set release thresholds</b>: Define acceptable WNS/TNS, area/power, unconstrained paths, LEC, and DFT-ready status plus who may approve exceptions before the final build.",
+    "<b>Align tool and library versions</b>: Synthesis, DFT, and physical teams must agree on PDK, Liberty, macro models, and scripts so identical names never hide different revisions.",
+    "<b>Disclosure boundary</b>: TPU v1's 256×256 array, 24 MiB Unified Buffer, 4 MiB accumulators, 700 MHz, and 28 nm are public. Its real handoff package and DFT data are not."
+  ],
+  "during": [
+    "<b>Export the gate netlist</b>: Ensure hierarchy, black boxes, macro instances, and naming are stable for downstream tools and clear unresolved references, latches, loops, and other blockers.",
+    "<b>Synchronize constraints and power intent</b>: Deliver the exact SDC/UPF used for this synthesis run, plus clock, reset, test-port, and macro-test definitions—not a separately reconstructed copy.",
+    "<b>Build the evidence package</b>: QoR reports timing/area/power, LEC proves RTL equivalence, and DFT-ready DRC confirms no structural obstacle at the test entry.",
+    "<b>Freeze one tag</b>: Record manifest/hash data for netlist, constraints, libraries, report set, script commit, and waivers so anyone can reproduce the baseline.",
+    "<b>Bridge DFT and backend through the shared baseline</b>: First produce a version with initial DFT insertion and preliminary coverage for physical startup, then continuously update netlist, chains, test constraints, and patterns under physical feedback."
+  ],
+  "result": [
+    {
+      "label": "Synthesis baseline",
+      "value": "28 nm gate netlist + matching RTL/LEC reference + manifest/tag"
+    },
+    {
+      "label": "Constraints and intent",
+      "value": "Functional SDC, UPF, clock/reset/test ports, libraries, and macro models"
+    },
+    {
+      "label": "Release evidence",
+      "value": "Timing/area/power QoR + LEC + DFT-ready DRC + waivers"
+    },
+    {
+      "label": "DFT input",
+      "value": "Stable netlist and complete test models for scan/compression/MBIST/OCC insertion"
+    },
+    {
+      "label": "Backend-start baseline",
+      "value": "Initial DFT netlist + test-mode SDC + ScanDEF/chain map + macro constraints; iterated with physical feedback"
+    }
+  ],
+  "after": [
+    "<b>Re-prove every DFT netlist change</b>: After insertion, test points, or ECO, rerun functional-mode LEC, DFT DRC, ATPG, and coverage. Old evidence does not carry automatically.",
+    "<b>Sign back backend reorder and ECO</b>: After chain, clock, or netlist changes, update ScanDEF/chain maps and revalidate final patterns and test-mode STA.",
+    "<b>Maintain two-way iteration</b>: Return concrete congestion, timing, test-power, or controllability reports to synthesis/RTL for controlled repair instead of hidden downstream patches.",
+    "<b>Archive a reproducible baseline</b>: Retain scripts, logs, library revisions, manifests, reports, and approvals for ECO, re-spin, and post-silicon diagnosis.",
+    "<b>Preserve honest claims</b>: This case describes standard large-digital-chip handoff, not the specific tools, scan architecture, or release metrics used by TPU v1."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (public TPU v1 structure, process, and frequency are context only. Versioned synthesis baselines, concentrated post-synthesis DFT insertion and early ATPG, and two-way physical-design iteration are standard EDA/DFT practice, not disclosure of private v1 netlists, scripts, scan architecture, or coverage.)"
+}

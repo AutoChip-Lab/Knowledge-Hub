@@ -1,0 +1,115 @@
+{
+  "secNum": "3.3",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · Package Architecture Selection: Wire Bond, Flip Chip, 2.5D, or 3D for a High-I/O Large Die",
+  "oneLine": "Package selection answers how a bare die connects to the outside world. Wire bonding mounts the die face-up and connects perimeter pads to the substrate with fine gold or copper wires; it is economical but pin-limited. Flip-chip assembly turns the die face-down and connects an area array of C4 bumps directly to the substrate, providing far more I/O, shorter interconnects, and stronger power delivery. A 2.5D package places logic and HBM side by side on a silicon interposer for an extremely wide, short memory interface. A 3D package stacks die vertically and connects them through TSVs for the greatest density and shortest links. TPU v1 must power 65,536 MACs, expose substantial I/O, and operate as a PCIe 3.0 accelerator, placing this class of product in the flip-chip category: a full area-array interconnect can supply the required pins and current. 2.5D and 3D are higher-integration options for later co-packaged or stacked memory. Moving from flip chip to 2.5D to 3D increases I/O, bandwidth, and integration, but also raises process, thermal, cost, yield, and test complexity. The selection rule is to use the least-complex architecture that satisfies the requirement and move upward only when pins, bandwidth, power delivery, or density reaches a limit.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 420\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"24\">Four package architectures: how the die connects outward, from low-cost wire bond to high-density 3D</text><g class=\"cs-part\" data-k=\"wb\" data-g=\"wb\"><rect class=\"cs-box\" x=\"34\" y=\"44\" width=\"150\" height=\"150\" rx=\"8\"/><text class=\"cs-t\" x=\"109\" y=\"66\">① Wire bond</text><rect class=\"cs-cell\" x=\"74\" y=\"86\" width=\"70\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"109\" y=\"105\">Die (face up)</text><rect class=\"cs-cell\" x=\"62\" y=\"120\" width=\"94\" height=\"16\" rx=\"3\"/><text class=\"cs-sub\" x=\"109\" y=\"156\">Fine Au/Cu wires from edge pads</text><text class=\"cs-sub\" x=\"109\" y=\"172\">Low I/O · low cost</text><polyline class=\"cs-arr\" points=\"80,86 64,124\" fill=\"none\" stroke-dasharray=\"3 3\"/><polyline class=\"cs-arr\" points=\"138,86 154,124\" fill=\"none\" stroke-dasharray=\"3 3\"/></g><g class=\"cs-part\" data-k=\"fc\" data-g=\"fc\"><rect class=\"cs-box\" x=\"196\" y=\"44\" width=\"160\" height=\"150\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"276\" y=\"66\">② Flip chip</text><rect class=\"cs-cell\" x=\"224\" y=\"80\" width=\"104\" height=\"26\" rx=\"4\"/><text class=\"cs-cellt\" x=\"276\" y=\"98\">Die (face down)</text><rect class=\"cs-cell\" x=\"224\" y=\"122\" width=\"104\" height=\"16\" rx=\"3\"/><text class=\"cs-sub\" x=\"276\" y=\"156\">C4 area array to substrate</text><text class=\"cs-sub\" x=\"276\" y=\"172\">High I/O · short links · strong power</text><line class=\"cs-arr\" x1=\"240\" y1=\"106\" x2=\"240\" y2=\"120\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"276\" y1=\"106\" x2=\"276\" y2=\"120\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"312\" y1=\"106\" x2=\"312\" y2=\"120\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-k=\"d25\" data-g=\"d25\"><rect class=\"cs-box\" x=\"368\" y=\"44\" width=\"160\" height=\"150\" rx=\"8\"/><text class=\"cs-t\" x=\"448\" y=\"66\">③ 2.5D integration</text><rect class=\"cs-cell\" x=\"384\" y=\"80\" width=\"62\" height=\"26\" rx=\"4\"/><text class=\"cs-cellt\" x=\"415\" y=\"98\">Logic die</text><rect class=\"cs-cell\" x=\"452\" y=\"80\" width=\"62\" height=\"26\" rx=\"4\"/><text class=\"cs-cellt\" x=\"483\" y=\"98\">HBM</text><rect class=\"cs-cell\" x=\"384\" y=\"118\" width=\"130\" height=\"16\" rx=\"3\"/><text class=\"cs-sub\" x=\"448\" y=\"152\">Silicon interposer connects die</text><text class=\"cs-sub\" x=\"448\" y=\"168\">Wide, short inter-die bus</text></g><g class=\"cs-part\" data-k=\"d3d\" data-g=\"d3d\"><rect class=\"cs-box\" x=\"540\" y=\"44\" width=\"146\" height=\"150\" rx=\"8\"/><text class=\"cs-t\" x=\"613\" y=\"66\">④ 3D stacking</text><rect class=\"cs-cell\" x=\"576\" y=\"80\" width=\"74\" height=\"22\" rx=\"4\"/><text class=\"cs-cellt\" x=\"613\" y=\"96\">Upper die</text><rect class=\"cs-cell\" x=\"576\" y=\"106\" width=\"74\" height=\"22\" rx=\"4\"/><text class=\"cs-cellt\" x=\"613\" y=\"122\">Lower die</text><text class=\"cs-sub\" x=\"613\" y=\"152\">Vertical TSV connections</text><text class=\"cs-sub\" x=\"613\" y=\"168\">Stacked die · shortest links</text><line class=\"cs-arr\" x1=\"600\" y1=\"102\" x2=\"600\" y2=\"106\"/><line class=\"cs-arr\" x1=\"626\" y1=\"102\" x2=\"626\" y2=\"106\"/></g><g class=\"cs-part\" data-k=\"tpu\" data-g=\"tpu\"><rect class=\"cs-box\" x=\"34\" y=\"214\" width=\"652\" height=\"68\" rx=\"8\" fill=\"#dcfce7\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"360\" y=\"240\">TPU v1: high performance, high I/O, strong power delivery → flip-chip-class package with C4 area array</text><text class=\"cs-sub\" x=\"360\" y=\"262\">Face-down area-array bumps provide far more pins and current than wire bonds for a PCIe 3.0 accelerator</text><text class=\"cs-sub\" x=\"360\" y=\"276\">2.5D/3D add co-packaged or stacked memory; see ③§3.14 for chiplet implementation</text></g><line class=\"cs-arr\" x1=\"276\" y1=\"194\" x2=\"276\" y2=\"212\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"pick\" data-g=\"pick\"><rect class=\"cs-box\" x=\"34\" y=\"300\" width=\"652\" height=\"50\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"322\">Selection rule: choose the simplest sufficient option; upgrade only at a pin or bandwidth limit</text><text class=\"cs-sub\" x=\"360\" y=\"340\">Low I/O→wire bond · high I/O/power→flip chip · memory bandwidth→2.5D · density/shortest links→3D</text></g><text class=\"cs-note\" x=\"40\" y=\"376\">Capability rises toward 3D, but so do process, thermal, cost, yield, and test complexity</text><text class=\"cs-note\" x=\"40\" y=\"398\">Disclosure: package cross-sections are standard practice; TPU v1's bump pitch, substrate, OSAT, and yield are not public</text></svg>",
+  "legend": [
+    {
+      "k": "wb",
+      "name": "① Wire-Bond Package",
+      "desc": "The most established and economical architecture mounts the die face-up and connects perimeter bond pads to the substrate with individual fine gold or copper wires. It benefits from mature processes, low cost, and modest equipment requirements. Its limits are equally fundamental: pads occupy only the die perimeter, so connection count is constrained, while long thin wires add resistance and inductance that degrade power delivery and high-speed signals. Wire bonding suits low-I/O, cost-sensitive products, but cannot efficiently support a high-I/O accelerator that must deliver substantial current to a large compute array."
+    },
+    {
+      "k": "fc",
+      "name": "② Flip-Chip Package (TPU v1 Class)",
+      "desc": "The mainstream high-performance approach turns the die face-down and connects an area array of C4 bumps—Controlled Collapse Chip Connection—directly to the package substrate through reflow. Connections cover the full die surface rather than only its perimeter, enabling thousands or more I/O and power connections. Very short paths reduce resistance and inductance, improving power integrity and high-speed signaling. A TPU v1-class device must supply a 256×256 = 65,536-MAC array, expose substantial I/O, and support a PCIe 3.0 accelerator card, making flip chip the appropriate architectural category."
+    },
+    {
+      "k": "d25",
+      "name": "③ 2.5D Integration (Silicon Interposer)",
+      "desc": "Multiple die are placed side by side on a silicon interposer. Fine-pitch microbumps and dense interposer routing connect a logic die to nearby HBM stacks through an extremely wide, short bus, delivering far more memory bandwidth than board-level DDR. Conceptually, 2.5D adds a silicon bridge above the flip-chip level to carry many local inter-die connections. It increases interposer, HBM, assembly, and test cost. TPU v1 used off-package DDR3; 2.5D is a later-generation direction discussed in ③§3.14 rather than a claim about TPU v1."
+    },
+    {
+      "k": "d3d",
+      "name": "④ 3D Integration (Vertical TSV Stacking)",
+      "desc": "The highest-density architecture uses through-silicon vias to carry metal connections vertically through silicon, stacking die directly above one another. Interconnect distance collapses from a lateral chip-scale route to a path through a silicon layer, improving density, latency, and energy. HBM itself is an example of TSV-stacked DRAM. The costs are compounded heat from stacked layers, difficult TSV processing, and more complex post-stack test and yield management. It extends 2.5D integration into the vertical dimension."
+    },
+    {
+      "k": "pick",
+      "name": "Selection Logic: Use the Simplest Sufficient Option",
+      "desc": "These options are not a ranking in which the most advanced is always best. Use wire bond for low I/O and low cost; flip chip for high I/O and strong power delivery such as TPU v1; 2.5D when nearby memory requires extreme bandwidth; and 3D for maximum density and minimum interconnect length. Each step increases capability while also increasing process, thermal, cost, yield, and test complexity. The requirement that reaches its physical or economic limit—pin count, bandwidth, current, density, or thermal budget—determines when to move up."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "wb"
+      ],
+      "cap": "① Start with low-cost wire bonding: mount the die face-up and connect perimeter pads to the substrate with fine Au/Cu wires. It is mature and inexpensive, but perimeter-only pad count and long inductive wires limit I/O and power delivery."
+    },
+    {
+      "keys": [
+        "fc",
+        "tpu"
+      ],
+      "cap": "② TPU v1 belongs in the flip-chip class: turn the die face-down and connect a full C4 bump array directly to the substrate. High connection density, short paths, and strong power delivery support the 256×256 array and a PCIe 3.0 accelerator."
+    },
+    {
+      "keys": [
+        "d25"
+      ],
+      "cap": "③ If local memory bandwidth becomes the limiting requirement, move to 2.5D: place logic and HBM side by side on a silicon interposer and connect them with an extremely wide, short bus. This is a later-generation direction, not a TPU v1 implementation claim."
+    },
+    {
+      "keys": [
+        "d3d"
+      ],
+      "cap": "④ For maximum density and minimum link length, move to 3D: stack die vertically and connect them through TSVs. Capability is highest, but thermal, process, test, and yield challenges also peak."
+    },
+    {
+      "keys": [
+        "pick"
+      ],
+      "cap": "⑤ Governing rule: choose the least-complex package that meets the product need. Use wire bond for low I/O, flip chip for high I/O and power, 2.5D for local memory bandwidth, and 3D for maximum density; upgrade only when a requirement reaches its limit."
+    }
+  ],
+  "before": [
+    "<b>Quantify the die's nonnegotiable package requirements</b>: Determine I/O and pin count, external bandwidth, current needed by the 256×256 array (§3.3), thermal budget (§3.9), and maximum package cost. These requirements place the product in one of the four architecture classes.",
+    "<b>Resolve the architecture choices</b>: Decide between wire bond and flip chip, whether memory must be co-packaged in 2.5D, and whether vertical TSV stacking is justified. Select the substrate, bump or ball pitch, package dimensions, and pinout, including compatibility with the TPU's PCIe 3.0 card.",
+    "<b>Collect the required inputs</b>: Use the chip I/O list, power-distribution requirements, TPU v1's 28 nm and ≤331 mm² die context, a thermal path for 28–40 W, interposer and HBM cost and supply data if 2.5D is considered, and the OSAT's qualified process capabilities.",
+    "<b>Enforce architecture constraints</b>: Wire bonding has physical pin-count and current limits; flip chip requires an area-array pad and redistribution design; 2.5D and 3D add cost, thermal difficulty, and manufacturing, test, and yield complexity. More advanced packaging is not automatically the better choice."
+  ],
+  "during": [
+    "<b>Advance through the four classes only as requirements demand</b>: From wire bond to flip chip to 2.5D to 3D, I/O, bandwidth, and integration increase, but process difficulty, cost, thermal risk, test effort, and yield exposure rise as well. Begin with the least expensive sufficient option and move upward only when pins, bandwidth, current, or density reaches a limit.",
+    "<b>Wire bond is economical but connects fewer, longer paths</b>: The die remains face-up while fine Au/Cu wires connect perimeter pads to the substrate. Perimeter pad count is limited, and the long, thin conductors add resistance and inductance. The method suits low-I/O products but not a large, high-current accelerator.",
+    "<b>Flip chip uses a full bump array; TPU v1 falls in this class</b>: Turning the die face-down allows an area array of C4 bumps to reflow directly onto the substrate. Connections can number in the thousands, paths are short, and power and signal integrity improve. Supplying 65,536 MACs and building a PCIe accelerator are characteristic flip-chip requirements.",
+    "<b>2.5D adds a silicon interposer for co-packaged memory</b>: Logic and HBM sit side by side on the interposer, whose dense short routes form a wide local memory bus and can increase bandwidth by roughly an order of magnitude over board-level DDR. Interposer, HBM, assembly, and test costs increase. TPU v1 used off-package DDR3; 2.5D is a later-generation direction.",
+    "<b>3D uses TSVs to stack die vertically</b>: Metal-filled through-silicon vias connect upper and lower die with the shortest and densest paths. HBM demonstrates this stacked-DRAM technique. Stacked heat, TSV fabrication, and test and yield management become much harder, making 3D the most integrated but most demanding option.",
+    "<b>Disclosure boundary</b>: Wire-bond, flip-chip, 2.5D, and 3D cross-sections, C4 bumps, silicon interposers, and TSVs are standard packaging practices for high-I/O accelerators. TPU v1 is publicly a high-performance PCIe 3.0 accelerator, supporting the qualitative flip-chip-class conclusion, but its substrate, bump and ball pitch, OSAT, package process, and yield are not public. No TPU-specific package numbers are asserted."
+  ],
+  "result": [
+    {
+      "label": "TPU v1 Package Class",
+      "value": "Flip-chip class, using an area array of C4 bumps to connect the die to a substrate for a PCIe 3.0 accelerator card"
+    },
+    {
+      "label": "Why Flip Chip",
+      "value": "High performance, substantial I/O, and strong power delivery for a 256×256 = 65,536-MAC array"
+    },
+    {
+      "label": "Four-Class Progression",
+      "value": "Low-cost wire bond → area-array flip chip → 2.5D co-packaged memory → vertically stacked 3D TSV integration"
+    },
+    {
+      "label": "Upgrade Direction",
+      "value": "I/O, bandwidth, and integration increase toward 3D, together with process, thermal, cost, yield, and test complexity"
+    },
+    {
+      "label": "Role of 2.5D / 3D",
+      "value": "Higher-integration paths for co-packaging or stacking HBM and related components in later generations; see ③§3.14"
+    },
+    {
+      "label": "Selection Rule",
+      "value": "Use the least-complex sufficient architecture; move upward only when pin count, bandwidth, current, or density reaches its limit"
+    }
+  ],
+  "after": [
+    "<b>Verify that the selected package meets the requirements</b>: Confirm that the flip-chip bump count covers every TPU I/O and power connection, signal and power integrity close, package thermal resistance supports 28–40 W, and dimensions and pinout align with the PCIe card. Freeze the package only after all checks pass.",
+    "<b>Propagate constraints into package design and OSAT execution</b>: Deliver bump and redistribution-layer placement, substrate stack-up, and ball-map requirements to package design, and provide flip-chip reflow, underfill, post-package reliability, and test requirements to the OSAT so the solution is manufacturable and testable.",
+    "<b>If adopting 2.5D or 3D, add a KGD strategy before assembly</b>: Every constituent die must be established as a known-good die before co-packaging or stacking; otherwise one bad die can destroy the yield of the complete package. Coordinate KGD coverage and post-stack test requirements with DFT. After packaging, passing units are qualified devices rather than KGD.",
+    "<b>Preserve an upgrade path</b>: If a later generation requires substantially more memory bandwidth, evaluate the cost, thermal, yield, supply, and test consequences of moving from flip chip to a 2.5D HBM interposer during architecture definition rather than discovering them late.",
+    "<b>Record the evidence and disclosure boundary</b>: Preserve the I/O, current, thermal, and cost rationale for the package class and the basis for identifying TPU v1 as flip-chip class. Clearly distinguish public TPU characteristics from unpublished implementation details, which must not be invented."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (wire-bond, flip-chip, 2.5D, and 3D package cross-sections, C4 bumps, silicon interposers, and TSVs are standard packaging practices; TPU v1 is publicly described as a high-performance, high-I/O PCIe 3.0 accelerator, supporting the qualitative flip-chip-class selection, while its bump pitch, substrate, OSAT, package process, and yield are not disclosed and no TPU-specific package numbers are asserted)"
+}

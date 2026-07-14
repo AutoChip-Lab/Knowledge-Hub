@@ -1,0 +1,121 @@
+{
+ "secNum": "3.8",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Parasitic Extraction and Signal Integrity: SPEF RC and Crosstalk Verify 700 MHz on the Routed Layout",
+ "oneLine": "After routing, every wire has an actual layer, length, and spacing. Extraction engines such as StarRC or Quantus calculate resistance R, capacitance C, and coupling capacitance Cc from layout geometry and write SPEF for accurate STA. Signal-integrity analysis then models crosstalk: a switching aggressor couples through Cc into an adjacent victim, creating noise glitches or delta-delay. Only STA with real RC and crosstalk can confirm that TPU’s 700 MHz (about 1.43 ns) holds in physical silicon rather than only under synthesis estimates.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 408\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"26\">Extraction: routed geometry → real RC → SPEF → accurate timing; SI analyzes aggressor/victim crosstalk</text><g class=\"cs-part\" data-k=\"layout\" data-g=\"layout\"><rect class=\"cs-box\" x=\"24\" y=\"52\" width=\"190\" height=\"120\" rx=\"8\"/><text class=\"cs-t\" x=\"119\" y=\"78\">Routed layout</text><text class=\"cs-sub\" x=\"119\" y=\"96\">routed layout (geometry)</text><g class=\"cs-part\" data-k=\"wire\" data-g=\"wire\"><rect class=\"cs-cell\" x=\"40\" y=\"108\" width=\"158\" height=\"20\"/><text class=\"cs-cellt\" x=\"119\" y=\"122\">Adjacent systolic-array MAC nets</text></g><g class=\"cs-part\" data-k=\"bus\" data-g=\"bus\"><rect class=\"cs-cell\" x=\"40\" y=\"134\" width=\"158\" height=\"20\"/><text class=\"cs-cellt\" x=\"119\" y=\"148\">UB↔array long buses</text></g><text class=\"cs-sub\" x=\"119\" y=\"166\">Actual layer / length / spacing</text></g><line class=\"cs-arr\" x1=\"214\" y1=\"112\" x2=\"276\" y2=\"112\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"220\" y=\"104\">Extract</text><g class=\"cs-part\" data-k=\"extract\" data-g=\"extract\"><rect class=\"cs-box\" x=\"280\" y=\"52\" width=\"180\" height=\"120\" rx=\"8\"/><text class=\"cs-t\" x=\"370\" y=\"78\">RC extraction engine</text><text class=\"cs-sub\" x=\"370\" y=\"96\">StarRC / Quantus (illustrative)</text><g class=\"cs-part\" data-k=\"r\" data-g=\"r\"><rect class=\"cs-cell\" x=\"296\" y=\"108\" width=\"70\" height=\"20\"/><text class=\"cs-cellt\" x=\"331\" y=\"122\">Wire resistance R</text></g><g class=\"cs-part\" data-k=\"c\" data-g=\"c\"><rect class=\"cs-cell\" x=\"374\" y=\"108\" width=\"70\" height=\"20\"/><text class=\"cs-cellt\" x=\"409\" y=\"122\">Capacitance C</text></g><text class=\"cs-sub\" x=\"370\" y=\"148\">Ground C + coupling Cc</text><text class=\"cs-sub\" x=\"370\" y=\"166\">Use process RC technology file</text></g><line class=\"cs-arr\" x1=\"460\" y1=\"112\" x2=\"522\" y2=\"112\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"spef\" data-g=\"spef\"><rect class=\"cs-box\" x=\"526\" y=\"52\" width=\"170\" height=\"120\" rx=\"8\"/><text class=\"cs-t\" x=\"611\" y=\"78\">SPEF file</text><text class=\"cs-sub\" x=\"611\" y=\"98\">Real RC for every net</text><text class=\"cs-sub\" x=\"611\" y=\"118\">Includes coupling Cc</text><text class=\"cs-sub\" x=\"611\" y=\"146\">→ Feed STA for</text><text class=\"cs-sub\" x=\"611\" y=\"164\">accurate timing</text></g><g class=\"cs-part\" data-k=\"si\" data-g=\"si\"><rect class=\"cs-box\" x=\"24\" y=\"206\" width=\"430\" height=\"130\" rx=\"8\"/><text class=\"cs-t\" x=\"239\" y=\"232\">Signal integrity (SI): crosstalk</text><g class=\"cs-part\" data-k=\"agg\" data-g=\"agg\"><rect class=\"cs-cell\" x=\"44\" y=\"250\" width=\"170\" height=\"34\"/><text class=\"cs-cellt\" x=\"129\" y=\"264\">Aggressor</text><text class=\"cs-cellt\" x=\"129\" y=\"278\">Fast switching</text></g><g class=\"cs-part\" data-k=\"vic\" data-g=\"vic\"><rect class=\"cs-cell\" x=\"44\" y=\"294\" width=\"170\" height=\"34\"/><text class=\"cs-cellt\" x=\"129\" y=\"308\">Victim</text><text class=\"cs-cellt\" x=\"129\" y=\"322\">Coupled interference</text></g><line class=\"cs-arr\" x1=\"214\" y1=\"277\" x2=\"214\" y2=\"305\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"232\" y=\"266\">Coupling Cc injects</text><text class=\"cs-note\" x=\"232\" y=\"284\">aggressor transition into</text><text class=\"cs-note\" x=\"232\" y=\"302\">victim: noise glitch / delay</text><text class=\"cs-note\" x=\"232\" y=\"320\">Slows or speeds (delta-delay)</text></g><line class=\"cs-arr\" x1=\"370\" y1=\"172\" x2=\"280\" y2=\"204\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><g class=\"cs-part\" data-k=\"close\" data-g=\"close\"><rect class=\"cs-box\" x=\"476\" y=\"206\" width=\"220\" height=\"130\" rx=\"8\"/><text class=\"cs-t\" x=\"586\" y=\"232\">SI-aware timing sign-off</text><text class=\"cs-sub\" x=\"586\" y=\"256\">Real RC + crosstalk delta</text><text class=\"cs-sub\" x=\"586\" y=\"276\">→ Verify 700 MHz (1.43 ns)</text><text class=\"cs-sub\" x=\"586\" y=\"296\">with physical parasitics</text><text class=\"cs-sub\" x=\"586\" y=\"316\">Fail → repair in ECO (3.7)</text></g><line class=\"cs-arr\" x1=\"611\" y1=\"172\" x2=\"611\" y2=\"204\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"454\" y1=\"271\" x2=\"474\" y2=\"271\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"24\" y=\"360\">Flow: layout geometry → SPEF RC → timing with crosstalk delta; dense array nets and long buses determine silicon 700 MHz.</text><text class=\"cs-note\" x=\"24\" y=\"392\">Note: extraction/SPEF/aggressor-victim/SI sign-off are standard practice; TPU v1 layout/parasitic/SI reports are not public. Context: systolic array / UB / 700 MHz / 28 nm.</text></svg>",
+ "legend": [
+  {
+   "k": "layout",
+   "name": "Routed layout (geometric extraction input)",
+   "desc": "At 3.8, placement and routing are complete: cells have coordinates, and every wire has an actual layer, direction, length, and neighbor spacing. Extraction can now replace synthesis estimates with physical RC. TPU’s sensitive classes are dense neighboring MAC interconnect in the 256×256 array and long buses between the 24 MiB UB and array."
+  },
+  {
+   "k": "extract",
+   "name": "RC extraction engine (StarRC / Quantus class, illustrative)",
+   "desc": "The engine combines layout geometry with foundry RC technology files containing per-layer resistance and interlayer/lateral capacitance coefficients. It calculates wire R, ground C, and coupling Cc for every net. Fast approximate modes aid iteration; high-accuracy or field-solver modes support sign-off."
+  },
+  {
+   "k": "spef",
+   "name": "SPEF (real RC for every routed net)",
+   "desc": "Standard Parasitic Exchange Format records net-by-net R, C, and Cc. It replaces synthesis wire-delay estimates in STA with values derived from layout and is a core handoff to sign-off ⑨ for timing, power, and EM/IR."
+  },
+  {
+   "k": "si",
+   "name": "Signal integrity / crosstalk (aggressor affects victim)",
+   "desc": "Coupling capacitance transfers charge from a switching aggressor to a neighboring victim. A static victim may receive a noise glitch; a switching victim may be slowed or accelerated by delta-delay, changing arrival time. Dense array wiring and long parallel buses require explicit SI analysis."
+  },
+  {
+   "k": "close",
+   "name": "SI-aware timing sign-off (verify 700 MHz)",
+   "desc": "STA combines real SPEF RC with crosstalk delta-delay and verifies setup/hold at 700 MHz (about 1.43 ns). Any failure returns to 3.7 ECO for spacing, shielding, rerouting, drive, or buffer changes, followed by re-extraction and re-sign-off."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "layout",
+    "wire",
+    "bus"
+   ],
+   "cap": "① Use the routed layout, where cells and wires have real coordinates, layers, lengths, and spacing. Focus on dense adjacent MAC nets and long UB↔array data buses."
+  },
+  {
+   "keys": [
+    "extract",
+    "r",
+    "c"
+   ],
+   "cap": "② Extract physical RC: StarRC/Quantus-class engines combine geometry with process RC technology files to calculate wire resistance R, ground capacitance C, and coupling capacitance Cc for every net."
+  },
+  {
+   "keys": [
+    "spef"
+   ],
+   "cap": "③ Generate SPEF containing real RC and Cc for each net, replacing synthesis estimates and feeding accurate STA."
+  },
+  {
+   "keys": [
+    "si",
+    "agg",
+    "vic"
+   ],
+   "cap": "④ Analyze SI: a fast aggressor couples through Cc into a neighboring victim, creating a noise glitch or crosstalk delta-delay that accelerates or delays arrival."
+  },
+  {
+   "keys": [
+    "close"
+   ],
+   "cap": "⑤ Run SI-aware sign-off using real RC + crosstalk delta and confirm 700 MHz (about 1.43 ns) under physical parasitics. If it fails, return to 3.7 ECO, re-extract, and rerun sign-off."
+  }
+ ],
+ "before": [
+  "<b>Obtain process RC technology files</b>: Extraction requires foundry-calibrated 28 nm RC decks for each metal layer and interlayer/lateral capacitance. These are the physical basis for R/C calculation; TPU’s specific process deck is not public.",
+  "<b>Choose extraction corners and accuracy</b>: Parasitics vary with process, voltage, and temperature. Define RC-best, RC-worst, and typical cases and select high-accuracy or field-solver modes for sign-off while using faster approximations during routing iteration.",
+  "<b>Define SI scope and thresholds</b>: Select networks for crosstalk analysis, noise-glitch and delta-delay limits, and protection priority for clocks and long buses. Explicit scope is increasingly important as coupling grows.",
+  "<b>Enable routing-stage SI prevention</b>: Allow NDR for width/spacing, shielding on sensitive nets, and limits on parallel run length. Preventive routing reduces violations discovered after extraction.",
+  "<b>Evidence boundary</b>: RC extraction, SPEF, aggressor-victim crosstalk, and SI-aware STA are standard back-end EDA practice. TPU v1 does not publish layout, extraction decks, SPEF, or SI reports. Disclosed 256×256 array, 24 MiB UB, long buses, 700 MHz, and 28 nm provide only the extraction target; settings are illustrative."
+ ],
+ "during": [
+  "<b>Extraction reads layout geometry, not netlist estimates</b>: Unlike synthesis wire-load models, extraction at 3.8 uses actual segment layer, length, width, and spacing from the routed layout. This step converts estimated timing into physical accounting.",
+  "<b>Coupling capacitance Cc drives both delay and crosstalk</b>: Cc changes the victim’s effective capacitance depending on neighbor switching and also carries aggressor transitions into the victim. The same extracted quantity affects STA and SI.",
+  "<b>Evaluate two aggressor/victim failure modes separately</b>: For a quiet victim, check whether coupled noise can trigger downstream logic. For a switching victim, calculate acceleration or delay and determine whether setup or hold is violated.",
+  "<b>Dense arrays and long buses are SI hotspots</b>: Neighboring MAC nets in a 256×256 array are dense and often parallel; UB↔array buses are both long and parallel with large baseline R/C. These physical structures are most likely to threaten 700 MHz and deserve extraction/SI priority.",
+  "<b>Feed SPEF into SI-aware STA</b>: Load real RC and add crosstalk delta-delay so critical-path delay reflects physical interconnect plus neighbor activity. Use that timing to judge whether 700 MHz≈1.43 ns still meets setup and hold.",
+  "<b>Evidence boundary</b>: Extraction corners, Cc/crosstalk models, and SPEF→STA flow follow standard industry practice. TPU v1 does not disclose its deck, SPEF, crosstalk violations, or SI reports. The illustrative 700 MHz≈1.43 ns check uses disclosed structural context; no private parasitic values are implied."
+ ],
+ "result": [
+  {
+   "label": "Core extraction product",
+   "value": "SPEF: real wire R + ground C + coupling Cc for every net, replacing synthesis wire-delay estimates"
+  },
+  {
+   "label": "Extraction tools (illustrative)",
+   "value": "StarRC / Quantus-class engine + layout geometry + process RC technology files; high-accuracy/field-solver mode for sign-off"
+  },
+  {
+   "label": "Sensitive extracted structures",
+   "value": "Dense adjacent MAC interconnect in the array (crosstalk) and 24 MiB UB↔array long buses (large R/C, parallel runs)"
+  },
+  {
+   "label": "SI / crosstalk analysis",
+   "value": "Aggressor-victim model: noise glitch + crosstalk delta-delay (arrival accelerated/delayed), checked against thresholds"
+  },
+  {
+   "label": "SI-aware timing",
+   "value": "Real RC (SPEF) + crosstalk delta in STA; verify 700 MHz (about 1.43 ns) setup/hold (illustrative)"
+  },
+  {
+   "label": "Violation exit",
+   "value": "SI/timing failure → 3.7 ECO (NDR spacing, shielding, drive/buffer change) → re-extract → re-sign-off"
+  }
+ ],
+ "after": [
+  "<b>Review SI-aware sign-off timing</b>: Rerun STA with real RC and crosstalk delta. List any negative setup/hold slack at 700 MHz, especially on array and long-bus paths, for ECO.",
+  "<b>Review crosstalk violations</b>: Identify victims whose noise exceeds threshold or whose delay shifts excessively, trace their aggressors, and choose spacing, shielding, or aggressor slew/drive changes.",
+  "<b>Repair in 3.7 ECO and re-extract</b>: Post-route fixes change geometry and therefore parasitics. Reroute with spacing, add shields, or replace buffers/drivers, then generate a new SPEF and rerun sign-off; never change layout without recalculation.",
+  "<b>Verify multiple corners</b>: Extract and sign off RC/PVT best and worst combinations, confirming 700 MHz under every required physical corner rather than only typical.",
+  "<b>Hand SPEF to sign-off ⑨</b>: Deliver the converged netlist plus final SPEF for the strictest STA, power, EM/IR, and physical verification. Real extracted RC is the basis for predicting silicon timing and current."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the disclosed 256×256 systolic array, 24 MiB Unified Buffer, long buses, 700 MHz, and 28 nm provide the extraction target; RC extraction, SPEF, StarRC/Quantus, aggressor-victim crosstalk, and SI-aware STA are standard back-end EDA practice, and all diagrams/values are illustrative rather than public TPU v1 layout, deck, SPEF, or SI reports)"
+}

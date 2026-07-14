@@ -1,0 +1,120 @@
+{
+  "secNum": "3.5",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · The PPA Triangle: Recover Area and Leakage from Noncritical Paths after Timing Closes",
+  "oneLine": "Synthesis balances Power, Performance, and Area rather than optimizing one metric. Tight timing often costs larger cells and more power. TPU's regular 65,536-MAC array contains many short paths with positive slack at 700 MHz (1.43 ns), allowing synthesis to downsize cells or swap them to HVT after timing closes, reclaiming area and leakage without sacrificing frequency.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">PPA triangle: balance under 700 MHz</text><g class=\"cs-part\" data-k=\"timing\" data-g=\"timing\"><rect class=\"cs-box\" x=\"280\" y=\"44\" width=\"160\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"72\">Timing (Performance)</text><text class=\"cs-sub\" x=\"360\" y=\"90\">700 MHz → 1.43 ns period</text></g><g class=\"cs-part\" data-k=\"area\" data-g=\"area\"><rect class=\"cs-box\" x=\"40\" y=\"232\" width=\"190\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"135\" y=\"260\">Area</text><text class=\"cs-sub\" x=\"135\" y=\"278\">Cell area / die cost / 331 mm²</text></g><g class=\"cs-part\" data-k=\"power\" data-g=\"power\"><rect class=\"cs-box\" x=\"490\" y=\"232\" width=\"190\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"585\" y=\"260\">Power</text><text class=\"cs-sub\" x=\"585\" y=\"278\">Dynamic + leakage / 28–40 W</text></g><line class=\"cs-arr\" x1=\"320\" y1=\"108\" x2=\"150\" y2=\"228\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"150\" y1=\"228\" x2=\"320\" y2=\"108\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"400\" y1=\"108\" x2=\"572\" y2=\"228\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"572\" y1=\"228\" x2=\"400\" y2=\"108\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"230\" y1=\"264\" x2=\"486\" y2=\"264\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"490\" y1=\"270\" x2=\"234\" y2=\"270\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"218\" y=\"172\">Tighter timing</text><text class=\"cs-note\" x=\"218\" y=\"188\">→ often more area/power</text><text class=\"cs-note\" x=\"470\" y=\"172\">Lower area/power</text><text class=\"cs-note\" x=\"470\" y=\"188\">→ may reduce timing margin</text><g class=\"cs-part\" data-k=\"slack\" data-g=\"slack\"><rect class=\"cs-box\" x=\"245\" y=\"318\" width=\"230\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"344\">Array has positive slack</text><text class=\"cs-sub\" x=\"360\" y=\"364\">Short regular paths; many noncritical</text></g><polyline class=\"cs-arr\" points=\"360,318 360,114\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"reclaim\" data-g=\"reclaim\"><rect class=\"cs-box\" x=\"30\" y=\"318\" width=\"200\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"130\" y=\"342\">Recover noncritical paths</text><text class=\"cs-sub\" x=\"130\" y=\"362\">Downsize / swap to HVT</text></g><polyline class=\"cs-arr\" points=\"130,318 130,300\" fill=\"none\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"save\" data-g=\"save\"><rect class=\"cs-box\" x=\"490\" y=\"318\" width=\"200\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"590\" y=\"342\">Reduce area + leakage</text><text class=\"cs-sub\" x=\"590\" y=\"362\">Preserve 700 MHz timing</text></g><polyline class=\"cs-arr\" points=\"590,318 590,300\" fill=\"none\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"230,350 245,350\" fill=\"none\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"475,350 490,350\" fill=\"none\" marker-end=\"url(#csar)\"/></svg>",
+  "legend": [
+    {
+      "k": "timing",
+      "name": "Timing (Performance)—hard constraint",
+      "desc": "TPU v1 runs at 700 MHz, represented by an illustrative 1.43 ns synthesis period. Any negative setup slack means the design cannot sustain 700 MHz and ~92 TOPS. Timing therefore closes first; area and power optimize only within that boundary."
+    },
+    {
+      "k": "area",
+      "name": "Area—cost dimension",
+      "desc": "Total standard-cell area affects TPU v1's 331 mm² die, cost, and yield. Faster timing often requires larger-drive cells, increasing area. On paths with margin, downsizing recovers that cost."
+    },
+    {
+      "k": "power",
+      "name": "Power—dynamic + leakage",
+      "desc": "TPU v1's card operates at 28–40 W. Larger-drive and lower-Vt cells consume more dynamic power or leakage. Swapping relaxed paths to high-Vt cells substantially lowers leakage without affecting required performance."
+    },
+    {
+      "k": "slack",
+      "name": "Positive slack in the array",
+      "desc": "The systolic array uses regular nearest-neighbor links and shallow logic. Many paths have substantial positive slack at 700 MHz, meaning they run faster than required and can trade excess speed for area and power."
+    },
+    {
+      "k": "reclaim",
+      "name": "Recover noncritical paths (downsize / HVT)",
+      "desc": "On positive-slack paths, replace overpowered cells with smaller drive strengths and timing-insensitive cells with HVT equivalents. Multi-Vt optimization performs these swaps while requiring slack to remain nonnegative."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "timing",
+        "area",
+        "power"
+      ],
+      "cap": "① Recognize the PPA triangle: faster timing through larger or lower-Vt cells usually raises area and power; synthesis seeks a signoff-capable balance."
+    },
+    {
+      "keys": [
+        "timing"
+      ],
+      "cap": "② Fix the hard requirement: an illustrative 1.43 ns/700 MHz clock makes nonnegative slack the first priority."
+    },
+    {
+      "keys": [
+        "slack"
+      ],
+      "cap": "③ Identify surplus: regular short systolic-array paths often have positive slack and therefore excess speed available for recovery."
+    },
+    {
+      "keys": [
+        "slack",
+        "reclaim"
+      ],
+      "cap": "④ Recover area and leakage on noncritical paths by downsizing cells and swapping timing-insensitive logic to HVT from a multi-Vt library."
+    },
+    {
+      "keys": [
+        "reclaim",
+        "area",
+        "power"
+      ],
+      "cap": "⑤ Recompute timing after every recovery step and keep slack ≥0, preserving 700 MHz while reducing area and leakage."
+    }
+  ],
+  "before": [
+    "<b>Set PPA priorities and targets</b>: State which corner is mandatory and which are objectives. For a throughput TPU, 700 MHz is typically hard; area and power should be minimized only after timing is satisfied.",
+    "<b>Provide multi-Vt libraries</b>: Area and leakage recovery requires functionally equivalent SVT, HVT, and sometimes LVT cells. Without HVT variants, leakage cannot be traded against surplus timing.",
+    "<b>Write complete SDC timing intent</b>: Define the 700 MHz clock, I/O delays, and justified false/multicycle paths. Loose or incomplete constraints can falsely inflate slack and trigger overaggressive recovery.",
+    "<b>Set area and power budgets</b>: Supply set_max_area and leakage/dynamic optimization intent so the tool actively reclaims slack after timing closes rather than preserving unnecessary speed.",
+    "<b>Disclosure boundary</b>: Design Compiler/Genus/Yosys, SDC, Liberty/multi-Vt libraries, downsizing, and Vt swaps are standard EDA practices. TPU's array, UB, 700 MHz, 28 nm, and weight-stationary structure provide context; scripts and QoR are illustrative."
+  ],
+  "during": [
+    "<b>Close timing before recovering area and power</b>: First use required drive strength and Vt to make every path nonnegative at 700 MHz. Only then optimize relaxed paths. Reversing the order often prevents convergence.",
+    "<b>Separate critical from noncritical paths</b>: Near-zero-slack paths may require extra area/power, while positive-slack paths—common in the regular array—are recovery candidates. Treat each according to slack.",
+    "<b>Downsize to save area</b>: Replace an overpowered cell on a relaxed path with a smaller-drive version. Reduce size until timing approaches, but does not cross, the constraint.",
+    "<b>Swap to HVT to reduce leakage</b>: Replace SVT with slower, lower-leakage HVT on timing-insensitive paths. Keep fast SVT/LVT only where necessary; broad HVT use is a major leakage lever at 28 nm.",
+    "<b>Recompute timing and preserve margin</b>: Downsizing and HVT swaps consume positive slack. Keep slack ≥0 and reserve additional margin for backend parasitics and on-chip variation, or routing will overturn synthesis closure.",
+    "<b>Core rule: all three corners move together</b>. Every area/power reduction can erode timing; every timing repair can raise area/power. Seek a joint optimum rather than driving one metric to an extreme."
+  ],
+  "result": [
+    {
+      "label": "Timing constraint (example)",
+      "value": "create_clock -period 1.43 [get_ports clk]  // 700 MHz"
+    },
+    {
+      "label": "Area target (example)",
+      "value": "set_max_area 0  // minimize area after timing is met"
+    },
+    {
+      "label": "Multi-Vt option (example)",
+      "value": "target_library = {svt.db, hvt.db}  // SVT critical, HVT relaxed"
+    },
+    {
+      "label": "Recovery method",
+      "value": "Positive slack: downsize for area + HVT swap for leakage; keep slack ≥0"
+    },
+    {
+      "label": "Netlist outcome",
+      "value": "Large/SVT cells on critical paths; small/HVT cells on relaxed paths"
+    },
+    {
+      "label": "QoR reports",
+      "value": "report_timing (WNS/TNS) + report_area + report_power"
+    }
+  ],
+  "after": [
+    "<b>Read all three reports together</b>: Confirm WNS/TNS are clean, inspect cell area, and review dynamic plus leakage power. An area win that destroys timing is not a valid result.",
+    "<b>Check that recovery did not create a new critical path</b>: Audit downsized and HVT-swapped paths. Roll back excessive swaps or adjust the slack threshold if any becomes negative.",
+    "<b>Reserve backend margin and iterate</b>: Routing parasitics, clock-tree effects, and OCV consume slack. If post-route STA reveals violations, use actual parasitics to reduce recovery or restore selected SVT cells.",
+    "<b>Run logical equivalence checking (LEC)</b>: Prove the optimized gate netlist matches RTL. Cell sizing and Vt changes may alter implementation, never function.",
+    "<b>Freeze and hand off</b>: Record timing, area, power, and LEC acceptance, then deliver the netlist and SDC. Backend rechecks PPA with real parasitics and may return targeted adjustments until the triangle jointly converges."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the 256×256 8-bit MAC array, 700 MHz/~92 TOPS, 24 MiB Unified Buffer, weight-stationary dataflow, and 28 nm/331 mm²/28–40 W figures are published context. EDA tools, SDC, multi-Vt Liberty libraries, downsizing/HVT swaps, LEC, and all snippets/QoR values are standard illustrative practice, not private TPU data.)"
+}

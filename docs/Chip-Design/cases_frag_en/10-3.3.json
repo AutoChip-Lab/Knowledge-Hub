@@ -1,0 +1,116 @@
+{
+ "secNum": "3.3",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Photomask/reticle fabrication: take the GDSII released at ⑩ through layer separation, OPC, and fracturing, then write every process layer onto chrome-on-quartz with e-beam/laser tools. One mask set contains dozens of reticles—one per layer—and every reticle undergoes defect inspection and repair. Only the complete, high-precision, expensive master set is pellicled and released to manufacturing ⑪",
+ "oneLine": "Tapeout GDSII cannot manufacture a chip directly; it must become a physical master set. The full-chip layout is separated by process layer, and each layer is written onto a chrome-coated quartz reticle with an electron beam. Chrome absorbs light while quartz transmits it, allowing the scanner to project that layer onto the wafer. A 28 nm large chip uses dozens of process layers and therefore dozens of reticles in one mask set. Because one mask defect replicates across every printed wafer and die, each reticle receives high-resolution inspection, repair where possible, and replacement where not; only the complete qualified set is pellicled and released. The documented TPU structures—the 256×256 array, 24 MiB Unified Buffer occupying nearly 29% of die, 700 MHz, and 28 nm / ≤331 mm²—illustrate what is written. This is standard 28 nm mask practice; TPU v1's exact mask count, writers, mask shop, and yield are not public.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 410\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"26\">Photomask fabrication: released GDSII → MDP (layers/OPC/fracturing) → e-beam/laser write on chrome-on-quartz → mask set → inspect/repair → release masters</text><g class=\"cs-part\" data-k=\"gds\" data-g=\"gds\"><rect class=\"cs-box\" x=\"24\" y=\"60\" width=\"140\" height=\"120\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"94\" y=\"90\">Signed-off GDSII</text><text class=\"cs-sub\" x=\"94\" y=\"114\">From Tapeout release ⑩</text><text class=\"cs-sub\" x=\"94\" y=\"134\">TPU full-chip layout</text><text class=\"cs-sub\" x=\"94\" y=\"154\">256×256 array /</text><text class=\"cs-sub\" x=\"94\" y=\"172\">24 MiB UB / 28 nm</text></g><line class=\"cs-arr\" x1=\"164\" y1=\"120\" x2=\"208\" y2=\"120\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"mdp\" data-g=\"mdp\"><rect class=\"cs-box\" x=\"212\" y=\"60\" width=\"150\" height=\"120\" rx=\"8\" fill=\"#f0f9ff\" stroke=\"#7dd3fc\"/><text class=\"cs-t\" x=\"287\" y=\"88\">Mask data preparation</text><text class=\"cs-sub\" x=\"287\" y=\"112\">Separate by process layer</text><text class=\"cs-sub\" x=\"287\" y=\"132\">OPC correction</text><text class=\"cs-sub\" x=\"287\" y=\"152\">Fracture / rasterize</text><text class=\"cs-sub\" x=\"287\" y=\"172\">Writer-readable format</text></g><line class=\"cs-arr\" x1=\"362\" y1=\"120\" x2=\"406\" y2=\"120\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"write\" data-g=\"write\"><rect class=\"cs-box\" x=\"410\" y=\"60\" width=\"150\" height=\"120\" rx=\"8\" fill=\"#fefce8\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"485\" y=\"86\">Mask writing (e-beam)</text><text class=\"cs-sub\" x=\"485\" y=\"110\">Chrome-on-quartz + resist</text><text class=\"cs-sub\" x=\"485\" y=\"130\">E-beam/laser raster write</text><text class=\"cs-sub\" x=\"485\" y=\"150\">Develop → chrome etch → strip</text><text class=\"cs-sub\" x=\"485\" y=\"170\">Chrome=absorber, quartz=transmitter</text></g><line class=\"cs-arr\" x1=\"560\" y1=\"120\" x2=\"604\" y2=\"120\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"reticle\" data-g=\"reticle\"><rect class=\"cs-box\" x=\"608\" y=\"60\" width=\"92\" height=\"120\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"654\" y=\"86\">One mask</text><text class=\"cs-cellt\" x=\"654\" y=\"104\">(reticle)</text><rect class=\"cs-cell\" x=\"620\" y=\"116\" width=\"20\" height=\"20\"/><rect class=\"cs-cell\" x=\"644\" y=\"116\" width=\"20\" height=\"20\"/><rect class=\"cs-cell\" x=\"668\" y=\"116\" width=\"20\" height=\"20\"/><rect class=\"cs-cell\" x=\"620\" y=\"140\" width=\"20\" height=\"20\"/><rect class=\"cs-cell\" x=\"644\" y=\"140\" width=\"20\" height=\"20\"/><rect class=\"cs-cell\" x=\"668\" y=\"140\" width=\"20\" height=\"20\"/><text class=\"cs-cellt\" x=\"654\" y=\"174\">Chrome pattern = one layer</text></g><g class=\"cs-part\" data-k=\"maskset\" data-g=\"maskset\"><rect class=\"cs-box\" x=\"24\" y=\"210\" width=\"338\" height=\"118\" rx=\"8\" fill=\"#faf5ff\" stroke=\"#d8b4fe\"/><text class=\"cs-t\" x=\"193\" y=\"234\">One mask set = one reticle per process layer, dozens total</text><rect class=\"cs-cell\" x=\"44\" y=\"248\" width=\"40\" height=\"58\"/><text class=\"cs-cellt\" x=\"64\" y=\"320\">Active</text><rect class=\"cs-cell\" x=\"92\" y=\"248\" width=\"40\" height=\"58\"/><text class=\"cs-cellt\" x=\"112\" y=\"320\">Poly/gate</text><rect class=\"cs-cell\" x=\"140\" y=\"248\" width=\"40\" height=\"58\"/><text class=\"cs-cellt\" x=\"160\" y=\"320\">Contact</text><rect class=\"cs-cell\" x=\"188\" y=\"248\" width=\"40\" height=\"58\"/><text class=\"cs-cellt\" x=\"208\" y=\"320\">Metal1</text><rect class=\"cs-cell\" x=\"236\" y=\"248\" width=\"40\" height=\"58\"/><text class=\"cs-cellt\" x=\"256\" y=\"320\">Via1</text><rect class=\"cs-cell\" x=\"284\" y=\"248\" width=\"40\" height=\"58\"/><text class=\"cs-cellt\" x=\"304\" y=\"320\">Metal2…</text><text class=\"cs-cellt\" x=\"343\" y=\"282\">…</text></g><line class=\"cs-arr\" x1=\"362\" y1=\"269\" x2=\"406\" y2=\"269\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"inspect\" data-g=\"inspect\"><rect class=\"cs-box\" x=\"410\" y=\"210\" width=\"150\" height=\"118\" rx=\"8\" fill=\"#fef2f2\" stroke=\"#fca5a5\"/><text class=\"cs-t\" x=\"485\" y=\"234\">Defect inspection + repair</text><text class=\"cs-sub\" x=\"485\" y=\"258\">High-resolution comparison</text><text class=\"cs-sub\" x=\"485\" y=\"278\">Find pinholes / bridges</text><text class=\"cs-sub\" x=\"485\" y=\"298\">Missing/extra chrome → repair</text><text class=\"cs-sub\" x=\"485\" y=\"318\">CD / overlay passes</text></g><line class=\"cs-arr\" x1=\"560\" y1=\"269\" x2=\"604\" y2=\"269\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"release\" data-g=\"release\"><rect class=\"cs-box\" x=\"608\" y=\"210\" width=\"92\" height=\"118\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"654\" y=\"240\">Master release</text><text class=\"cs-sub\" x=\"654\" y=\"266\">Complete set passes</text><text class=\"cs-sub\" x=\"654\" y=\"286\">Install pellicle</text><text class=\"cs-sub\" x=\"654\" y=\"306\">To manufacturing ⑪</text><text class=\"cs-sub\" x=\"654\" y=\"324\">Load into scanner</text></g><polyline class=\"cs-arr\" points=\"485,328 485,352 287,352 287,184\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"120\" y=\"372\">Fatal unrepairable defect → return to MDP / rewrite layer; masks are expensive high-precision production masters</text><text class=\"cs-note\" x=\"24\" y=\"398\">Note: chrome-on-quartz, e-beam writing, one mask per layer, inspection/repair, and pellicles are standard 28 nm practice; TPU v1's mask count, equipment, shop, and yield are not public</text></svg>",
+ "legend": [
+  {
+   "k": "gds",
+   "name": "Signed-off GDSII (mask-fabrication input)",
+   "desc": "The source is the full-chip GDSII/OASIS revision whose signoff passed and Tapeout gate released at step ⑩, containing polygon geometry for every TPU layer. The mask shop does not redesign it; it faithfully translates each layer into writable geometry. The documented 256×256 array, 24 MiB Unified Buffer, 700 MHz, 28 nm, and ≤331 mm² context illustrates the written design; actual TPU layer definitions are private."
+  },
+  {
+   "k": "mdp",
+   "name": "Mask data preparation (MDP: layer separation / OPC / fracturing)",
+   "desc": "MDP translates GDSII into writer instructions: ① separate full-chip geometry by process layer; ② apply optical proximity correction (OPC), adding serifs and assist features to precompensate projection distortion so wafer geometry approaches design intent; and ③ fracture/rasterize polygons into writer primitives and the equipment's data format. This is standard mask-data preparation."
+  },
+  {
+   "k": "write",
+   "name": "Mask writing (e-beam / laser direct write)",
+   "desc": "Coat a flat quartz substrate with light-absorbing chrome and resist. An electron beam or laser scans the MDP data into resist, followed by develop, chrome etch, and strip. Remaining chrome forms the layer pattern: light passes through quartz and is blocked by chrome so the scanner can project the image. High-precision e-beam writing is standard for 28 nm masks; TPU's writer and mask shop are undisclosed."
+  },
+  {
+   "k": "maskset",
+   "name": "One mask set (one reticle per layer, dozens total)",
+   "desc": "A chip requires more than one mask. Active, polysilicon/gate, contact, metal1/via1/metal2, and every later process layer each use an independent reticle; precise overlay builds devices and interconnect layer by layer. A 28 nm large chip has dozens of layers and therefore dozens of masks in one set. Layer names/counts are illustrative; TPU v1's actual numbers are not public."
+  },
+  {
+   "k": "inspect",
+   "name": "Defect inspection and repair (master-level gate)",
+   "desc": "A mask is reused across production, so one pinhole, bridge, missing chrome, or extra chrome prints on every wafer and die. Inspect every reticle at high resolution, check critical dimension (CD) and overlay, repair eligible defects with laser/ion beam, and scrap/rewrite irreparable masks. The hard release condition is a fully qualified set; TPU mask yield is not public."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "gds",
+    "mdp"
+   ],
+   "cap": "① Run MDP on the released GDSII: separate process layers, apply OPC, and fracture/rasterize into writer-readable data, translating the full TPU layout—including the 256×256 array and 24 MiB UB—into per-layer write instructions."
+  },
+  {
+   "keys": [
+    "write"
+   ],
+   "cap": "② Write a mask: coat chrome-on-quartz with resist, scan the layer geometry by e-beam/laser, then develop → etch chrome → strip resist. The remaining chrome blocks light while quartz transmits it, forming the lithography master."
+  },
+  {
+   "keys": [
+    "maskset"
+   ],
+   "cap": "③ Repeat for a mask set: active, gate, contact, metal1, via1, metal2, and every other process layer each receive one mask. Dozens of layers mean dozens of reticles whose overlay references must align."
+  },
+  {
+   "keys": [
+    "inspect"
+   ],
+   "cap": "④ Inspect and repair: scan every reticle at high resolution for pinholes, bridges, missing chrome, CD, and overlay. Repair what is repairable and scrap/rewrite the rest; a master defect would replicate across production."
+  },
+  {
+   "keys": [
+    "release"
+   ],
+   "cap": "⑤ Release the masters: after every mask in the set passes, install a protective pellicle and release the set to manufacturing step ⑪ for scanner use. Design data has become a physical production master."
+  }
+ ],
+ "before": [
+  "<b>Lock one input revision</b>: mask fabrication accepts only the GDSII/OASIS whose signoff is green and Tapeout gate released at step ⑩. Match revision, layer map, units, and precision to signoff records; the mask shop does not modify circuits, and one wrong input invalidates dozens of masks. TPU's 256×256 array, 24 MiB UB, 700 MHz, and 28 nm are the context; actual layout is not public.",
+  "<b>Define the layer map and processing recipe per layer</b>: map GDSII layer numbers to active, polysilicon/gate, contact, metal/via, and other process layers; select OPC strength and fracturing/rasterization parameters. Correct translation depends on this mapping. Actual layer definitions and recipes are factory-private; names here are illustrative.",
+  "<b>Specify mask grade, substrate, and process</b>: choose quartz grade, chrome absorber thickness, any phase-shift enhancement, and CD/overlay tolerances. A 28 nm large chip demands high mask precision. TPU v1's specifications and mask shop are not public.",
+  "<b>Define defect criteria and inspection/repair capability</b>: decide what is fatal, repairable, or scrap-worthy, along with inspection resolution and laser/ion-beam repair limits. A reusable master requires stricter criteria than a wafer.",
+  "<b>Define pellicle and delivery controls</b>: determine pellicle use, numbering, registration, electrostatic/contamination-safe handling, and storage. Expensive masks are vulnerable to particles and scratches."
+ ],
+ "during": [
+  "<b>Rule: a mask is the master, so one defect is replicated at scale</b>. One pinhole or bridge projects onto every wafer and every die printed with that mask, multiplying into thousands of fatal defects. Mask precision and inspection are therefore stricter than wafer inspection and drive high mask-set cost.",
+  "<b>One layer, one mask; dozens of layers form the set</b>. Each active, gate, contact, metal, and via layer gets its own mask; a 28 nm large chip requires dozens. The set is incomplete without any one layer, and all overlay references must align precisely.",
+  "<b>OPC is mandatory</b>. At 28 nm, projection rounds corners and changes linewidth, so mask data uses OPC serifs and assist features to precompensate the image. The mask intentionally differs from original layout so the printed silicon matches it.",
+  "<b>Chrome blocks light and quartz transmits it—the physical meaning of a master</b>. E-beam/laser exposure patterns resist on chrome-coated quartz; development and chrome etch leave the layer's absorber geometry, which the scanner projects into wafer photoresist.",
+  "<b>Inspect every reticle, repair what is repairable, and rewrite the rest</b>. High-resolution comparison checks CD and overlay. Laser/ion-beam repair must be reinspected; fatal or unrepairable masks are scrapped and rewritten. Never release a defective master.",
+  "<b>Methodology scope</b>: MDP, OPC/fracturing, chrome-on-quartz e-beam/laser writing, one reticle per layer, high-resolution inspection/repair, and pellicle release are standard 28 nm large-chip mask practices. TPU v1's mask count, layer map, equipment, shop, and yield are not public. Its 256×256 array, 24 MiB Unified Buffer, 700 MHz, 28 nm, and ≤331 mm² are context; all layer names, counts, recipes, and tolerances are illustrative."
+ ],
+ "result": [
+  {
+   "label": "Mask-fabrication input",
+   "value": "Full-chip GDSII released and revision-locked at step ⑩; mask shop translates rather than redesigns. Written context = TPU 256×256 array / 24 MiB UB / 700 MHz / 28 nm layout"
+  },
+  {
+   "label": "Mask data preparation (MDP)",
+   "value": "Separate per process layer → OPC correction → fracture/rasterize into writer-readable format; convert design geometry into per-layer write instructions"
+  },
+  {
+   "label": "Mask writing",
+   "value": "Resist-coated chrome-on-quartz; e-beam/laser expose → develop → chrome etch → strip. Remaining chrome is the layer image and lithography master"
+  },
+  {
+   "label": "Mask set",
+   "value": "Active / gate / contact / metal1 / via1 / metal2 … one mask per layer; dozens of layers = dozens of reticles with precise overlay (names/counts illustrative)"
+  },
+  {
+   "label": "Defect inspection and repair",
+   "value": "High-resolution inspection for pinholes/bridges/missing chrome and CD/overlay; laser/ion-beam repair if possible, otherwise scrap and rewrite"
+  },
+  {
+   "label": "Release / return",
+   "value": "Complete set passes → install pellicles and release to manufacturing ⑪; fatal unrepairable layer → return to MDP and rewrite until all pass"
+  }
+ ],
+ "after": [
+  "<b>Inspect and disposition every reticle</b>: compare each mask at high resolution and verify critical dimensions and overlay against predefined criteria. A reticle with a fatal defect cannot advance.",
+  "<b>Repair eligible defects and rewrite ineligible masks</b>: repair missing/extra chrome with laser/ion beam and reinspect; scrap fatal masks and return to MDP to regenerate and rewrite the layer. No compromised master enters production.",
+  "<b>Verify completeness and cross-layer consistency</b>: confirm every process layer has a correctly numbered reticle and a common overlay reference. A missing or misregistered layer cannot build a complete chip.",
+  "<b>Install pellicles, register, and deliver under protection</b>: pellicle the qualified set, register each mask, and handle/store it under contamination and electrostatic controls. These expensive masters are particle- and scratch-sensitive.",
+  "<b>Release the complete set to manufacturing ⑪</b>: once every reticle passes and is pellicled, hand the set to lithography for layer-by-layer wafer projection. Mask fabrication has converted design geometry into production hardware."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the 256×256 8-bit-MAC systolic array, 24 MiB Unified Buffer, 700 MHz, 28 nm, and ≤331 mm² are documented structures used as mask-writing context; MDP through layer separation/OPC/fracturing, e-beam/laser writing on chrome-on-quartz, one mask per process layer in a set of dozens, defect inspection/repair, and pellicle release are standard 28 nm large-chip mask practices. All layer names, mask counts, recipes, tolerances, and yields are illustrative, not TPU v1's private mask count, writer/inspection equipment, mask shop, or yield)"
+}

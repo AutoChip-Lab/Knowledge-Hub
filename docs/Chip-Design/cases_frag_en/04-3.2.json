@@ -1,0 +1,118 @@
+{
+ "secNum": "3.2",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Clean Separation of the Datapath (MXU, Accumulator, Activation) and Minimal Control",
+ "oneLine": "TPU cleanly separates computation from orchestration: the datapath performs matrix multiply, accumulation, and activation, while the control path stays minimal. Complex scheduling is pushed to host software, leaving nearly all chip area available for MACs.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"60\" y=\"40\">Datapath (performs computation)</text><text class=\"cs-note\" x=\"430\" y=\"40\">Control path (issues controls)</text><line x1=\"400\" y1=\"55\" x2=\"400\" y2=\"385\" stroke=\"#cbd5e1\" stroke-width=\"1\" stroke-dasharray=\"3 5\"/><g class=\"cs-part\" data-k=\"ub\" data-g=\"datapath\"><rect class=\"cs-box\" x=\"55\" y=\"60\" width=\"150\" height=\"52\" rx=\"8\"/><text class=\"cs-t\" x=\"130\" y=\"84\">Unified Buffer</text><text class=\"cs-sub\" x=\"130\" y=\"100\">24 MiB activations/intermediates</text></g><g class=\"cs-part\" data-k=\"mxu\" data-g=\"datapath\"><rect class=\"cs-box\" x=\"55\" y=\"150\" width=\"150\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"130\" y=\"178\">MXU matrix unit</text><text class=\"cs-sub\" x=\"130\" y=\"196\">256×256 systolic array</text></g><g class=\"cs-part\" data-k=\"acc\" data-g=\"datapath\"><rect class=\"cs-box\" x=\"55\" y=\"252\" width=\"150\" height=\"52\" rx=\"8\"/><text class=\"cs-t\" x=\"130\" y=\"276\">Accumulator</text><text class=\"cs-sub\" x=\"130\" y=\"292\">4 MiB · 32-bit</text></g><g class=\"cs-part\" data-k=\"act\" data-g=\"datapath\"><rect class=\"cs-box\" x=\"55\" y=\"334\" width=\"150\" height=\"50\" rx=\"8\"/><text class=\"cs-t\" x=\"130\" y=\"358\">Activation unit</text><text class=\"cs-sub\" x=\"130\" y=\"374\">ReLU / normalization / pooling</text></g><line class=\"cs-arr\" x1=\"130\" y1=\"112\" x2=\"130\" y2=\"146\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"130\" y1=\"214\" x2=\"130\" y2=\"248\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"130\" y1=\"304\" x2=\"130\" y2=\"330\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"host\" data-g=\"control\"><rect class=\"cs-box\" x=\"445\" y=\"60\" width=\"200\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"545\" y=\"84\">Host (PCIe)</text><text class=\"cs-sub\" x=\"545\" y=\"100\">Issues ~a dozen CISC ops</text></g><g class=\"cs-part\" data-k=\"seq\" data-g=\"control\"><rect class=\"cs-box\" x=\"445\" y=\"160\" width=\"200\" height=\"60\" rx=\"8\"/><text class=\"cs-t\" x=\"545\" y=\"186\">On-chip sequencer</text><text class=\"cs-sub\" x=\"545\" y=\"204\">Fetch / decode / minimal control</text></g><g class=\"cs-part\" data-k=\"ctrl\" data-g=\"control\"><rect class=\"cs-box\" x=\"445\" y=\"262\" width=\"200\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"545\" y=\"286\">Control signals</text><text class=\"cs-sub\" x=\"545\" y=\"302\">Read address / enable / start</text></g><line class=\"cs-arr\" x1=\"545\" y1=\"116\" x2=\"545\" y2=\"156\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"545\" y1=\"220\" x2=\"545\" y2=\"258\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-g=\"cw\"><line class=\"cs-arr\" x1=\"445\" y1=\"284\" x2=\"212\" y2=\"86\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-g=\"cw\"><line class=\"cs-arr\" x1=\"445\" y1=\"290\" x2=\"212\" y2=\"182\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-g=\"cw\"><line class=\"cs-arr\" x1=\"445\" y1=\"296\" x2=\"212\" y2=\"278\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-g=\"cw\"><line class=\"cs-arr\" x1=\"445\" y1=\"302\" x2=\"212\" y2=\"359\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"248\" y=\"135\">Control signals (dashed)</text><text class=\"cs-note\" x=\"248\" y=\"150\">→ drive datapath</text><text class=\"cs-note\" x=\"430\" y=\"350\">Complex control (schedule / loops / branches)</text><text class=\"cs-note\" x=\"430\" y=\"366\">stays in host software</text></svg>",
+ "legend": [
+  {
+   "k": "datapath",
+   "name": "Datapath (performs computation)",
+   "desc": "Unified Buffer → MXU → accumulator → activation is the numerical pipeline for multiply, add, and ReLU. TPU dedicates most of its transistors to this path, including 65,536 8-bit MACs."
+  },
+  {
+   "k": "control",
+   "name": "Control path (issues control signals)",
+   "desc": "The host sends roughly a dozen CISC instructions over PCIe. An on-chip sequencer fetches and decodes them into control signals; it performs no arithmetic and only directs when the datapath reads and computes."
+  },
+  {
+   "k": "cw",
+   "name": "Control signals (dashed)",
+   "desc": "The dashed arrows from the control path to the datapath carry read addresses, unit enables, matrix-multiply start signals, and related controls. Control flows toward the data while remaining physically separate from it."
+  },
+  {
+   "k": "host",
+   "name": "Complex control remains on the host",
+   "desc": "TensorFlow/XLA compiles loop expansion, branches, tensor scheduling, and other complex control into the host-side instruction stream rather than implementing them on chip. This host-driven design trades software flexibility for simpler hardware."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "host"
+   ],
+   "cap": "① The host issues instructions: XLA compiles the computation graph into roughly a dozen CISC operations and sends them to TPU over PCIe. Host software decides what to execute."
+  },
+  {
+   "keys": [
+    "seq",
+    "ctrl"
+   ],
+   "cap": "② The on-chip sequencer fetches and decodes instructions, then generates read addresses, enables, and start signals. The control path orchestrates but performs no arithmetic."
+  },
+  {
+   "keys": [
+    "cw",
+    "ub",
+    "mxu",
+    "acc",
+    "act"
+   ],
+   "cap": "③ Dashed control signals cross the boundary into each datapath stage, selecting UB addresses, starting the MXU, and enabling accumulation and activation."
+  },
+  {
+   "keys": [
+    "ub",
+    "mxu",
+    "acc",
+    "act"
+   ],
+   "cap": "④ The datapath runs as an independent pipeline: activations flow from UB through MXU, partial sums land in the accumulator, and activated results return to UB. Data and control use physically separate paths."
+  },
+  {
+   "keys": [
+    "host",
+    "seq"
+   ],
+   "cap": "⑤ Complexity is placed in software: loops, branches, and scheduling stay on the host, keeping on-chip control minimal and freeing area for more MACs."
+  }
+ ],
+ "before": [
+  "<b>Define the two-path boundary</b>: Classify blocks as computation (datapath: storage → operation → writeback) or orchestration (control path: fetch → decode → control signals). TPU draws a clean boundary: MXU, accumulator, and activation perform the work, while a minimal sequencer controls them.",
+  "<b>Decisions to make</b>: How much control belongs on chip versus in host software; the instruction-set style (TPU chooses coarse-grained, host-driven CISC with roughly a dozen operations); and the required controls, such as read addresses, enables, and matrix-multiply start.",
+  "<b>Required inputs</b>: The weight-stationary dataflow from architecture (③), the target datacenter-inference workload with large batches and statically compilable graphs, and the PCIe 3.0 host interface.",
+  "<b>Trade-off to resolve</b>: Can workload control be made static? When a computation graph is fixed at compile time, as in CNN/MLP inference, complex control should move to the host and on-chip control can remain thin."
+ ],
+ "during": [
+  "<b>Goal</b>: Make the datapath as wide and simple as possible and the control path as thin as possible. Maximizing the silicon devoted to the MAC array is the basis of TPU’s high compute density.",
+  "<b>Place control deliberately</b>: TPU is host-driven. TensorFlow/XLA compiles loops, branches, and tensor scheduling into the host instruction stream; on chip, a minimal sequencer only fetches, decodes, and emits controls. The trade-off is dependence on a steady host instruction supply and compiler-constrained flexibility.",
+  "<b>Choose instruction granularity</b>: Coarse CISC operations, such as one large matrix multiply, drive many MACs for many cycles. With only roughly a dozen instructions, fetch and decode overhead is negligible and control logic stays compact.",
+  "<b>Physically separate the paths</b>: Data moves through UB → MXU → accumulator → activation, while dashed control signals fan out laterally from the sequencer. Separation lets each path be optimized independently: bandwidth and parallelism for data, precise timing for control.",
+  "<b>Why control can be removed</b>: Inference graphs are static and have no data-dependent branches, so TPU does not need branch prediction, out-of-order execution, or complex dependency tracking. Static schedulability is the prerequisite for a thin control path.",
+  "<b>Evidence boundary</b>: Public TPU v1 material does not disclose the sequencer’s detailed microarchitecture, such as state count or control-word width. Minimal on-chip control with complex orchestration on the host is the documented design direction, not a verbatim RTL description."
+ ],
+ "result": [
+  {
+   "label": "Datapath core",
+   "value": "MXU (256×256) + 4 MiB accumulator + activation unit"
+  },
+  {
+   "label": "Control path",
+   "value": "Minimal on-chip sequencer (host-driven)"
+  },
+  {
+   "label": "Instruction style / count",
+   "value": "Coarse-grained CISC, roughly a dozen operations"
+  },
+  {
+   "label": "Location of complex control",
+   "value": "Moved to host-side TensorFlow/XLA compilation"
+  },
+  {
+   "label": "Conventional control omitted",
+   "value": "No branch prediction or out-of-order execution for static graphs"
+  },
+  {
+   "label": "Area outcome",
+   "value": "Nearly all transistors serve MACs; control is a small fraction"
+  }
+ ],
+ "after": [
+  "<b>Verify control timing</b>: Confirm that sequencer read-address, enable, and start signals align exactly with every datapath pipeline stage. A one-cycle error can read the wrong data or lose a result.",
+  "<b>Verify the host–chip protocol</b>: Use a cycle model to confirm that PCIe instruction delivery sustains datapath throughput and does not make the host the bottleneck, an inherent host-driven risk.",
+  "<b>Define the block verification plan</b>: Create separate coverage for datapath operations and control-path instruction decoding and boundaries, including no-ops, back-to-back matrix multiplies, and backpressure.",
+  "<b>Hand off to RTL (⑤)</b>: Implement the datapath (MXU, accumulator, activation) and the control FSM/sequencer as separate synthesizable Verilog blocks, freezing the control-bundle interface first.",
+  "<b>Review extensibility</b>: Thin control means new operators are supported mainly through host-compiler changes. Evaluate the cost of adapting this host-driven model to future workloads such as RNNs and Transformers."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the sequencer microarchitecture details are inferred from common practice rather than disclosed verbatim for v1)"
+}

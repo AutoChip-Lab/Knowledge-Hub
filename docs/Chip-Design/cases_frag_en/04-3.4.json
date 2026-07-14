@@ -1,0 +1,115 @@
+{
+ "secNum": "3.4",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Timing and Frequency Budget Behind the Systolic Array’s 700 MHz Clock",
+ "oneLine": "TPU’s timing budget is unusually forgiving: each stage’s critical path is only one 8-bit multiply-accumulate, and 65,536 PEs connect through regular local wiring rather than long global nets. Shallow logic and short wires make 700 MHz comparatively easy to close.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"34\">Left: short critical path inside one PE (MAC)</text><text class=\"cs-note\" x=\"430\" y=\"34\">Right: local wires vs hypothetical global wire</text><line x1=\"400\" y1=\"48\" x2=\"400\" y2=\"388\" stroke=\"#cbd5e1\" stroke-width=\"1\" stroke-dasharray=\"3 5\"/><g class=\"cs-part\" data-k=\"reg_in\" data-g=\"path\"><rect class=\"cs-box\" x=\"50\" y=\"80\" width=\"92\" height=\"48\" rx=\"8\"/><text class=\"cs-t\" x=\"96\" y=\"100\">Input register</text><text class=\"cs-sub\" x=\"96\" y=\"116\">act / partial sum</text></g><line class=\"cs-arr\" x1=\"142\" y1=\"104\" x2=\"178\" y2=\"104\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"mul\" data-g=\"path\"><rect class=\"cs-box\" x=\"180\" y=\"80\" width=\"74\" height=\"48\" rx=\"8\"/><text class=\"cs-t\" x=\"217\" y=\"100\">Multiply ×</text><text class=\"cs-sub\" x=\"217\" y=\"116\">8b×8b</text></g><line class=\"cs-arr\" x1=\"254\" y1=\"104\" x2=\"290\" y2=\"104\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"add\" data-g=\"path\"><rect class=\"cs-box\" x=\"292\" y=\"80\" width=\"74\" height=\"48\" rx=\"8\"/><text class=\"cs-t\" x=\"329\" y=\"100\">Add +</text><text class=\"cs-sub\" x=\"329\" y=\"116\">accumulate</text></g><line class=\"cs-arr\" x1=\"225\" y1=\"128\" x2=\"225\" y2=\"166\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"reg_out\" data-g=\"path\"><rect class=\"cs-box\" x=\"150\" y=\"168\" width=\"150\" height=\"48\" rx=\"8\"/><text class=\"cs-t\" x=\"225\" y=\"188\">Output register</text><text class=\"cs-sub\" x=\"225\" y=\"204\">latched every cycle</text></g><text class=\"cs-note\" x=\"50\" y=\"248\">Critical path = multiply → add → register</text><text class=\"cs-note\" x=\"50\" y=\"266\">Shallow logic → low stage delay</text><g class=\"cs-part\" data-k=\"clk\" data-g=\"clk\"><rect class=\"cs-box\" x=\"50\" y=\"288\" width=\"300\" height=\"46\" rx=\"8\"/><text class=\"cs-t\" x=\"200\" y=\"309\">700 MHz clock (period ≈1.43 ns)</text><text class=\"cs-sub\" x=\"200\" y=\"325\">Fits in one cycle → easy closure</text></g><g class=\"cs-part\" data-k=\"good\" data-g=\"good\"><rect class=\"cs-cell\" x=\"440\" y=\"70\" width=\"34\" height=\"34\"/><rect class=\"cs-cell\" x=\"478\" y=\"70\" width=\"34\" height=\"34\"/><rect class=\"cs-cell\" x=\"516\" y=\"70\" width=\"34\" height=\"34\"/><rect class=\"cs-cell\" x=\"440\" y=\"108\" width=\"34\" height=\"34\"/><rect class=\"cs-cell\" x=\"478\" y=\"108\" width=\"34\" height=\"34\"/><rect class=\"cs-cell\" x=\"516\" y=\"108\" width=\"34\" height=\"34\"/><rect class=\"cs-cell\" x=\"440\" y=\"146\" width=\"34\" height=\"34\"/><rect class=\"cs-cell\" x=\"478\" y=\"146\" width=\"34\" height=\"34\"/><rect class=\"cs-cell\" x=\"516\" y=\"146\" width=\"34\" height=\"34\"/><line x1=\"474\" y1=\"87\" x2=\"478\" y2=\"87\" stroke=\"#22c55e\" stroke-width=\"2\"/><line x1=\"512\" y1=\"87\" x2=\"516\" y2=\"87\" stroke=\"#22c55e\" stroke-width=\"2\"/><line x1=\"457\" y1=\"104\" x2=\"457\" y2=\"108\" stroke=\"#22c55e\" stroke-width=\"2\"/><line x1=\"495\" y1=\"104\" x2=\"495\" y2=\"108\" stroke=\"#22c55e\" stroke-width=\"2\"/></g><text class=\"cs-note\" x=\"570\" y=\"92\">Regular array</text><text class=\"cs-note\" x=\"570\" y=\"110\">PE connects only</text><text class=\"cs-note\" x=\"570\" y=\"128\">up/down/left/right</text><text class=\"cs-note\" x=\"570\" y=\"146\">neighbors</text><text class=\"cs-note\" x=\"440\" y=\"200\">Short wires, low load → low delay</text><g class=\"cs-part\" data-k=\"bad\" data-g=\"bad\"><rect class=\"cs-box\" x=\"440\" y=\"240\" width=\"80\" height=\"40\" rx=\"8\"/><text class=\"cs-sub\" x=\"480\" y=\"264\">Distant A</text><polyline class=\"cs-arr\" points=\"520,260 580,235 620,290 660,255\" fill=\"none\" stroke=\"#ef4444\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><rect class=\"cs-box\" x=\"600\" y=\"300\" width=\"80\" height=\"40\" rx=\"8\"/><text class=\"cs-sub\" x=\"640\" y=\"324\">Distant B</text></g><text class=\"cs-note\" x=\"440\" y=\"300\">Hypothetical global wire: long, high load</text><text class=\"cs-note\" x=\"440\" y=\"318\">→ high delay, lower fmax (absent in TPU)</text></svg>",
+ "legend": [
+  {
+   "k": "path",
+   "name": "In-PE critical path (multiply → add → register)",
+   "desc": "Each systolic-array PE performs only an 8-bit multiply, accumulation, and register capture within one cycle. The shallow combinational depth gives low stage delay and a generous timing budget."
+  },
+  {
+   "k": "clk",
+   "name": "700 MHz clock budget",
+   "desc": "The period is approximately 1.43 ns. One shallow MAC plus register setup fits within that cycle, making timing closure straightforward and enabling 700 MHz and ~92 TOPS."
+  },
+  {
+   "k": "good",
+   "name": "Regular local interconnect",
+   "desc": "In the 256×256 array, every PE connects only to its up, down, left, and right neighbors. These regular, short, lightly loaded wires advance data one stage per cycle without chip-spanning nets."
+  },
+  {
+   "k": "bad",
+   "name": "Hypothetical long global wire (slow)",
+   "desc": "As a contrast, a signal crossing the die has a long wire, heavy load, and large delay; it can become the critical path and reduce frequency. General-purpose CPUs often contain such networks, while the TPU systolic array deliberately avoids them."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "reg_in",
+    "mul",
+    "add",
+    "reg_out"
+   ],
+   "cap": "① Decompose one PE’s path: input register → 8b×8b multiply → accumulate → output register. Register-to-register combinational logic contains only one MAC and is very shallow."
+  },
+  {
+   "keys": [
+    "path",
+    "clk"
+   ],
+   "cap": "② Budget the cycle: logic propagation plus register setup must fit within one clock period. Because the path is shallow, it fits comfortably inside 1.43 ns, supporting 700 MHz."
+  },
+  {
+   "keys": [
+    "good"
+   ],
+   "cap": "③ Inspect wiring: the array is regular and each PE connects only to neighbors, producing short, lightly loaded interconnect with low routing delay and no surprise long nets."
+  },
+  {
+   "keys": [
+    "bad"
+   ],
+   "cap": "④ Contrast the failure mode: a chip-spanning global wire has large capacitance and delay, can become critical, and forces a lower clock. Local systolic wiring naturally avoids that problem."
+  },
+  {
+   "keys": [
+    "path",
+    "good",
+    "clk"
+   ],
+   "cap": "⑤ Combine the effects: shallow logic (short critical path) × regular local wiring (no long nets) yields predictable timing and easy closure at 700 MHz, unlike a general CPU that repeatedly pipelines and buffers long paths."
+  }
+ ],
+ "before": [
+  "<b>Set the target frequency and cycle budget</b>: TPU v1 targets 700 MHz, implying a period of ≈1.43 ns. Every register → combinational logic → register path must meet that budget.",
+  "<b>Enumerate critical-path candidates</b>: In the systolic array, the primary candidate is multiply → add → register inside a PE. Also check operand-supply and writeback paths at the array boundary for the slowest path on the chip.",
+  "<b>Required inputs</b>: The weight-stationary dataflow, with resident weights and cycle-by-cycle activation/partial-sum movement; the 8-bit MAC function; and 28 nm cell-delay and interconnect-RC characteristics. Together they determine stage depth and achievable frequency.",
+  "<b>System constraint to resolve</b>: Higher frequency is not automatically better. Along with TDP (28–40 W), area, and DDR3 bandwidth (~30 GB/s), it determines end performance. If memory bandwidth is the roofline bottleneck, raising the clock merely increases idle activity."
+ ],
+ "during": [
+  "<b>Core idea: make the critical path shallow enough</b>. The systolic array naturally decomposes matrix multiplication into one MAC per cycle, so each stage contains only a multiply-accumulate and meets 700 MHz without extra timing-driven pipeline stages.",
+  "<b>Use regularity for predictable timing</b>: The 256×256 PEs are identical and connect only to neighbors. Placement and routing are regular, wires are short, and loads are uniform, so post-layout timing is predictable and converges quickly.",
+  "<b>Avoid long global nets</b>: At 700 MHz, routing often matters more than logic. The array moves data between adjacent PEs one cycle at a time, eliminating die-spanning wires. General CPU bypass networks and global buses have long paths that require aggressive partitioning or buffering.",
+  "<b>Trade frequency against pipeline depth</b>: The logic is already shallow, so inserting more registers would add latency, area, and power for little benefit. TPU chooses shallow logic at a moderate frequency and spends its power budget on scale—65,536 MACs—rather than extreme clock speed.",
+  "<b>Trade frequency against power and bandwidth</b>: Dynamic power rises with frequency while compute remains constrained by ~30 GB/s of DDR3 bandwidth. TPU pairs 700 MHz with a large 24 MiB Unified Buffer for on-chip reuse instead of relying on frequency alone.",
+  "<b>Evidence boundary</b>: The TPU v1 paper does not publish per-stage timing reports, setup/hold margins, clock-tree details, or PVT corners. The conclusion that shallow paths and short wires ease 700 MHz closure follows standard systolic-array timing principles and is consistent with the disclosed 700 MHz/~92 TOPS figures, not disclosed STA data."
+ ],
+ "result": [
+  {
+   "label": "Target frequency",
+   "value": "700 MHz (period ≈1.43 ns)"
+  },
+  {
+   "label": "Per-stage critical path",
+   "value": "One 8-bit MAC + register (shallow logic)"
+  },
+  {
+   "label": "Interconnect",
+   "value": "Regular local short wires; no long global nets"
+  },
+  {
+   "label": "Resulting peak compute",
+   "value": "~92 TOPS (INT8)"
+  },
+  {
+   "label": "Timing-closure difficulty",
+   "value": "Low: regular, shallow, predictable paths"
+  },
+  {
+   "label": "Contrast with general CPU",
+   "value": "Long critical paths require aggressive pipelining and buffering"
+  }
+ ],
+ "after": [
+  "<b>Run static timing analysis (STA)</b>: Across target process, voltage, and temperature corners, verify every register-to-register path meets the 1.43 ns budget with positive setup and hold slack, and confirm the critical path is inside a PE rather than an unexpected long net.",
+  "<b>Check array-boundary paths</b>: Separately analyze operand supply, partial-sum writeback, and accumulator/Unified Buffer interfaces. The regular interior may be faster than these less regular edge paths.",
+  "<b>Check clock-tree skew</b>: All 65,536 PEs must advance synchronously, so clock-distribution skew must be controlled. This is standard ASIC practice; v1 does not disclose its clock-tree implementation.",
+  "<b>Validate the system-level benefit</b>: Insert 700 MHz into the roofline model and ensure the resulting compute is not wasted behind ~30 GB/s DDR3 bandwidth. Frequency must be decided jointly with bandwidth and power.",
+  "<b>Deliver and freeze constraints</b>: Hand the validated frequency target, PE critical-path definition, and SDC clock constraints to RTL (⑤) and physical design as the synthesis and place-and-route timing baseline."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (700 MHz/~92 TOPS, the systolic array, and local interconnect are disclosed for v1; per-stage STA margin, clock tree, and PVT corners follow standard datacenter-inference ASIC practice rather than verbatim v1 disclosure)"
+}

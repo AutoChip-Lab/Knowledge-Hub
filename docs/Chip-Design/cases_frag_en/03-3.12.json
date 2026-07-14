@@ -1,0 +1,119 @@
+{
+  "secNum": "3.12",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · RAS: ECC/CRC for On-Chip Integrity, Fleet Redundancy for Service Availability",
+  "oneLine": "RAS for a data-center accelerator operates at two levels: ECC and CRC protect each on-chip data hop, while fleet-level redundant scheduling tolerates card failures. TPU v1 discloses little RAS detail, so these mechanisms represent standard inference-ASIC practice.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 410\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"22\">Two-layer RAS: on-chip integrity + fleet availability</text><text class=\"cs-note\" x=\"40\" y=\"44\">① On-chip datapath: protect every hop</text><g class=\"cs-part\" data-k=\"ddr\" data-g=\"path\"><rect class=\"cs-box\" x=\"40\" y=\"56\" width=\"150\" height=\"60\" rx=\"8\"/><text class=\"cs-t\" x=\"115\" y=\"82\">DDR3 · 8 GiB</text><text class=\"cs-sub\" x=\"115\" y=\"100\">Weight storage</text></g><g class=\"cs-part\" data-k=\"ecc\" data-g=\"ecc\"><rect class=\"cs-box\" x=\"40\" y=\"120\" width=\"150\" height=\"34\" rx=\"8\" fill=\"#ecfeff\" stroke=\"#22d3ee\"/><text class=\"cs-t\" x=\"115\" y=\"142\">Memory ECC (SECDED)</text></g><line class=\"cs-arr\" x1=\"190\" y1=\"100\" x2=\"252\" y2=\"100\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"link\" data-g=\"link\"><rect class=\"cs-box\" x=\"206\" y=\"78\" width=\"44\" height=\"44\" rx=\"8\" fill=\"#fdf4ff\" stroke=\"#d946ef\"/><text class=\"cs-t\" x=\"228\" y=\"98\">CRC</text><text class=\"cs-sub\" x=\"228\" y=\"112\">Link</text></g><g class=\"cs-part\" data-k=\"ub\" data-g=\"path\"><rect class=\"cs-box\" x=\"254\" y=\"56\" width=\"150\" height=\"60\" rx=\"8\"/><text class=\"cs-t\" x=\"329\" y=\"82\">Unified Buffer</text><text class=\"cs-sub\" x=\"329\" y=\"100\">24 MiB SRAM</text></g><g class=\"cs-part\" data-k=\"eccsram\" data-g=\"ecc\"><rect class=\"cs-box\" x=\"254\" y=\"120\" width=\"150\" height=\"34\" rx=\"8\" fill=\"#ecfeff\" stroke=\"#22d3ee\"/><text class=\"cs-t\" x=\"329\" y=\"142\">SRAM ECC / parity</text></g><line class=\"cs-arr\" x1=\"404\" y1=\"86\" x2=\"466\" y2=\"86\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"mxu\" data-g=\"path\"><rect class=\"cs-box\" x=\"468\" y=\"56\" width=\"150\" height=\"60\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#818cf8\"/><text class=\"cs-t\" x=\"543\" y=\"82\">MXU 256×256</text><text class=\"cs-sub\" x=\"543\" y=\"100\">Systolic compute</text></g><g class=\"cs-part\" data-k=\"telem\" data-g=\"telem\"><rect class=\"cs-box\" x=\"468\" y=\"120\" width=\"212\" height=\"34\" rx=\"8\" fill=\"#fff7ed\" stroke=\"#fb923c\"/><text class=\"cs-t\" x=\"574\" y=\"142\">Telemetry: corrected errors / temperature / heartbeat</text></g><line class=\"cs-arr\" x1=\"618\" y1=\"86\" x2=\"678\" y2=\"86\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"630\" y=\"72\">→ write back</text><line class=\"cs-arr\" x1=\"115\" y1=\"154\" x2=\"115\" y2=\"182\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"329\" y1=\"154\" x2=\"329\" y2=\"182\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"574\" y1=\"154\" x2=\"574\" y2=\"182\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"40\" y=\"206\">② Fleet availability: scheduler routes around a failed device</text><g class=\"cs-part\" data-k=\"sched\" data-g=\"sched\"><rect class=\"cs-box\" x=\"270\" y=\"214\" width=\"180\" height=\"50\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#4ade80\"/><text class=\"cs-t\" x=\"360\" y=\"236\">Cluster scheduler</text><text class=\"cs-sub\" x=\"360\" y=\"252\">Reads telemetry · judges health · routes</text></g><line class=\"cs-arr\" x1=\"574\" y1=\"154\" x2=\"450\" y2=\"226\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"452\" y=\"200\">Telemetry / heartbeat</text><polyline class=\"cs-arr\" points=\"300,264 200,300\" fill=\"none\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"360,264 360,300\" fill=\"none\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"420,264 520,300\" fill=\"none\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><g class=\"cs-part\" data-k=\"tpu1\" data-g=\"fleet\"><rect class=\"cs-box\" x=\"120\" y=\"304\" width=\"150\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"195\" y=\"328\">TPU card #1</text><text class=\"cs-sub\" x=\"195\" y=\"346\">Healthy · serves requests</text></g><g class=\"cs-part\" data-k=\"tpu2\" data-g=\"fleet\"><rect class=\"cs-box\" x=\"290\" y=\"304\" width=\"150\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"365\" y=\"328\">TPU card #2</text><text class=\"cs-sub\" x=\"365\" y=\"346\">Healthy · serves requests</text></g><g class=\"cs-part\" data-k=\"tpu3\" data-g=\"bad\"><rect class=\"cs-box\" x=\"460\" y=\"304\" width=\"150\" height=\"56\" rx=\"8\" fill=\"#fef2f2\" stroke=\"#f87171\" stroke-dasharray=\"5 4\"/><text class=\"cs-t\" x=\"535\" y=\"328\">TPU card #3 ✕</text><text class=\"cs-sub\" x=\"535\" y=\"346\">Failed · isolated</text></g><text class=\"cs-note\" x=\"120\" y=\"382\">N+ redundancy: isolate failures and reroute requests</text></svg>",
+  "legend": [
+    {
+      "k": "ecc",
+      "name": "Memory ECC (integrity · standard practice)",
+      "desc": "Large memories—DDR3, the 24 MiB Unified Buffer, and 4 MiB accumulators—are exposed to soft errors. Data-center hardware commonly uses SECDED ECC to correct one bit and detect two. TPU v1's exact ECC scheme was not published."
+    },
+    {
+      "k": "link",
+      "name": "Link CRC (transfer integrity · standard practice)",
+      "desc": "PCIe and high-speed SerDes links use CRC and retransmission. CRC protects data in flight while ECC protects data at rest, a fundamental RAS division of responsibility."
+    },
+    {
+      "k": "telem",
+      "name": "Observable telemetry",
+      "desc": "Corrected-error counts, temperature, heartbeat, and utilization are reported continuously. Visibility allows operators to remove a card whose error rate is rising before correctable faults become uncorrectable."
+    },
+    {
+      "k": "sched",
+      "name": "Cluster scheduler (availability control)",
+      "desc": "The scheduler reads telemetry, evaluates health, and routes requests only to healthy cards. Failure detection, isolation, rerouting, and service replacement provide most availability and maintainability above the chip."
+    },
+    {
+      "k": "bad",
+      "name": "Failed card isolated",
+      "desc": "Inference is stateless and replayable. With N+ redundancy, a failed card leaves service and its requests move to healthy cards, preserving online availability. This is the data-center model of fleet redundancy over expensive per-chip fault tolerance."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "ddr",
+        "ecc",
+        "eccsram"
+      ],
+      "cap": "① Protect storage: add ECC to large DDR3, the 24 MiB UB, and 4 MiB accumulators so single-bit faults are corrected and double-bit faults detected."
+    },
+    {
+      "keys": [
+        "link"
+      ],
+      "cap": "② Protect transfers: use CRC and retransmission on PCIe and high-speed links, complementing memory ECC."
+    },
+    {
+      "keys": [
+        "telem"
+      ],
+      "cap": "③ Make faults visible: continuously report corrected-error counts, temperature, and heartbeat so latent failures become observable signals."
+    },
+    {
+      "keys": [
+        "telem",
+        "sched"
+      ],
+      "cap": "④ Judge health: a cluster scheduler consumes telemetry and decides which cards may serve requests and which must be removed."
+    },
+    {
+      "keys": [
+        "sched",
+        "tpu1",
+        "tpu2",
+        "bad"
+      ],
+      "cap": "⑤ Route around failure: isolate failed card #3 and replay its requests on healthy cards #1/#2; fleet-level N+ redundancy masks the device failure."
+    }
+  ],
+  "before": [
+    "<b>Set reliability objectives</b>: The goal is not a perfect chip but a service-level availability target and maintainability plan—how many nines, and whether failed hardware can be replaced without downtime. RAS tradeoffs follow that fault budget.",
+    "<b>Decisions to make</b>: Which memories receive parity, SECDED, or stronger codes; which links use CRC/retry; what telemetry is exposed; how much self-repair a chip provides; and whether redundancy lives on chip or at fleet level.",
+    "<b>Required inputs</b>: Process soft-error-rate estimates, exposed storage capacity (8 GiB DDR3, 24 MiB UB, 4 MiB accumulators), fleet size and card failure rates, and operational monitoring/replacement capability.",
+    "<b>Hard constraints</b>: ECC and CRC cost area, bandwidth, latency, and power and must reconcile with §§3.4 and 3.9. Public v1 sources disclose little RAS, security, or DFT detail, so do not invent TPU-specific mechanisms or numbers."
+  ],
+  "during": [
+    "<b>Separate the two RAS layers</b>: On-chip mechanisms preserve data integrity and prevent silent corruption; the fleet provides service availability and maintainability when a device fails. Each layer needs different tools.",
+    "<b>Use ECC for storage</b>: Large memories dominate soft-error exposure. DDR3 generally uses ECC, while large on-chip SRAMs such as the Unified Buffer and accumulators benefit from ECC or parity. SECDED corrects one bit and detects two.",
+    "<b>Use CRC for links</b>: PCIe and high-speed SerDes use CRC plus retransmission for data in flight. ECC guards stored data; CRC guards transferred data.",
+    "<b>Balance correction strength and cost</b>: Stronger codes correct more faults but add bits, decoder logic, bandwidth, and latency. Because inference is replayable, lightweight per-chip protection plus fleet recovery can be more efficient than telecom-grade on-chip redundancy.",
+    "<b>Place redundancy at the right level</b>: Stateless inference makes fleet-level N+ redundancy attractive. Isolate failed cards, reroute requests, and replace hardware rather than duplicating large blocks inside every chip.",
+    "<b>Instrument faults</b>: Rising corrected-error counts can precede failure. Report ECC corrections, temperature, and heartbeat so the scheduler can remove unhealthy cards proactively."
+  ],
+  "result": [
+    {
+      "label": "Storage integrity (general)",
+      "value": "ECC for DDR3/SRAM; SECDED corrects 1, detects 2"
+    },
+    {
+      "label": "Transfer integrity (general)",
+      "value": "PCIe/link CRC + retransmission"
+    },
+    {
+      "label": "Observability",
+      "value": "Corrected-error / temperature / heartbeat telemetry"
+    },
+    {
+      "label": "Availability strategy",
+      "value": "Fleet-level N+ redundancy; route around failures"
+    },
+    {
+      "label": "Fault-tolerance split",
+      "value": "Lightweight chip protection + strong fleet redundancy"
+    },
+    {
+      "label": "TPU v1 disclosure",
+      "value": "RAS details largely unpublished; no invented v1 mechanisms"
+    }
+  ],
+  "after": [
+    "<b>Verify correction</b>: Inject bit flips and corrupted packets to confirm ECC corrects one and detects two while CRC detects damage and triggers retry. Track corrected-error rates at fleet scale and tune health thresholds.",
+    "<b>Verify failover</b>: Exercise a card failure and ensure the scheduler detects, isolates, and reroutes it while online requests are replayed on healthy hardware and replacement occurs without downtime.",
+    "<b>Reconcile cost</b>: Feed ECC/CRC area, bandwidth, latency, and power back into memory (§3.4) and power (§3.9); adjust code strength or protection scope if budgets fail.",
+    "<b>Hand off to implementation and operations</b>: Give physical design ECC/CRC logic and DFT hooks; give fleet operations health thresholds, isolation/rerouting rules, and replacement procedures. Mark all undisclosed v1 details as standard ASIC practice."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (v1 RAS, ECC, and redundant-scheduling details were not published; they are described as standard data-center inference-ASIC practice, not TPU-specific mechanisms or values.)"
+}

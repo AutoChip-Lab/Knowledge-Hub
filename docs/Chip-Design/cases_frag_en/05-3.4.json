@@ -1,0 +1,115 @@
+{
+ "secNum": "3.4",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · MAC Datapath RTL: Growing 8b × 8b into a 32b Signed Accumulation",
+ "oneLine": "Correct MAC RTL depends on width and signedness. Two 8-bit operands need a 16-bit product, a 256-term dot product needs a wider accumulator, and every stage from input through accumulation must preserve signed two's-complement semantics. One missing signed declaration can reinterpret the sign bit as magnitude.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 380\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"30\">One PE MAC datapath: widths grow, signedness persists</text><g class=\"cs-part\" data-k=\"a\" data-g=\"in\"><rect class=\"cs-box\" x=\"40\" y=\"60\" width=\"120\" height=\"52\" rx=\"8\"/><text class=\"cs-t\" x=\"100\" y=\"84\">Activation a</text><text class=\"cs-sub\" x=\"100\" y=\"100\">signed [7:0]</text></g><g class=\"cs-part\" data-k=\"b\" data-g=\"in\"><rect class=\"cs-box\" x=\"40\" y=\"150\" width=\"120\" height=\"52\" rx=\"8\"/><text class=\"cs-t\" x=\"100\" y=\"174\">Weight b</text><text class=\"cs-sub\" x=\"100\" y=\"190\">signed [7:0]</text></g><line class=\"cs-arr\" x1=\"160\" y1=\"86\" x2=\"232\" y2=\"120\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"160\" y1=\"176\" x2=\"232\" y2=\"142\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"mul\" data-g=\"mul\"><rect class=\"cs-box\" x=\"234\" y=\"98\" width=\"130\" height=\"66\" rx=\"8\"/><text class=\"cs-t\" x=\"299\" y=\"124\">Multiplier ×</text><text class=\"cs-sub\" x=\"299\" y=\"142\">8b × 8b → 16b</text></g><text class=\"cs-note\" x=\"240\" y=\"184\">signed [15:0] prod</text><text class=\"cs-note\" x=\"240\" y=\"200\">= a * b (full-width product)</text><line class=\"cs-arr\" x1=\"364\" y1=\"131\" x2=\"430\" y2=\"131\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"372\" y=\"122\">16b</text><g class=\"cs-part\" data-k=\"add\" data-g=\"acc\"><rect class=\"cs-box\" x=\"432\" y=\"98\" width=\"120\" height=\"66\" rx=\"8\"/><text class=\"cs-t\" x=\"492\" y=\"124\">Adder +</text><text class=\"cs-sub\" x=\"492\" y=\"142\">Sign-extend to 32b</text></g><line class=\"cs-arr\" x1=\"552\" y1=\"131\" x2=\"600\" y2=\"131\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"acc\" data-g=\"acc\"><rect class=\"cs-box\" x=\"602\" y=\"86\" width=\"96\" height=\"90\" rx=\"8\"/><path d=\"M602,176 L602,160 L618,176 Z\" fill=\"#8b5cf6\"/><text class=\"cs-t\" x=\"650\" y=\"120\">Accumulate</text><text class=\"cs-t\" x=\"650\" y=\"138\">register</text><text class=\"cs-sub\" x=\"650\" y=\"158\">signed [31:0]</text></g><line class=\"cs-arr\" x1=\"650\" y1=\"176\" x2=\"650\" y2=\"210\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"650\" y1=\"210\" x2=\"492\" y2=\"210\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"492\" y1=\"210\" x2=\"492\" y2=\"166\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"500\" y=\"226\">Feedback each cycle: acc &lt;= acc + prod</text><g class=\"cs-part\" data-k=\"grow\" data-g=\"grow\"><rect class=\"cs-box\" x=\"40\" y=\"262\" width=\"658\" height=\"96\" rx=\"8\"/><text class=\"cs-t\" x=\"60\" y=\"288\" text-anchor=\"start\">Width budget: why accumulation uses 32 bits</text><text class=\"cs-sub\" x=\"60\" y=\"312\" text-anchor=\"start\">Max 8b × 8b product ≈ 2^15; summing 256 terms reaches about 2^23</text><text class=\"cs-sub\" x=\"60\" y=\"332\" text-anchor=\"start\">→ about 23 bits for one row; use 32 bits for margin and no wraparound</text><text class=\"cs-note\" x=\"60\" y=\"350\" text-anchor=\"start\">Rule: multiply grows width; addition/accumulation needs headroom; keep every arithmetic stage signed</text></g></svg>",
+ "legend": [
+  {
+   "k": "in",
+   "name": "8-bit signed inputs (a, b)",
+   "desc": "Activation a and weight b are INT8. In RTL, logic signed [7:0] a, b declares two's-complement operands. Without signed, synthesis treats -1 as unsigned 255 and arithmetic is wrong."
+  },
+  {
+   "k": "mul",
+   "name": "Multiplier (8b × 8b → 16b)",
+   "desc": "The * operator infers multiplier hardware. Two 8-bit operands require a 16-bit signed product, so prod is declared signed [15:0]. This is the first width expansion."
+  },
+  {
+   "k": "acc",
+   "name": "32-bit signed accumulator",
+   "desc": "Summing 256 signed products requires more than the 16-bit product width; TPU v1 uses 32-bit accumulation. The clocked acc <= acc + prod update preserves the partial sum, and insufficient width would silently wrap on overflow."
+  },
+  {
+   "k": "grow",
+   "name": "Width-growth budget",
+   "desc": "Datapath widths must be derived: multiplication adds operand widths, addition needs carry/sign headroom, and repeated accumulation needs log2(depth) growth plus margin. Explicit sizing prevents truncation and overflow."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "a",
+    "b"
+   ],
+   "cap": "① Declare a and b as 8-bit signed operands: logic signed [7:0] a, b. The signed qualifier determines two's-complement rather than unsigned multiplication."
+  },
+  {
+   "keys": [
+    "mul"
+   ],
+   "cap": "② Write assign prod = a * b. The * operator infers a multiplier. Declare prod as signed [15:0] because an 8b × 8b full-precision result needs 16 bits."
+  },
+  {
+   "keys": [
+    "add",
+    "acc"
+   ],
+   "cap": "③ Accumulate with acc <= acc + prod. Sign-extend the 16-bit product to 32 bits before addition. The accumulator is clocked state and therefore uses always_ff with nonblocking <=."
+  },
+  {
+   "keys": [
+    "grow"
+   ],
+   "cap": "④ Derive the width budget: a 256-term dot product needs roughly 23 signed magnitude bits at the worst bound; 32 bits provides margin and avoids wraparound. Width is calculated, not guessed."
+  },
+  {
+   "keys": [
+    "in",
+    "mul",
+    "acc",
+    "grow"
+   ],
+   "cap": "⑤ End-to-end: signed 8b inputs → signed 16b product → signed 32b accumulation. Once one PE is correct, 65,536 homogeneous PEs compose the 256 × 256 systolic array."
+  }
+ ],
+ "before": [
+  "<b>Define the language and coding style</b>: use a synthesizable SystemVerilog/Verilog subset, always_ff with nonblocking <= for sequential state, always_comb with blocking = for combinational logic, and a consistent reset policy. These are standard practices; TPU source is not published line by line.",
+  "<b>Calculate each width</b>: INT8 inputs produce a 16-bit product. Accumulating 256 terms needs about 23 bits at the mathematical bound, so a 32-bit accumulator provides margin and matches the disclosed TPU accumulator precision.",
+  "<b>Define signed and unsigned domains</b>: INT8 inference uses signed two's-complement values. Specify a, b, prod, and acc as signed and document every deliberate unsigned control or address signal.",
+  "<b>Freeze the PE interface</b>: define widths and directions for activation, resident weight, partial-sum input/output, clock, reset, and enable before replicating the PE 65,536 times. One interface error multiplies across the array.",
+  "<b>Constrain RTL to synthesizable intent</b>: use * and + and let synthesis map arithmetic; do not hand-code gates or rely on simulation-only delay or initial behavior."
+ ],
+ "during": [
+  "<b>Operators infer hardware</b>: a * b becomes a multiplier and acc + prod becomes an adder. Datapath RTL is an explicitly sized arithmetic graph; synthesis implements the operators.",
+  "<b>Width rule: multiply expands, add preserves carry, accumulate for depth</b>. An 8b × 8b product needs 16 bits; addition needs sign/carry headroom; 256 terms require a wider accumulator. Too few bits silently truncate the high end and wrap around.",
+  "<b>Declare signedness at every stage</b>: logic signed [7:0] a,b; logic signed [15:0] prod; logic signed [31:0] acc; (illustrative). If one intermediate becomes unsigned, negative weights and extension behavior can be corrupted while waveforms still show plausible bit patterns.",
+  "<b>Make sign extension explicit and reviewable</b>: adding a 16-bit product into a 32-bit accumulator requires sign extension, not zero extension. Fully signed expressions normally extend correctly, but use explicit casts such as $signed() at mixed-type boundaries.",
+  "<b>Separate combinational and sequential behavior</b>: multiply/add logic is combinational; acc is a register updated in always_ff @(posedge clk) with <=. An illustrative one-MAC-per-cycle form is always_ff @(posedge clk) if(en) acc <= acc + a*b;",
+  "<b>Keep the evidence boundary clear</b>: the exact TPU v1 RTL is not public. Signedness, width, and always_ff examples follow standard datapath RTL practice; disclosed facts are the 8-bit MACs, 32-bit accumulators, 256 × 256 array, and INT8 throughput."
+ ],
+ "result": [
+  {
+   "label": "Input declaration (example)",
+   "value": "logic signed [7:0] a, b;"
+  },
+  {
+   "label": "Product declaration (example)",
+   "value": "logic signed [15:0] prod = a * b;  // 8+8=16"
+  },
+  {
+   "label": "Accumulator declaration (example)",
+   "value": "logic signed [31:0] acc;  // 23-bit bound, 32-bit margin"
+  },
+  {
+   "label": "Accumulator update (example)",
+   "value": "always_ff @(posedge clk) acc <= acc + prod;"
+  },
+  {
+   "label": "Width-growth chain",
+   "value": "8b → 16b product → 32b accumulation"
+  },
+  {
+   "label": "Reuse",
+   "value": "Replicate one PE 65,536 times → 256 × 256 systolic array"
+  }
+ ],
+ "after": [
+  "<b>Run width and signedness lint</b>: treat width mismatch, signed/unsigned mixing, and implicit truncation as real defects. Many low-level datapath bugs can be stopped before simulation.",
+  "<b>Simulate numerical boundaries</b>: test -128, +127, all-negative weights, and vectors near the 256-term accumulation bound. Compare random stimulus against a bit-accurate golden model.",
+  "<b>Run trial synthesis</b>: verify that * and + map to the intended multiplier and adder widths, no unexpected truncation occurs, and PE timing/area is compatible with 700 MHz.",
+  "<b>Check CDC at domain boundaries</b>: the PE is synchronous to the array clock, but interfaces to PCIe and DDR3 may use other clocks. Verify synchronized control and safe data transport at the array boundary.",
+  "<b>Hand off the numerical contract</b>: provide RTL, the width budget, signedness rules, and a bit-accurate model to verification. Freeze interface widths before synthesis and physical implementation."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (8-bit MACs, 32-bit accumulators, and the 256 × 256 array are disclosed TPU v1 facts; RTL signedness and coding examples reflect standard practice)"
+}

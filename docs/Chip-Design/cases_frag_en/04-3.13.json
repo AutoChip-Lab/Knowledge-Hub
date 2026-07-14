@@ -1,0 +1,116 @@
+{
+ "secNum": "3.13",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Roofline Performance Modeling: Find the Bottleneck Before Writing RTL",
+ "oneLine": "The TPU paper’s roofline analysis exemplifies microarchitecture-level performance modeling: quantify utilization and determine whether real workloads are limited by 92 TOPS of compute or ~30 GB/s of memory bandwidth, verify that microarchitecture delivers the throughput promised by ③, and write RTL only after the model passes—while defining the verification plan in parallel.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"24\">Microarchitecture modeling: find bottleneck → iterate if short → write RTL and verify when ready</text><g class=\"cs-part\" data-k=\"axis\" data-g=\"axis\"><line x1=\"80\" y1=\"210\" x2=\"430\" y2=\"210\" stroke=\"#475569\" stroke-width=\"1.5\"/><line x1=\"80\" y1=\"210\" x2=\"80\" y2=\"70\" stroke=\"#475569\" stroke-width=\"1.5\"/><text class=\"cs-note\" x=\"300\" y=\"232\">Operational intensity OI (Ops/Byte, log axis) →</text><text class=\"cs-note\" x=\"18\" y=\"66\">Performance</text><text class=\"cs-note\" x=\"18\" y=\"80\">TOPS</text></g><g class=\"cs-part\" data-k=\"bw\" data-g=\"bw\"><line class=\"cs-arr\" x1=\"80\" y1=\"200\" x2=\"210\" y2=\"92\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"92\" y=\"150\">Bandwidth roof (slope)</text><text class=\"cs-note\" x=\"92\" y=\"164\">~30 GB/s DDR3</text></g><g class=\"cs-part\" data-k=\"peak\" data-g=\"peak\"><line x1=\"205\" y1=\"90\" x2=\"430\" y2=\"90\" stroke=\"#7c3aed\" stroke-width=\"2.5\"/><text class=\"cs-note\" x=\"300\" y=\"82\">Compute roof (flat) ≈ 92 TOPS</text></g><g class=\"cs-part\" data-k=\"meas\" data-g=\"meas\"><circle cx=\"150\" cy=\"170\" r=\"6\" fill=\"#ef4444\"/><circle cx=\"178\" cy=\"150\" r=\"6\" fill=\"#ef4444\"/><circle cx=\"250\" cy=\"120\" r=\"6\" fill=\"#ef4444\"/><text class=\"cs-note\" x=\"120\" y=\"196\">Measured points on slope = bandwidth-bound</text></g><g class=\"cs-part\" data-k=\"model\" data-g=\"flow\"><rect class=\"cs-box\" x=\"488\" y=\"60\" width=\"200\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"588\" y=\"84\">① Build cycle model</text><text class=\"cs-sub\" x=\"588\" y=\"102\">Array utilization / decode latency</text></g><g class=\"cs-part\" data-k=\"check\" data-g=\"flow\"><rect class=\"cs-box\" x=\"488\" y=\"150\" width=\"200\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"588\" y=\"174\">② Compare with roofline</text><text class=\"cs-sub\" x=\"588\" y=\"192\">Compute-bound or bandwidth-bound?</text></g><g class=\"cs-part\" data-k=\"loop\" data-g=\"flow\"><rect class=\"cs-box\" x=\"488\" y=\"240\" width=\"200\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"588\" y=\"264\">③ Below target → iterate</text><text class=\"cs-sub\" x=\"588\" y=\"282\">Tune microarchitecture in §3.1/3.5/3.6</text></g><g class=\"cs-part\" data-k=\"rtl\" data-g=\"flow\"><rect class=\"cs-box\" x=\"488\" y=\"330\" width=\"200\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"588\" y=\"354\">④ Target met → write RTL</text><text class=\"cs-sub\" x=\"588\" y=\"372\">Define block verification in parallel</text></g><g class=\"cs-part\" data-g=\"fa\"><line class=\"cs-arr\" x1=\"588\" y1=\"118\" x2=\"588\" y2=\"146\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-g=\"fa\"><line class=\"cs-arr\" x1=\"588\" y1=\"208\" x2=\"588\" y2=\"236\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-g=\"fb\"><polyline class=\"cs-arr\" points=\"488,269 460,269 460,89 484,89\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"438\" y=\"300\">Iteration loop</text><g class=\"cs-part\" data-g=\"fc\"><line class=\"cs-arr\" x1=\"588\" y1=\"298\" x2=\"588\" y2=\"326\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-g=\"probe\"><polyline class=\"cs-arr\" points=\"430,140 470,140 470,89 484,89\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"300\" y=\"252\">Roofline turns the gap to the roof into an actionable bottleneck diagnosis.</text></svg>",
+ "legend": [
+  {
+   "k": "peak",
+   "name": "Compute roof (flat) ≈ 92 TOPS",
+   "desc": "The INT8 peak of 256×256 = 65,536 8-bit MACs at 700 MHz forms the horizontal roof. At high operational intensity, performance reaches this compute-bound limit."
+  },
+  {
+   "k": "bw",
+   "name": "Bandwidth roof (slope) ~30 GB/s",
+   "desc": "The 8 GiB off-chip DDR3 bandwidth sets the sloped limit. At low operational intensity, where each byte enables only a few operations, performance is memory-bound and cannot reach the flat roof."
+  },
+  {
+   "k": "meas",
+   "name": "Measured / modeled points (red)",
+   "desc": "Plot the operational intensity and delivered performance of representative MLP, CNN, and LSTM workloads. Many TPU v1 workloads lie below the sloped roof, indicating data supply rather than the MAC array is the bottleneck."
+  },
+  {
+   "k": "flow",
+   "name": "Model → iterate → RTL flow",
+   "desc": "Build a cycle model, classify the roofline bottleneck, return to §3.1/3.5/3.6 to tune pipelines, FIFOs, or banks if the target is missed, and write RTL plus the verification plan only after the model passes. Do not discover an infeasible microarchitecture after implementation."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "axis",
+    "peak",
+    "bw"
+   ],
+   "cap": "① Draw both roofs: a 92 TOPS horizontal compute roof and a ~30 GB/s DDR3 bandwidth slope. Their intersection is the ridge point separating compute-bound from bandwidth-bound operation."
+  },
+  {
+   "keys": [
+    "meas",
+    "peak",
+    "bw"
+   ],
+   "cap": "② Plot operational intensity and modeled performance for real workloads. A point on the slope is bandwidth-bound; a point near the flat roof is compute-bound. Most TPU v1 inference workloads lie below the slope, constrained by supply rather than MAC count."
+  },
+  {
+   "keys": [
+    "model",
+    "check",
+    "probe"
+   ],
+   "cap": "③ Use a cycle model to quantify array utilization and decode/fetch latency. Compare with the roofs to answer whether the microarchitecture can deliver the throughput promised by ③ and identify the limiting stage."
+  },
+  {
+   "keys": [
+    "loop",
+    "model"
+   ],
+   "cap": "④ If below target, iterate: for a bandwidth limit, return to §3.5/3.6 to increase Unified Buffer reuse or tune banks and FIFO; for a compute or timing limit, return to §3.1 to change array size or pipelining. Rerun the model after every change."
+  },
+  {
+   "keys": [
+    "rtl"
+   ],
+   "cap": "⑤ Enter RTL (⑤) only after the target is met, and deliver a block verification plan with coverage, stimulus, and checkers in parallel. Prove performance on paper before spending months implementing."
+  }
+ ],
+ "before": [
+  "<b>Define the question first</b>: Can this microarchitecture deliver the throughput and latency promised by ③ on real workloads? Is it limited by the 92 TOPS compute peak or ~30 GB/s DDR3 bandwidth? Roofline analysis quantifies the answer.",
+  "<b>Choose modeling scope</b>: Select analytical roofline and/or block-level cycle-accurate C++/SystemC models; decide which metrics to model, including systolic utilization, Unified Buffer reuse, decode and fetch latency, fill/drain overhead, and the representative workload set.",
+  "<b>Required inputs</b>: Throughput and latency budgets from architecture (③), peak compute (65,536 MACs × 700 MHz ≈ 92 TOPS), off-chip bandwidth (~30 GB/s), 24 MiB UB capacity, and operational intensity of target MLP/CNN/LSTM workloads.",
+  "<b>Resolve the optimization direction</b>: Whether each workload falls on the memory-bound or compute-bound side of the ridge determines which resource to improve. Plan how each block will be verified at the same time; a functional model without a performance model is insufficient."
+ ],
+ "during": [
+  "<b>Goal</b>: Measure performance before writing RTL and confirm the microarchitecture itself meets targets. The discipline is simple: do not finish RTL only to discover that the architecture cannot deliver its specification and requires months of rework.",
+  "<b>Start with analytical roofline for direction</b>: Drawing a 92 TOPS flat roof and ~30 GB/s slope quickly classifies each workload. TPU v1 results show many inference workloads below the slope, limited by data supply rather than array capacity.",
+  "<b>Add a block-level cycle model for detail</b>: A cycle-accurate model resolves utilization and latency hidden by analytical roofline, including actual systolic utilization, UB reuse, host PCIe CISC-command overhead, and fill/drain amortization.",
+  "<b>Iterate instead of forcing RTL</b>: For a bandwidth bottleneck, revisit §3.5/3.6 to enlarge effective UB reuse, improve weight/activation reuse, and reorganize banks or FIFO. For a compute or frequency bottleneck, revisit §3.1 for array size or pipeline depth. RTL cannot cheaply repair a fundamental microarchitecture shortfall.",
+  "<b>Plan performance and verification together</b>: Have verification define block coverage, stimulus, and checkers against the same microarchitecture. The model proves it runs fast enough; the verification plan proves it runs correctly. Both feed RTL (⑤).",
+  "<b>Turn roofline gap into decisions</b>: Distance below the roof quantifies wasted capability. Translate it into specific iteration items—more UB reuse, bank changes, or FIFO tuning—and stop when representative points are sufficiently close rather than adding area for an unreachable headline peak."
+ ],
+ "result": [
+  {
+   "label": "Peak compute (flat roof)",
+   "value": "≈ 92 TOPS (INT8, 65,536 MACs × 700 MHz)"
+  },
+  {
+   "label": "Bandwidth roof (slope)",
+   "value": "~30 GB/s (off-chip 8 GiB DDR3)"
+  },
+  {
+   "label": "Modeling conclusion",
+   "value": "Most inference workloads are memory-bound, limited by bandwidth rather than MACs"
+  },
+  {
+   "label": "Model hierarchy",
+   "value": "Analytical roofline + block-level cycle-accurate model"
+  },
+  {
+   "label": "Pass criterion",
+   "value": "Target array utilization and measured points sufficiently close to the roof"
+  },
+  {
+   "label": "Deliverables",
+   "value": "Performance model and conclusions + block verification plan (coverage/stimulus)"
+  }
+ ],
+ "after": [
+  "<b>Make the gate decision from model results</b>: Release RTL (⑤) only when target workloads meet the utilization and latency budget from ③. Otherwise take the roofline gap back to §3.1/3.5/3.6, revise the microarchitecture, and close the loop by rerunning the model.",
+  "<b>Deliver performance evidence</b>: Place the roofline plot, cycle model, and per-workload utilization and bottleneck conclusions in the microarchitecture specification as traceable proof that the design meets its target.",
+  "<b>Deliver the block verification plan</b>: Define coverage points such as full-pipeline utilization, FIFO full/empty backpressure, fill/drain boundaries, and command sequences, plus stimulus and checkers, so functional verification proceeds alongside performance work.",
+  "<b>Back-annotate the model from RTL</b>: When RTL exists, use actual cycle counts to calibrate the performance model. If implementation diverges from the expected roofline, iterate early rather than waiting until stage ⑦.",
+  "<b>Preserve the model for the next generation</b>: Keep roofline and cycle models as reusable design-space-exploration assets. Later TPU v2/v3/v4 pod designs can rapidly evaluate new bandwidth and compute points without starting from a blank model."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (roofline analysis, 92 TOPS peak, ~30 GB/s DDR3, and predominantly memory-bound workloads are disclosed; the specific cycle model and verification-plan form follow common inference-ASIC performance-modeling practice)"
+}

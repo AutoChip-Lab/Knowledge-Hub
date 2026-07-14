@@ -1,0 +1,122 @@
+{
+  "secNum": "3.2",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · Hardware/Software Partitioning: Harden Matrix Math, Leave Complex Control to the Host",
+  "oneLine": "TPU is a decisive example of functional partitioning: harden only the most valuable, regular inference operations—matrix multiplication, activation, and normalization—and leave complex control and scheduling to host software.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"24\">Dashed: host control · Solid: fixed-function hardware</text><g class=\"cs-part\" data-k=\"host\" data-g=\"soft\"><rect class=\"cs-box\" x=\"40\" y=\"150\" width=\"140\" height=\"78\" rx=\"8\" stroke-dasharray=\"5 4\"/><text class=\"cs-t\" x=\"110\" y=\"180\">Host</text><text class=\"cs-sub\" x=\"110\" y=\"198\">Control / scheduling / orchestration</text><text class=\"cs-sub\" x=\"110\" y=\"214\">TensorFlow / XLA</text></g><line class=\"cs-arr\" x1=\"180\" y1=\"189\" x2=\"232\" y2=\"189\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"182\" y=\"178\">PCIe 3.0</text><text class=\"cs-note\" x=\"182\" y=\"226\">~a dozen CISC instructions</text><rect x=\"236\" y=\"44\" width=\"450\" height=\"328\" rx=\"10\" fill=\"none\" stroke=\"#cbd5e1\" stroke-dasharray=\"2 4\"/><text class=\"cs-note\" x=\"246\" y=\"62\">TPU v1 (fixed-function datapath)</text><g class=\"cs-part\" data-k=\"ddr3\" data-g=\"hard\"><rect class=\"cs-box\" x=\"252\" y=\"78\" width=\"120\" height=\"48\" rx=\"8\"/><text class=\"cs-t\" x=\"312\" y=\"100\">DDR3</text><text class=\"cs-sub\" x=\"312\" y=\"116\">8 GiB · ~30 GB/s weights</text></g><g class=\"cs-part\" data-k=\"wfifo\" data-g=\"hard\"><rect class=\"cs-box\" x=\"252\" y=\"150\" width=\"120\" height=\"42\" rx=\"8\"/><text class=\"cs-t\" x=\"312\" y=\"170\">Weight FIFO</text><text class=\"cs-sub\" x=\"312\" y=\"185\">Weight prefetch</text></g><line class=\"cs-arr\" x1=\"312\" y1=\"126\" x2=\"312\" y2=\"148\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"mxu\" data-g=\"hard\"><rect class=\"cs-box\" x=\"416\" y=\"150\" width=\"150\" height=\"92\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#818cf8\"/><text class=\"cs-t\" x=\"491\" y=\"184\">MXU matrix unit</text><text class=\"cs-sub\" x=\"491\" y=\"202\">256×256 systolic array</text><text class=\"cs-sub\" x=\"491\" y=\"218\">8-bit MAC · ~92 TOPS</text></g><line class=\"cs-arr\" x1=\"372\" y1=\"171\" x2=\"414\" y2=\"186\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"acc\" data-g=\"hard\"><rect class=\"cs-box\" x=\"416\" y=\"262\" width=\"150\" height=\"40\" rx=\"8\"/><text class=\"cs-t\" x=\"491\" y=\"282\">Accumulators</text><text class=\"cs-sub\" x=\"491\" y=\"296\">4 MiB · INT32 partial sums</text></g><line class=\"cs-arr\" x1=\"491\" y1=\"242\" x2=\"491\" y2=\"260\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"act\" data-g=\"hard\"><rect class=\"cs-box\" x=\"592\" y=\"262\" width=\"94\" height=\"40\" rx=\"8\"/><text class=\"cs-t\" x=\"639\" y=\"282\">Activation / pooling</text><text class=\"cs-sub\" x=\"639\" y=\"296\">Normalization</text></g><line class=\"cs-arr\" x1=\"566\" y1=\"282\" x2=\"590\" y2=\"282\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"ub\" data-g=\"hard\"><rect class=\"cs-box\" x=\"252\" y=\"262\" width=\"120\" height=\"92\" rx=\"8\"/><text class=\"cs-t\" x=\"312\" y=\"296\">Unified Buffer</text><text class=\"cs-sub\" x=\"312\" y=\"314\">24 MiB scratchpad</text><text class=\"cs-sub\" x=\"312\" y=\"330\">Activations / intermediates</text></g><line class=\"cs-arr\" x1=\"372\" y1=\"280\" x2=\"414\" y2=\"200\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"639,302 639,344 312,344 312,356\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"396\" y=\"362\">Results write back to Unified Buffer →</text></svg>",
+  "legend": [
+    {
+      "k": "soft",
+      "name": "Host software (dashed)",
+      "desc": "Control flow, scheduling, operator orchestration, loops, and branches are complex but not performance hotspots. Leave them to the CPU host and TensorFlow/XLA instead of spending silicon on equivalent logic."
+    },
+    {
+      "k": "mxu",
+      "name": "MXU matrix unit (hardened core)",
+      "desc": "Matrix multiplication is the inference hotspot. Hardening it as a 256×256 systolic array is the central partitioning decision, with area and power prioritized for this block."
+    },
+    {
+      "k": "act",
+      "name": "Activation / pooling / normalization",
+      "desc": "A few frequent, regular elementwise operations beyond matrix multiplication also merit fixed-function units placed near the array output to avoid extra data movement."
+    },
+    {
+      "k": "ub",
+      "name": "Unified Buffer (on-chip data hub)",
+      "desc": "A 24 MiB software-managed scratchpad keeps activations and intermediates on chip so fixed-function blocks can hand data off locally instead of repeatedly accessing DDR3."
+    },
+    {
+      "k": "wfifo",
+      "name": "Weight FIFO / DDR3 (supply boundary)",
+      "desc": "The weight path is separated: DDR3 stores weights and the Weight FIFO prefetches them into the array, decoupling weight delivery from matrix computation."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "soft",
+        "mxu",
+        "act"
+      ],
+      "cap": "① Draw the boundary: divide functions into fixed hardware worth hardening (MXU, activation, normalization; solid) and complex control best left in software (dashed)."
+    },
+    {
+      "keys": [
+        "soft"
+      ],
+      "cap": "② Define the interface: the host issues only about a dozen CISC instructions over PCIe—load weights, multiply matrices, activate, write back—while the chip avoids complex control flow."
+    },
+    {
+      "keys": [
+        "wfifo",
+        "ddr3",
+        "mxu"
+      ],
+      "cap": "③ Separate supply: DDR3 → Weight FIFO prefetch → array decouples fetching weights from matrix multiplication."
+    },
+    {
+      "keys": [
+        "mxu",
+        "acc",
+        "act"
+      ],
+      "cap": "④ Chain the datapath: array computation → partial-sum accumulators → activation, pooling, and normalization, connected through clear one-way interfaces."
+    },
+    {
+      "keys": [
+        "act",
+        "ub",
+        "mxu"
+      ],
+      "cap": "⑤ Close the loop: write results to the Unified Buffer as the next layer's inputs; the on-chip hub circulates data while every module has one clear role."
+    }
+  ],
+  "before": [
+    "<b>Define the partitioning question</b>: Which functions belong in hardware and which in software? TPU hardens only inference hotspots and delegates everything else to the host.",
+    "<b>Decisions to make</b>: The hardware/software boundary, the set of fixed-function blocks, block interfaces and data formats, instruction abstraction (fine-grained RISC or coarse-grained CISC), and whether control resides on chip or in the host.",
+    "<b>Required inputs</b>: The workload profile (§3.1)—especially which operators dominate runtime—the regularity of each operator, and the TensorFlow/XLA ecosystem into which the design must compile.",
+    "<b>Hard constraints</b>: Area and power limit how much can be hardened; changing models demand flexibility; and host bandwidth and latency determine whether control can be offloaded safely."
+  ],
+  "during": [
+    "<b>Set the partitioning rule</b>: Harden functions that are both hot and regular; keep complex, fast-changing behavior in software. The core tradeoff is specialization for efficiency versus generality for flexibility.",
+    "<b>Make matrix multiplication central</b>: GEMM dominates inference time, so harden it as a 256×256 MXU and give it first claim on area and power. Every other block supports this core.",
+    "<b>Add only a few specialized units</b>: Activation, pooling, and normalization are frequent, regular elementwise operations. Small fixed-function units beside the array output process them locally and avoid round-trip data movement.",
+    "<b>Delegate complex control to the host</b>: Loops, branches, scheduling, and tensor orchestration are complex but not hotspots. A host-driven design sends about a dozen CISC instructions over PCIe, saving control area for MACs.",
+    "<b>Choose coarse instruction semantics</b>: With host control and long-running array operations, coarse CISC commands such as “matrix multiply” and “read weights” reduce instruction bandwidth and host overhead relative to fine-grained RISC.",
+    "<b>Define clean module interfaces</b>: Give DDR3/Weight FIFO, Unified Buffer, and accumulators explicit responsibilities for weights, activations/intermediates, and partial sums. Connect them with simple one-way dataflow interfaces."
+  ],
+  "result": [
+    {
+      "label": "Hardened functions",
+      "value": "MXU + activation / pooling / normalization"
+    },
+    {
+      "label": "Software responsibilities",
+      "value": "Control flow / scheduling / operator orchestration"
+    },
+    {
+      "label": "Host interface",
+      "value": "PCIe 3.0 · CISC instructions"
+    },
+    {
+      "label": "Instruction set",
+      "value": "Only about a dozen CISC instructions"
+    },
+    {
+      "label": "On-chip data hub",
+      "value": "24 MiB Unified Buffer"
+    },
+    {
+      "label": "Supply boundary",
+      "value": "8 GiB DDR3 → Weight FIFO"
+    }
+  ],
+  "after": [
+    "<b>Validate the partition</b>: Run representative workloads and confirm that hardened blocks consume most execution time while host software and PCIe do not become bottlenecks. Move the boundary if they do.",
+    "<b>Propagate block requirements</b>: Specify the MXU for compute (§3.3), Unified Buffer capacity for memory (§3.4), delivery cadence for dataflow (§3.6), and an initial CISC control interface.",
+    "<b>Freeze inter-block contracts</b>: Document data formats, handshakes, and timing boundaries so teams can develop microarchitectures in parallel against stable interfaces.",
+    "<b>Review flexibility headroom</b>: Ask whether future operators can remain in host software or require another fixed-function unit, and use that answer to guide the product family.",
+    "<b>Plan block-level verification and handoff</b>: Define verification for every fixed-function block, performance-counter hooks, and co-verification with the TensorFlow/XLA software stack."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017. Facts disclosed in the paper are distinguished from illustrative examples and standard industry practice; the latter are not presented as disclosed TPU v1 implementation details."
+}

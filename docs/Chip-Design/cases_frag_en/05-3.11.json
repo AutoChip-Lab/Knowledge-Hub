@@ -1,0 +1,118 @@
+{
+ "secNum": "3.11",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Write one parameterized PE and generate a 256×256 array—change N to scale a product family",
+ "oneLine": "Parameters and module reuse turn “write once, instantiate many” into RTL. Make widths, depths, and array dimensions parameters, then use nested generate-for loops to instantiate one PE module N×N times, producing TPU v1's 65,536-MAC systolic array. Changing N scales compute capacity from the same source without hand-writing tens of thousands of instances. TPU RTL is not public; its documented structure is used here to illustrate standard parameter/generate practice.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">Left: one parameterized PE module (write once; expose controls)</text><g class=\"cs-part\" data-k=\"param\" data-g=\"param\"><rect class=\"cs-box\" x=\"40\" y=\"44\" width=\"248\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"164\" y=\"68\">parameter controls</text><text class=\"cs-sub\" x=\"164\" y=\"86\">N=256 · DW_A=8 · DW_ACC=32</text></g><line class=\"cs-arr\" x1=\"164\" y1=\"102\" x2=\"164\" y2=\"128\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-box\" x=\"40\" y=\"132\" width=\"248\" height=\"116\" rx=\"8\"/><path d=\"M40,248 L40,230 L58,248 Z\" fill=\"#8b5cf6\"/><text class=\"cs-t\" x=\"164\" y=\"158\">module pe #(parameters)</text><text class=\"cs-sub\" x=\"164\" y=\"180\">logic [DW_A-1:0] a, w;</text><text class=\"cs-sub\" x=\"164\" y=\"198\">logic [DW_ACC-1:0] acc;</text><text class=\"cs-sub\" x=\"164\" y=\"216\">acc &lt;= acc + a*w; // parameterized width</text><text class=\"cs-note\" x=\"164\" y=\"238\">Reusable block: write only this</text></g><text class=\"cs-note\" x=\"316\" y=\"92\">Nested generate-for loops</text><text class=\"cs-note\" x=\"316\" y=\"110\">Instantiate the same pe N×N times</text><g class=\"cs-part\" data-k=\"gen\" data-g=\"gen\"><rect class=\"cs-box\" x=\"316\" y=\"124\" width=\"120\" height=\"92\" rx=\"8\"/><text class=\"cs-sub\" x=\"376\" y=\"150\">genvar i,j;</text><text class=\"cs-sub\" x=\"376\" y=\"170\">for(i..N)</text><text class=\"cs-sub\" x=\"376\" y=\"188\"> for(j..N)</text><text class=\"cs-sub\" x=\"376\" y=\"206\">  pe u(...);</text></g><line class=\"cs-arr\" x1=\"288\" y1=\"190\" x2=\"312\" y2=\"170\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"436\" y1=\"170\" x2=\"470\" y2=\"170\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"470\" y=\"40\">Right: elaborated N×N systolic array (identical cells)</text><g class=\"cs-part\" data-k=\"cell\" data-g=\"array\"><rect class=\"cs-cell\" x=\"478\" y=\"56\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"498\" y=\"80\">pe</text><rect class=\"cs-cell\" x=\"522\" y=\"56\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"542\" y=\"80\">pe</text><rect class=\"cs-cell\" x=\"566\" y=\"56\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"586\" y=\"80\">pe</text><rect class=\"cs-cell\" x=\"638\" y=\"56\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"658\" y=\"80\">pe</text><rect class=\"cs-cell\" x=\"478\" y=\"100\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"498\" y=\"124\">pe</text><rect class=\"cs-cell\" x=\"522\" y=\"100\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"542\" y=\"124\">pe</text><rect class=\"cs-cell\" x=\"566\" y=\"100\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"586\" y=\"124\">pe</text><rect class=\"cs-cell\" x=\"638\" y=\"100\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"658\" y=\"124\">pe</text><rect class=\"cs-cell\" x=\"478\" y=\"144\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"498\" y=\"168\">pe</text><rect class=\"cs-cell\" x=\"522\" y=\"144\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"542\" y=\"168\">pe</text><rect class=\"cs-cell\" x=\"566\" y=\"144\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"586\" y=\"168\">pe</text><rect class=\"cs-cell\" x=\"638\" y=\"144\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"658\" y=\"168\">pe</text><rect class=\"cs-cell\" x=\"478\" y=\"216\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"498\" y=\"240\">pe</text><rect class=\"cs-cell\" x=\"522\" y=\"216\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"542\" y=\"240\">pe</text><rect class=\"cs-cell\" x=\"566\" y=\"216\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"586\" y=\"240\">pe</text><rect class=\"cs-cell\" x=\"638\" y=\"216\" width=\"40\" height=\"40\"/><text class=\"cs-cellt\" x=\"658\" y=\"240\">pe</text></g><text class=\"cs-note\" x=\"614\" y=\"84\">···</text><text class=\"cs-note\" x=\"614\" y=\"128\">···</text><text class=\"cs-note\" x=\"498\" y=\"206\">⋮</text><text class=\"cs-note\" x=\"658\" y=\"206\">⋮</text><text class=\"cs-sub\" x=\"578\" y=\"278\">N×N = 256×256 = 65,536 MACs</text><line x1=\"40\" y1=\"296\" x2=\"708\" y2=\"296\" stroke=\"#e2e8f0\" stroke-dasharray=\"5 4\"/><text class=\"cs-note\" x=\"40\" y=\"318\">Change N to scale compute from one source</text><g class=\"cs-part\" data-k=\"family\" data-g=\"family\"><rect class=\"cs-box\" x=\"40\" y=\"330\" width=\"200\" height=\"54\" rx=\"8\"/><text class=\"cs-t\" x=\"140\" y=\"354\">N=256 → flagship</text><text class=\"cs-sub\" x=\"140\" y=\"372\">65,536 MACs · ~92 TOPS</text></g><g class=\"cs-part\" data-k=\"family2\" data-g=\"family\"><rect class=\"cs-box\" x=\"260\" y=\"330\" width=\"200\" height=\"54\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"354\">N=128 → smaller core</text><text class=\"cs-sub\" x=\"360\" y=\"372\">16,384 MACs · 1/4 area</text></g><g class=\"cs-part\" data-k=\"family3\" data-g=\"family\"><rect class=\"cs-box\" x=\"480\" y=\"330\" width=\"228\" height=\"54\" rx=\"8\"/><text class=\"cs-t\" x=\"594\" y=\"354\">Same source · parameter change only</text><text class=\"cs-sub\" x=\"594\" y=\"372\">Fixed at elaboration; 0 copied instances</text></g></svg>",
+ "legend": [
+  {
+   "k": "param",
+   "name": "parameter controls (compile-time constants)",
+   "desc": "Declare quantities that vary—array dimension N, activation/weight width DW_A, and accumulator width DW_ACC—as parameters or localparams. They are fixed during elaboration, not runtime signals; circuit scale and widths are fully determined before synthesis. These controls make a module configurable."
+  },
+  {
+   "k": "pe",
+   "name": "Parameterized PE module (the one reusable building block)",
+   "desc": "Inside module pe #(parameter DW_A=8, DW_ACC=32), express widths as [DW_A-1:0] and [DW_ACC-1:0] rather than hard-coding [7:0] and [31:0]. This is the only multiply-accumulate unit written manually. Once it is self-consistent and independently verified, every array instance is a copy and one source edit updates all of them."
+  },
+  {
+   "k": "gen",
+   "name": "Nested generate-for loops (elaboration expansion)",
+   "desc": "genvar i,j; generate for(i=0;i<N;i++) for(j=0;j<N;j++) begin:cell ... pe u_pe(...); end is not a runtime loop. During elaboration, the tool replicates the body N×N times, creates N×N PE instances, and connects neighbors from indices i and j. It is the key construct for writing once and filling an array."
+  },
+  {
+   "k": "array",
+   "name": "Elaborated N×N systolic array",
+   "desc": "After generate expansion, 256×256 = 65,536 PE instances form TPU v1's 8-bit-MAC systolic array. Every cell is an instance of the same pe module (all diagram cells use data-k=cell); activations flow horizontally, partial sums accumulate vertically, and parameter N defines the side length."
+  },
+  {
+   "k": "family",
+   "name": "Product family from parameter changes",
+   "desc": "Because scale comes entirely from parameters, changing N from 256 to 128 reduces 65,536 MACs to 16,384 and area to roughly one quarter; changing widths selects another numeric format. A few parameter changes can produce derivatives with different throughput/area from one source, without copied-instance drift."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "param",
+    "pe"
+   ],
+   "cap": "① Extract every changing quantity into a parameter: array dimension N, activation width DW_A=8, and accumulator width DW_ACC=32. Use [DW_A-1:0] inside the PE rather than [7:0], decoupling the module from a fixed configuration."
+  },
+  {
+   "keys": [
+    "pe"
+   ],
+   "cap": "② Hand-write and verify only one pe module—the cycle containing an 8-bit multiply and 32-bit accumulation. It is the reusable building block: verify it once and all generated instances inherit the correction, reducing repeated implementation from 65,536 units to one."
+  },
+  {
+   "keys": [
+    "gen",
+    "array"
+   ],
+   "cap": "③ Use nested generate-for loops (genvar i,j) to instantiate pe N×N times and connect each output to its right/down neighbor. Elaboration expands the structure into a 256×256 systolic array with no manually repeated instances."
+  },
+  {
+   "keys": [
+    "array",
+    "param"
+   ],
+   "cap": "④ Parameters fix array size, adjacency, and signal widths during elaboration: N determines rows and columns, while DW_* determines each wire width. The source uses N rather than a hard-coded 256."
+  },
+  {
+   "keys": [
+    "family"
+   ],
+   "cap": "⑤ Those controls enable a product family: N=256 represents the ~92 TOPS configuration; illustrative N=128 uses roughly one-quarter the area. One parameter change creates a derivative without rewriting, copying, or introducing manual drift."
+  }
+ ],
+ "before": [
+  "<b>Identify what should be parameterized</b>: list quantities that truly vary by version or product—array dimension N, activation/weight width, accumulator width, and UB/FIFO depth. Parameterize only values expected to change; turning immutable constants into controls adds needless complexity.",
+  "<b>Standardize parameter names and defaults</b>: use uppercase names such as N, DW_A, and DW_ACC with sensible defaults (N=256, DW_A=8, DW_ACC=32). Distinguish externally configurable top-level parameters from derived internal localparams such as product width DW_P = 2*DW_A, which callers should not override.",
+  "<b>Define module hierarchy and interfaces</b>: establish single PE → row/column → N×N array, and specify every layer's ports using parameter expressions such as [DW_ACC-1:0]. Generate wiring depends on stable interfaces; changing them late forces broad rework.",
+  "<b>State synthesizability constraints</b>: generate loop bounds and width expressions must be compile-time parameter/localparam constants and cannot depend on runtime signals; genvar is used only for generate. Put constant loop bounds, parameterized widths, and no magic numbers into coding standards.",
+  "<b>Define measurable success criteria</b>: require the single pe to pass standalone functional verification; N=2/4/256 to elaborate exactly N×N instances with correct wiring; and no hard-coded scale/width constants so one N change propagates everywhere."
+ ],
+ "during": [
+  "<b>Use parameter expressions for every width; eliminate magic numbers</b>: declare logic [DW_A-1:0] a, w; logic [DW_ACC-1:0] acc;, never fixed [7:0]/[31:0]. Derive widths with localparam, for example localparam DW_P = 2*DW_A. Any residual hard-coded 8 or 32 can silently break alignment when parameters change.",
+  "<b>Expand repeated structures with generate + genvar, not copy/paste</b>: for example, genvar i,j; generate for(i=0;i<N;i++) for(j=0;j<N;j++) begin: cell pe #(.DW_A(DW_A),.DW_ACC(DW_ACC)) u_pe(...); end endgenerate; Name the begin block for hierarchical references and waveform debugging. Manual instance copying is error-prone and cannot scale with N.",
+  "<b>Connect parameters and ports explicitly by name</b>: pe #(.DW_A(DW_A), .DW_ACC(DW_ACC)) u_pe(.a(...),.w(...),.acc_o(...)); Use named .parameter(value) and .port(signal) associations rather than positional connections. Named connections do not silently shift when ports are added or renamed.",
+  "<b>Compute neighbor wiring with genvar indices; handle boundaries separately</b>: internal PEs pass activations to [i][j+1] and partial sums to [i+1][j]. Generate these connections from i,j; handle first-row/column inputs and last-row/column outputs with generate-if branches or sentinel boundary arrays so no index goes out of range.",
+  "<b>Derive each secondary quantity once from a single source of truth</b>: compute product width, address width ($clog2(depth)), and row/column counts from top-level parameters using localparams defined in one place. Then changing N or a width automatically updates all derivatives, which is essential for a scalable product family.",
+  "<b>Scope note</b>: the TPU v1 paper documents a 256×256 array, 65,536 8-bit MACs, weight-stationary dataflow, and 32-bit accumulators, but not its RTL. The parameter names, generate constructs, and HDL snippets here are standard illustrative practice for array accelerators, not private TPU code. N=128 is an illustrative derivative, not a released TPU product."
+ ],
+ "result": [
+  {
+   "label": "Parameterized module (illustrative HDL)",
+   "value": "module pe #(parameter DW_A=8, DW_ACC=32) ( ... ); all internal widths use [DW_A-1:0]/[DW_ACC-1:0]"
+  },
+  {
+   "label": "Expansion loop (illustrative HDL)",
+   "value": "genvar i,j; generate for(i..N) for(j..N) begin: cell pe #(.DW_A,.DW_ACC) u_pe(...); end endgenerate"
+  },
+  {
+   "label": "Top-level controls",
+   "value": "parameter N=256, DW_A=8, DW_ACC=32 (compile-time constants)"
+  },
+  {
+   "label": "Elaborated scale",
+   "value": "N×N = 256×256 = 65,536 PE instances (manually written instances = 1)"
+  },
+  {
+   "label": "Derived quantities",
+   "value": "localparam DW_P=2*DW_A, etc.; one source of truth so N/width changes propagate"
+  },
+  {
+   "label": "Reuse benefit",
+   "value": "N=128 → 16,384 MACs and ~1/4 area; one source scales a product family with no repeated instances"
+  }
+ ],
+ "after": [
+  "<b>Verify one PE independently before the array</b>: test the parameterized PE across several width configurations and boundary cases such as carry, overflow, and signed behavior. Reuse delivers “verify once, instantiate many” only if the building block is correct.",
+  "<b>Elaborate and simulate with small N first</b>: use N=2 and N=4 to count exactly N×N instances and inspect right/down neighbor wiring and boundaries in the hierarchy and waveforms before returning to N=256. Small arrays expose generate index and boundary defects quickly and cheaply.",
+  "<b>Run lint for hard-coded values and width mismatches</b>: detect remaining magic numbers such as 8/32/256, truncating width mismatches, nonconstant generate bounds, and positional/implicit connections. A missed parameter conversion is the most common parameterization defect.",
+  "<b>Trial-synthesize several parameter points</b>: synthesize N=256 and a smaller N to confirm instance count and area scale with N² while the local PE multiply-add critical path remains near the 700 MHz target and does not grow with N. Also confirm no unintended latches are inferred.",
+  "<b>Freeze the parameter specification for verification</b>: deliver public parameters, legal ranges, and derived localparam relationships with RTL. Verification should regress a matrix of N and width combinations so the entire product family rests on the same verified source."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the paper documents 256×256 = 65,536 8-bit MACs, weight-stationary dataflow, 32-bit accumulators, and ~92 TOPS; parameter/generate constructs, named instantiation, and HDL snippets are standard parameterized-RTL practices, TPU RTL is not public, and the N=128 derivative is illustrative)"
+}

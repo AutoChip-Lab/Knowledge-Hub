@@ -1,0 +1,120 @@
+{
+  "secNum": "3.7",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · Physical-Verification Signoff: DRC, LVS, Antenna, and ERC Must Be Clean",
+  "oneLine": "After timing and power converge, the final layout still faces a hard manufacturing gate. Golden verification treats GDSII as geometry: DRC checks foundry width/spacing/density rules, LVS extracts devices/connectivity and compares them with the signoff netlist, antenna checks plasma-etch charging, and ERC checks electrical rules. Every issue must be fixed or formally waived by the foundry before a 28 nm tapeout is accepted.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 412\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"24\">Physical signoff: GDSII geometry passes golden DRC/LVS/antenna/ERC with no unresolved issue</text><g class=\"cs-part\" data-k=\"layout\" data-g=\"layout\"><rect class=\"cs-box\" x=\"24\" y=\"48\" width=\"170\" height=\"120\" rx=\"8\"/><text class=\"cs-t\" x=\"109\" y=\"74\">Final layout (GDSII)</text><text class=\"cs-sub\" x=\"109\" y=\"96\">256×256 array geometry</text><text class=\"cs-sub\" x=\"109\" y=\"114\">24 MiB UB / accumulators / PDN</text><text class=\"cs-sub\" x=\"109\" y=\"132\">Multilayer metal + via polygons</text><text class=\"cs-sub\" x=\"109\" y=\"152\">28 nm · die ≤331 mm²</text></g><line class=\"cs-arr\" x1=\"194\" y1=\"108\" x2=\"252\" y2=\"80\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"194\" y1=\"108\" x2=\"252\" y2=\"140\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"194\" y1=\"108\" x2=\"252\" y2=\"200\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"drc\" data-g=\"drc\"><rect class=\"cs-box\" x=\"256\" y=\"50\" width=\"232\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"372\" y=\"74\">DRC</text><text class=\"cs-sub\" x=\"372\" y=\"94\">Width / spacing / density / antenna vs foundry runset</text></g><g class=\"cs-part\" data-k=\"lvs\" data-g=\"lvs\"><rect class=\"cs-box\" x=\"256\" y=\"116\" width=\"232\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"372\" y=\"140\">LVS: layout ≡ netlist</text><text class=\"cs-sub\" x=\"372\" y=\"160\">Extract devices/nets and compare point by point</text></g><g class=\"cs-part\" data-k=\"ant\" data-g=\"ant\"><rect class=\"cs-box\" x=\"256\" y=\"182\" width=\"232\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"372\" y=\"206\">Antenna + ERC</text><text class=\"cs-sub\" x=\"372\" y=\"226\">Plasma antenna ratio / substrate and power rules</text></g><line class=\"cs-arr\" x1=\"488\" y1=\"78\" x2=\"552\" y2=\"120\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"488\" y1=\"144\" x2=\"552\" y2=\"144\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"488\" y1=\"210\" x2=\"552\" y2=\"168\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"gate\" data-g=\"gate\"><rect class=\"cs-box\" x=\"556\" y=\"108\" width=\"140\" height=\"72\" rx=\"8\"/><text class=\"cs-t\" x=\"626\" y=\"136\">Layout-acceptance gate</text><text class=\"cs-sub\" x=\"626\" y=\"158\">All three clean ✓</text><text class=\"cs-sub\" x=\"626\" y=\"174\">Release</text></g><g class=\"cs-part\" data-k=\"clean\" data-g=\"clean\"><rect class=\"cs-box\" x=\"556\" y=\"232\" width=\"140\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"626\" y=\"258\">Clean ✓ → tapeout</text><text class=\"cs-sub\" x=\"626\" y=\"278\">Deliver GDSII to foundry</text></g><line class=\"cs-arr\" x1=\"626\" y1=\"180\" x2=\"626\" y2=\"230\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"viol\" data-g=\"viol\"><rect class=\"cs-box\" x=\"180\" y=\"288\" width=\"356\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"358\" y=\"314\">Violation ✗ → fix or foundry-approved waiver</text><text class=\"cs-sub\" x=\"358\" y=\"336\">Geometry error → ⑧ ECO; accepted exception → formal waiver</text></g><line class=\"cs-arr\" x1=\"372\" y1=\"238\" x2=\"372\" y2=\"286\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"180,320 110,320 110,168 96,168\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"118\" y=\"372\">After every edit, rerun DRC/LVS/antenna until zero unresolved issues</text><text class=\"cs-note\" x=\"24\" y=\"394\">DRC/LVS/antenna/ERC and waivers are standard signoff practice</text></svg>",
+  "legend": [
+    {
+      "k": "drc",
+      "name": "DRC (manufacturing geometry rules)",
+      "desc": "Treat layout as polygons and check the foundry runset: minimum width/spacing, metal density, via/contact rules, wells/implants, dummy fill, antenna, and many other constraints. Any true violation may be unmanufacturable or harm yield. Use the foundry-qualified golden checker and official 28 nm runset."
+    },
+    {
+      "k": "lvs",
+      "name": "LVS (layout ≡ netlist)",
+      "desc": "Extract devices and connectivity from geometry, then compare the layout netlist point by point with the signed gate/schematic netlist. LVS detects shorts, opens, wrong devices/parameters, and supply mistakes. One incorrect connection in the 65,536-MAC array or memory can destroy the part, so clean LVS is mandatory."
+    },
+    {
+      "k": "ant",
+      "name": "Antenna + ERC",
+      "desc": "During plasma etch, temporarily floating metal can collect charge and damage thin gate oxide if its area ratio is excessive; repair with antenna diodes or layer jumpers. ERC checks supplies, grounds, substrate/well bias, and floating nodes. Both are required physical-signoff checks."
+    },
+    {
+      "k": "gate",
+      "name": "Layout-acceptance gate",
+      "desc": "DRC, LVS, and antenna/ERC must report zero unresolved violations. Remaining items need formal foundry-approved waivers. This is pass/fail, not a score: any uncorrected, unwaived issue blocks 28 nm tapeout."
+    },
+    {
+      "k": "viol",
+      "name": "Violation handling: ECO or foundry waiver",
+      "desc": "Real errors return to ⑧ for placement/routing, diode, fill, or spacing ECO and full recheck. A checker artifact or accepted special structure may proceed only with a foundry-approved, archived waiver. Designers cannot self-waive."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "layout",
+        "drc"
+      ],
+      "cap": "① Run DRC on final array, UB, accumulator, and PDN geometry against the official foundry runset for width, spacing, density, vias, antenna, and all other rules."
+    },
+    {
+      "keys": [
+        "layout",
+        "lvs"
+      ],
+      "cap": "② Run LVS by extracting devices/nets from layout and comparing each device and node with the signoff netlist, catching shorts, opens, wrong devices, and supply mistakes."
+    },
+    {
+      "keys": [
+        "layout",
+        "ant"
+      ],
+      "cap": "③ Run antenna and ERC: verify every gate's plasma-etch antenna ratio, repair with diodes/jumpers, and check power, substrate, and floating-node rules."
+    },
+    {
+      "keys": [
+        "viol",
+        "layout"
+      ],
+      "cap": "④ Resolve every issue through real ⑧ layout ECO or a formal foundry waiver; after any edit rerun the complete coupled verification suite."
+    },
+    {
+      "keys": [
+        "gate",
+        "clean"
+      ],
+      "cap": "⑤ Pass the layout gate only with zero unresolved DRC/LVS/antenna/ERC issues; then deliver GDSII to the foundry."
+    }
+  ],
+  "before": [
+    "<b>Prepare the foundry-qualified signoff kit</b>: Use the certified checker and 28 nm DRC runset, LVS extraction/layer maps, antenna rules, and ERC deck matching the exact fabrication process revision.",
+    "<b>Freeze both signoff inputs</b>: Compare final GDSII—including ECO, fill, IP abstraction, and PDN—with the final gate netlist already proven equivalent to RTL. Nonfinal inputs make LVS meaningless.",
+    "<b>Define pass and waiver policy</b>: Each violation class must be zero, or every residual item must carry a formal foundry approval. Agree in advance which special IP structures may be reviewed; designers never simply ignore a violation.",
+    "<b>Plan capacity for a large die</b>: A ≤331 mm² design with 65,536 MACs makes full-chip DRC/LVS expensive. Use hierarchical block verification for iteration, but finish with a flat or equivalent full-coverage top-level confirmation.",
+    "<b>Disclosure boundary</b>: DRC, LVS, antenna, ERC, runsets, waivers, and hierarchical verification are standard practices. TPU's decks, violation counts, waivers, and reports are unpublished; all criteria here are illustrative."
+  ],
+  "during": [
+    "<b>Inspect geometry, not architectural function</b>: The checker sees metal, vias, diffusion, and other polygons—not systolic arrays or convolution. DRC asks whether geometry is manufacturable, LVS whether extracted connectivity matches, and antenna whether fabrication can damage gates.",
+    "<b>Clean LVS is absolute</b>: One short, open, wrong device, or supply error means fabricated connectivity differs from design. Every device and net in the array, UB, and accumulators must match.",
+    "<b>Classify DRC issues but leave none unresolved</b>: Real geometry errors require repair; false positives or allowed special structures require a foundry waiver. Every report item needs disposition.",
+    "<b>Repair antenna physically</b>: Insert a discharge diode near the affected gate or jump a long wire to another layer to reduce per-layer antenna area. Recheck the ratio without changing logic function.",
+    "<b>Rerun all checks after every layout edit</b>: A spacing fix may alter LVS, a diode can create DRC, and reconnection can create antenna issues. Verify the affected region incrementally and perform final full-chip closure.",
+    "<b>Core rule: an unclean layout is not accepted</b>. Physical signoff is pass/fail. Any uncorrected, unwaived DRC/LVS/antenna issue prevents foundry acceptance and tapeout."
+  ],
+  "result": [
+    {
+      "label": "DRC criterion",
+      "value": "Official 28 nm runset; zero violations except foundry-approved waivers; width/spacing/density/via/antenna rules pass"
+    },
+    {
+      "label": "LVS criterion",
+      "value": "Extracted layout netlist ≡ signoff netlist; all devices/nodes match; no shorts, opens, or supply errors"
+    },
+    {
+      "label": "Antenna / ERC criterion",
+      "value": "Every gate antenna ratio within rule after diode/jumper repair; power/substrate/floating-node checks pass"
+    },
+    {
+      "label": "Disposition record",
+      "value": "Every issue either fixed in ⑧ and rechecked or archived with a formal foundry waiver; none unresolved"
+    },
+    {
+      "label": "Layout gate",
+      "value": "DRC/LVS/antenna/ERC clean ✓; unclean layout is rejected by manufacturing"
+    },
+    {
+      "label": "Signoff deliverable",
+      "value": "Clean reports + waiver list + GDSII in the tapeout package"
+    }
+  ],
+  "after": [
+    "<b>Return real violations to ⑧ and rerun all checks</b>: Re-place, reroute, add antenna diodes, insert fill, or adjust spacing. Because checks interact, repeat DRC/LVS/antenna until edits create no new issue.",
+    "<b>Submit residual exceptions for foundry waiver</b>: Document location, rationale, and risk; only approved waivers join the release archive. Unapproved items must be fixed.",
+    "<b>Feed physical verification into the tapeout gate</b>: Clean DRC/LVS/antenna/ERC joins STA/MMMC/OCV, power/EM/IR, LEC, and DFM. Every dimension must be green.",
+    "<b>Freeze layout and package tapeout deliverables</b>: Once clean, freeze GDSII and bundle reports, waivers, and process/mask metadata for foundry mask preparation and fabrication.",
+    "<b>Maintain honest attribution</b>: All pass criteria and examples are standard signoff practice applied to public TPU structure; no private TPU rule deck, count, waiver, or report is claimed."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (published TPU v1 array, 24 MiB Unified Buffer, 4 MiB accumulators, 700 MHz, 28 nm, die≤331 mm², and weight-stationary dataflow provide context. DRC, LVS, antenna, ERC, foundry runsets, waivers, hierarchical signoff, and all criteria/counts are standard illustrative physical-verification practice, not published TPU rule decks, reports, or violations.)"
+}

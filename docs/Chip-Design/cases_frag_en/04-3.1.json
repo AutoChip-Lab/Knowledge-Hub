@@ -1,0 +1,149 @@
+{
+ "secNum": "3.1",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · The Systolic Array as a 256-Stage 2D Pipeline",
+ "oneLine": "A systolic array is fundamentally a two-dimensional pipeline: data advances by one PE per cycle, making the TPU a textbook example of trading latency for throughput.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 380\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><g class=\"cs-part\" data-g=\"preg\"><rect x=\"253\" y=\"77\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"307\" y=\"77\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"361\" y=\"77\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"415\" y=\"77\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"253\" y=\"131\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"307\" y=\"131\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"361\" y=\"131\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"415\" y=\"131\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"253\" y=\"185\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"307\" y=\"185\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"361\" y=\"185\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"415\" y=\"185\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"253\" y=\"239\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"307\" y=\"239\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"361\" y=\"239\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"415\" y=\"239\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"253\" y=\"293\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"307\" y=\"293\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"361\" y=\"293\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-g=\"preg\"><rect x=\"415\" y=\"293\" width=\"10\" height=\"16\" rx=\"2\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/></g><g class=\"cs-part\" data-k=\"0-0\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"210\" y=\"64\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"231\" y=\"89\">PE</text></g><g class=\"cs-part\" data-k=\"0-1\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"264\" y=\"64\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"285\" y=\"89\">PE</text></g><g class=\"cs-part\" data-k=\"0-2\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"318\" y=\"64\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"339\" y=\"89\">PE</text></g><g class=\"cs-part\" data-k=\"0-3\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"372\" y=\"64\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"393\" y=\"89\">PE</text></g><g class=\"cs-part\" data-k=\"0-4\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"426\" y=\"64\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"447\" y=\"89\">PE</text></g><g class=\"cs-part\" data-k=\"1-0\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"210\" y=\"118\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"231\" y=\"143\">PE</text></g><g class=\"cs-part\" data-k=\"1-1\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"264\" y=\"118\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"285\" y=\"143\">PE</text></g><g class=\"cs-part\" data-k=\"1-2\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"318\" y=\"118\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"339\" y=\"143\">PE</text></g><g class=\"cs-part\" data-k=\"1-3\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"372\" y=\"118\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"393\" y=\"143\">PE</text></g><g class=\"cs-part\" data-k=\"1-4\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"426\" y=\"118\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"447\" y=\"143\">PE</text></g><g class=\"cs-part\" data-k=\"2-0\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"210\" y=\"172\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"231\" y=\"197\">PE</text></g><g class=\"cs-part\" data-k=\"2-1\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"264\" y=\"172\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"285\" y=\"197\">PE</text></g><g class=\"cs-part\" data-k=\"2-2\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"318\" y=\"172\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"339\" y=\"197\">PE</text></g><g class=\"cs-part\" data-k=\"2-3\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"372\" y=\"172\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"393\" y=\"197\">PE</text></g><g class=\"cs-part\" data-k=\"2-4\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"426\" y=\"172\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"447\" y=\"197\">PE</text></g><g class=\"cs-part\" data-k=\"3-0\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"210\" y=\"226\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"231\" y=\"251\">PE</text></g><g class=\"cs-part\" data-k=\"3-1\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"264\" y=\"226\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"285\" y=\"251\">PE</text></g><g class=\"cs-part\" data-k=\"3-2\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"318\" y=\"226\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"339\" y=\"251\">PE</text></g><g class=\"cs-part\" data-k=\"3-3\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"372\" y=\"226\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"393\" y=\"251\">PE</text></g><g class=\"cs-part\" data-k=\"3-4\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"426\" y=\"226\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"447\" y=\"251\">PE</text></g><g class=\"cs-part\" data-k=\"4-0\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"210\" y=\"280\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"231\" y=\"305\">PE</text></g><g class=\"cs-part\" data-k=\"4-1\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"264\" y=\"280\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"285\" y=\"305\">PE</text></g><g class=\"cs-part\" data-k=\"4-2\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"318\" y=\"280\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"339\" y=\"305\">PE</text></g><g class=\"cs-part\" data-k=\"4-3\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"372\" y=\"280\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"393\" y=\"305\">PE</text></g><g class=\"cs-part\" data-k=\"4-4\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"426\" y=\"280\" width=\"42\" height=\"42\" rx=\"5\"/><text class=\"cs-cellt\" x=\"447\" y=\"305\">PE</text></g><g class=\"cs-part\" data-g=\"in\"><line class=\"cs-arr\" x1=\"150\" y1=\"85\" x2=\"206\" y2=\"85\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-g=\"in\"><line class=\"cs-arr\" x1=\"150\" y1=\"139\" x2=\"206\" y2=\"139\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-g=\"in\"><line class=\"cs-arr\" x1=\"150\" y1=\"193\" x2=\"206\" y2=\"193\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-g=\"in\"><line class=\"cs-arr\" x1=\"150\" y1=\"247\" x2=\"206\" y2=\"247\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-g=\"in\"><line class=\"cs-arr\" x1=\"150\" y1=\"301\" x2=\"206\" y2=\"301\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"120\" y=\"52\">Activation</text><text class=\"cs-note\" x=\"120\" y=\"66\">input</text><g class=\"cs-part\" data-g=\"out\"><line class=\"cs-arr\" x1=\"231\" y1=\"322\" x2=\"231\" y2=\"352\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-g=\"out\"><line class=\"cs-arr\" x1=\"285\" y1=\"322\" x2=\"285\" y2=\"352\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-g=\"out\"><line class=\"cs-arr\" x1=\"339\" y1=\"322\" x2=\"339\" y2=\"352\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-g=\"out\"><line class=\"cs-arr\" x1=\"393\" y1=\"322\" x2=\"393\" y2=\"352\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-g=\"out\"><line class=\"cs-arr\" x1=\"447\" y1=\"322\" x2=\"447\" y2=\"352\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"210\" y=\"370\">Partial sums ↓ (accumulate downward)</text><text class=\"cs-note\" x=\"488\" y=\"82\">One column/cycle</text><text class=\"cs-note\" x=\"488\" y=\"97\">output = throughput</text><text class=\"cs-note\" x=\"488\" y=\"184\">One input traverses</text><text class=\"cs-note\" x=\"488\" y=\"199\">a full PE column</text><text class=\"cs-note\" x=\"488\" y=\"214\">latency ≈ array depth</text></svg>",
+ "legend": [
+  {
+   "k": "pe",
+   "name": "PE = one pipeline stage",
+   "desc": "Each PE performs only 1 multiply and 1 accumulate per cycle. The shallow logic keeps stage delay low enough to support 700 MHz."
+  },
+  {
+   "k": "preg",
+   "name": "Inter-PE pipeline registers",
+   "desc": "Staging registers between adjacent PEs latch data every cycle and break a long combinational path into short stages—the physical mechanism that makes the design a pipeline."
+  },
+  {
+   "k": "in",
+   "name": "Activation input (from left)",
+   "desc": "Activations enter from the left and advance one stage per cycle like a propagating wave."
+  },
+  {
+   "k": "out",
+   "name": "Partial-sum output (downward)",
+   "desc": "Partial sums accumulate down each column and exit at the bottom."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "0-0",
+    "0-1",
+    "1-0"
+   ],
+   "cap": "① Startup / fill: during the first few cycles, only a few PEs near the upper-left corner are active as the pipeline fills."
+  },
+  {
+   "keys": [
+    "0-0",
+    "0-1",
+    "1-0",
+    "0-2",
+    "1-1",
+    "2-0",
+    "0-3",
+    "1-2",
+    "2-1",
+    "3-0"
+   ],
+   "cap": "② Filling: the activation wave advances diagonally and progressively engages more PEs."
+  },
+  {
+   "keys": [
+    "0-0",
+    "0-1",
+    "0-2",
+    "0-3",
+    "0-4",
+    "1-0",
+    "1-1",
+    "1-2",
+    "1-3",
+    "1-4",
+    "2-0",
+    "2-1",
+    "2-2",
+    "2-3",
+    "2-4",
+    "3-0",
+    "3-1",
+    "3-2",
+    "3-3",
+    "3-4",
+    "4-0",
+    "4-1",
+    "4-2",
+    "4-3",
+    "4-4"
+   ],
+   "cap": "③ Full pipeline: the entire array computes, producing one complete result column per cycle (throughput = 1 column/cycle)."
+  },
+  {
+   "keys": [
+    "0-0",
+    "1-1",
+    "2-2",
+    "3-3",
+    "4-4"
+   ],
+   "cap": "④ Latency vs. throughput: one input must traverse a full PE column before producing a result (latency ≈ array depth, 256 cycles), while steady state emits one column per cycle."
+  },
+  {
+   "keys": [
+    "3-4",
+    "4-3",
+    "4-4"
+   ],
+   "cap": "⑤ Drain: the final wave exits and the pipeline empties. Large matrices and batches amortize fill and drain overhead."
+  }
+ ],
+ "before": [
+  "<b>Define the question first</b>: Should this block be pipelined, and into how many stages? The answer is fundamentally set by target frequency versus critical-path delay. A systolic array naturally pipelines matrix multiplication across rows of PEs.",
+  "<b>Decisions to make</b>: Pipeline depth; logic per stage (stage-delay/logic-depth budget); staging registers between PEs; and whether hazard handling such as forwarding or stalls is required.",
+  "<b>Required inputs</b>: The target frequency and throughput from architecture (③), an estimate of the block’s critical path, and whether the workload is latency-sensitive or throughput-sensitive.",
+  "<b>Trade-offs to resolve</b>: Latency versus throughput; whether the workload can amortize fill/drain overhead; and whether data or control dependencies require forwarding, stalls, or branch prediction."
+ ],
+ "during": [
+  "<b>Goal</b>: Increase throughput by overlapping execution. The systolic array spreads a large matrix multiply across rows of PEs; data advances one stage per cycle and each stage performs a small amount of work.",
+  "<b>Choose stage count/depth</b>: Each PE performs only 1 8-bit multiply and 1 accumulate, so its logic is shallow and stage delay is low enough for 700 MHz. Pipeline depth equals the array dimension (256), chosen together with throughput and operand-supply bandwidth.",
+  "<b>Natural balancing</b>: Every PE is identical and performs the same work each cycle, so there is no unusually slow stage. This is far easier to balance than a general-purpose CPU pipeline with IF/ID/EX/MEM/WB stages.",
+  "<b>Eliminate conventional hazards</b>: The dataflow is static and deterministic, with no branches or writeback dependencies, so it does not need the full forwarding/stall/branch-prediction machinery. TPU spends that area on MACs instead.",
+  "<b>Latency is the cost</b>: An input must traverse a full PE column before producing a result (≈256 cycles), but once full the array emits one column per cycle. Large matrices and batches therefore amortize fill and drain."
+ ],
+ "result": [
+  {
+   "label": "Pipeline depth",
+   "value": "≈ array dimension: 256"
+  },
+  {
+   "label": "Work per stage",
+   "value": "1× 8-bit multiply + 1× accumulate"
+  },
+  {
+   "label": "Steady-state throughput",
+   "value": "One full column per cycle"
+  },
+  {
+   "label": "Fill/drain",
+   "value": "~256-cycle fill + ~256-cycle drain"
+  },
+  {
+   "label": "Hazard handling",
+   "value": "Static dataflow; no forwarding/stalls"
+  },
+  {
+   "label": "Clock",
+   "value": "700 MHz"
+  }
+ ],
+ "after": [
+  "<b>Run a synthesis timing trial</b>: Pass the pipeline’s critical path through quick logic synthesis to confirm 700 MHz. If it misses, add a pipeline stage or retime it; changing stage count changes cycle-level behavior and requires renewed verification.",
+  "<b>Build a cycle model</b>: Confirm target utilization at full pipeline and acceptable fill/drain overhead for target matrix sizes. Otherwise revisit array size or batching strategy.",
+  "<b>Define the block verification plan</b>: Cover and stimulate pipeline hazards and boundaries, including fill, full operation, drain, and backpressure.",
+  "<b>Hand off to RTL (⑤)</b>: Implement every pipeline stage, staging register, and control FSM as synthesizable Verilog.",
+  "<b>Reserve low-power hooks</b>: During decode, PEs are often idle. Provide fine-grained clock gating so idle units do not consume dynamic power."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017. Facts disclosed in the paper are distinguished from illustrative examples and standard industry practice; the latter are not presented as disclosed TPU v1 implementation details."
+}

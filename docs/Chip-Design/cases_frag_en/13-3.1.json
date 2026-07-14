@@ -1,0 +1,114 @@
+{
+ "secNum": "3.1",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · End-to-End Silicon Bring-up (After Fabrication): When the packaged PCIe accelerator card first returns to the lab, the team does not immediately run inference. It advances methodically from the fundamentals—safe power-on, clock start-up, reset release, and PCIe enumeration—then brings up interfaces and DDR3, applies real workloads, runs true inference on the 256×256 systolic array, characterizes operating limits, and resolves every discovered erratum.",
+ "oneLine": "This case supports the “end-to-end bring-up” section. The first TPU v1 engineering card returning from packaging and test is activated one rung at a time: ① power-on—measure every rail, rule out shorts, and confirm that the card powers safely; ② clock/reset/boot—start the 700 MHz clock, release reset in sequence, and run the minimum boot logic; ③ test patterns—compare known inputs with known-good outputs; ④ interfaces/peripherals—enumerate the device over PCIe 3.0 and establish reliable access to the external 8 GiB DDR3; ⑤ real-workload validation—issue the roughly dozen CISC instructions, load weights, and execute a real neural-network inference; ⑥ characterization—sweep voltage, frequency, and temperature to determine the actual operating envelope and margin; and ⑦ errata handling—root-cause each issue and close it through a board change, software or firmware change, workaround, or documented erratum. The governing rule is simple: prove that the device is alive before adding complexity. Power, clocks, and PCIe visibility must work before progressing to true inference, and a failed rung blocks the next. The public TPU structure—256×256 = 65,536 8-bit MACs, a 24 MiB Unified Buffer, 700 MHz operation, a 28 nm process, a PCIe 3.0 card, and the TensorFlow/XLA stack—is used only as the object being brought up. Power sequencing, diagnostic patterns, characterization, and errata closure are standard post-silicon practices; TPU v1's private procedures, waveforms, issue list, and measurements are not public.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 420\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"26\">Bring-up panorama: after the packaged TPU card returns to the lab, advance from the fundamentals—prove power, clocks, and host visibility, then progress to real inference.</text><g class=\"cs-part\" data-k=\"power\" data-g=\"power\"><rect class=\"cs-box\" x=\"24\" y=\"58\" width=\"200\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"124\" y=\"82\">① Power-on</text><text class=\"cs-sub\" x=\"124\" y=\"100\">Apply power; measure every rail</text></g><line class=\"cs-arr\" x1=\"224\" y1=\"86\" x2=\"266\" y2=\"86\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"clkrst\" data-g=\"clkrst\"><rect class=\"cs-box\" x=\"270\" y=\"58\" width=\"200\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"370\" y=\"82\">② Clock / reset / boot</text><text class=\"cs-sub\" x=\"370\" y=\"100\">Start 700 MHz clock; release reset</text></g><line class=\"cs-arr\" x1=\"470\" y1=\"86\" x2=\"512\" y2=\"86\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"pattern\" data-g=\"pattern\"><rect class=\"cs-box\" x=\"516\" y=\"58\" width=\"180\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"606\" y=\"82\">③ Run test patterns</text><text class=\"cs-sub\" x=\"606\" y=\"100\">Compare known inputs and outputs</text></g><polyline class=\"cs-arr\" points=\"606,114 606,140 124,140 124,164\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"iface\" data-g=\"iface\"><rect class=\"cs-box\" x=\"24\" y=\"168\" width=\"200\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"124\" y=\"192\">④ Interfaces / peripherals</text><text class=\"cs-sub\" x=\"124\" y=\"210\">PCIe enumerates; DDR3 works</text></g><line class=\"cs-arr\" x1=\"224\" y1=\"196\" x2=\"266\" y2=\"196\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"real\" data-g=\"real\"><rect class=\"cs-box\" x=\"270\" y=\"168\" width=\"200\" height=\"56\" rx=\"8\" fill=\"#dcfce7\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"370\" y=\"192\">⑤ Real-workload validation</text><text class=\"cs-sub\" x=\"370\" y=\"210\">Issue host commands; run inference</text></g><line class=\"cs-arr\" x1=\"470\" y1=\"196\" x2=\"512\" y2=\"196\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"char\" data-g=\"char\"><rect class=\"cs-box\" x=\"516\" y=\"168\" width=\"180\" height=\"56\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"606\" y=\"192\">⑥ Characterization</text><text class=\"cs-sub\" x=\"606\" y=\"210\">Sweep V/F/T operating limits</text></g><polyline class=\"cs-arr\" points=\"606,224 606,250 370,250 370,266\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"errata\" data-g=\"errata\"><rect class=\"cs-box\" x=\"270\" y=\"270\" width=\"200\" height=\"56\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"370\" y=\"294\">⑦ Errata handling</text><text class=\"cs-sub\" x=\"370\" y=\"312\">Root cause → board/software/workaround</text></g><g class=\"cs-part\" data-k=\"ladder\" data-g=\"ladder\"><rect class=\"cs-box\" x=\"24\" y=\"270\" width=\"200\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"124\" y=\"294\">Progressive bring-up discipline</text><text class=\"cs-sub\" x=\"124\" y=\"312\">Prove it is alive before complexity</text></g><g class=\"cs-part\" data-k=\"gate\" data-g=\"gate\"><rect class=\"cs-box\" x=\"516\" y=\"270\" width=\"180\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"606\" y=\"294\">A gate at every rung</text><text class=\"cs-sub\" x=\"606\" y=\"312\">Do not advance until it passes</text></g><text class=\"cs-note\" x=\"24\" y=\"356\">Core cadence: safe power → running clocks → host enumeration → working interfaces → real inference → measured limits → documented and resolved defects.</text><text class=\"cs-note\" x=\"24\" y=\"378\">Why advance incrementally: if real inference fails immediately, power, clocks, PCIe, DDR3, or the 256×256 array could be responsible. One new variable per rung keeps diagnosis tractable.</text><text class=\"cs-note\" x=\"24\" y=\"404\">Evidence boundary: the sequence, power checks, test patterns, characterization, and errata process are standard post-silicon practice. TPU v1's private flow, data, and issue list are not public; its known 256×256 array, 24 MiB UB, 700 MHz, 28 nm, PCIe card, and TF/XLA stack serve only as the bring-up example.</text></svg>",
+ "legend": [
+  {
+   "k": "power",
+   "name": "① Power-on (the first proof that the device is alive)",
+   "desc": "The lowest rung of bring-up is intentionally non-functional. Apply power to the packaged, cooled TPU card one rail at a time while monitoring voltage and current with bench instruments. Confirm correct sequencing, no shorts, no abnormal current, no smoke or overheating, and stable rails inside their expected windows. Nothing else matters until power is safe and stable. A TPU v1-class 28–40 W PCIe accelerator likewise begins with these checks; the exact sequence and current limits are standard project-specific bring-up data and are not public."
+  },
+  {
+   "k": "clkrst",
+   "name": "② Clock / reset / boot (establish the chip's heartbeat)",
+   "desc": "Once power is stable, verify that the 700 MHz main clock and its derived clocks/PLLs start, lock, and meet frequency and jitter requirements. Assert and release reset in the designed order so internal state machines enter known states, then run the minimum boot/configuration logic needed to expose the device externally. This still proves only that the silicon is alive: without clocks and orderly reset/boot, a powered die is merely a powered brick. The 700 MHz frequency is public; TPU v1's private clock tree, reset topology, and boot sequence are not."
+  },
+  {
+   "k": "iface",
+   "name": "③④ Test patterns → interfaces/peripherals (from alive to connected and cooperative)",
+   "desc": "After clocks and reset work, first exercise basic datapaths and register access with deterministic test patterns whose inputs and correct outputs are known. A mismatch then confines the search space. Next validate system connectivity: the TPU v1 PCIe 3.0 card must enumerate, accept configuration and commands, and transfer data by DMA; its external 8 GiB DDR3 at approximately 30 GB/s must read and write reliably because weights and intermediate data depend on it. A compute engine with no working host or memory path is unusable. PCIe 3.0 and 8 GiB DDR3 (~30 GB/s) are public parameters; vectors and link-debug procedures are not."
+  },
+  {
+   "k": "real",
+   "name": "⑤⑥ Real-workload validation → characterization (run inference, then map the limits)",
+   "desc": "Only after interfaces pass should the card perform production-like work. The host issues roughly a dozen CISC instructions, loads trained weights for weight-stationary execution, supplies activations through the 24 MiB Unified Buffer, and drives the 256×256 = 65,536 8-bit-MAC systolic array through a real neural-network inference while results and performance are checked end to end. Characterization then sweeps voltage, frequency, and temperature to build shmoo data, find minimum voltage and maximum frequency, quantify power, and establish the actual operating window and margin. The array, buffer, instruction style, and frequency are public; the selected models and measured limits are not."
+  },
+  {
+   "k": "errata",
+   "name": "⑦ Errata handling + progressive discipline (closure and method)",
+   "desc": "Issues are expected during bring-up: an intermittent failure under one condition, a marginal peripheral timing path, or a path that misses target frequency. Each symptom must be reproduced and attributed to silicon, board, software, or environment, then closed with the least-risk remedy—software workaround, driver/compiler update in the XLA/TF stack, board or configuration change, or a documented erratum pending a re-spin. The same discipline governs the entire flow: power → clocks → basic paths → interfaces → real inference → limits → defect closure. Each rung introduces one new variable, and no failing rung is bypassed. Errata management and this progressive method are standard practice; TPU v1's private issue list is not public."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "power",
+    "clkrst"
+   ],
+   "cap": "① First prove that it is alive: power the returned TPU card while measuring all voltage and current rails and ruling out shorts or overheating; then start the 700 MHz clock, release reset in order, and complete the minimum boot path. Before useful work, establish power, heartbeat, and orderly wake-up."
+  },
+  {
+   "keys": [
+    "pattern",
+    "iface"
+   ],
+   "cap": "② Then prove that paths are connected and correct: exercise basic datapaths with known-input/known-output patterns; confirm PCIe 3.0 host enumeration and reliable external 8 GiB DDR3 (~30 GB/s) access so the device is integrated with its host and memory."
+  },
+  {
+   "keys": [
+    "real",
+    "char"
+   ],
+   "cap": "③ Only then run a real workload and map the envelope: issue roughly a dozen CISC instructions, load weight-stationary data, drive the 256×256 array through real inference, verify results and performance, then sweep voltage/frequency/temperature to quantify the actual operating window and margin."
+  },
+  {
+   "keys": [
+    "errata",
+    "ladder",
+    "gate"
+   ],
+   "cap": "④ Enforce the ladder throughout and close errata at the end: introduce one new variable per rung, never advance past a failure, root-cause every observed problem, and resolve it through board changes, software or XLA/TF updates, workarounds, or an explicit erratum."
+  }
+ ],
+ "before": [
+  "<b>Confirm the packaged engineering-card identity</b>: bring-up starts only after silicon has returned, passed packaging/test, been assembled on a PCIe card, and received its cooling solution. Verify revision, lot, and board identity before any bench work so the team does not characterize the wrong sample.",
+  "<b>Prepare the bench and the activation order</b>: provide programmable supplies, oscilloscope, logic analyzer, multimeter, host, and PCIe slot, then approve the sequence power → clock/reset → test patterns → interfaces → real workload → characterization → errata. Define the pass criterion for every rung in advance.",
+  "<b>Prepare a golden expectation for every rung</b>: document acceptable rail voltage/current windows, clock frequencies, known-good test-pattern outputs, expected PCIe identity, DDR3 read/write behavior, reference inference results, and characterization limits. Bring-up must compare evidence with a baseline, not rely on intuition.",
+  "<b>Have host software ready</b>: stage the driver, runtime for the roughly dozen CISC instructions, TensorFlow/XLA stack, and weight-loading path before hardware reaches interface and workload testing. Missing software can otherwise halt the ladder despite healthy silicon.",
+  "<b>Define issue capture and ownership</b>: agree on how logs and waveforms are retained, how each symptom is recorded, and how hardware, board, software, and environmental root causes are routed to board changes, software changes, workarounds, or errata so every defect reaches closure."
+ ],
+ "during": [
+  "<b>First principle: prove the device is alive before running a complex workload</b>. The cadence is deliberately progressive. The first gate asks only whether the card powers safely, its clocks start, and the host can see it through PCIe. If any of those fail, real inference is prohibited; otherwise a later failure cannot be separated from a basic liveness problem.",
+  "<b>Power-on: measure rails, check for shorts, and prevent damage</b>. Apply each rail in sequence, verify voltage and current against the expected window, watch for abnormal current that indicates a short, and stop on heating or smoke. No functional workload runs here; the sole objective is safe, stable power.",
+  "<b>Clock/reset/boot: establish heartbeat and wake-up</b>. Verify that the 700 MHz main clock and derived clocks/PLLs start and lock; assert and release resets in the specified order so state machines reach known initial states; and execute minimum boot/configuration so external access becomes possible. This remains a liveness gate, not useful computation.",
+  "<b>Test patterns → interfaces/peripherals: progress from alive to connected</b>. Use known-input/known-output patterns to activate basic datapaths and registers with a small diagnostic search space. Then prove that PCIe 3.0 enumeration, configuration, commands, and DMA work and that the external 8 GiB DDR3 (~30 GB/s) reads and writes correctly. A compute engine isolated from its host and memory is not deployable.",
+  "<b>Real workload → characterization: run inference, then determine the real limits</b>. After all earlier gates pass, issue roughly a dozen CISC instructions, load weight-stationary data, feed activations through the 24 MiB Unified Buffer, and drive the 256×256 = 65,536 8-bit-MAC array through a real neural-network inference. Check correctness and performance, then sweep voltage/frequency/temperature to quantify the operating window and margin. Earlier closure confines a new failure to the newly introduced workload or condition.",
+  "<b>Evidence boundary</b>: rail sequencing and current limits, clock/reset/boot timing, test vectors, PCIe/DDR3 link activation, workload selection, voltage/frequency/temperature shmoo data, and errata details are standard confidential bring-up artifacts. TPU v1 does not publish them. This case uses only known attributes—256×256 array, 24 MiB UB, 700 MHz, 28 nm, PCIe 3.0 card, 8 GiB DDR3 at ~30 GB/s, and the TF/XLA stack—to explain the method without inventing private data."
+ ],
+ "result": [
+  {
+   "label": "Deliverable",
+   "value": "A TPU engineering card returned from packaging/test and activated from the fundamentals through real 256×256-array inference, with its operating envelope measured and defects recorded."
+  },
+  {
+   "label": "Seven-rung ladder",
+   "value": "Power-on → clock/reset/boot → test patterns → interfaces/peripherals (PCIe/DDR3) → real-workload validation → characterization → errata handling."
+  },
+  {
+   "label": "Governing principle",
+   "value": "Prove liveness—power, running clocks, and PCIe visibility—before complexity; do not advance past a failed gate, and introduce only one new variable per rung."
+  },
+  {
+   "label": "Three liveness gates",
+   "value": "① Safe power with no short or overheating ② 700 MHz clock start-up plus reset/boot ③ PCIe 3.0 host enumeration. The device is not considered alive until all three pass."
+  },
+  {
+   "label": "Proof of useful life",
+   "value": "The host issues roughly a dozen CISC instructions, loads weight-stationary data, and drives 65,536 8-bit MACs through a real neural-network inference with correct results and expected performance."
+  },
+  {
+   "label": "Evidence boundary",
+   "value": "The ladder, power checks, test patterns, characterization, and errata process are standard post-silicon practice, not published TPU v1 data; known TPU structure is used only as the activation target."
+  }
+ ],
+ "after": [
+  "<b>Sign off each rung and retain the bring-up record</b>: compare every power, clock, interface, workload, and characterization result with its predefined expectation; record pass/fail status, rail data, waveforms, enumeration evidence, inference outputs, and sweep curves. Stop and diagnose any failing rung instead of carrying uncertainty forward.",
+  "<b>Hand operating points and limitations to system software</b>: provide recommended voltage/frequency/temperature limits, margin, and all errata/workarounds to the driver, runtime, and XLA/TF stack so upper layers use the TPU only inside validated boundaries.",
+  "<b>Assign root-caused problems and iterate</b>: route software issues to software, board issues to board updates, and unchangeable silicon defects to documented errata and the next re-spin. Feed persistent or severe findings back into design and verification to close the discover → diagnose → resolve/document loop.",
+  "<b>Release to system- and data-center-scale validation</b>: only after a single card is stable and executes real inference should it enter multi-card, server, and data-center integration. A card that cannot pass individual bring-up must never be scaled out.",
+  "<b>Preserve an auditable engineering record</b>: archive the procedure, pass criteria, characterization data, errata, and workarounds for production, reliability, and system teams. These are standard post-silicon artifacts, not public TPU v1 disclosures."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the paper discloses the 256×256 = 65,536 8-bit-MAC systolic array, 24 MiB Unified Buffer, 4 MiB accumulator, 700 MHz clock, external 8 GiB DDR3 at ~30 GB/s, weight-stationary execution, roughly a dozen CISC instructions delivered over PCIe 3.0, a 28 nm / ≤331 mm² / 28–40 W PCIe accelerator card, the TensorFlow/XLA stack, approximately 15 months from program start to deployment, and more than one year of data-center operation before public release. This case uses those facts only as the object being activated. Power-on, clock/reset/boot, test patterns, PCIe/DDR3 bring-up, real-workload validation, voltage/frequency/temperature characterization and shmooing, errata handling, and the progressive rule of one new variable per gate are standard post-silicon and production practices. TPU v1's private flow, waveforms, sweep data, and issue/errata list are not public; the diagram is conceptual, not a private TPU disclosure.)"
+}

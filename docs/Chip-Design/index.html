@@ -7,7 +7,9 @@
 <script src="assets/marked.min.js"></script>
 <script src="content.js"></script>
 <script src="cases.js"></script>
+<script src="cases_en.js"></script>
 <script src="secmaps.js"></script>
+<script src="secmaps_en.js"></script>
 <style>
   :root{
     --bg:#f5f7fb;
@@ -28,6 +30,8 @@
     --topbar-h:58px;
   }
   *{box-sizing:border-box;}
+  .sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;
+    overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;}
   html{scroll-behavior:smooth;}
   body{
     margin:0;background:var(--bg);color:var(--ink);
@@ -50,10 +54,12 @@
     background:rgba(255,255,255,.82);backdrop-filter:saturate(180%) blur(12px);
     border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;padding:0 18px;
   }
-  .brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:15px;white-space:nowrap;cursor:pointer;color:var(--ink);}
+  .brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:15px;white-space:nowrap;cursor:pointer;color:var(--ink);
+    border:0;background:transparent;padding:0;font-family:inherit;}
+  .brand:focus-visible{outline:2px solid var(--brand);outline-offset:5px;border-radius:5px;}
   .brand .dot{width:13px;height:13px;border-radius:4px;background:linear-gradient(135deg,var(--p1),var(--p2),var(--p3));background-size:200% 200%;animation:dotShift 6s ease infinite;}
   @keyframes dotShift{0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;}}
-  .nav{display:flex;align-items:center;gap:3px;overflow-x:auto;flex:1;scrollbar-width:thin;}
+  .nav{display:flex;align-items:center;gap:3px;overflow-x:auto;flex:1;min-width:0;scrollbar-width:thin;}
   .nav::-webkit-scrollbar{height:5px;}
   .nav::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px;}
   .chip{display:inline-flex;align-items:center;gap:5px;padding:6px 10px;border-radius:8px;white-space:nowrap;
@@ -61,9 +67,21 @@
   .chip:hover{background:var(--line-soft);color:var(--ink);transform:translateY(-1px);}
   .chip .n{font-size:13px;opacity:.8;}
   .chip.active{background:var(--brand-soft);color:var(--brand);border-color:#d3e2ff;font-weight:600;}
+  .chip.topic{margin-left:7px;color:#6d28d9;border-color:#ddd0fb;background:linear-gradient(110deg,#f5f0ff,#ecf8f7);}
+  .chip.topic:hover{border-color:#bca7f2;background:linear-gradient(110deg,#efe7ff,#e3f7f6);}
+  .chip.topic.active{color:#5b21b6;border-color:#a98de8;background:linear-gradient(110deg,#e9ddff,#dff7f4);box-shadow:0 4px 12px rgba(109,40,217,.10);}
+  .chip.topic .n{font-size:12px;font-weight:800;}
   .chip.disabled{color:var(--ink-faint);cursor:not-allowed;}
   .chip.disabled:hover{background:transparent;color:var(--ink-faint);transform:none;}
   .chip.disabled .n{opacity:.5;}
+  .lang-toggle{appearance:none;display:inline-flex;align-items:center;gap:5px;flex:none;padding:5px 8px;
+    border:1px solid var(--line);border-radius:9px;background:rgba(255,255,255,.88);color:var(--ink-faint);
+    font-family:inherit;font-size:11.5px;font-weight:700;line-height:1.3;cursor:pointer;box-shadow:0 2px 8px rgba(20,30,50,.04);transition:all .15s;}
+  .lang-toggle:hover{border-color:#b8c7e6;box-shadow:0 4px 12px rgba(37,99,235,.08);}
+  .lang-toggle:focus-visible{outline:2px solid var(--brand);outline-offset:2px;}
+  .lang-toggle .lang-opt{padding:2px 5px;border-radius:5px;transition:all .15s;}
+  .lang-toggle .lang-sep{font-weight:500;color:#c3c9d3;}
+  .lang-toggle[data-lang="zh"] .lang-zh,.lang-toggle[data-lang="en"] .lang-en{background:var(--brand-soft);color:var(--brand);}
 
   /* 阅读进度条 */
   .readbar{position:fixed;top:var(--topbar-h);left:0;height:3px;width:0;z-index:49;
@@ -142,19 +160,22 @@
 
   /* 互动流程图 */
   .flowmap-wrap{margin:26px 0 6px;}
-  .flowmap{position:relative;display:flex;justify-content:space-between;padding:42px 8px 8px;}
-  .flow-track{position:absolute;height:3px;background:var(--line);border-radius:3px;top:60px;}
-  .flow-fill{position:absolute;height:3px;border-radius:3px;top:60px;
+  .flowmap{position:relative;display:flex;justify-content:space-between;padding:118px 8px 280px;}
+  .flow-track{position:absolute;height:3px;background:var(--line);border-radius:3px;top:137px;}
+  .flow-fill{position:absolute;height:3px;border-radius:3px;top:137px;
     background:linear-gradient(90deg,var(--p1),var(--p2),var(--p3));background-size:200% 100%;
     animation:flow 2.4s linear infinite;box-shadow:0 0 10px rgba(59,130,246,.4);}
   @keyframes flow{0%{background-position:0% 0;}100%{background-position:200% 0;}}
-  .flow-node{flex:1;display:flex;flex-direction:column;align-items:center;position:relative;z-index:1;}
+  .flow-node{flex:1;display:flex;flex-direction:column;align-items:center;position:relative;z-index:3;}
   .node-dot{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;
     font-weight:800;font-size:15px;background:var(--surface);border:2px solid var(--line);color:var(--ink-faint);
-    transition:transform .18s,box-shadow .18s;cursor:default;}
+    transition:transform .18s,box-shadow .18s;cursor:default;font-family:inherit;padding:0;}
   .flow-node.ready .node-dot{color:#fff;border-color:transparent;background:linear-gradient(135deg,var(--accent),var(--accent2,var(--accent)));
     box-shadow:0 4px 14px var(--glow);cursor:pointer;}
   .flow-node.ready:hover .node-dot{transform:translateY(-4px) scale(1.12);box-shadow:0 9px 22px var(--glow);}
+  .flow-node.ready:focus-within .node-dot{transform:translateY(-4px) scale(1.12);box-shadow:0 9px 22px var(--glow);}
+  .flow-node.dft-hovered .node-dot{box-shadow:0 0 0 4px rgba(124,58,237,.18),0 8px 20px var(--glow);transform:translateY(-2px) scale(1.07);}
+  .node-dot:focus-visible{outline:3px solid var(--surface);box-shadow:0 0 0 5px var(--accent),0 9px 22px var(--glow)!important;}
   .flow-node.locked .node-dot{border-style:dashed;}
   .flow-node.nextup .node-dot{animation:pulse 1.8s ease-in-out infinite;border-color:var(--accent);color:var(--accent);}
   @keyframes pulse{0%,100%{box-shadow:0 0 0 0 var(--glow);}50%{box-shadow:0 0 0 7px transparent;}}
@@ -165,9 +186,157 @@
     box-shadow:0 12px 30px rgba(20,30,50,.13);opacity:0;visibility:hidden;transition:all .16s;z-index:5;pointer-events:none;}
   .node-pop::before{content:"";position:absolute;top:-6px;left:50%;transform:translateX(-50%) rotate(45deg);
     width:10px;height:10px;background:var(--surface);border-left:1px solid var(--line);border-top:1px solid var(--line);}
-  .flow-node:hover .node-pop{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);}
+  .flow-node:hover .node-pop,.flow-node:focus-within .node-pop{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);}
   .node-pop .pt{font-size:13px;font-weight:700;margin-bottom:4px;color:var(--ink);}
   .node-pop .pd{font-size:12px;color:var(--ink-soft);line-height:1.5;}
+  .node-pop .dft-node-role{margin-top:7px;padding-top:6px;border-top:1px solid #e5dcfb;color:#6d28d9;font-size:10.5px;font-weight:700;line-height:1.4;}
+
+  /* 流程节点小组成员：与下方环节简介同步出现 */
+  .node-members{position:absolute;left:50%;bottom:calc(100% + 10px);transform:translateX(-50%) translateY(6px);
+    width:238px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 11px 11px;
+    box-shadow:0 12px 30px rgba(20,30,50,.13);opacity:0;visibility:hidden;transition:all .16s;
+    z-index:6;pointer-events:none;text-align:center;}
+  .node-members::after{content:"";position:absolute;bottom:-6px;left:50%;transform:translateX(-50%) rotate(45deg);
+    width:10px;height:10px;background:var(--surface);border-right:1px solid var(--line);border-bottom:1px solid var(--line);}
+  .flow-node:hover .node-members,.flow-node:focus-within .node-members{
+    opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);}
+  .node-members .ot{font-size:10.5px;font-weight:800;letter-spacing:.08em;color:var(--accent);margin-bottom:7px;}
+  .member-list{display:flex;justify-content:center;gap:5px;flex-wrap:wrap;}
+  .member-tag{display:inline-flex;align-items:center;min-height:24px;padding:3px 8px;border-radius:999px;
+    background:var(--accentBg,var(--brand-soft));color:var(--ink);font-size:11.5px;font-weight:650;line-height:1.35;white-space:nowrap;}
+  .member-tag.pending{background:var(--line-soft);color:var(--ink-faint);border:1px dashed #cbd1dc;}
+
+  /* DFT设计：与 13 个主节点严格对齐的跨阶段泳道 */
+  .dft-map{position:absolute;left:8px;right:8px;top:280px;height:126px;z-index:2;
+    display:grid;grid-template-columns:repeat(13,minmax(0,1fr));pointer-events:none;}
+  .dft-scope-frame{position:absolute;left:0;right:0;top:-16px;height:136px;border:2px solid rgba(124,58,237,.30);
+    border-radius:17px;background:linear-gradient(90deg,rgba(124,58,237,.045),rgba(14,165,164,.025));
+    box-shadow:0 10px 28px rgba(76,29,149,.055);z-index:0;pointer-events:none;}
+  .dft-scope-frame>span{position:absolute;top:-11px;padding:2px 9px;border:1px solid #cfbff5;border-radius:999px;
+    background:var(--bg);color:#5b21b6;font-size:9.5px;font-weight:850;line-height:1.4;white-space:nowrap;
+    box-shadow:0 3px 10px rgba(76,29,149,.08);}
+  .dft-entry-wrap{position:relative;z-index:6;grid-column:1 / 3;align-self:start;height:100px;margin:5px 6px 0 8px;
+    pointer-events:auto;--accent:#7c3aed;--accentBg:#f1ecfe;}
+  .dft-entry{position:relative;z-index:1;width:100%;height:100%;padding:10px 8px;
+    display:flex;flex-direction:column;justify-content:center;border:1px solid #cfc0f7;border-radius:13px;
+    background:linear-gradient(145deg,#f5f0ff,#fff);box-shadow:0 8px 22px rgba(76,29,149,.08);
+    color:var(--ink);transition:transform .16s,box-shadow .16s,border-color .16s;}
+  .dft-entry-wrap:hover .dft-entry,.dft-entry:focus-visible{transform:translateY(-2px);border-color:#8b5cf6;
+    box-shadow:0 11px 26px rgba(76,29,149,.14);outline:none;}
+  .dft-entry .de-kicker{font-size:8.5px;font-weight:850;letter-spacing:.08em;color:#7c3aed;line-height:1.25;white-space:nowrap;}
+  .dft-entry b{font-size:15px;color:#4c1d95;line-height:1.4;margin-top:2px;white-space:nowrap;}
+  .dft-entry .de-legend{font-size:8.8px;color:var(--ink-soft);line-height:1.45;margin-top:2px;white-space:nowrap;}
+  .dft-entry .de-go{font-size:10px;font-weight:750;color:#6d28d9;line-height:1.35;margin-top:3px;}
+  .dft-entry-tip{position:absolute;left:50%;--tip-x:-50%;transform:translateX(var(--tip-x)) translateY(6px);
+    background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 30px rgba(20,30,50,.13);
+    opacity:0;visibility:hidden;transition:opacity .16s,visibility .16s,transform .16s;z-index:8;pointer-events:none;}
+  .dft-entry-members{bottom:calc(100% + 12px);width:260px;padding:10px 11px 11px;text-align:center;}
+  .dft-entry-members::after{content:"";position:absolute;bottom:-6px;left:50%;width:10px;height:10px;background:var(--surface);
+    border-right:1px solid var(--line);border-bottom:1px solid var(--line);transform:translateX(-50%) rotate(45deg);}
+  .dft-entry-members .ot{font-size:10.5px;font-weight:800;letter-spacing:.08em;color:#7c3aed;margin-bottom:7px;}
+  .dft-entry-summary{top:calc(100% + 12px);width:320px;padding:12px 14px 13px;text-align:left;border-top:3px solid #7c3aed;}
+  .dft-entry-summary::before{content:"";position:absolute;top:-7px;left:50%;width:10px;height:10px;background:var(--surface);
+    border-left:1px solid var(--line);border-top:1px solid var(--line);transform:translateX(-50%) rotate(45deg);}
+  .dft-entry-summary .pt{font-size:13px;font-weight:750;color:#4c1d95;margin-bottom:5px;}
+  .dft-entry-summary .pd{font-size:12px;color:var(--ink-soft);line-height:1.55;}
+  .dft-entry-wrap:hover .dft-entry-tip,.dft-entry-wrap:focus-within .dft-entry-tip{
+    opacity:1;visibility:visible;transform:translateX(var(--tip-x)) translateY(0);}
+  .dft-track{position:absolute;top:29px;height:0;border-top:2px dashed #c4b5fd;z-index:1;pointer-events:none;}
+  .dft-track.segment{height:3px;border:0;border-radius:999px;top:28px;}
+  .dft-track.plan{background:#8b5cf6;}
+  .dft-track.focus{height:5px;top:27px;background:#6d28d9;box-shadow:0 0 0 3px rgba(109,40,217,.10);}
+  .dft-track.silicon{background:#0f9f9b;}
+  .dft-focus-window{position:absolute;top:-3px;height:113px;border:1.5px solid rgba(109,40,217,.30);border-radius:13px;
+    background:rgba(109,40,217,.065);z-index:1;pointer-events:none;}
+  .dft-focus-window span{position:absolute;left:50%;top:-9px;transform:translateX(-50%);padding:2px 8px;border-radius:999px;
+    background:#fff;color:#5b21b6;border:1px solid #cfc0f7;box-shadow:0 3px 10px rgba(76,29,149,.09);
+    font-size:9.5px;font-weight:850;line-height:1.4;white-space:nowrap;}
+  .dft-transit-note{position:absolute;top:6px;text-align:center;color:#7b8492;font-size:9.5px;font-weight:700;
+    line-height:1.35;white-space:nowrap;z-index:4;pointer-events:none;}
+  .dft-transit-note span{display:inline-block;padding:2px 7px;border-radius:999px;background:var(--bg);}
+  .dft-touchpoint{position:relative;grid-row:1;align-self:start;justify-self:stretch;margin:24px 4px 0;
+    z-index:3;text-align:center;--tp:#7c3aed;--tp-bg:#f5f0ff;pointer-events:auto;}
+  .dft-touchpoint::before{content:"";position:absolute;left:50%;top:-112px;height:137px;
+    border-left:2px solid var(--tp);opacity:.24;transform:translateX(-50%);z-index:-1;}
+  .dft-touchpoint.collab{--tp:#7c6b9d;--tp-bg:#faf9fd;}
+  .dft-touchpoint.collab::before{border-left-style:dashed;opacity:.38;}
+  .dft-touchpoint.focus{--tp:#6d28d9;--tp-bg:#f1ecfe;}
+  .dft-touchpoint.focus::before{border-left-width:3px;opacity:.52;}
+  .dft-touchpoint.silicon{--tp:#0f8f8b;--tp-bg:#e9f8f7;}
+  .dft-touchpoint.silicon::before{opacity:.34;}
+  .dft-anchor{display:block;width:11px;height:11px;margin:0 auto;border-radius:50%;background:var(--tp);
+    border:2px solid #fff;box-shadow:0 0 0 3px color-mix(in srgb,var(--tp) 18%,transparent);}
+  .dft-touchpoint.collab .dft-anchor{width:10px;height:10px;border-radius:3px;background:#fff;border:2px solid var(--tp);
+    box-shadow:none;transform:rotate(45deg);margin-top:1px;}
+  .dft-tp-label{display:block;min-height:46px;margin-top:7px;padding:5px 3px 4px;border:1px solid color-mix(in srgb,var(--tp) 31%,#e6e9ef);
+    border-top:3px solid var(--tp);border-radius:9px;background:var(--tp-bg);box-shadow:0 4px 12px rgba(20,30,50,.055);
+    transition:transform .15s,box-shadow .15s,border-color .15s;}
+  .dft-tp-label b{display:block;color:var(--ink);font-size:10.3px;line-height:1.25;white-space:nowrap;}
+  .dft-tp-label small{display:block;margin-top:2px;color:var(--ink-soft);font-size:9.2px;font-weight:650;line-height:1.25;}
+  .dft-touchpoint:hover .dft-tp-label,.dft-touchpoint.is-active .dft-tp-label,
+  .dft-entry-wrap:hover~.dft-touchpoint .dft-tp-label,.dft-entry-wrap:focus-within~.dft-touchpoint .dft-tp-label{
+    transform:translateY(-2px);border-color:var(--tp);box-shadow:0 7px 16px rgba(76,29,149,.11);}
+
+  /* 项目时间线 */
+  .project-timeline{margin:62px 0 42px;}
+  .pt-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:16px;}
+  .pt-kicker{display:block;font-size:10.5px;font-weight:800;letter-spacing:.10em;color:var(--brand);text-transform:uppercase;margin-bottom:2px;}
+  .pt-title{margin:0;font-size:21px;line-height:1.35;font-weight:800;color:var(--ink);letter-spacing:-.01em;}
+  .pt-guide{display:flex;align-items:center;gap:11px;flex-wrap:wrap;font-size:11.5px;color:var(--ink-faint);}
+  .pt-guide span{display:inline-flex;align-items:center;gap:5px;white-space:nowrap;}
+  .pt-guide span::before{content:"";width:7px;height:7px;border-radius:50%;background:linear-gradient(135deg,var(--p1),var(--p2));}
+  .pt-swipe{display:none!important;}
+  .pt-frame{overflow:hidden;border:1px solid var(--line);border-radius:18px;
+    background:linear-gradient(180deg,#f8faff 0%,#fff 52%,#fafbfc 100%);box-shadow:0 8px 26px rgba(20,30,50,.055);}
+  .pt-scroll{overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;scrollbar-color:#d9deea transparent;}
+  .pt-scroll::-webkit-scrollbar{height:6px;}
+  .pt-scroll::-webkit-scrollbar-thumb{background:#d9deea;border-radius:999px;}
+  .pt-scroll:focus-visible{outline:2px solid var(--brand);outline-offset:-3px;}
+  .pt-board{min-width:1000px;padding:172px 54px 150px;}
+  .pt-axis{position:relative;height:72px;margin:0;}
+  .pt-axis::before{content:"";position:absolute;left:0;right:0;top:10px;height:4px;border-radius:999px;
+    background:var(--line);box-shadow:0 0 12px rgba(59,130,246,.12);}
+  .pt-pop{position:absolute;width:270px;max-width:calc(100vw - 48px);background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    padding:12px 14px 13px;box-shadow:0 12px 30px rgba(20,30,50,.13);opacity:0;visibility:hidden;
+    --pop-x:-50%;transform:translateX(var(--pop-x)) translateY(6px);transition:opacity .16s,visibility .16s,transform .16s;
+    z-index:6;pointer-events:none;text-align:left;}
+  .pt-tag{display:inline-flex;align-items:center;padding:3px 8px;border-radius:6px;background:var(--tl-bg);color:var(--tl);
+    font-size:10.5px;font-weight:800;line-height:1.4;}
+  .pt-pop h3{margin:8px 0 5px;font-size:14px;line-height:1.4;font-weight:750;color:var(--ink);}
+  .pt-pop p{margin:0;font-size:12.5px;line-height:1.6;color:var(--ink-soft);}
+  .pt-period{position:absolute;left:var(--start);width:var(--span);top:0;height:20px;z-index:2;}
+  .pt-segment{appearance:none;position:absolute;inset:-8px 0;border:0;background:transparent;padding:0;cursor:pointer;border-radius:999px;touch-action:pan-x;}
+  .pt-segment::before{content:"";position:absolute;left:9px;right:9px;top:18px;height:6px;border-radius:999px;
+    background:linear-gradient(90deg,var(--tl),var(--tl2,var(--tl)));opacity:.72;transition:height .16s,top .16s,opacity .16s,box-shadow .16s;}
+  .pt-period:hover .pt-segment::before,.pt-period:focus-within .pt-segment::before{
+    height:9px;top:16px;opacity:1;box-shadow:0 0 12px var(--glow);}
+  .pt-segment:focus-visible{outline:none;}
+  .pt-segment:focus-visible::before{box-shadow:0 0 0 3px #fff,0 0 0 5px var(--tl),0 0 14px var(--glow);}
+  .pt-task-pop{left:50%;bottom:calc(100% + 18px);border-top:3px solid var(--tl);}
+  .pt-task-pop::after{content:"";position:absolute;bottom:-6px;left:50%;width:10px;height:10px;background:var(--surface);
+    border-right:1px solid var(--line);border-bottom:1px solid var(--line);transform:translateX(-50%) rotate(45deg);}
+  .pt-period:hover .pt-task-pop,.pt-period:focus-within .pt-task-pop{
+    opacity:1;visibility:visible;transform:translateX(var(--pop-x)) translateY(0);}
+  .pt-milestone{position:absolute;left:var(--x);top:-10px;width:84px;height:70px;z-index:3;transform:translateX(-50%);}
+  .pt-point{appearance:none;border:0;background:transparent;width:84px;min-height:64px;padding:10px 7px 0;touch-action:pan-x;
+    display:flex;flex-direction:column;align-items:center;color:inherit;font-family:inherit;cursor:pointer;border-radius:12px;}
+  .pt-dot{width:24px;height:24px;border:5px solid #fff;border-radius:50%;background:var(--dot);transition:transform .16s,box-shadow .16s;
+    box-shadow:0 0 0 2px var(--dot),0 4px 10px var(--glow);}
+  .pt-date{margin-top:7px;padding:2px 8px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--ink);
+    font-size:11.5px;font-weight:750;white-space:nowrap;box-shadow:0 2px 7px rgba(20,30,50,.05);transition:all .16s;}
+  .pt-milestone:hover .pt-dot,.pt-milestone:focus-within .pt-dot{transform:scale(1.18);box-shadow:0 0 0 3px var(--dot),0 7px 16px var(--glow);}
+  .pt-milestone:hover .pt-date,.pt-milestone:focus-within .pt-date{
+    color:var(--dot);border-color:var(--dot);background:var(--dot-bg,#fff);}
+  .pt-point:focus-visible{outline:2px solid var(--dot);outline-offset:2px;}
+  .pt-criterion-pop{left:50%;top:calc(100% + 8px);border-bottom:3px solid var(--tl);background:#fbfcfe;}
+  .pt-criterion-pop::before{content:"";position:absolute;top:-6px;left:50%;width:10px;height:10px;background:#fbfcfe;
+    border-left:1px solid var(--line);border-top:1px solid var(--line);transform:translateX(-50%) rotate(45deg);}
+  .pt-milestone:hover .pt-criterion-pop,.pt-milestone:focus-within .pt-criterion-pop{
+    opacity:1;visibility:visible;transform:translateX(var(--pop-x)) translateY(0);}
+  .pt-milestone.edge-start .pt-criterion-pop{--pop-x:0%;}
+  .pt-milestone.edge-start .pt-criterion-pop::before{left:18px;}
+  .pt-milestone.edge-end .pt-criterion-pop{left:auto;right:50%;--pop-x:0%;}
+  .pt-milestone.edge-end .pt-criterion-pop::before{left:auto;right:18px;}
 
   /* 阶段卡片 */
   .phase{margin-top:34px;}
@@ -176,10 +345,13 @@
   .phase-line{flex:1;height:1px;background:var(--line);}
   .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(228px,1fr));gap:14px;}
   .card{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:14px;
-    padding:16px 16px 15px;cursor:pointer;transition:transform .16s,box-shadow .16s,border-color .16s;overflow:hidden;}
+    padding:16px 16px 15px;cursor:pointer;transition:transform .16s,box-shadow .16s,border-color .16s;overflow:hidden;
+    width:100%;font:inherit;color:inherit;text-align:left;}
   .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent,var(--brand));transform:scaleY(.55);transition:transform .16s;}
   .card:hover::before{transform:scaleY(1);}
   .card:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(20,30,50,.10);border-color:var(--accent,var(--brand));}
+  .card:focus-visible{outline:3px solid color-mix(in srgb,var(--accent,var(--brand)) 45%,transparent);outline-offset:2px;
+    border-color:var(--accent,var(--brand));}
   .card.locked{cursor:not-allowed;opacity:.7;}
   .card.locked:hover{transform:none;box-shadow:none;border-color:var(--line);}
   .card.locked::before{opacity:.4;}
@@ -216,10 +388,13 @@
   .dh-title{font-size:25px;font-weight:800;margin:3px 0 0;letter-spacing:-.01em;}
   .dh-meta{display:flex;gap:16px;margin-top:13px;font-size:12.5px;color:var(--ink-soft);position:relative;z-index:1;}
   .dh-stepper{display:flex;gap:5px;margin-top:15px;flex-wrap:wrap;position:relative;z-index:1;}
-  .dh-step{width:22px;height:8px;border-radius:5px;background:var(--line);transition:transform .15s;}
+  .dh-step{width:22px;height:8px;border:0;padding:0;border-radius:5px;background:var(--line);transition:transform .15s;}
   .dh-step.avail{cursor:pointer;}
-  .dh-step.avail:hover{transform:scaleY(1.5);}
+  .dh-step.avail:hover,.dh-step.avail:focus-visible{transform:scaleY(1.5);outline:2px solid var(--accent);outline-offset:2px;}
   .dh-step.cur{width:36px;box-shadow:0 0 0 3px var(--accentBg);}
+  .doc-hero.crosscut{background:linear-gradient(120deg,#f1ecfe,#e7f7f6 58%,#fff 100%);border-color:#d9cdf7;}
+  .doc-hero.crosscut .dh-badge{font-size:19px;border-radius:50%;}
+  .doc-hero.crosscut .dh-stepper{padding:7px 9px;border-radius:9px;background:linear-gradient(90deg,rgba(139,92,246,.10),rgba(14,165,164,.10),rgba(245,158,11,.08));}
 
   /* 章节分块 + 标题序号片 */
   .doc-lead{margin:0;}
@@ -238,12 +413,12 @@
   /* 代码块 / 示意图 + 复制 */
   .doc pre{position:relative;}
   .doc pre.diagram{background:linear-gradient(135deg,#f3f7ff,#f7f4ff);border:1px dashed #c7d3ea;}
-  .doc pre.diagram::before{content:"流程示意";position:absolute;top:7px;left:12px;font-size:10px;
+  .doc pre.diagram::before{content:attr(data-label);position:absolute;top:7px;left:12px;font-size:10px;
     letter-spacing:.08em;color:var(--ink-faint);font-family:inherit;}
   .doc pre.diagram code{display:block;padding-top:14px;text-align:center;}
   .copy-btn{position:absolute;top:7px;right:8px;font-size:11px;color:var(--ink-soft);background:rgba(255,255,255,.85);
     border:1px solid var(--line);border-radius:6px;padding:3px 9px;cursor:pointer;font-family:inherit;transition:all .13s;opacity:0;}
-  .doc pre:hover .copy-btn{opacity:1;}
+  .doc pre:hover .copy-btn,.doc pre:focus-within .copy-btn,.copy-btn:focus-visible{opacity:1;}
   .copy-btn:hover{color:var(--brand);border-color:var(--brand);}
 
   /* 表格行悬停 */
@@ -293,7 +468,7 @@
     border-radius:8px;padding:7px 11px;line-height:1.5;}
   .case-legend{display:flex;flex-wrap:wrap;gap:7px;margin-top:13px;}
   .cs-leg{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:4px 11px;cursor:pointer;
-    background:#fff;display:inline-flex;gap:6px;align-items:center;transition:all .13s;}
+    background:#fff;display:inline-flex;gap:6px;align-items:center;transition:all .13s;font-family:inherit;color:inherit;}
   .cs-leg:hover{border-color:var(--accent);color:var(--accent);background:var(--accentBg);}
   .cs-leg .dot{width:8px;height:8px;border-radius:50%;background:var(--accent,#8b5cf6);flex:none;}
   .case-desc{font-size:12.5px;color:var(--ink-soft);margin-top:9px;line-height:1.6;}
@@ -314,6 +489,13 @@
   .spec .k{font-size:11px;color:var(--ink-faint);}
   .spec .v{font-size:13.5px;font-weight:700;color:var(--ink);margin-top:2px;}
   .case-src{font-size:11px;color:var(--ink-faint);margin-top:12px;font-style:italic;}
+  .case-lang-note{margin:20px 0 10px;padding:18px 20px;border:1px solid #cfe0ff;border-radius:14px;
+    background:linear-gradient(135deg,#eef5ff,#f7f3ff);box-shadow:0 5px 18px rgba(37,99,235,.06);}
+  .case-lang-note .case-note-title{display:block;margin:0 0 6px;font-size:15.5px;font-weight:800;color:var(--ink);}
+  .case-lang-note p{margin:0;color:var(--ink-soft);font-size:13px;line-height:1.6;}
+  .case-lang-note button{margin-top:11px;padding:7px 12px;border:1px solid #b7cdf8;border-radius:8px;background:#fff;
+    color:var(--brand);font-family:inherit;font-size:12px;font-weight:700;line-height:1.3;cursor:pointer;transition:all .15s;}
+  .case-lang-note button:hover{background:var(--brand);border-color:var(--brand);color:#fff;transform:translateY(-1px);}
   /* SVG 基础与高亮态 */
   .cs-box{fill:#fff;stroke:#cbd5e1;stroke-width:1.5;}
   .cs-cell{fill:#faf7ff;stroke:#c4b5fd;stroke-width:1.2;}
@@ -340,7 +522,8 @@
     border:1px solid var(--line);border-radius:7px;padding:5px 8px;text-align:center;line-height:1.3;min-height:34px;
     display:flex;align-items:center;justify-content:center;}
   .smchip{background:#fff;border:1px solid var(--line);border-left:3px solid var(--accent,#8b5cf6);
-    border-radius:8px;padding:7px 10px;font-size:12.5px;color:var(--ink);cursor:pointer;transition:all .13s;line-height:1.35;}
+    border-radius:8px;padding:7px 10px;font-size:12.5px;color:var(--ink);cursor:pointer;transition:all .13s;line-height:1.35;
+    font-family:inherit;text-align:left;}
   .smchip:hover{border-color:var(--accent);box-shadow:0 3px 12px rgba(20,30,50,.10);transform:translateX(2px);}
   .smchip b{color:var(--accent,#8b5cf6);margin-right:5px;font-variant-numeric:tabular-nums;}
   .smarrow{display:flex;align-items:center;justify-content:center;color:var(--ink-faint);font-size:17px;flex:none;
@@ -349,7 +532,7 @@
   .secmap-span{position:relative;margin-top:18px;border:1px dashed var(--accent,#8b5cf6);border-radius:11px;
     background:repeating-linear-gradient(135deg,rgba(139,92,246,.05),rgba(139,92,246,.05) 7px,transparent 7px,transparent 14px);
     padding:10px 13px 11px;}
-  .secmap-span::before{content:"⇡ 以上每一步都要同时顾及 ⇡";position:absolute;top:-9px;left:14px;
+  .secmap-span::before{content:attr(data-caption);position:absolute;top:-9px;left:14px;
     font-size:10px;font-weight:700;color:var(--accent,#8b5cf6);background:var(--surface);padding:0 7px;letter-spacing:.02em;}
   .span-lbl{font-size:11.5px;font-weight:700;color:var(--accent,#8b5cf6);margin:2px 0 9px;line-height:1.5;}
   .span-items{display:flex;flex-wrap:wrap;gap:7px;}
@@ -361,56 +544,245 @@
     .layout{grid-template-columns:1fr;}
     .toc{display:none;}
     .main{padding:24px 20px 90px;}
-    .flowmap{overflow-x:auto;}
+    .flowmap-wrap{overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;}
+    .flowmap{min-width:1040px;padding-bottom:280px;}
     .node-label{font-size:10px;}
+    .dft-entry-tip{left:0;--tip-x:0%;}
+    .dft-entry-members::after,.dft-entry-summary::before{left:80px;}
+    .project-timeline{margin-top:58px;}
+    .pt-board{min-width:920px;padding-left:46px;padding-right:46px;}
+    .pt-swipe{display:inline-flex!important;}
+  }
+  html[lang="en"] .flowmap-wrap{overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;}
+  html[lang="en"] .flowmap{min-width:1420px;}
+  html[lang="en"] .flowmap{padding-bottom:350px;}
+  html[lang="en"] .node-label{max-width:100px;font-size:10.5px;}
+  html[lang="en"] .dft-entry .de-kicker{font-size:7.8px;}
+  html[lang="en"] .dft-entry b{font-size:12px;line-height:1.2;white-space:normal;}
+  html[lang="en"] .dft-entry .de-legend{font-size:8px;}
+  html[lang="en"] .dft-entry .de-go{font-size:8.8px;}
+  html[lang="en"] .dft-entry-summary{width:390px;}
+  html[lang="en"] .dft-tp-label b{font-size:8.8px;white-space:normal;}
+  html[lang="en"] .dft-tp-label small{font-size:8.1px;line-height:1.18;}
+  html[lang="en"] .dft-transit-note{font-size:8.5px;}
+  html[lang="en"] .pt-board{padding-top:235px;}
+  html[lang="en"] .pt-pop{width:310px;}
+  html[lang="en"] .cs-t{font-size:11px;}
+  html[lang="en"] .cs-cellt{font-size:10px;}
+  html[lang="en"] .cs-sub{font-size:8.8px;}
+  html[lang="en"] .cs-note{font-size:8.8px;}
+  @media (max-width:680px){
+    .brand .brand-label{display:none;}
+    .topbar{gap:8px;padding:0 10px;}
+  }
+  @media (max-width:560px){
+    .pt-head{align-items:flex-start;flex-direction:column;gap:7px;}
+    .pt-frame{border-radius:14px;}
   }
 </style>
 </head>
 <body>
   <header class="topbar">
-    <div class="brand" onclick="location.hash='#/overview'">
-      <span class="dot"></span><span>芯片设计完整流程</span>
-    </div>
+    <button class="brand" id="brandHome" type="button" onclick="location.hash='#/overview'" aria-label="返回流程概览">
+      <span class="dot"></span><span class="brand-label" id="brandLabel">芯片设计完整流程</span>
+    </button>
     <nav class="nav" id="nav"></nav>
+    <button class="lang-toggle" id="langToggle" type="button" data-lang="zh" aria-label="切换到英文" title="切换到英文">
+      <span class="lang-opt lang-zh">中文</span><span class="lang-sep" aria-hidden="true">/</span><span class="lang-opt lang-en">EN</span>
+    </button>
   </header>
   <div class="readbar" id="readbar"></div>
 
   <div class="layout">
     <aside class="toc">
-      <div class="toc-title">本页目录</div>
+      <div class="toc-title" id="tocTitle">本页目录</div>
       <div id="toc"></div>
     </aside>
     <main class="main">
-      <div id="content" class="doc"></div>
+      <div id="content" class="doc" tabindex="-1"></div>
     </main>
   </div>
+  <div class="sr-only" id="routeStatus" aria-live="polite" aria-atomic="true"></div>
 
-  <div class="kbd-hint" id="kbdhint"><kbd>←</kbd><kbd>→</kbd> 切换上一步 / 下一步</div>
+  <div class="kbd-hint" id="kbdhint"><kbd>←</kbd><kbd>→</kbd> <span id="kbdLabel">切换上一步 / 下一步</span></div>
 
 <script>
 const SITE = window.SITE || {stages:[], phaseOrder:[]};
-const STAGES = SITE.stages;
+const STAGES = SITE.stages || [];
+const TOPICS = SITE.topics || [];
+const ALL_DOCS = [...STAGES, ...TOPICS];
+const DFT_TOPIC = TOPICS.find(s=>s.prefix==='dft') || null;
+const UI = {
+  zh: {
+    htmlLang:'zh-CN', pageTitle:'芯片设计完整流程', brand:'芯片设计完整流程', toc:'本页目录', overviewPage:'概览页', overviewAria:'返回流程概览',
+    switchLabel:'切换到英文', notWritten:'尚未撰写', ready:'已就绪', coming:'待撰写',
+    groupMembers:'小组成员', tbd:'待定', companyEngineers:'公司工程师', previous:'← 上一步', next:'下一步 →',
+    planningStart:'← 规划起点', productionRealization:'量产兑现 →', keyHint:'切换上一步 / 下一步',
+    phases:{definition:'定义',design:'设计',verification_synthesis:'验证与综合',physical_signoff:'物理与签核',manufacturing_delivery:'制造与交付',dft:'DFT设计'},
+    overviewTitle:'芯片设计完整流程',
+    overviewIntro:'从一个想法到量产芯片，主流程包含十三个编号阶段；DFT设计并非边界严格的单一步骤，而是从测试架构、RTL 可测逻辑一路延伸到 Scan/MBIST 插入、物理收敛、签核、ATE 与量产诊断。',
+    overviewHelp:'点击圆点进入主流程章节；下方框出的 DFT设计泳道会用连线与动作标签标明具体关联环节，点击左侧入口可查看完整方法。键盘 <b>←</b> / <b>→</b> 只在十三个编号主阶段之间切换。',
+    coreStages:'个主阶段', completed:'已完成', enterStage:'进入',
+    dftScopeAria:'DFT设计涉及的主流程环节：架构设计至签核，以及封装测试与量产',
+    dftScope:'DFT设计关联主流程 · ③—⑨、⑫—⑬', dftFocusFallback:'主要实现 / 覆盖率收敛',
+    dftTransit:'⑩–⑪ · 结构随版图制造 · 测试程序准备', dftKicker:'DESIGN FOR TEST', dftLinkage:'关联：③—⑨、⑫—⑬',
+    viewMethod:'查看完整方法 →', enterDft:'进入 DFT设计专题',
+    timeline:{
+      title:'项目时间线', guideAria:'时间线阅读说明', segmentGuide:'悬停线段：上方查看任务', pointGuide:'悬停圆点：下方查看验收', touchGuide:'触屏可轻触 · 可横向滑动',
+      scrollAria:'项目时间线，可横向滚动', groupAria:'项目阶段与里程碑', taskTag:'阶段任务', acceptance:'验收标准', kickoff:'启动节点', kickoffSuffix:' · 启动', kickoffTitle:'项目启动', nodeSuffix:'节点',
+      segmentAria:(p)=>`查看${p.start}至${p.end}阶段任务`, pointAria:(m)=>`查看${m.date}${m.kickoff?'项目启动信息':'节点验收标准'}`,
+      periods:[
+        {start:'7月10日',end:'8月10日',title:'知识学习与工具上手',task:'各小组成员结合公司工程师提供的资料，学习所负责环节的相关知识。',criterion:'能够使用对应的 EDA 软件，并能对运行结果进行简单分析。'},
+        {start:'8月10日',end:'9月10日',title:'完成各环节 Agent 初版',task:'各小组配合公司工程师，完成相应环节 Agent 的设计。',criterion:'该环节 Agent 能够跑通，并具备完成该环节的基本自动化能力。'},
+        {start:'9月10日',end:'10月10日',title:'Agent 试用与多轮优化',task:'与公司工程师配合试用 Agent，并对 Agent 的设计进行多轮迭代和优化。',criterion:'Agent 基本能够自动化完成 518 芯片的设计。'},
+        {start:'10月10日',end:'12月10日',title:'测试、细化与项目落地',task:'公司工程师与同学们配合，持续测试 Agent、细化并拆分执行流程，并根据 Agent 实际运行中出现的 Bug 进行迭代优化。',criterion:'Agent 能够实际应用于公司现有的 3D 芯片项目。'}
+      ],
+      dates:['7月10日','8月10日','9月10日','10月10日','12月10日'], kickoffCriterion:'项目起始节点，暂无阶段验收标准；首轮验收节点为 8 月 10 日。'
+    },
+    flowDiagram:'流程示意', copy:'复制', copied:'已复制 ✓', copyFailed:'复制失败', chapterMap:'本章子环节：顺序与并行关系', spanCaption:'⇡ 以上每一步都要同时顾及 ⇡',
+    readMinutes:(n)=>`约 ${n} 分钟`, stageProgress:(phase,idx,total)=>`${phase}阶段 · 第 ${idx} / ${total} 步`,
+    topicProgress:'涉及架构规划、RTL、综合插入、物理收敛、签核与量产测试', topicMeta:'↔ 不属于边界严格的单一步骤',
+    caseNoteTitle:'交互式 TPU 真实芯片案例', caseNote:'详细的交互式 TPU 案例位于中文版本中。', caseNoteButton:'查看中文案例',
+    caseBadge:'真实芯片案例', play:'▶ 播放', pause:'⏸ 暂停', legendHelp:'悬停下方图例 → 高亮图中对应部件；点「▶」分步查看数据流。',
+    lifeBefore:'🧭 进入本环节前 · 决策与输入', lifeDuring:'⚖️ 本环节执行中 · 权衡与控制', lifeResult:'📐 本环节产出 · 结果与指标', lifeAfter:'✅ 本环节之后 · 后续动作',
+    lifeIntro:'开始本环节前，先明确需要决定的事项、约束条件与必要输入。', sourceLabel:'来源：',
+    missing:'未找到内容：请先在本目录运行 python3 build.py 生成 content.js。'
+  },
+  en: {
+    htmlLang:'en', pageTitle:'End-to-End Chip Design Flow', brand:'End-to-End Chip Design Flow', toc:'ON THIS PAGE', overviewPage:'Overview', overviewAria:'Return to the flow overview',
+    switchLabel:'Switch to Chinese', notWritten:'Not yet available', ready:'Ready', coming:'Coming soon',
+    groupMembers:'GROUP MEMBERS', tbd:'TBD', companyEngineers:'Company Engineers', previous:'← Previous', next:'Next →',
+    planningStart:'← Planning Start', productionRealization:'Packaging & Test →', keyHint:'Previous / next core stage',
+    phases:{definition:'Definition',design:'Design',verification_synthesis:'Verification & Synthesis',physical_signoff:'Physical Implementation & Signoff',manufacturing_delivery:'Manufacturing & Delivery',dft:'Design for Test (DFT)'},
+    overviewTitle:'End-to-End Chip Design Flow',
+    overviewIntro:'From an initial concept to volume silicon, the core flow comprises thirteen numbered stages. Design for Test (DFT) is not a single stage with rigid boundaries; it extends from test-architecture planning and testable RTL through scan and MBIST insertion, physical closure, signoff, ATE deployment, and production diagnostics.',
+    overviewHelp:'Select a node to open that stage. The framed DFT swimlane below identifies the related stages with connectors and action labels; select the panel at left to view the complete methodology. Use <b>←</b> / <b>→</b> to move only among the thirteen core stages.',
+    coreStages:'core stages', completed:'Completed', enterStage:'Open',
+    dftScopeAria:'Core-flow stages covered by Design for Test, from architecture through signoff and from packaging and test through volume production',
+    dftScope:'DFT touchpoints across the core flow · ③–⑨, ⑫–⑬', dftFocusFallback:'Primary implementation / coverage closure',
+    dftTransit:'⑩–⑪ · DFT frozen into masks / silicon · ATE preparation', dftKicker:'DESIGN FOR TEST', dftLinkage:'Touchpoints: ③–⑨, ⑫–⑬',
+    viewMethod:'View complete methodology →', enterDft:'Open the Design for Test methodology',
+    timeline:{
+      title:'Project Timeline', guideAria:'How to read the project timeline', segmentGuide:'Hover a segment: task above', pointGuide:'Hover a milestone: acceptance criterion below', touchGuide:'Tap on touch screens · Swipe horizontally',
+      scrollAria:'Project timeline; horizontally scrollable', groupAria:'Project phases and milestones', taskTag:'Stage Task', acceptance:'Acceptance Criterion', kickoff:'Kickoff', kickoffSuffix:' · Kickoff', kickoffTitle:'Project Kickoff', nodeSuffix:'Milestone',
+      segmentAria:(p)=>`View the task from ${p.start} to ${p.end}`, pointAria:(m)=>`View ${m.date} ${m.kickoff?'kickoff information':'acceptance criterion'}`,
+      periods:[
+        {start:'Jul 10',end:'Aug 10',title:'Domain Learning and EDA Tool Proficiency',task:'Each group studies the domain knowledge for its assigned stage using materials provided by company engineers.',criterion:'Members can operate the applicable EDA tools and perform a basic analysis of the results.'},
+        {start:'Aug 10',end:'Sep 10',title:'Initial Agent Implementation for Each Stage',task:'Each group works with company engineers to design the agent for its assigned stage.',criterion:'The agent runs end to end and provides the basic automation required for that stage.'},
+        {start:'Sep 10',end:'Oct 10',title:'Agent Trial and Iterative Optimization',task:'Pilot the agents with company engineers and improve their designs through multiple iterations.',criterion:'The agent system can largely automate the end-to-end design flow for the 518 chip.'},
+        {start:'Oct 10',end:'Dec 10',title:'Testing, Workflow Refinement, and Project Deployment',task:'Company engineers and students continuously test the agents, further decompose and refine the execution workflow, and iteratively improve the agents based on bugs observed during actual runs.',criterion:'The agents can be applied to the company’s existing 3D IC project.'}
+      ],
+      dates:['Jul 10','Aug 10','Sep 10','Oct 10','Dec 10'], kickoffCriterion:'Project kickoff; the first formal acceptance milestone is Aug 10.'
+    },
+    flowDiagram:'Flow Diagram', copy:'Copy', copied:'Copied ✓', copyFailed:'Copy failed', chapterMap:'Chapter Map: Sequence and Parallelism', spanCaption:'⇡ Apply concurrently throughout the flow ⇡',
+    readMinutes:(n)=>`Approx. ${n} min read`, stageProgress:(phase,idx,total)=>`${phase} · Stage ${idx} of ${total}`,
+    topicProgress:'Spans architecture planning, RTL, DFT insertion, physical closure, signoff, and production test', topicMeta:'↔ Cross-stage discipline, not a rigid standalone stage',
+    caseNoteTitle:'Interactive TPU Case Studies', caseNote:'The English interactive-case bundle could not be loaded or is out of sync with its Chinese source. Switch to Chinese to view the corresponding cases.', caseNoteButton:'View Chinese case studies',
+    caseBadge:'Real Chip Case', play:'▶ Play', pause:'⏸ Pause', legendHelp:'Hover a legend item to highlight the corresponding component; select ▶ to step through the dataflow.',
+    lifeBefore:'🧭 Before This Stage · Decisions', lifeDuring:'⚖️ During This Stage · Trade-offs', lifeResult:'📐 Stage Outputs · Results', lifeAfter:'✅ After This Stage · Next Actions',
+    lifeIntro:'Before this stage begins, clarify the decisions, constraints, and required inputs.', sourceLabel:'Source: ',
+    missing:'Content was not found. Run python3 build.py in this directory to generate content.js.'
+  }
+};
+let currentLang='zh';
+try{ const saved=localStorage.getItem('chip-design-flow.lang'); if(saved==='zh'||saved==='en') currentLang=saved; }catch(_){ /* file:// may block storage */ }
 const PHASE_COLOR = {
-  "定义":      {c:"var(--p1)", c2:"#60a5fa", bg:"var(--p1bg)", glow:"rgba(59,130,246,.35)"},
-  "设计":      {c:"var(--p2)", c2:"#a78bfa", bg:"var(--p2bg)", glow:"rgba(139,92,246,.35)"},
-  "验证与综合":{c:"var(--p3)", c2:"#2dd4bf", bg:"var(--p3bg)", glow:"rgba(14,165,164,.35)"},
-  "物理与签核":{c:"var(--p4)", c2:"#fbbf24", bg:"var(--p4bg)", glow:"rgba(245,158,11,.35)"},
-  "制造与交付":{c:"var(--p5)", c2:"#f87171", bg:"var(--p5bg)", glow:"rgba(239,68,68,.35)"},
+  definition:{c:"var(--p1)", c2:"#60a5fa", bg:"var(--p1bg)", glow:"rgba(59,130,246,.35)"},
+  design:{c:"var(--p2)", c2:"#a78bfa", bg:"var(--p2bg)", glow:"rgba(139,92,246,.35)"},
+  verification_synthesis:{c:"var(--p3)", c2:"#2dd4bf", bg:"var(--p3bg)", glow:"rgba(14,165,164,.35)"},
+  physical_signoff:{c:"var(--p4)", c2:"#fbbf24", bg:"var(--p4bg)", glow:"rgba(245,158,11,.35)"},
+  manufacturing_delivery:{c:"var(--p5)", c2:"#f87171", bg:"var(--p5bg)", glow:"rgba(239,68,68,.35)"},
+  dft:{c:"#7c3aed", c2:"#0ea5a4", bg:"#f1ecfe", glow:"rgba(124,58,237,.28)"},
+};
+const LEGACY_PHASE_KEYS={"定义":"definition","设计":"design","验证与综合":"verification_synthesis","物理与签核":"physical_signoff","制造与交付":"manufacturing_delivery","DFT设计":"dft"};
+const L=()=>UI[currentLang];
+const phaseKey=s=>s.phaseKey||LEGACY_PHASE_KEYS[s.phase]||s.phase;
+const phaseLabel=s=>L().phases[typeof s==='string'?s:phaseKey(s)]||s.phase||s;
+const localField=(obj,key)=>currentLang==='en'?(obj[key+'En']??''):(obj[key]??'');
+const stageTitle=s=>localField(s,'title');
+const stageSummary=s=>localField(s,'summary');
+const docAvailable=s=>currentLang==='en'?!!s.availableEn:!!s.available;
+const docRaw=s=>currentLang==='en'?(s.rawEn||''):(s.raw||'');
+const displayMember=name=>currentLang==='en'?(name==='待定'?L().tbd:(name==='公司工程师'?L().companyEngineers:name)):name;
+const memberLangAttr=name=>currentLang==='en'&&/[一-龥]/.test(name)&&name!=='待定'&&name!=='公司工程师'?' lang="zh-CN"':'';
+const esc=value=>String(value??'').replace(/[&<>'"]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[ch]));
+const MEMBERS_BY_PREFIX = {
+  "03":["赵家旺","惠晨宇","李贝尔","公司工程师"],
+  "04":["赵家旺","惠晨宇","李贝尔","公司工程师"],
+  "05":["李贝尔","沈航锋","待定","公司工程师"],
+  "06":["UCAgent","李锴瑞","公司工程师"],
+  "07":["沈默","刘惟琛","待定","公司工程师"],
+  "08":["李锴瑞","李瀚幸","待定","公司工程师"],
+  "09":["郑心舟","符敦靖","待定","公司工程师"]
 };
 marked.setOptions({gfm:true, breaks:false});
 let currentPrefix = null;
+const activeCaseTimers=new Set();
+const caseUiState=new Map();
+function clearCaseTimers(){ activeCaseTimers.forEach(id=>clearInterval(id)); activeCaseTimers.clear(); }
+function applyLanguageShell(){
+  const l=L();
+  document.documentElement.lang=l.htmlLang;
+  document.title=l.pageTitle;
+  document.getElementById('brandLabel').textContent=l.brand;
+  document.getElementById('brandHome').setAttribute('aria-label',l.overviewAria);
+  document.getElementById('tocTitle').textContent=l.toc;
+  document.getElementById('kbdLabel').textContent=l.keyHint;
+  const toggle=document.getElementById('langToggle');
+  toggle.dataset.lang=currentLang;
+  toggle.setAttribute('aria-label',l.switchLabel);
+  toggle.title=l.switchLabel;
+}
+function captureReadingPosition(){
+  const y=window.scrollY||document.documentElement.scrollTop||0;
+  let section='';
+  document.querySelectorAll('#content h2,#content h3').forEach(h=>{
+    if(h.getBoundingClientRect().top<=Math.max(90,innerHeight*.22)){
+      const m=(h.dataset.title||h.textContent||'').match(/^(\d+(?:\.\d+)*)\.?\s/);
+      if(m) section=m[1];
+    }
+  });
+  return {y,section};
+}
+function restoreReadingPosition(pos){
+  if(pos.section){
+    const target=Array.from(document.querySelectorAll('#content h2,#content h3')).find(h=>
+      (h.dataset.title||h.textContent||'').match(new RegExp('^'+pos.section.replace(/\./g,'\\.')+'(?:\\.|\\s)')));
+    if(target){ target.scrollIntoView({behavior:'auto',block:'start'}); return; }
+  }
+  window.scrollTo(0,pos.y);
+}
+function setLanguage(lang){
+  if(lang!=='zh'&&lang!=='en') return;
+  const position=captureReadingPosition();
+  currentLang=lang;
+  try{ localStorage.setItem('chip-design-flow.lang',lang); }catch(_){ /* keep in-memory selection */ }
+  clearCaseTimers();
+  applyLanguageShell();
+  route();
+  requestAnimationFrame(()=>restoreReadingPosition(position));
+}
+document.getElementById('langToggle').addEventListener('click',()=>setLanguage(currentLang==='zh'?'en':'zh'));
 
 /* ---------- 顶栏 ---------- */
 function buildNav(activePrefix){
   const nav = document.getElementById('nav');
   nav.innerHTML = '';
-  STAGES.forEach(s=>{
-    const el = document.createElement(s.available ? 'a' : 'span');
-    el.className = 'chip' + (s.available ? '' : ' disabled') + (s.prefix===activePrefix ? ' active' : '');
-    el.innerHTML = `<span class="n">${s.num}</span>${s.title}`;
-    if(s.available){ el.href = '#/'+s.prefix; el.title = s.file; }
-    else el.title = '尚未撰写';
+  [...STAGES, ...TOPICS].forEach(s=>{
+    const isTopic = TOPICS.includes(s);
+    const available=docAvailable(s);
+    const el = document.createElement(available ? 'a' : 'span');
+    el.className = 'chip' + (isTopic ? ' topic' : '') + (available ? '' : ' disabled') + (s.prefix===activePrefix ? ' active' : '');
+    el.innerHTML = isTopic ? `<span class="n">↔</span>${esc(stageTitle(s))}` : `<span class="n">${s.num}</span>${esc(stageTitle(s))}`;
+    if(available){ el.href = '#/'+s.prefix; el.title = stageSummary(s); }
+    else el.title = L().notWritten;
     nav.appendChild(el);
+  });
+  requestAnimationFrame(()=>{
+    const active=nav.querySelector('.chip.active');
+    if(!active) return;
+    const left=Math.max(0,active.offsetLeft-(nav.clientWidth-active.offsetWidth)/2);
+    if(typeof nav.scrollTo==='function') nav.scrollTo({left,behavior:'smooth'}); else nav.scrollLeft=left;
   });
 }
 
@@ -476,20 +848,21 @@ window.addEventListener('scroll', onScroll, {passive:true});
 
 /* ---------- 文档页 ---------- */
 function renderDoc(prefix){
-  const s = STAGES.find(x=>x.prefix===prefix);
-  if(!s || !s.available){ location.hash = '#/overview'; return; }
+  const s = ALL_DOCS.find(x=>x.prefix===prefix);
+  if(!s || !docAvailable(s)){ location.hash = '#/overview'; return; }
   currentPrefix = prefix;
   const content = document.getElementById('content');
   content.className = 'doc';
-  content.innerHTML = marked.parse(s.raw);
+  content.innerHTML = marked.parse(docRaw(s));
   try{ decorateDoc(content, s); }catch(err){ console.warn('decorate failed', err); }
   buildNav(prefix); buildToc(content);
+  const isTopic = TOPICS.includes(s);
   const idx = STAGES.indexOf(s);
-  const prev = STAGES.slice(0,idx).reverse().find(x=>x.available);
-  const next = STAGES.slice(idx+1).find(x=>x.available);
+  const prev = isTopic ? STAGES.find(x=>x.prefix==='03' && docAvailable(x)) : STAGES.slice(0,idx).reverse().find(docAvailable);
+  const next = isTopic ? STAGES.find(x=>x.prefix==='12' && docAvailable(x)) : STAGES.slice(idx+1).find(docAvailable);
   const foot = document.createElement('div');
   foot.className='doc-foot';
-  foot.innerHTML = footBtn(prev,'prev','← 上一步') + footBtn(next,'next','下一步 →');
+  foot.innerHTML = footBtn(prev,'prev',isTopic?L().planningStart:L().previous) + footBtn(next,'next',isTopic?L().productionRealization:L().next);
   content.appendChild(foot);
   setupReveal();
   window.scrollTo(0,0); onScroll();
@@ -497,19 +870,86 @@ function renderDoc(prefix){
 }
 function footBtn(stage, cls, lbl){
   if(!stage) return `<span class="foot-btn ${cls} disabled"><span class="lbl">${lbl}</span><span class="ttl">—</span></span>`;
-  return `<a class="foot-btn ${cls}" href="#/${stage.prefix}"><span class="lbl">${lbl}</span><span class="ttl">${stage.num} ${stage.title}</span></a>`;
+  return `<a class="foot-btn ${cls}" href="#/${stage.prefix}"><span class="lbl">${esc(lbl)}</span><span class="ttl">${stage.num} ${esc(stageTitle(stage))}</span></a>`;
 }
 
 /* ---------- 首页概览 ---------- */
+function renderProjectTimeline(){
+  const tl=L().timeline;
+  const periodColors=[
+    {c:'var(--p1)',c2:'#60a5fa',bg:'var(--p1bg)',glow:'rgba(59,130,246,.30)'},
+    {c:'var(--p2)',c2:'#a78bfa',bg:'var(--p2bg)',glow:'rgba(139,92,246,.30)'},
+    {c:'var(--p3)',c2:'#2dd4bf',bg:'var(--p3bg)',glow:'rgba(14,165,164,.30)'},
+    {c:'var(--p4)',c2:'#fbbf24',bg:'var(--p4bg)',glow:'rgba(245,158,11,.30)'}
+  ];
+  const periods=tl.periods.map((p,i)=>({...p,...periodColors[i]}));
+  const milestones = [
+    {date:tl.dates[0],x:'0%',c:'var(--p1)',bg:'var(--p1bg)',glow:'rgba(59,130,246,.30)',kickoff:true,criterion:tl.kickoffCriterion},
+    {date:tl.dates[1],x:'25%',c:'var(--p2)',bg:'var(--p2bg)',glow:'rgba(139,92,246,.30)',period:0},
+    {date:tl.dates[2],x:'50%',c:'var(--p3)',bg:'var(--p3bg)',glow:'rgba(14,165,164,.30)',period:1},
+    {date:tl.dates[3],x:'75%',c:'var(--p4)',bg:'var(--p4bg)',glow:'rgba(245,158,11,.30)',period:2},
+    {date:tl.dates[4],x:'100%',c:'var(--p5)',bg:'var(--p5bg)',glow:'rgba(239,68,68,.30)',period:3}
+  ];
+  const segments = periods.map((p,i)=>`
+    <div class="pt-period" style="--start:${i*25}%;--span:25%;--tl:${p.c};--tl2:${p.c2};--tl-bg:${p.bg};--glow:${p.glow}">
+      <button class="pt-segment" type="button" aria-label="${esc(tl.segmentAria(p))}" aria-describedby="pt-task-${i}"></button>
+      <article class="pt-pop pt-task-pop" id="pt-task-${i}" role="tooltip">
+        <span class="pt-tag">${esc(tl.taskTag)} · ${esc(p.start)}—${esc(p.end)}</span><h3>${esc(p.title)}</h3><p>${esc(p.task)}</p>
+      </article>
+    </div>`).join('');
+  const points = milestones.map((m,i)=>{
+    const p = m.kickoff ? null : periods[m.period];
+    const criterion = m.kickoff ? m.criterion : p.criterion;
+    const edge = i===0 ? ' edge-start' : (i===milestones.length-1 ? ' edge-end' : '');
+    const style = `--x:${m.x};--dot:${m.c};--dot-bg:${m.bg};--glow:${m.glow};--tl:${p?p.c:m.c};--tl-bg:${p?p.bg:m.bg}`;
+    const label = m.kickoff ? tl.kickoff : tl.acceptance;
+    const title = m.kickoff ? `${m.date} · ${tl.kickoffTitle}` : `${m.date} ${tl.nodeSuffix}`;
+    return `
+      <div class="pt-milestone${edge}" style="${style}">
+        <button class="pt-point" type="button" aria-label="${esc(tl.pointAria(m))}" aria-describedby="pt-criterion-${i}">
+          <span class="pt-dot" aria-hidden="true"></span><span class="pt-date">${esc(m.date)}${m.kickoff?esc(tl.kickoffSuffix):''}</span>
+        </button>
+        <article class="pt-pop pt-criterion-pop" id="pt-criterion-${i}" role="tooltip">
+          <span class="pt-tag">${esc(label)}</span><h3>${esc(title)}</h3><p>${esc(criterion)}</p>
+        </article>
+      </div>`;
+  }).join('');
+  return `
+    <section class="project-timeline reveal" aria-labelledby="project-timeline-title">
+      <div class="pt-head">
+        <div><span class="pt-kicker">Project Timeline</span><h2 class="pt-title" id="project-timeline-title">${esc(tl.title)}</h2></div>
+        <div class="pt-guide" aria-label="${esc(tl.guideAria)}">
+          <span>${esc(tl.segmentGuide)}</span><span>${esc(tl.pointGuide)}</span><span class="pt-swipe">${esc(tl.touchGuide)}</span>
+        </div>
+      </div>
+      <div class="pt-frame">
+        <div class="pt-scroll" tabindex="0" aria-label="${esc(tl.scrollAria)}">
+          <div class="pt-board">
+            <div class="pt-axis" role="group" aria-label="${esc(tl.groupAria)}">${segments}${points}</div>
+          </div>
+        </div>
+      </div>
+    </section>`;
+}
+
+function setupProjectTimeline(){
+  document.querySelectorAll('.pt-segment,.pt-point').forEach(control=>{
+    control.addEventListener('click', ()=>{
+      try{ control.focus({preventScroll:true}); }catch(_){ control.focus(); }
+    });
+    control.addEventListener('keydown', e=>{ if(e.key==='Escape') control.blur(); });
+  });
+}
+
 function renderOverview(){
   currentPrefix = null; readbar.classList.remove('show');
   buildNav('overview');
-  document.getElementById('toc').innerHTML = '<div class="empty">概览页</div>';
+  document.getElementById('toc').innerHTML = `<div class="empty">${esc(L().overviewPage)}</div>`;
   const content = document.getElementById('content');
   content.className = '';
-  const done = STAGES.filter(s=>s.available).length;
+  const done = STAGES.filter(docAvailable).length;
   const total = STAGES.length;
-  const lastDone = STAGES.reduce((m,s,i)=> s.available ? i : m, -1);
+  const lastDone = STAGES.reduce((m,s,i)=> docAvailable(s) ? i : m, -1);
   const pct = Math.round(done/total*100);
 
   // 进度环
@@ -519,9 +959,9 @@ function renderOverview(){
   let html = `
     <div class="hero">
       <div class="hero-text">
-        <h1>芯片设计完整流程</h1>
-        <p>从一个想法到量产芯片,要走完十三步。下面这条流水线把「市场要什么」一路翻译成硅片上的电路,再制造、封装、点亮、量产。</p>
-        <p class="sub">点亮的节点可点击进入章节;灰色虚线节点为后续待撰写。试试键盘 <b>←</b> / <b>→</b> 在章节间切换。</p>
+        <h1 tabindex="-1">${esc(L().overviewTitle)}</h1>
+        <p>${esc(L().overviewIntro)}</p>
+        <p class="sub">${L().overviewHelp}</p>
       </div>
       <div class="ring-wrap">
         <div class="ring">
@@ -532,9 +972,9 @@ function renderOverview(){
             <circle class="track" cx="59" cy="59" r="${R}"/>
             <circle class="fill" id="ringFill" cx="59" cy="59" r="${R}" stroke-dasharray="${C}" stroke-dashoffset="${C}"/>
           </svg>
-          <div class="ctr"><b id="cnt">0</b><span>/ ${total} 步</span></div>
+          <div class="ctr"><b id="cnt">0</b><span>/ ${total} ${esc(L().coreStages)}</span></div>
         </div>
-        <div class="ring-cap">已完成 ${pct}%</div>
+        <div class="ring-cap">${esc(L().completed)} ${pct}%</div>
       </div>
     </div>
 
@@ -542,28 +982,34 @@ function renderOverview(){
       <div class="flowmap" id="flowmap"></div>
     </div>`;
 
+  html += renderProjectTimeline();
+
   // 阶段卡片
-  SITE.phaseOrder.forEach(phase=>{
-    const items = STAGES.filter(s=>s.phase===phase);
+  SITE.phaseOrder.forEach(rawPhase=>{
+    const key=LEGACY_PHASE_KEYS[rawPhase]||rawPhase;
+    const items = STAGES.filter(s=>phaseKey(s)===key);
     if(!items.length) return;
-    const col = PHASE_COLOR[phase] || {c:'var(--brand)',bg:'var(--brand-soft)'};
+    const col = PHASE_COLOR[key] || {c:'var(--brand)',bg:'var(--brand-soft)'};
     html += `<section class="phase reveal">
       <div class="phase-head">
-        <span class="phase-tag" style="background:${col.bg};color:${col.c}">${phase}</span>
+        <span class="phase-tag" style="background:${col.bg};color:${col.c}">${esc(phaseLabel(key))}</span>
         <span class="phase-line"></span>
       </div><div class="cards">`;
     items.forEach((s,i)=>{
-      const lock = s.available ? '' : ' locked';
-      const click = s.available ? `onclick="location.hash='#/${s.prefix}'"` : '';
-      const badge = s.available ? '<span class="badge ready">已就绪</span>' : '<span class="badge soon">待撰写</span>';
-      html += `<div class="card${lock} reveal" style="--accent:${col.c};transition-delay:${i*55}ms" ${click}>
+      const available=docAvailable(s);
+      const lock = available ? '' : ' locked';
+      const action = available ? `href="#/${s.prefix}"` : '';
+      const tag = available ? 'a' : 'div';
+      const badge = available ? `<span class="badge ready">${esc(L().ready)}</span>` : `<span class="badge soon">${esc(L().coming)}</span>`;
+      html += `<${tag} class="card${lock} reveal" style="--accent:${col.c};transition-delay:${i*55}ms" ${action}>
         <div class="card-top"><span class="card-num">${s.num}</span>${badge}</div>
-        <h3>${s.title}</h3><p>${s.summary}</p></div>`;
+        <h3>${esc(stageTitle(s))}</h3><p>${esc(stageSummary(s))}</p></${tag}>`;
     });
     html += `</div></section>`;
   });
 
   content.innerHTML = html;
+  setupProjectTimeline();
   buildFlowmap(lastDone);
   setupReveal();
   window.scrollTo(0,0);
@@ -578,16 +1024,32 @@ function buildFlowmap(lastDone){
   const fm = document.getElementById('flowmap');
   fm.innerHTML = '';
   STAGES.forEach(s=>{
-    const col = PHASE_COLOR[s.phase] || {c:'var(--brand)',c2:'var(--brand)',glow:'rgba(37,99,235,.3)'};
-    const ready = s.available;
-    const nextup = !ready && STAGES.filter(x=>x.available).length === STAGES.indexOf(s); // 第一个未写的
+    const col = PHASE_COLOR[phaseKey(s)] || {c:'var(--brand)',c2:'var(--brand)',glow:'rgba(37,99,235,.3)'};
+    const members = MEMBERS_BY_PREFIX[s.prefix] || [];
+    const ready = docAvailable(s);
+    const nextup = !ready && STAGES.filter(docAvailable).length === STAGES.indexOf(s); // 第一个未写的
     const node = document.createElement('div');
     node.className = 'flow-node ' + (ready?'ready':'locked') + (nextup?' nextup':'');
-    node.style.cssText = `--accent:${col.c};--accent2:${col.c2};--glow:${col.glow}`;
+    node.dataset.prefix = s.prefix;
+    const dftPoint = (DFT_TOPIC?.touchpoints || []).find(p=>p.prefix===s.prefix);
+    if(dftPoint){ node.classList.add('dft-involved'); node.dataset.dftKind=dftPoint.kind; }
+    node.style.cssText = `--accent:${col.c};--accent2:${col.c2};--accentBg:${col.bg||'var(--brand-soft)'};--glow:${col.glow}`;
+    const memberId = `flow-members-${s.prefix}`;
+    const descId = `flow-desc-${s.prefix}`;
+    const dftRole=dftPoint?`<div class="dft-node-role">DFT · ${esc(localField(dftPoint,'role'))}</div>`:'';
+    const describedBy = members.length ? `${memberId} ${descId}` : descId;
+    const memberHtml = members.length ? `
+      <div class="node-members" id="${memberId}" role="tooltip">
+        <div class="ot">${esc(L().groupMembers)}</div>
+        <div class="member-list">${members.map(name=>`<span class="member-tag${name==='待定'?' pending':''}"${memberLangAttr(name)}>${esc(displayMember(name))}</span>`).join('')}</div>
+      </div>` : '';
     node.innerHTML = `
-      <div class="node-dot">${s.num}</div>
-      <div class="node-label">${s.title}</div>
-      <div class="node-pop"><div class="pt">${s.num} ${s.title}</div><div class="pd">${s.summary}</div></div>`;
+      ${memberHtml}
+      ${ready
+        ? `<button class="node-dot" type="button" aria-label="${esc(L().enterStage)} ${s.num} ${esc(stageTitle(s))}" aria-describedby="${describedBy}">${s.num}</button>`
+        : `<div class="node-dot" aria-hidden="true">${s.num}</div>`}
+      <div class="node-label">${esc(stageTitle(s))}</div>
+      <div class="node-pop" id="${descId}" role="tooltip"><div class="pt">${s.num} ${esc(stageTitle(s))}</div><div class="pd">${esc(stageSummary(s))}</div>${dftRole}</div>`;
     if(ready) node.querySelector('.node-dot').onclick = ()=> location.hash='#/'+s.prefix;
     fm.appendChild(node);
   });
@@ -607,6 +1069,117 @@ function buildFlowmap(lastDone){
     fm.appendChild(fill);
     requestAnimationFrame(()=>{ fill.style.transition='width 1s ease .2s'; fill.style.width=(center(lastDone)-center(0))+'%'; });
   }
+  buildDftMap(fm);
+}
+
+function buildDftMap(fm){
+  if(!DFT_TOPIC || STAGES.length<2) return;
+  const n = STAGES.length;
+  const center = i => (i+0.5)/n*100;
+  const indexOf = prefix => STAGES.findIndex(s=>s.prefix===prefix);
+  const points = (DFT_TOPIC.touchpoints || []).map(p=>{
+    const index=indexOf(p.prefix);
+    return {...p,index,stage:STAGES[index]};
+  }).filter(p=>p.index>=0 && p.stage);
+  if(!points.length) return;
+
+  const map=document.createElement('div');
+  map.className='dft-map';
+  map.setAttribute('role','group');
+  map.setAttribute('aria-label',L().dftScopeAria);
+
+  const spanStart=indexOf(DFT_TOPIC.spanStart);
+  const scope=document.createElement('span');
+  scope.className='dft-scope-frame';
+  scope.innerHTML=`<span style="left:calc(${Math.max(0,spanStart)/n*100}% + 10px)">${esc(L().dftScope)}</span>`;
+  map.appendChild(scope);
+
+  const addTrack=(cls,startPrefix,endPrefix)=>{
+    const a=indexOf(startPrefix), b=indexOf(endPrefix);
+    if(a<0||b<0) return;
+    const line=document.createElement('span');
+    line.className='dft-track '+cls;
+    line.style.left=center(Math.min(a,b))+'%';
+    line.style.width=Math.abs(center(b)-center(a))+'%';
+    map.appendChild(line);
+  };
+  addTrack('base',DFT_TOPIC.spanStart,DFT_TOPIC.spanEnd);
+  addTrack('segment plan','03','05');
+  addTrack('segment focus','07','09');
+  addTrack('segment silicon','12','13');
+
+  const focusA=indexOf(DFT_TOPIC.focusStart), focusB=indexOf(DFT_TOPIC.focusEnd);
+  if(focusA>=0&&focusB>=0){
+    const lo=Math.min(focusA,focusB), hi=Math.max(focusA,focusB);
+    const win=document.createElement('span');
+    win.className='dft-focus-window';
+    win.style.left=(lo/n*100)+'%';
+    win.style.width=((hi-lo+1)/n*100)+'%';
+    win.innerHTML=`<span>${STAGES[lo].num}–${STAGES[hi].num} · ${esc(localField(DFT_TOPIC,'focusLabel') || L().dftFocusFallback)}</span>`;
+    map.appendChild(win);
+
+    const ate=indexOf('12');
+    if(ate>=0){
+      const note=document.createElement('span');
+      note.className='dft-transit-note';
+      const left=(hi+1)/n*100, right=center(ate);
+      note.style.left=left+'%'; note.style.width=Math.max(0,right-left)+'%';
+      note.innerHTML=`<span>${esc(L().dftTransit)}</span>`;
+      map.appendChild(note);
+    }
+  }
+
+  const entryWrap=document.createElement('div');
+  entryWrap.className='dft-entry-wrap';
+  const members=DFT_TOPIC.members || [];
+  const memberHtml=members.map(name=>`<span class="member-tag${name==='待定'?' pending':''}"${memberLangAttr(name)}>${esc(displayMember(name))}</span>`).join('');
+  const dftAvailable=docAvailable(DFT_TOPIC);
+  entryWrap.innerHTML=`
+    <div class="dft-entry-tip dft-entry-members" id="dft-entry-members" role="tooltip">
+      <div class="ot">${esc(L().groupMembers)}</div><div class="member-list">${memberHtml}</div>
+    </div>
+    <${dftAvailable?'a':'div'} class="dft-entry${dftAvailable?'':' disabled'}"
+      ${dftAvailable?`href="#/${DFT_TOPIC.prefix}"`:'aria-disabled="true"'}
+      aria-label="${esc(L().enterDft)}" aria-describedby="dft-entry-members dft-entry-summary">
+      <span class="de-kicker">${esc(L().dftKicker)}</span><b>${esc(stageTitle(DFT_TOPIC))}</b>
+      <span class="de-legend">${esc(L().dftLinkage)}</span><span class="de-go">${esc(L().viewMethod)}</span>
+    </${dftAvailable?'a':'div'}>
+    <div class="dft-entry-tip dft-entry-summary" id="dft-entry-summary" role="tooltip">
+      <div class="pt">${esc(stageTitle(DFT_TOPIC))}</div><div class="pd">${esc(stageSummary(DFT_TOPIC))}</div>
+    </div>`;
+  const entry=entryWrap.querySelector('.dft-entry');
+  map.appendChild(entryWrap);
+
+  points.forEach(p=>{
+    const tp=document.createElement('div');
+    tp.className='dft-touchpoint '+(p.kind||'plan');
+    tp.style.gridColumn=String(p.index+1);
+    tp.dataset.prefix=p.prefix;
+    const tpLabel=localField(p,'label')||stageTitle(p.stage);
+    const tpRole=localField(p,'role');
+    tp.title=`${p.stage.num} ${stageTitle(p.stage)}: ${tpRole}`;
+    tp.innerHTML=`<span class="dft-anchor" aria-hidden="true"></span><span class="dft-tp-label">
+      <b>${p.stage.num} ${esc(tpLabel)}</b><small>${esc(tpRole)}</small></span>`;
+    map.appendChild(tp);
+
+    const node=fm.querySelector(`.flow-node[data-prefix="${p.prefix}"]`);
+    if(node){
+      const setActive=on=>{ tp.classList.toggle('is-active',on); node.classList.toggle('dft-hovered',on); };
+      tp.addEventListener('mouseenter',()=>setActive(true));
+      tp.addEventListener('mouseleave',()=>setActive(false));
+      node.addEventListener('mouseenter',()=>tp.classList.add('is-active'));
+      node.addEventListener('mouseleave',()=>tp.classList.remove('is-active'));
+      node.addEventListener('focusin',()=>tp.classList.add('is-active'));
+      node.addEventListener('focusout',()=>tp.classList.remove('is-active'));
+    }
+  });
+
+  const setAll=on=>points.forEach(p=>fm.querySelector(`.flow-node[data-prefix="${p.prefix}"]`)?.classList.toggle('dft-hovered',on));
+  entryWrap.addEventListener('mouseenter',()=>setAll(true));
+  entryWrap.addEventListener('mouseleave',()=>setAll(false));
+  entryWrap.addEventListener('focusin',()=>setAll(true));
+  entryWrap.addEventListener('focusout',()=>setAll(false));
+  fm.appendChild(map);
 }
 
 function animateCount(el, to, dur){
@@ -628,40 +1201,55 @@ function showHint(){
   hintTimer=setTimeout(()=>h.classList.remove('show'),2600);
 }
 document.addEventListener('keydown', e=>{
-  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
+  if(e.target.closest?.('input,textarea,button,a,select,[contenteditable="true"]')) return;
   if(!currentPrefix) return;
-  const avail = STAGES.filter(s=>s.available);
+  if(e.key==='Escape'){ location.hash='#/overview'; return; }
+  const avail = STAGES.filter(docAvailable);
   const i = avail.findIndex(s=>s.prefix===currentPrefix);
+  // DFT设计涉及多个主流程环节,不在十三个编号主阶段的左右键序列中。
+  if(i<0) return;
   if(e.key==='ArrowRight' && i<avail.length-1){ location.hash='#/'+avail[i+1].prefix; }
   else if(e.key==='ArrowLeft' && i>0){ location.hash='#/'+avail[i-1].prefix; }
-  else if(e.key==='Escape'){ location.hash='#/overview'; }
 });
 
 /* ---------- 文档页可视化增强 ---------- */
 function docIcon(t){
-  if(/位置|全景/.test(t)) return '📍';
-  if(/输入|手里/.test(t)) return '📥';
-  if(/是什么|到底是|什么是/.test(t)) return '🎯';
-  if(/谁来|谁写|谁做|谁负责/.test(t)) return '👥';
-  if(/核心内容|内容/.test(t)) return '🧩';
-  if(/权衡|心态|标尺|张力|铁三角/.test(t)) return '⚖️';
-  if(/方法|工具|怎么做|如何/.test(t)) return '🛠️';
-  if(/交付|产出/.test(t)) return '📦';
-  if(/忽视|坑|致命|陷阱|误区/.test(t)) return '⚠️';
-  if(/小结|总结|下一步/.test(t)) return '✅';
-  if(/标准|好规格|好的/.test(t)) return '⭐';
-  if(/管理|实务/.test(t)) return '🗂️';
+  if(/位置|全景|where it fits|overview|landscape/i.test(t)) return '📍';
+  if(/输入|手里|inputs?|prerequisites?/i.test(t)) return '📥';
+  if(/是什么|到底是|什么是|what it is|definition/i.test(t)) return '🎯';
+  if(/谁来|谁写|谁做|谁负责|who does|ownership|roles?/i.test(t)) return '👥';
+  if(/核心内容|内容|core content|core activities/i.test(t)) return '🧩';
+  if(/权衡|心态|标尺|张力|铁三角|trade-?offs?|balancing/i.test(t)) return '⚖️';
+  if(/方法|工具|怎么做|如何|methods?|tools?|how to/i.test(t)) return '🛠️';
+  if(/交付|产出|deliverables?|outputs?/i.test(t)) return '📦';
+  if(/忽视|坑|致命|陷阱|误区|pitfalls?|failure|mistakes?|traps?/i.test(t)) return '⚠️';
+  if(/小结|总结|下一步|summary|next steps?/i.test(t)) return '✅';
+  if(/标准|好规格|好的|criteria|quality bar|good specification/i.test(t)) return '⭐';
+  if(/管理|实务|management|practice/i.test(t)) return '🗂️';
   return '▸';
 }
+async function copyText(text){
+  if(navigator.clipboard?.writeText){
+    try{ await navigator.clipboard.writeText(text); return true; }
+    catch(_){ /* file:// may expose the API but deny permission; use the local fallback below */ }
+  }
+  try{
+    const ta=document.createElement('textarea');
+    ta.value=text; ta.setAttribute('readonly',''); ta.style.cssText='position:fixed;left:-9999px;top:0;opacity:0';
+    document.body.appendChild(ta); ta.select();
+    const ok=typeof document.execCommand==='function'&&document.execCommand('copy');
+    ta.remove(); return !!ok;
+  }catch(_){ return false; }
+}
 function decorateDoc(container, stage){
-  const col=PHASE_COLOR[stage.phase]||{c:'var(--brand)',c2:'var(--brand)',bg:'var(--brand-soft)',glow:'rgba(37,99,235,.3)'};
+  const col=PHASE_COLOR[phaseKey(stage)]||{c:'var(--brand)',c2:'var(--brand)',bg:'var(--brand-soft)',glow:'rgba(37,99,235,.3)'};
   container.style.setProperty('--accent',col.c);
   container.style.setProperty('--accent2',col.c2);
   container.style.setProperty('--accentBg',col.bg);
   container.style.setProperty('--glow',col.glow);
   const h1 = container.querySelector('h1'); if(h1) h1.remove();
   container.querySelectorAll('blockquote').forEach(bq=>{
-    if(/学习系列|全流程:/.test(bq.textContent)) bq.classList.add('series-nav');
+    if(/学习系列|全流程:|learning series|end-to-end flow:/i.test(bq.textContent)) bq.classList.add('series-nav');
   });
   container.querySelectorAll('h2,h3').forEach(h=>{
     h.dataset.title = h.textContent;
@@ -671,12 +1259,13 @@ function decorateDoc(container, stage){
   });
   container.querySelectorAll('pre').forEach(pre=>{
     const code=pre.textContent||'';
-    if(/[→←↑↓│└├┌┐┘─➜▸]/.test(code)) pre.classList.add('diagram');
+    if(/[→←↑↓│└├┌┐┘─➜▸]/.test(code)){ pre.classList.add('diagram'); pre.dataset.label=L().flowDiagram; }
     const btn=document.createElement('button');
-    btn.className='copy-btn'; btn.textContent='复制';
-    btn.onclick=()=>navigator.clipboard.writeText(code).then(()=>{
-      btn.textContent='已复制 ✓'; setTimeout(()=>btn.textContent='复制',1400);
-    });
+    btn.className='copy-btn'; btn.textContent=L().copy;
+    btn.onclick=async()=>{
+      btn.textContent=(await copyText(code))?L().copied:L().copyFailed;
+      setTimeout(()=>btn.textContent=L().copy,1400);
+    };
     pre.appendChild(btn);
   });
   sectionize(container);
@@ -687,7 +1276,8 @@ function decorateDoc(container, stage){
 
 /* ---------- 「核心内容」小节全景顺序图 ---------- */
 function injectSecMap(container, stage){
-  const map = window.SECMAP && window.SECMAP[stage.prefix];
+  const maps=currentLang==='en'?window.SECMAP_EN:window.SECMAP;
+  const map = maps && maps[stage.prefix];
   if(!map) return;
   const sections = container.querySelectorAll('.doc-section');
   for(const sec of sections){
@@ -702,18 +1292,18 @@ function injectSecMap(container, stage){
 }
 function renderSecMap(map){
   const wrap=document.createElement('div'); wrap.className='secmap';
-  let html=`<div class="secmap-hd">🗺️ 本章子环节:顺序与并行关系</div><div class="secmap-note">${map.note}</div>`;
+  let html=`<div class="secmap-hd">🗺️ ${esc(L().chapterMap)}</div><div class="secmap-note">${esc(map.note)}</div>`;
   html+=`<div class="secmap-flow">`;
   (map.flow||map.cols).forEach((col,ci)=>{
     if(ci>0) html+=`<div class="smarrow">→</div>`;
-    html+=`<div class="smcol"><div class="smcol-lbl">${col.lbl}</div>`;
-    col.items.forEach(it=>{ html+=`<div class="smchip" data-sec="${it[0]}"><b>${it[0]}</b>${it[1]}</div>`; });
+    html+=`<div class="smcol"><div class="smcol-lbl">${esc(col.lbl)}</div>`;
+    col.items.forEach(it=>{ html+=`<button type="button" class="smchip" data-sec="${esc(it[0])}"><b>${esc(it[0])}</b>${esc(it[1])}</button>`; });
     html+=`</div>`;
   });
   html+=`</div>`;
   if(map.span){
-    html+=`<div class="secmap-span"><div class="span-lbl">⇕ ${map.span.lbl}</div><div class="span-items">`;
-    map.span.items.forEach(it=>{ html+=`<div class="smchip" data-sec="${it[0]}"><b>${it[0]}</b>${it[1]}</div>`; });
+    html+=`<div class="secmap-span" data-caption="${esc(L().spanCaption)}"><div class="span-lbl">⇕ ${esc(map.span.lbl)}</div><div class="span-items">`;
+    map.span.items.forEach(it=>{ html+=`<button type="button" class="smchip" data-sec="${esc(it[0])}"><b>${esc(it[0])}</b>${esc(it[1])}</button>`; });
     html+=`</div></div>`;
   }
   wrap.innerHTML=html;
@@ -726,8 +1316,28 @@ function scrollToSec(num){
 }
 
 /* ---------- 真实芯片案例(TPU)注入与渲染 ---------- */
+function caseBundlesAligned(){
+  const zh=window.CASES, en=window.CASES_EN;
+  if(!zh||!en) return false;
+  const sameKeys=(a,b)=>{
+    const ak=Object.keys(a||{}).sort(), bk=Object.keys(b||{}).sort();
+    return ak.length===bk.length&&ak.every((key,i)=>key===bk[i]);
+  };
+  return sameKeys(zh,en)&&Object.keys(zh).every(doc=>sameKeys(zh[doc],en[doc]));
+}
 function injectCases(container, stage){
-  const map = (window.CASES && window.CASES[stage.prefix]) || null;
+  const zhMap=(window.CASES&&window.CASES[stage.prefix])||null;
+  const map=currentLang==='en'?(caseBundlesAligned()?window.CASES_EN[stage.prefix]||null:null):zhMap;
+  if(!map&&currentLang==='en'&&zhMap){
+    const note=document.createElement('aside');
+    note.className='case-lang-note';
+    note.innerHTML=`<strong class="case-note-title">${esc(L().caseNoteTitle)}</strong><p>${esc(L().caseNote)}</p><button type="button">${esc(L().caseNoteButton)}</button>`;
+    note.querySelector('button').onclick=()=>setLanguage('zh');
+    const target=Array.from(container.querySelectorAll('.doc-section')).find(sec=>/^3\.\s/.test(sec.querySelector('h2')?.dataset.title||''));
+    if(target){ const h2=target.querySelector('h2'); h2.insertAdjacentElement('afterend',note); }
+    else container.appendChild(note);
+    return;
+  }
   if(!map) return;
   container.querySelectorAll('.doc-section h3').forEach(h=>{
     const m = (h.dataset.title || h.textContent).match(/^(\d+\.\d+)/);
@@ -742,15 +1352,127 @@ function injectCases(container, stage){
   });
 }
 function caseBtn(t){ const b=document.createElement('button'); b.className='case-btn'; b.textContent=t; return b; }
+function estimateSvgTextWidth(value,fontSize){
+  return Array.from(value).reduce((sum,ch)=>{
+    if(/\s/.test(ch)) return sum+fontSize*.31;
+    if(/[MW@%#&]/.test(ch)) return sum+fontSize*.82;
+    if(/[A-Z0-9]/.test(ch)) return sum+fontSize*.61;
+    if(/[ilI1|.,:;'`]/.test(ch)) return sum+fontSize*.28;
+    if(/[()\[\]{}\/\\+\-=<>]/.test(ch)) return sum+fontSize*.42;
+    return sum+fontSize*.52;
+  },0);
+}
+function wrapSvgWords(value,maxWidth,fontSize){
+  const words=value.trim().split(/\s+/), lines=[];
+  let line='';
+  const pushLongWord=word=>{
+    let part='';
+    Array.from(word).forEach(ch=>{
+      const next=part+ch;
+      if(part&&estimateSvgTextWidth(next,fontSize)>maxWidth){ lines.push(part); part=ch; }
+      else part=next;
+    });
+    return part;
+  };
+  words.forEach(word=>{
+    if(!line){ line=estimateSvgTextWidth(word,fontSize)>maxWidth?pushLongWord(word):word; return; }
+    const next=line?line+' '+word:word;
+    if(estimateSvgTextWidth(next,fontSize)<=maxWidth){ line=next; return; }
+    lines.push(line);
+    line=estimateSvgTextWidth(word,fontSize)>maxWidth?pushLongWord(word):word;
+  });
+  if(line) lines.push(line);
+  return lines.length?lines:[''];
+}
+function addSvgTooltip(node,label){
+  const title=document.createElementNS('http://www.w3.org/2000/svg','title');
+  title.textContent=label;
+  node.appendChild(title);
+}
+function prepareEnglishCaseSvg(fig){
+  if(currentLang!=='en') return;
+  const svg=fig.querySelector('.cs-svg');
+  if(!svg) return;
+  const vb=(svg.getAttribute('viewBox')||'0 0 720 420').trim().split(/\s+/).map(Number);
+  const left=Number.isFinite(vb[0])?vb[0]:0, top=Number.isFinite(vb[1])?vb[1]:0;
+  const width=Number.isFinite(vb[2])?vb[2]:720, originalHeight=Number.isFinite(vb[3])?vb[3]:420;
+  const right=left+width, margin=24, noteFont=8.8, lineHeight=11.4;
+  let requiredBottom=top+originalHeight;
+
+  // English disclosure notes are often substantially longer than their Chinese
+  // counterparts. SVG <text> never wraps by itself, so build explicit tspans and
+  // enlarge the viewBox when a bottom note needs additional vertical room.
+  svg.querySelectorAll('text.cs-note').forEach(node=>{
+    const label=(node.textContent||'').replace(/\s+/g,' ').trim();
+    if(!label) return;
+    const x=parseFloat(node.getAttribute('x'))||0, y=parseFloat(node.getAttribute('y'))||0;
+    const anchor=node.getAttribute('text-anchor')||'start';
+    let available=right-margin-x;
+    if(anchor==='middle') available=2*Math.min(x-(left+margin),right-margin-x);
+    else if(anchor==='end') available=x-(left+margin);
+    available=Math.max(80,available);
+    const lines=wrapSvgWords(label,available,noteFont);
+    requiredBottom=Math.max(requiredBottom,y+(lines.length-1)*lineHeight+14);
+    if(lines.length===1) return;
+    node.textContent='';
+    lines.forEach((line,i)=>{
+      const span=document.createElementNS('http://www.w3.org/2000/svg','tspan');
+      span.setAttribute('x',String(x));
+      span.setAttribute('y',String(y+i*lineHeight));
+      span.textContent=line;
+      node.appendChild(span);
+    });
+    addSvgTooltip(node,label);
+  });
+
+  // Keep compact labels inside their own boxes. We first reduce the font, then
+  // use SVG's textLength only for the rare label that still exceeds the box.
+  const labelStyle={
+    'cs-t':{size:11,min:6.5},
+    'cs-sub':{size:8.8,min:6.1},
+    'cs-cellt':{size:10,min:6.3}
+  };
+  svg.querySelectorAll('text.cs-t,text.cs-sub,text.cs-cellt').forEach(node=>{
+    if(node.hasAttribute('transform')) return;
+    const kind=Object.keys(labelStyle).find(name=>node.classList.contains(name));
+    const style=labelStyle[kind], label=(node.textContent||'').replace(/\s+/g,' ').trim();
+    const x=parseFloat(node.getAttribute('x')), y=parseFloat(node.getAttribute('y'));
+    if(!style||!label||!Number.isFinite(x)||!Number.isFinite(y)) return;
+    const rect=Array.from(node.parentElement?.children||[]).find(el=>{
+      if(el.tagName.toLowerCase()!=='rect') return false;
+      const rx=parseFloat(el.getAttribute('x'))||0, ry=parseFloat(el.getAttribute('y'))||0;
+      const rw=parseFloat(el.getAttribute('width'))||0, rh=parseFloat(el.getAttribute('height'))||0;
+      return x>=rx&&x<=rx+rw&&y>=ry&&y<=ry+rh;
+    });
+    if(!rect) return;
+    const available=Math.max(24,(parseFloat(rect.getAttribute('width'))||0)-12);
+    const measured=estimateSvgTextWidth(label,style.size);
+    if(measured<=available) return;
+    const fitted=Math.max(style.min,style.size*available/measured);
+    node.style.fontSize=fitted.toFixed(2)+'px';
+    if(estimateSvgTextWidth(label,fitted)>available){
+      node.setAttribute('textLength',available.toFixed(1));
+      node.setAttribute('lengthAdjust','spacingAndGlyphs');
+    }
+    addSvgTooltip(node,label);
+  });
+  if(requiredBottom>top+originalHeight){
+    svg.setAttribute('viewBox',`${left} ${top} ${width} ${Math.ceil(requiredBottom-top)}`);
+  }
+}
 function renderCase(spec){
   const el=document.createElement('div'); el.className='case';
+  const stateKey=`${currentPrefix||'case'}:${spec.secNum}`;
+  const uiState=caseUiState.get(stateKey)||{};
+  caseUiState.set(stateKey,uiState);
   const hd=document.createElement('div'); hd.className='case-hd';
-  hd.innerHTML=`<span class="case-badge">真实芯片案例 · ${spec.chip}</span><span class="case-ttl">${spec.title}</span>`+
+  hd.innerHTML=`<span class="case-badge">${esc(L().caseBadge)} · ${esc(spec.chip)}</span><span class="case-ttl">${esc(spec.title)}</span>`+
     (spec.oneLine?`<span class="case-one">${spec.oneLine}</span>`:'');
   el.appendChild(hd);
   const bd=document.createElement('div'); bd.className='case-bd'; el.appendChild(bd);
 
   const fig=document.createElement('div'); fig.className='case-figure'; fig.innerHTML=spec.svg; bd.appendChild(fig);
+  prepareEnglishCaseSvg(fig);
   const parts=()=>fig.querySelectorAll('.cs-part');
   const isHl=(p,keys)=>{ const k=p.getAttribute('data-k'), g=p.getAttribute('data-g');
     return (k&&keys.indexOf(k)>=0)||(g&&keys.indexOf(g)>=0); };
@@ -765,29 +1487,31 @@ function renderCase(spec){
       if(!hasHlChild) p.classList.add('is-dim');
     });
   }
-  let stepIdx=0, timer=null;
+  let stepIdx=Number.isInteger(uiState.step)?uiState.step:0, timer=null;
   if(spec.steps && spec.steps.length){
     const bar=document.createElement('div'); bar.className='case-step';
-    const prev=caseBtn('◀'), play=caseBtn('▶ 播放'), next=caseBtn('▶');
+    const prev=caseBtn('◀'), play=caseBtn(L().play), next=caseBtn('▶');
     const cap=document.createElement('div'); cap.className='case-cap';
-    function stop(){ if(timer){clearInterval(timer);timer=null;play.textContent='▶ 播放';} }
-    function show(i){ stepIdx=(i+spec.steps.length)%spec.steps.length; apply(spec.steps[stepIdx].keys); cap.textContent=spec.steps[stepIdx].cap; }
+    function stop(){ if(timer){clearInterval(timer);activeCaseTimers.delete(timer);timer=null;play.textContent=L().play;} }
+    function show(i){ stepIdx=(i+spec.steps.length)%spec.steps.length; uiState.step=stepIdx; apply(spec.steps[stepIdx].keys); cap.textContent=spec.steps[stepIdx].cap; }
     prev.onclick=()=>{stop();show(stepIdx-1);};
     next.onclick=()=>{stop();show(stepIdx+1);};
-    play.onclick=()=>{ if(timer){stop();return;} play.textContent='⏸ 暂停'; timer=setInterval(()=>show(stepIdx+1),1800); };
+    play.onclick=()=>{ if(timer){stop();return;} play.textContent=L().pause; timer=setInterval(()=>show(stepIdx+1),1800); activeCaseTimers.add(timer); };
     bar.append(prev,play,next,cap); bd.appendChild(bar);
     el._restore=()=>apply(spec.steps[stepIdx].keys);
-    show(0);
+    show(stepIdx);
   } else { el._restore=()=>apply([]); }
 
   if(spec.legend && spec.legend.length){
     const lg=document.createElement('div'); lg.className='case-legend';
-    const desc=document.createElement('div'); desc.className='case-desc'; desc.textContent='悬停下方图例 → 高亮图中对应部件;点「▶」分步看数据怎么流。';
+    const desc=document.createElement('div'); desc.className='case-desc'; desc.textContent=L().legendHelp;
     spec.legend.forEach(it=>{
-      const c=document.createElement('span'); c.className='cs-leg';
+      const c=document.createElement('button'); c.type='button'; c.className='cs-leg';
       c.innerHTML=`<span class="dot"></span>${it.name}`;
-      c.onmouseenter=()=>{ apply([it.k]); desc.textContent=it.desc; };
-      c.onmouseleave=()=>{ el._restore(); desc.textContent='悬停下方图例 → 高亮图中对应部件;点「▶」分步看数据怎么流。'; };
+      const highlight=()=>{ apply([it.k]); desc.textContent=it.desc; };
+      const restore=()=>{ el._restore(); desc.textContent=L().legendHelp; };
+      c.onmouseenter=highlight; c.onfocus=highlight;
+      c.onmouseleave=restore; c.onblur=restore;
       lg.appendChild(c);
     });
     bd.appendChild(lg); bd.appendChild(desc);
@@ -796,26 +1520,27 @@ function renderCase(spec){
   const lifeList=items=>`<ul>${items.map(x=>`<li>${x}</li>`).join('')}</ul>`;
   const lifeSpecs=items=>`<div class="case-specs">${items.map(s=>`<div class="spec"><div class="k">${s.label}</div><div class="v">${s.value}</div></div>`).join('')}</div>`;
   const tabs=[
-    {t:'🧭 设计前 · 要定什么', html:(spec.before&&spec.before.length)?`<div class="life-intro">动手前先想清:要决定哪些量、必须考虑哪些约束与输入。</div>${lifeList(spec.before)}`:''},
-    {t:'⚖️ 设计时 · 怎么权衡', html:(spec.during&&spec.during.length)?lifeList(spec.during):''},
-    {t:'📐 设计结果 · 长什么样', html:(spec.result&&spec.result.length)?lifeSpecs(spec.result):''},
-    {t:'✅ 设计后 · 接下来做什么', html:(spec.after&&spec.after.length)?lifeList(spec.after):''}
+    {t:L().lifeBefore, html:(spec.before&&spec.before.length)?`<div class="life-intro">${esc(L().lifeIntro)}</div>${lifeList(spec.before)}`:''},
+    {t:L().lifeDuring, html:(spec.during&&spec.during.length)?lifeList(spec.during):''},
+    {t:L().lifeResult, html:(spec.result&&spec.result.length)?lifeSpecs(spec.result):''},
+    {t:L().lifeAfter, html:(spec.after&&spec.after.length)?lifeList(spec.after):''}
   ].filter(x=>x.html);
   if(tabs.length){
     const life=document.createElement('div'); life.className='case-life';
     const bar=document.createElement('div'); bar.className='life-tabs';
     const panels=document.createElement('div'); panels.className='life-panels';
+    const activeTab=Math.min(Number.isInteger(uiState.tab)?uiState.tab:0,tabs.length-1);
     tabs.forEach((tb,i)=>{
-      const b=document.createElement('button'); b.className='life-tab'+(i===0?' active':''); b.textContent=tb.t;
-      const p=document.createElement('div'); p.className='life-panel'+(i===0?' active':''); p.innerHTML=tb.html;
+      const b=document.createElement('button'); b.className='life-tab'+(i===activeTab?' active':''); b.textContent=tb.t;
+      const p=document.createElement('div'); p.className='life-panel'+(i===activeTab?' active':''); p.innerHTML=tb.html;
       b.onclick=()=>{ bar.querySelectorAll('.life-tab').forEach(x=>x.classList.remove('active'));
         panels.querySelectorAll('.life-panel').forEach(x=>x.classList.remove('active'));
-        b.classList.add('active'); p.classList.add('active'); };
+        b.classList.add('active'); p.classList.add('active'); uiState.tab=i; };
       bar.appendChild(b); panels.appendChild(p);
     });
     life.appendChild(bar); life.appendChild(panels); bd.appendChild(life);
   }
-  if(spec.source){ const s=document.createElement('div'); s.className='case-src'; s.textContent='来源:'+spec.source; bd.appendChild(s); }
+  if(spec.source){ const s=document.createElement('div'); s.className='case-src'; s.textContent=L().sourceLabel+spec.source; bd.appendChild(s); }
   return el;
 }
 function sectionize(container){
@@ -825,53 +1550,66 @@ function sectionize(container){
   kids.forEach(node=>{
     if(node.nodeType===1 && node.tagName==='H2'){
       cur=document.createElement('section'); cur.className='doc-section reveal';
-      if(/忽视|坑|致命|陷阱|误区/.test(node.dataset.title||node.textContent)) cur.classList.add('warn-section');
+      if(/忽视|坑|致命|陷阱|误区|pitfalls?|failure|mistakes?|traps?/i.test(node.dataset.title||node.textContent)) cur.classList.add('warn-section');
       container.appendChild(cur); cur.appendChild(node);
     } else if(cur){ cur.appendChild(node); }
     else { if(!lead){ lead=document.createElement('div'); lead.className='doc-lead'; container.appendChild(lead);} lead.appendChild(node); }
   });
 }
 function buildDocHero(stage){
-  const col=PHASE_COLOR[stage.phase]||{c:'var(--brand)',c2:'var(--brand)',bg:'var(--brand-soft)',glow:'rgba(37,99,235,.3)'};
+  const col=PHASE_COLOR[phaseKey(stage)]||{c:'var(--brand)',c2:'var(--brand)',bg:'var(--brand-soft)',glow:'rgba(37,99,235,.3)'};
+  const isTopic=TOPICS.includes(stage);
   const idx=STAGES.indexOf(stage)+1;
-  const mins=Math.max(1, Math.round((stage.raw||'').length/450));
+  const raw=docRaw(stage);
+  const mins=currentLang==='en'
+    ? Math.max(1,Math.round(((raw.match(/\b[\w’'-]+\b/g)||[]).length)/220))
+    : Math.max(1,Math.round(raw.length/450));
   let dots='';
   STAGES.forEach(s=>{
-    const c=PHASE_COLOR[s.phase]||{};
+    const c=PHASE_COLOR[phaseKey(s)]||{};
     const isCur=s.prefix===stage.prefix;
-    let cls='dh-step'+(isCur?' cur':(s.available?' avail':''));
-    const bg=isCur?`linear-gradient(90deg,${col.c},${col.c2})`:(s.available?c.c:'var(--line)');
-    dots+=`<span class="${cls}" style="background:${bg}" title="${s.num} ${s.title}" ${s.available&&!isCur?`onclick="location.hash='#/${s.prefix}'"`:''}></span>`;
+    const available=docAvailable(s);
+    let cls='dh-step'+(isCur?' cur':(available?' avail':''));
+    const bg=isCur?`linear-gradient(90deg,${col.c},${col.c2})`:(available?c.c:'var(--line)');
+    const label=`${s.num} ${stageTitle(s)}`;
+    dots+=`<button type="button" class="${cls}" style="background:${bg}" title="${esc(label)}" aria-label="${esc(label)}" ${isCur?'aria-current="step" disabled':(available?`onclick="location.hash='#/${s.prefix}'"`:'disabled')}></button>`;
   });
   const hero=document.createElement('div');
-  hero.className='doc-hero';
+  hero.className='doc-hero'+(isTopic?' crosscut':'');
   hero.style.cssText=`--accent:${col.c};--accent2:${col.c2};--accentBg:${col.bg};--glow:${col.glow}`;
   hero.innerHTML=`
     <div class="dh-top">
       <span class="dh-badge">${stage.num}</span>
       <div>
-        <div class="dh-phase">${stage.phase}阶段 · 第 ${idx} / ${STAGES.length} 步</div>
-        <div class="dh-title">${stage.title}</div>
+        <div class="dh-phase">${esc(isTopic?L().topicProgress:L().stageProgress(phaseLabel(stage),idx,STAGES.length))}</div>
+        <h1 class="dh-title" tabindex="-1">${esc(stageTitle(stage))}</h1>
       </div>
     </div>
-    <div class="dh-meta"><span>📖 约 ${mins} 分钟</span><span>🧭 ${stage.phase}</span></div>
+    <div class="dh-meta"><span>📖 ${esc(L().readMinutes(mins))}</span><span>${esc(isTopic?L().topicMeta:'🧭 '+phaseLabel(stage))}</span></div>
     <div class="dh-stepper">${dots}</div>`;
   return hero;
 }
 
 /* ---------- 路由 ---------- */
-function route(){
+function route(shouldFocus=false){
+  clearCaseTimers();
   const hash = location.hash || '#/overview';
   const m = hash.match(/^#\/(\w+)/);
   const key = m ? m[1] : 'overview';
   if(key==='overview') renderOverview();
-  else if(/^\d{2}$/.test(key)) renderDoc(key);
+  else if(ALL_DOCS.some(s=>s.prefix===key)) renderDoc(key);
   else { const t=document.getElementById(hash.slice(1)); if(t) t.scrollIntoView({behavior:'smooth'}); else renderOverview(); }
+  const active=ALL_DOCS.find(s=>s.prefix===key);
+  document.getElementById('routeStatus').textContent=active?`${active.num} ${stageTitle(active)}`:L().overviewTitle;
+  if(shouldFocus){
+    requestAnimationFrame(()=>document.querySelector('#content h1')?.focus({preventScroll:true}));
+  }
 }
-window.addEventListener('hashchange', route);
+window.addEventListener('hashchange', ()=>route(true));
+applyLanguageShell();
 if(!STAGES.length){
   document.getElementById('content').innerHTML =
-    '<p style="color:#b3406b">未找到内容:请先在本目录运行 <code>python3 build.py</code> 生成 content.js。</p>';
+    `<p style="color:#b3406b">${esc(L().missing)}</p>`;
 } else { route(); }
 </script>
 </body>

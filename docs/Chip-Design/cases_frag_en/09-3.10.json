@@ -1,0 +1,119 @@
+{
+  "secNum": "3.10",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · Signoff Gate and Tapeout Decision: Consolidating Timing/Power/EM/IR/SI/DRC-LVS/LEC/Reliability Results into a Checklist, Completing a Joint Backend/Signoff/Project Review with Item-by-Item Confirmation and Accountable Signatures, and Releasing the 28 nm GDSII to the Foundry for ⑩ Fabrication Only When All Checks Are Green or Every Violation Has an Approved, Traceable Waiver",
+  "oneLine": "This case focuses on the signoff gate and tapeout decision. Signoff does not end when one tool reports green; it ends when every signoff dimension has been consolidated into a formal checklist, reviewed in an accountable and signed tapeout meeting, and jointly accepted or rejected by backend implementation, signoff, and project leadership. Unlike §3.1, which explains how the dimensions are signed independently, this section explains how their conclusions are aggregated, checked item by item, assigned to accountable signers, supported by formally reviewed and traceable waivers where necessary, and ultimately released by an authorized owner. The chip passing through this gate is the known TPU v1 design with its 256×256 systolic array, 24 MiB Unified Buffer occupying nearly 29% of die area, 700 MHz clock, 28 nm process and ≤331 mm² die, 28–40 W envelope, and weight-stationary dataflow. Tapeout reviews, checklists, accountable signatures, and waiver governance are standard signoff practices; no private TPU review records, acceptance criteria, or waiver lists are asserted.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 420\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"24\">Signoff gate: results → checklist → signed review → all green / approved waivers → ⑩ fabrication</text><g class=\"cs-part\" data-k=\"dims\" data-g=\"dims\"><rect class=\"cs-box\" x=\"24\" y=\"48\" width=\"196\" height=\"312\" rx=\"8\" fill=\"none\" stroke=\"#cbd5e1\" stroke-dasharray=\"5 4\"/><text class=\"cs-t\" x=\"122\" y=\"70\">Signed results entering gate</text><g class=\"cs-part\" data-k=\"sta\" data-g=\"sta\"><rect class=\"cs-cell\" x=\"36\" y=\"82\" width=\"172\" height=\"34\"/><text class=\"cs-cellt\" x=\"122\" y=\"103\">Timing STA ✓</text></g><g class=\"cs-part\" data-k=\"pwr\" data-g=\"pwr\"><rect class=\"cs-cell\" x=\"36\" y=\"120\" width=\"172\" height=\"34\"/><text class=\"cs-cellt\" x=\"122\" y=\"141\">Power ✓ (28–40 W)</text></g><g class=\"cs-part\" data-k=\"ir\" data-g=\"ir\"><rect class=\"cs-cell\" x=\"36\" y=\"158\" width=\"172\" height=\"34\"/><text class=\"cs-cellt\" x=\"122\" y=\"179\">Power EM/IR ✓</text></g><g class=\"cs-part\" data-k=\"si\" data-g=\"si\"><rect class=\"cs-cell\" x=\"36\" y=\"196\" width=\"172\" height=\"34\"/><text class=\"cs-cellt\" x=\"122\" y=\"217\">Signal integrity SI ✓</text></g><g class=\"cs-part\" data-k=\"drc\" data-g=\"drc\"><rect class=\"cs-cell\" x=\"36\" y=\"234\" width=\"172\" height=\"34\"/><text class=\"cs-cellt\" x=\"122\" y=\"255\">Physical DRC/LVS ✓</text></g><g class=\"cs-part\" data-k=\"lec\" data-g=\"lec\"><rect class=\"cs-cell\" x=\"36\" y=\"272\" width=\"172\" height=\"34\"/><text class=\"cs-cellt\" x=\"122\" y=\"293\">Logical equivalence LEC ✓</text></g><g class=\"cs-part\" data-k=\"rel\" data-g=\"rel\"><rect class=\"cs-cell\" x=\"36\" y=\"310\" width=\"172\" height=\"34\"/><text class=\"cs-cellt\" x=\"122\" y=\"331\">ESD / antenna / aging ✓</text></g></g><line class=\"cs-arr\" x1=\"220\" y1=\"99\" x2=\"300\" y2=\"150\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"220\" y1=\"137\" x2=\"300\" y2=\"162\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"220\" y1=\"175\" x2=\"300\" y2=\"174\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"220\" y1=\"213\" x2=\"300\" y2=\"186\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"220\" y1=\"251\" x2=\"300\" y2=\"198\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"220\" y1=\"289\" x2=\"300\" y2=\"210\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"220\" y1=\"327\" x2=\"300\" y2=\"222\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"checklist\" data-g=\"checklist\"><rect class=\"cs-box\" x=\"304\" y=\"120\" width=\"184\" height=\"160\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"396\" y=\"146\">Signoff checklist</text><text class=\"cs-sub\" x=\"396\" y=\"170\">Status: green / red</text><text class=\"cs-sub\" x=\"396\" y=\"190\">+ criteria + report links</text><text class=\"cs-sub\" x=\"396\" y=\"210\">+ accountable sign-off</text><text class=\"cs-sub\" x=\"396\" y=\"232\">Violation → waiver</text><text class=\"cs-sub\" x=\"396\" y=\"252\">approved + traceable?</text><text class=\"cs-sub\" x=\"396\" y=\"272\">No blanks; review each row</text></g><line class=\"cs-arr\" x1=\"488\" y1=\"200\" x2=\"548\" y2=\"200\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"review\" data-g=\"review\"><rect class=\"cs-box\" x=\"552\" y=\"120\" width=\"146\" height=\"160\" rx=\"8\" fill=\"#fefce8\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"625\" y=\"146\">Tapeout review</text><text class=\"cs-sub\" x=\"625\" y=\"172\">Backend · signoff · project</text><text class=\"cs-sub\" x=\"625\" y=\"192\">Joint release decision</text><text class=\"cs-sub\" x=\"625\" y=\"214\">Green / valid waivers</text><text class=\"cs-sub\" x=\"625\" y=\"234\">= review passes</text><text class=\"cs-sub\" x=\"625\" y=\"258\">Accountable owner signs</text></g><line class=\"cs-arr\" x1=\"625\" y1=\"280\" x2=\"625\" y2=\"324\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"tapeout\" data-g=\"tapeout\"><rect class=\"cs-box\" x=\"540\" y=\"328\" width=\"170\" height=\"50\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"625\" y=\"352\">⑩ Release to fabrication</text><text class=\"cs-sub\" x=\"625\" y=\"370\">Locked 28 nm GDSII → foundry</text></g><polyline class=\"cs-arr\" points=\"552,158 516,158 516,392 122,392 122,360\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"138\" y=\"386\">Any red / unsupported waiver → ⑧ ECO → re-extract and re-sign → review again</text><text class=\"cs-note\" x=\"24\" y=\"412\">Note: This is a standard signoff-governance example; TPU v1 reports, criteria, waivers, and review records are unpublished</text></svg>",
+  "legend": [
+    {
+      "k": "dims",
+      "name": "Signoff Results (the Gate's Seven Indicators)",
+      "desc": "At this point, timing (STA), power, power integrity (IR drop/EM), signal integrity (SI/crosstalk), physical verification (DRC/LVS), logical equivalence (LEC), and reliability (ESD/antenna effects/aging) have each completed their own signoff, as covered in the preceding sections. Here they enter the gate as a set of conclusions: every dimension is either green (meets its criterion) or red (has a violation). The gate asks whether all seven indicators can be cleared. The exact dimension set is project-specific; this diagram uses dimensions common to a large chip, because TPU v1 does not disclose its actual signoff scope or acceptance criteria."
+    },
+    {
+      "k": "checklist",
+      "name": "Signoff Checklist (One Auditable Consolidated Record)",
+      "desc": "The checklist is the primary control artifact for the tapeout review. Each row records the dimension's status (green/red), release criterion, link to the signoff report, accountable owner, and—if a violation remains—the waiver identifier and approving signatures. Reviewers inspect it row by row to ensure that nothing is blank or provisionally deferred, every green result has traceable evidence, and every accepted violation has a formally reviewed and signed waiver. An accountable checklist and item-by-item review are standard signoff governance; TPU v1's actual checklist template and contents are not public."
+    },
+    {
+      "k": "review",
+      "name": "Tapeout Review Gate (Joint Three-Party Decision)",
+      "desc": "Backend implementation, signoff, and project or engineering management conduct a formal tapeout review against the checklist. Signoff presents each dimension's result and criterion, backend explains every violation and waiver, and project leadership accepts or rejects the schedule and residual risk. The review passes only when every dimension meets its criterion or every residual violation has an approved, signed, and traceable waiver; an authorized owner then signs the release. This converts a tool's green report into an accountable human decision that the chip may be fabricated. The governance model is standard practice; TPU v1's actual review process and records are not public."
+    },
+    {
+      "k": "tapeout",
+      "name": "Release to ⑩ Fabrication (Send GDSII to the Foundry)",
+      "desc": "After the review passes and all required signatures are complete, the independently signed-off, version-locked final GDSII is formally released to the foundry—28 nm for TPU v1—for mask generation and wafer start. This is the boundary where the design becomes silicon: changes after release can require mask revisions and carry very high cost, so the decision demands rigorous control. TPU v1's 28 nm fabrication is public; its specific wafer-start schedule and mask revision are outside this section's scope."
+    },
+    {
+      "k": "drc",
+      "name": "Hard-Gate Dimensions (Non-Waivable DRC/LVS and Related Checks)",
+      "desc": "Some checklist rows are hard vetoes. DRC/LVS must have zero violations because a layout that violates manufacturing rules or does not match the netlist cannot be released, and LEC must prove equivalence because a functionally altered design cannot be fabricated. If any of these checks is red, strong timing or power results elsewhere do not compensate. Distinguishing reviewable soft violations from non-waivable hard gates is central to the release decision. These criteria illustrate standard practice; TPU v1's private criteria are not public."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "dims",
+        "sta",
+        "pwr"
+      ],
+      "cap": "① Collect the signed conclusions for every dimension: timing, power, EM/IR, SI, DRC-LVS, LEC, reliability, and related checks have completed their own signoff and now enter the gate as green/red results. The object being signed off and released is the known TPU v1 design: 256×256 systolic array, 24 MiB Unified Buffer, 700 MHz, and 28 nm."
+    },
+    {
+      "keys": [
+        "checklist"
+      ],
+      "cap": "② Consolidate a formal signoff checklist: for every dimension, record status, criterion, report, accountable owner, and—if a violation remains—the waiver and review signatures. The result is one traceable record that reviewers can audit row by row, with no blanks."
+    },
+    {
+      "keys": [
+        "drc",
+        "checklist"
+      ],
+      "cap": "③ Separate soft violations from hard gates: zero DRC/LVS violations and successful LEC are veto criteria—red means stop. A small residual violation in another dimension can be considered only when it has an approved, signed, and traceable waiver; a waiver must carry evidence, not merely defer the issue."
+    },
+    {
+      "keys": [
+        "review"
+      ],
+      "cap": "④ Conduct the formal tapeout review: backend, signoff, and project representatives examine the checklist item by item. Signoff presents the criteria, backend explains each waiver, and project leadership decides whether the risk is acceptable. The review passes only when all items are green or every residual violation has justified approval, followed by the accountable owner's signature."
+    },
+    {
+      "keys": [
+        "tapeout",
+        "review"
+      ],
+      "cap": "⑤ Sign and release to ⑩ fabrication: once the review passes and all signatures are complete, the version-locked final 28 nm GDSII is sent to the foundry for mask generation. Any red result or unsupported waiver returns the design to ⑧ ECO, followed by re-extraction, re-signoff, waiver correction or rejection, and another gate review."
+    }
+  ],
+  "before": [
+    "<b>Define the checklist template and mandatory dimensions</b>: Before consolidation begins, lock the tapeout checklist structure: the required signoff dimensions—timing, power, power integrity (IR-drop/EM analysis), signal integrity, physical verification (DRC/LVS), logical equivalence (LEC), and reliability (ESD/antenna effects/aging)—and the fields required for each dimension, including status, criterion, report reference, accountable owner, and waiver. Defining the template up front prevents omitted dimensions and unowned gaps. The dimension set illustrates standard practice for a large chip; TPU v1's actual checklist is not public.",
+    "<b>Define each dimension's release criterion and the hard-gate list</b>: State the objective green condition for every dimension—for example, setup/hold slack ≥ 0 across all corners; bounded IR drop and positive EM margin; zero DRC/LVS violations; passing LEC; and power within the 28–40 W envelope. Explicitly identify non-waivable gates such as DRC/LVS and LEC. Predetermined criteria make the review objective instead of improvised. All thresholds are illustrative rather than private TPU values.",
+    "<b>Define violation-waiver governance</b>: A large chip may retain a very small number of understood violations whose risk has been analyzed and accepted. Establish in advance which dimensions may use waivers, what root cause, impact analysis, and mitigation each waiver must contain, who must review and sign it, and how its identifier is recorded in the checklist for traceability. The governing rule is that every waiver requires evidence and signatures; an unreviewed violation or placeholder waiver cannot pass the gate. This is standard signoff governance, and TPU v1's waiver list is not public.",
+    "<b>Define review participants, signing roles, and release authority</b>: Identify the tapeout review participants—backend implementation lead, signoff lead, and project or engineering management, with DFT, package/test, or foundry-interface representatives as needed. Assign an accountable signer to every dimension and specify who holds final release authority. The decision that a chip may be fabricated must belong to named people, not to a tool indicator. This accountability model is standard practice; TPU v1's review organization is not public.",
+    "<b>Define version locking and handoff-consistency rules</b>: Specify the exact GDSII revision that will pass the gate and require it to match the netlist, SPEF, and reports used for signoff. This prevents the fatal mismatch of signing revision A while fabricating revision B. Freeze the release version and register the complete deliverable manifest before handoff. Version governance is standard practice."
+  ],
+  "during": [
+    "<b>Cardinal rule: the gate requires all green or evidence-backed waivers—not “mostly acceptable”</b>. A tapeout review is not a weighted score and does not release a chip merely because six of seven dimensions are green. Each dimension must either meet its criterion or have an approved, signed, and traceable waiver for its residual violation. If any dimension is neither green nor legitimately waived, the gate remains closed; this refusal to dilute the criteria is the gate's purpose.",
+    "<b>Separate hard gates from waivable soft violations; a hard-gate failure is a veto</b>. A red DRC result means the layout violates manufacturing rules, an LVS mismatch means the layout does not correspond to the netlist and invalidates other conclusions, and an LEC failure means functionality has changed. None may be released, regardless of how strong the timing or power reports look. Only selected soft violations may be accepted after sufficient risk analysis and formal waiver approval. Correctly separating what may and may not be waived is the review's central judgment.",
+    "<b>Audit the checklist item by item; no blank or “pending” cells</b>. Reviewers examine each row: where is the report, what is the criterion, who signed it, does a violation remain, and what is the waiver identifier? A row cannot pass based on “to be added later” or a verbal assurance. An unchecked blank may be exactly where a silicon failure is hiding.",
+    "<b>Every violation waiver requires a root cause, impact analysis, and accountable signature</b>. Accepting a violation is not a signoff engineer saying that it is probably harmless. It requires a written root-cause analysis, assessment of functional, yield, and reliability impact, necessary mitigation, an identifier in the checklist, and approval by authorized signers. Empty waivers or waivers forced through solely for schedule are among the gate's greatest risks.",
+    "<b>People remain accountable for releasing the chip; tools supply evidence rather than make the decision</b>. A green tool result is an input. Backend, signoff, and project representatives jointly examine the full evidence, after which an authorized owner signs the release. The decision to commit costly mask fabrication belongs to accountable people, not to an automated report.",
+    "<b>Methodology disclosure (applies throughout)</b>: Consolidating seven signoff dimensions, using a tapeout checklist, conducting a three-party review, assigning item-level signatures, governing waivers, locking versions, and releasing GDSII only after all conditions are satisfied are standard EDA signoff and project-governance practices. TPU v1 does not disclose its signoff checklist, review records, criteria, waiver list, or release flow. This section uses the known TPU v1 configuration—256×256 systolic array, 24 MiB Unified Buffer, 700 MHz, 28 nm, ≤331 mm², 28–40 W, and weight-stationary dataflow—as the design passing through the illustrative gate. Every threshold and dimension list shown here is illustrative rather than private TPU data; only TPU v1's 28 nm fabrication is a public fact."
+  ],
+  "result": [
+    {
+      "label": "Gate Structure",
+      "value": "Seven signoff conclusions consolidated into one formal checklist → item-by-item tapeout review by backend, signoff, and project representatives → accountable owner signatures"
+    },
+    {
+      "label": "Release Criterion",
+      "value": "Every dimension meets its criterion (all green), or every residual violation has an approved, signed, and traceable waiver = review passes; otherwise the gate remains closed"
+    },
+    {
+      "label": "Hard Gates (Veto)",
+      "value": "Zero DRC/LVS violations and successful LEC are non-waivable; a red result blocks release regardless of how many other dimensions are green (illustrative criteria)"
+    },
+    {
+      "label": "Each Checklist Row Records",
+      "value": "Dimension · status (green/red) · release criterion · signoff-report reference · accountable owner's signature · waiver identifier if any violation remains"
+    },
+    {
+      "label": "Released Deliverable",
+      "value": "The version-locked final 28 nm GDSII is signed for release and sent to the foundry for mask generation and ⑩ fabrication"
+    },
+    {
+      "label": "Rejection Path",
+      "value": "Any red result or unsupported waiver → return to ⑧ ECO → re-extract and re-sign, then approve or reject the waiver → repeat the gate review until all checks are green or all waivers are justified"
+    }
+  ],
+  "after": [
+    "<b>Review passes → sign the release and send the 28 nm GDSII to the foundry</b>: After the three parties confirm every checklist item and the authorized owner signs, the version-locked final GDSII is handed to the foundry for mask generation and wafer start. This is the boundary where ⑨ signoff hands control to ⑩ fabrication. Because post-release changes can require mask revisions at very high cost, the signature carries real accountability.",
+    "<b>Any red result or unsupported waiver → reject the release and return to ⑧ ECO</b>: If the review finds a dimension still red or a waiver incomplete or unsigned, release is denied and the exact issue returns to step ⑧ for a targeted ECO. Signoff does not modify the circuit; implementation makes the change, while the gate determines whether to release or reject it.",
+    "<b>After an ECO, re-extract and re-sign every affected dimension before repeating the gate review</b>: Once an ECO changes the netlist or layout, regenerate the SPEF and layout data, update the affected signoff reports and checklist, re-sign the affected dimensions—or all dimensions when required—and reopen the review. Never release after making a local change while leaving the checklist tied to an obsolete revision.",
+    "<b>Archive the checklist, review record, waivers, and released version</b>: Lock and retain the signoff checklist, review minutes, every waiver with its root cause, impact analysis, and signatures, and the released GDSII revision. Together they provide traceable evidence of why the silicon was released and who accepted the decision; if a post-silicon issue appears, these records are the primary basis for root-cause and accountability analysis.",
+    "<b>After release, enter ⑩ fabrication and conclude the signoff mission</b>: Once the gate is cleared, the design formally enters fabrication and ⑨ signoff completes its role as the final independent pre-tapeout control. By consolidating every signoff dimension into a single explicit decision on whether to invest in this chip, the gate delivers signoff's ultimate purpose."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the paper discloses TPU v1's 256×256 8-bit MAC systolic array, 24 MiB Unified Buffer, 700 MHz clock, 28 nm process, ≤331 mm² die, 28–40 W envelope, weight-stationary dataflow, and 28 nm fabrication, which provide the known design context; the tapeout signoff gate, checklist, three-party review, item-level accountability and signatures, violation-waiver governance, version locking, and all-green GDSII release shown here are standard EDA signoff and project-governance practices, while the diagram, criteria, dimension set, and waiver rules are illustrative rather than TPU v1's unpublished private signoff reports, review records, acceptance criteria, or waiver list)"
+}

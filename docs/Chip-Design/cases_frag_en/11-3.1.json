@@ -1,0 +1,110 @@
+{
+ "secNum": "3.1",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Wafer Fabrication overview and wafers: the GDSII delivered at ⑩ becomes layer-by-layer photomasks, then hundreds to thousands of identical TPU dies are fabricated in parallel on one silicon wafer (commonly 300 mm). Hundreds of operations over weeks to months build more than ten layers; a ≤331 mm² TPU die yields fewer dies per wafer and is especially defect-sensitive—the first panorama from design data ⑩ to silicon ⑪",
+ "oneLine": "Wafer Fabrication does not make one chip at a time; it uses a mask set to fabricate hundreds or thousands of identical dies in parallel across one silicon wafer. This captures semiconductor scale economics and yield: a wafer, commonly 300 mm in diameter, carries the batch through hundreds of layer-building operations over weeks to months. As die size grows—TPU v1 is ≤331 mm²—fewer dies fit and each is more likely to intersect a random defect, making good-die yield highly sensitive. TPU's documented 256×256 array, 24 MiB Unified Buffer occupying nearly 29% of die, 700 MHz, 28 nm, ≤331 mm², 28–40 W, and weight-stationary dataflow provide the manufactured context. Foundry process, equipment, recipe, and wafer/die yield figures follow standard practice for this class of 28 nm large chip; TPU v1's foundry and proprietary manufacturing/yield figures are not public.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 420\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"26\">Wafer Fabrication overview: GDSII ⑩ → photomasks → hundreds or thousands of identical dies fabricated in parallel on a common 300 mm wafer → wafer test, dicing, and yield binning</text><g class=\"cs-part\" data-k=\"mask\" data-g=\"mask\"><rect class=\"cs-box\" x=\"24\" y=\"60\" width=\"120\" height=\"120\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"84\" y=\"92\">Photomask set</text><text class=\"cs-sub\" x=\"84\" y=\"116\">From GDSII ⑩</text><text class=\"cs-sub\" x=\"84\" y=\"136\">Layer masters</text><text class=\"cs-sub\" x=\"84\" y=\"156\">Patterns repeat across wafer</text></g><line class=\"cs-arr\" x1=\"144\" y1=\"120\" x2=\"196\" y2=\"120\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"fab\" data-g=\"fab\"><rect class=\"cs-box\" x=\"200\" y=\"60\" width=\"150\" height=\"120\" rx=\"8\" fill=\"#f0f9ff\" stroke=\"#7dd3fc\"/><text class=\"cs-t\" x=\"275\" y=\"90\">Fab production line</text><text class=\"cs-sub\" x=\"275\" y=\"114\">Hundreds of operations</text><text class=\"cs-sub\" x=\"275\" y=\"134\">Deposition / lithography / etch…</text><text class=\"cs-sub\" x=\"275\" y=\"154\">Weeks to months</text><text class=\"cs-sub\" x=\"275\" y=\"172\">More than ten layers</text></g><line class=\"cs-arr\" x1=\"350\" y1=\"120\" x2=\"402\" y2=\"120\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"wafer\" data-g=\"wafer\"><circle cx=\"500\" cy=\"270\" r=\"118\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"2\"/><text class=\"cs-t\" x=\"500\" y=\"96\">One silicon wafer (commonly 300 mm)</text><text class=\"cs-sub\" x=\"500\" y=\"116\">Fabricates hundreds or thousands of identical dies in parallel</text><g class=\"cs-part\" data-k=\"die\" data-g=\"die\"><rect class=\"cs-cell\" x=\"438\" y=\"208\" width=\"56\" height=\"56\"/><rect class=\"cs-cell\" x=\"498\" y=\"208\" width=\"56\" height=\"56\"/><rect class=\"cs-cell\" x=\"438\" y=\"268\" width=\"56\" height=\"56\"/><rect class=\"cs-cell\" x=\"498\" y=\"268\" width=\"56\" height=\"56\"/><rect class=\"cs-cell\" x=\"408\" y=\"238\" width=\"26\" height=\"56\"/><rect class=\"cs-cell\" x=\"558\" y=\"238\" width=\"26\" height=\"56\"/><rect class=\"cs-cell\" x=\"468\" y=\"178\" width=\"56\" height=\"26\"/><rect class=\"cs-cell\" x=\"468\" y=\"328\" width=\"56\" height=\"26\"/><text class=\"cs-cellt\" x=\"466\" y=\"240\">TPU</text><text class=\"cs-cellt\" x=\"526\" y=\"240\">die</text><text class=\"cs-cellt\" x=\"466\" y=\"300\">≤331</text><text class=\"cs-cellt\" x=\"526\" y=\"300\">mm²</text></g><g class=\"cs-part\" data-k=\"defect\" data-g=\"defect\"><circle cx=\"452\" cy=\"226\" r=\"5\" fill=\"#ef4444\"/><circle cx=\"524\" cy=\"296\" r=\"5\" fill=\"#ef4444\"/><circle cx=\"572\" cy=\"262\" r=\"5\" fill=\"#ef4444\"/></g></g><g class=\"cs-part\" data-k=\"yield\" data-g=\"yield\"><rect class=\"cs-box\" x=\"626\" y=\"200\" width=\"92\" height=\"160\" rx=\"8\" fill=\"#fefce8\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"672\" y=\"226\">Yield-sensitive</text><text class=\"cs-sub\" x=\"672\" y=\"252\">Larger die</text><text class=\"cs-sub\" x=\"672\" y=\"270\">Fewer per wafer</text><text class=\"cs-sub\" x=\"672\" y=\"294\">More likely hit by</text><text class=\"cs-sub\" x=\"672\" y=\"312\">a defect (red dot)</text><text class=\"cs-sub\" x=\"672\" y=\"338\">good-die fraction ↓</text></g><line class=\"cs-arr\" x1=\"626\" y1=\"280\" x2=\"580\" y2=\"270\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"24\" y=\"406\">Note: 300 mm wafers, hundreds of steps, and defect-density yield are standard 28 nm foundry practice; TPU v1's foundry, recipes, and wafer/die yield are not public; grid and red dots are illustrative</text></svg>",
+ "legend": [
+  {
+   "k": "mask",
+   "name": "Photomask set (layer-by-layer masters from ⑩ GDSII)",
+   "desc": "The GDSII delivered at Tapeout step ⑩ is converted by the foundry into photomasks/reticles, with one or more masks for each metal, polysilicon, diffusion, and related layer. A mask contains replicated field geometry for exposure across the wafer—not only one TPU—so step-and-repeat copies many identical dies. TPU v1's PDK, mask count, and process are not public; mask preparation is standard foundry practice for its documented 28 nm context."
+  },
+  {
+   "k": "fab",
+   "name": "Fab production line (hundreds of steps, weeks to months)",
+   "desc": "In a cleanroom, wafers repeatedly undergo deposition → lithography → etch → ion implantation/doping → chemical-mechanical polishing (CMP) and hundreds of related operations. Transistors and more than ten metal-interconnect layers build over weeks to months. TPU's 256×256 array, 24 MiB Unified Buffer, and 4 MiB accumulators emerge layer by layer with the wafer. Exact equipment, recipes, and step counts are foundry-private 28 nm practice."
+  },
+  {
+   "k": "wafer",
+   "name": "Silicon wafer (commonly 300 mm, the parallel batch carrier)",
+   "desc": "A round monocrystalline silicon wafer—300 mm is mainstream—moves all dies through the same operations and masks simultaneously, so one finished wafer contains hundreds or thousands of identical chips. This amortizes process cost across dies. The diagram tiles TPU dies of ≤331 mm² inside the wafer; incomplete edge tiles are unusable edge loss. A 300 mm wafer is standard foundry practice; TPU's specific wafer source and floorplan are not public."
+  },
+  {
+   "k": "die",
+   "name": "Die (hundreds or thousands of identical TPU dice per wafer)",
+   "desc": "Each grid square is an uncut, unpackaged TPU die. TPU v1 is large (≤331 mm²) because it contains 65,536 8-bit MACs and a 24 MiB UB occupying nearly 29% of die. Larger dies mean (1) fewer fit per wafer, (2) more edge loss, and (3) a higher probability of intersecting a random defect. These three effects reduce large-die yield—the unavoidable cost of a ≤331 mm² large die. Exact TPU dies per wafer are private."
+  },
+  {
+   "k": "yield",
+   "name": "Yield sensitivity (large die ↔ defects: good-die fraction)",
+   "desc": "Random process defects, illustrated as red dots, kill a die when they land in critical circuitry. A larger area covers more possible defects, so good-die yield decreases significantly as die area rises. TPU v1's ≤331 mm² die is squeezed twice: fewer gross dies and higher defect exposure. Defect density, yield model, and actual TPU yield are foundry-private; the mechanism is illustrative."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "mask"
+   ],
+   "cap": "① Convert the GDSII delivered at Tapeout ⑩ into layer photomasks. Each master is repeatedly exposed across the wafer to replicate hundreds or thousands of identical TPU dies; mask preparation is standard foundry practice."
+  },
+  {
+   "keys": [
+    "fab",
+    "wafer"
+   ],
+   "cap": "② Run Wafer Fabrication on a full silicon wafer, commonly 300 mm. Every die simultaneously undergoes hundreds of deposition/lithography/etch/doping/CMP steps that build the 256×256 array and 24 MiB UB over weeks to months."
+  },
+  {
+   "keys": [
+    "wafer",
+    "die"
+   ],
+   "cap": "③ One wafer contains hundreds or thousands of identical TPU dies, but the ≤331 mm² large die occupies substantial area, limits complete dies per wafer, and creates unusable edge fragments."
+  },
+  {
+   "keys": [
+    "die",
+    "yield"
+   ],
+   "cap": "④ Yield becomes the core constraint: random red-dot defects kill intersected dies. A larger die both fits fewer times and is more likely to be hit, lowering the good-die fraction."
+  }
+ ],
+ "before": [
+  "<b>Confirm Tapeout ⑩ handoff and mask data readiness</b>: verify the fully signed-off GDSII has been received and converted layer by layer into mask data, including alignment and process-assist geometry. Wafer Fabrication cannot begin without a printable first mask. TPU's PDK/mask count is not public; its 28 nm structure is the context.",
+  "<b>Select wafer specification and substrate</b>: choose diameter and monocrystalline silicon substrate; 300 mm is mainstream. Diameter determines gross dies and cost amortization and is a starting manufacturing parameter. A 300 mm wafer is standard foundry practice; TPU-specific sourcing is private.",
+  "<b>Estimate dies per wafer and area budget</b>: combine die area (TPU v1 ≤331 mm²), usable wafer area, and scribe width to estimate whole dies and edge loss. Large-die output is limited before yield is applied. TPU's exact count is private.",
+  "<b>Align yield expectations and the cost model</b>: use die area and estimated defect density in standard yield models to predict good-die fraction and unit-cost range, then plan wafer starts for target quantity. TPU defect density, yield, and cost are undisclosed."
+ ],
+ "during": [
+  "<b>Rule: Wafer Fabrication operates on a full wafer, not one chip</b>. Hundreds or thousands of TPU dies share masks and process every operation together. Cost amortization across the wafer is the foundation of semiconductor scale economics.",
+  "<b>Build layer by layer through hundreds of steps over weeks to months</b>. Repeated deposition → lithography → etch → doping → CMP forms transistors and more than ten metal layers. The 256×256 array and 24 MiB UB emerge through these operations, and one critical-layer error can affect the whole wafer.",
+  "<b>Larger dies reduce gross count and increase edge loss</b>. Square dies tile a round wafer imperfectly. TPU v1 uses ≤331 mm² to hold 65,536 MACs and a 24 MiB UB near 29% of die; that area directly limits gross dies.",
+  "<b>Random defects hit large dies more often</b>. Particles and pattern defects scatter across the wafer; any defect in critical circuitry kills the die. Larger area means a greater probability of covering one, producing the physical area-yield relationship.",
+  "<b>Yield is the good-die fraction and the unit-cost bottleneck</b>. Large dies suffer fewer gross dies × higher kill probability, suppressing usable TPU output per wafer and increasing unit cost—an unavoidable economic consequence of ≤331 mm².",
+  "<b>Process scope</b>: 300 mm wafers, hundreds of deposition/lithography/etch steps, layer buildup, defect-density yield models, and edge loss are standard foundry practice for 28 nm large chips. TPU v1's foundry, recipes, mask count, dies per wafer, yield, and cost are not public. Its 256×256 array, 24 MiB UB, 700 MHz, 28 nm, ≤331 mm², 28–40 W, and weight-stationary architecture provide context; diagram dies and defects are illustrative."
+ ],
+ "result": [
+  {
+   "label": "Manufacturing carrier",
+   "value": "One silicon wafer (commonly 300 mm) = parallel batch: all dies share masks and process steps; one completed wafer yields hundreds or thousands of identical TPUs"
+  },
+  {
+   "label": "Process scale",
+   "value": "Hundreds of deposition/lithography/etch/doping/CMP operations build more than ten layers over weeks to months; standard 28 nm foundry practice"
+  },
+  {
+   "label": "Die placement",
+   "value": "Hundreds or thousands of TPU dies tile a wafer; TPU v1 die ≤331 mm² (256×256 array + 24 MiB UB near 29% of die), so gross count is limited"
+  },
+  {
+   "label": "Large-die penalty",
+   "value": "Larger die → fewer per wafer + more circular-edge waste + greater random-defect hit probability"
+  },
+  {
+   "label": "Yield sensitivity",
+   "value": "Good-die fraction falls as area rises; a ≤331 mm² die is especially defect-sensitive, reducing usable dies per wafer and raising unit cost (mechanism illustrative; TPU yield private)"
+  },
+  {
+   "label": "Evidence boundary",
+   "value": "TPU v1's foundry, recipes, mask count, dies per wafer, wafer/die yield, and cost are private; the above is standard foundry practice, not TPU-specific figures"
+  }
+ ],
+ "after": [
+  "<b>Perform wafer sort / CP on the intact wafer</b>: probe and power every die, marking failures by ink or coordinate before packaging. Avoid spending downstream cost on known-bad dies. This is the prelude to packaging/test ⑫.",
+  "<b>Measure yield and map defect hotspots</b>: analyze the fraction and spatial distribution of good dies. Random scatter follows defect-density models; clusters indicate systematic process issues that require root-cause action. TPU yield maps are private.",
+  "<b>Dice and bin by yield for the next stage</b>: cut along scribe lanes and send good TPU dies to packaging/test ⑫; discard bad dies. The usable count realizes the large-die × yield calculation.",
+  "<b>Feed yield and defect data back into process/design</b>: tune process parameters or add DFM/redundancy when recurring defects suppress yield, improving later wafer lots. TPU-specific iteration is not public."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the 256×256 8-bit-MAC array, 24 MiB Unified Buffer, 700 MHz, 28 nm, ≤331 mm², 28–40 W, and weight-stationary dataflow are documented TPU v1 structures used as the Wafer Fabrication context; commonly 300 mm wafers, hundreds of deposition/lithography/etch steps, layer buildup, defect-density yield, dies per wafer, edge loss, and wafer-level electrical test are standard foundry/manufacturing practices for this class of 28 nm large chip. Diagram dies/defects and all dies-per-wafer, yield, and cost figures are illustrative, not TPU v1's foundry, private recipes, mask count, or wafer/die yield)"
+}

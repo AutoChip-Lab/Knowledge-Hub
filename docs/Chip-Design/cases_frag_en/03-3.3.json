@@ -1,0 +1,118 @@
+{
+  "secNum": "3.3",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · 256×256 Systolic-Array Matrix Multiply Unit (MXU)",
+  "oneLine": "TPU is a real data-center inference accelerator whose compute core is a large systolic array, engineered to execute inference-dominant matrix multiplication at exceptional energy efficiency.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 410\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"130\" y=\"132\">Activations in →</text><text class=\"cs-note\" x=\"300\" y=\"86\">Weights load ↓</text><g class=\"cs-part\" data-k=\"ub\" data-g=\"ub\"><rect class=\"cs-box\" x=\"26\" y=\"150\" width=\"92\" height=\"150\" rx=\"8\"/><text class=\"cs-t\" x=\"72\" y=\"172\">Unified</text><text class=\"cs-t\" x=\"72\" y=\"187\">Buffer</text><text class=\"cs-sub\" x=\"72\" y=\"202\">24 MiB</text><text class=\"cs-sub\" x=\"72\" y=\"217\">Activations / intermediates</text></g><g class=\"cs-part\" data-k=\"wfifo\" data-g=\"wfifo\"><rect class=\"cs-box\" x=\"300\" y=\"28\" width=\"210\" height=\"40\" rx=\"8\"/><text class=\"cs-t\" x=\"405\" y=\"50\">Weight FIFO ← DDR3 weights</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"300\" y=\"140\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"318\" y=\"162\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"342\" y=\"140\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"360\" y=\"162\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"384\" y=\"140\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"402\" y=\"162\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"426\" y=\"140\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"444\" y=\"162\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"468\" y=\"140\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"486\" y=\"162\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"300\" y=\"182\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"318\" y=\"204\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"342\" y=\"182\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"360\" y=\"204\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"384\" y=\"182\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"402\" y=\"204\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"426\" y=\"182\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"444\" y=\"204\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"468\" y=\"182\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"486\" y=\"204\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"300\" y=\"224\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"318\" y=\"246\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"342\" y=\"224\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"360\" y=\"246\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"384\" y=\"224\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"402\" y=\"246\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"426\" y=\"224\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"444\" y=\"246\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"468\" y=\"224\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"486\" y=\"246\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"300\" y=\"266\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"318\" y=\"288\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"342\" y=\"266\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"360\" y=\"288\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"384\" y=\"266\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"402\" y=\"288\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"426\" y=\"266\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"444\" y=\"288\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"468\" y=\"266\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"486\" y=\"288\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"300\" y=\"308\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"318\" y=\"330\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"342\" y=\"308\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"360\" y=\"330\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"384\" y=\"308\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"402\" y=\"330\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"426\" y=\"308\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"444\" y=\"330\">×+</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-cell\" x=\"468\" y=\"308\" width=\"36\" height=\"36\" rx=\"5\"/><text class=\"cs-cellt\" x=\"486\" y=\"330\">×+</text></g><text class=\"cs-sub\" x=\"402\" y=\"358\">256×256 PE array (each PE = 8-bit multiply-accumulate)</text><line class=\"cs-arr\" x1=\"120\" y1=\"158\" x2=\"296\" y2=\"158\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"120\" y1=\"200\" x2=\"296\" y2=\"200\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"120\" y1=\"242\" x2=\"296\" y2=\"242\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"330\" y1=\"70\" x2=\"330\" y2=\"138\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"402\" y1=\"70\" x2=\"402\" y2=\"138\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"474\" y1=\"70\" x2=\"474\" y2=\"138\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"330\" y1=\"362\" x2=\"330\" y2=\"378\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"402\" y1=\"362\" x2=\"402\" y2=\"378\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"474\" y1=\"362\" x2=\"474\" y2=\"378\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"acc\" data-g=\"acc\"><rect class=\"cs-box\" x=\"300\" y=\"380\" width=\"204\" height=\"32\" rx=\"8\"/><text class=\"cs-t\" x=\"402\" y=\"402\">Accumulators · 4 MiB · INT32</text></g><g class=\"cs-part\" data-k=\"act\" data-g=\"act\"><rect class=\"cs-box\" x=\"545\" y=\"250\" width=\"150\" height=\"44\" rx=\"8\"/><text class=\"cs-t\" x=\"620\" y=\"272\">Activation / normalization</text></g><polyline class=\"cs-arr\" points=\"504,396 620,396 620,294\" fill=\"none\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"620,250 620,120 72,120 72,148\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"360\" y=\"118\">Results write back to Unified Buffer →</text></svg>",
+  "legend": [
+    {
+      "k": "ub",
+      "name": "Unified Buffer",
+      "desc": "A 24 MiB software-managed on-chip SRAM scratchpad for activations and intermediate results. TPU removes hardware caches in favor of predictable latency."
+    },
+    {
+      "k": "wfifo",
+      "name": "Weight FIFO",
+      "desc": "Weights arrive from 8 GiB of off-chip DDR3 through the Weight FIFO and remain fixed in the array after loading—a weight-stationary dataflow."
+    },
+    {
+      "k": "pe",
+      "name": "PE array (MXU)",
+      "desc": "A 256×256 grid of 65,536 8-bit multiply-accumulate units. Data passes directly between PEs with almost no memory access, the foundation of its energy efficiency."
+    },
+    {
+      "k": "acc",
+      "name": "Accumulators",
+      "desc": "A 4 MiB bank of 32-bit accumulators captures partial sums flowing down each column. Low-precision multiplication and wide accumulation control overflow."
+    },
+    {
+      "k": "act",
+      "name": "Activation / normalization",
+      "desc": "Apply activation and normalization to accumulated results, then write them to the Unified Buffer for the next layer."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "wfifo",
+        "pe"
+      ],
+      "cap": "① Preload weights from DDR3 through the Weight FIFO; once loaded, they remain stationary in the array."
+    },
+    {
+      "keys": [
+        "ub",
+        "pe"
+      ],
+      "cap": "② Stream activations from the Unified Buffer across array rows, advancing one PE per cycle."
+    },
+    {
+      "keys": [
+        "pe"
+      ],
+      "cap": "③ Each PE performs one 8-bit multiply-accumulate and forwards the partial sum to the next PE without accessing memory."
+    },
+    {
+      "keys": [
+        "pe",
+        "acc"
+      ],
+      "cap": "④ Partial sums accumulate down each column and land in 32-bit accumulators."
+    },
+    {
+      "keys": [
+        "act",
+        "ub"
+      ],
+      "cap": "⑤ Apply activation and normalization, then write results to the Unified Buffer for the next layer."
+    }
+  ],
+  "before": [
+    "<b>Define the compute-core question</b>: Should the chip use general-purpose CPU cores, a vector engine, or a specialized array? TPU answers with a purpose-built matrix-multiplication machine for inference.",
+    "<b>Decisions to make</b>: Target TOPS, numerical precision (INT8, FP16, and so on), dataflow (weight-, output-, or row-stationary), PE-array size, target frequency, area, and power.",
+    "<b>Required inputs</b>: Workload characteristics from §3.1—matrix-multiply share, arithmetic intensity, and working-set size—plus sustainable data-supply bandwidth and process-library density, speed, and power.",
+    "<b>Hard constraints</b>: The power ceiling limits MAC count; on-chip and off-chip bandwidth limit array utilization; and the software ecosystem must support the chosen numerical format."
+  ],
+  "during": [
+    "<b>Commit to the workload</b>: MLP, CNN, and LSTM inference can all be lowered to GEMM. With abundant matrix multiplication, build the chip as a dedicated matrix engine.",
+    "<b>Select the structure</b>: A systolic array reuses each value many times after entry and passes data directly between PEs with almost no memory access. That maximizes MACs per area and per watt; the TPU paper emphasizes memory-free transfers among 64K ALUs.",
+    "<b>Select the dataflow</b>: In a weight-stationary flow, load weights once, stream activations across rows, and accumulate partial sums downward to maximize weight reuse.",
+    "<b>Select precision</b>: Inference tolerates low precision, so use 8-bit integer multiplication with 32-bit accumulation. Compared with floating point, this reduces storage by roughly 4× and makes each MAC smaller and more efficient.",
+    "<b>Size the array</b>: The 256×256 choice is bounded jointly by throughput, feed bandwidth, area, and power. A larger array would be underfed when bandwidth cannot scale with it.",
+    "<b>Remove overhead</b>: Eliminate caches, branch prediction, and out-of-order execution so silicon goes to MACs, trading generality for deterministic latency and high compute density."
+  ],
+  "result": [
+    {
+      "label": "Array size",
+      "value": "256×256 = 65,536 MACs"
+    },
+    {
+      "label": "Peak compute",
+      "value": "700 MHz → ~92 INT8 TOPS"
+    },
+    {
+      "label": "Dataflow",
+      "value": "Weight-stationary systolic"
+    },
+    {
+      "label": "Numerics",
+      "value": "INT8 multiply / INT32 accumulate"
+    },
+    {
+      "label": "On-chip activations",
+      "value": "24 MiB Unified Buffer"
+    },
+    {
+      "label": "Process / power",
+      "value": "28 nm · ≤331 mm² · 28–40 W"
+    }
+  ],
+  "after": [
+    "<b>Validate performance</b>: Use roofline and cycle-level models on real workloads to measure utilization and determine whether compute or bandwidth dominates. Adjust array size, dataflow, or SRAM if targets are missed.",
+    "<b>Propagate requirements</b>: Specify SRAM capacity and bandwidth for memory hierarchy (§3.4), bisection bandwidth for on-chip interconnect (§3.5), and the delivery cadence for dataflow (§3.6).",
+    "<b>Hand off to microarchitecture (④)</b>: Define PE pipelining and array fill/drain behavior—the subject of ④ §3.1.",
+    "<b>Define verification and test hooks</b>: Plan array verification, SRAM MBIST, and performance counters for utilization and stalls.",
+    "<b>Preserve margin and configuration</b>: Decide whether precision or array dimensions can be scaled to derive high-, mid-, and low-tier products."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017. Facts disclosed in the paper are distinguished from illustrative examples and standard industry practice; the latter are not presented as disclosed TPU v1 implementation details."
+}

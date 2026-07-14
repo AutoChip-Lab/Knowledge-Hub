@@ -1,0 +1,123 @@
+{
+ "secNum": "3.8",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Formal verification: proving deadlock freedom and handshake invariants within a constrained model",
+ "oneLine": "Host-command FSMs, PCIe and DDR3 handshakes, and cross-domain control contain rare protocol corners that simulation cannot exhaust. Formal verification gives properties to an engine that explores every reachable state: it either proves them invariant (PROVEN) or returns a counterexample waveform. The 256×256 array datapath creates state-space explosion, so proof scope must be defined carefully.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">Formal verification: within the proof boundary and assumptions, prove the property or return a counterexample</text><g class=\"cs-part\" data-k=\"prop\" data-g=\"prop\"><rect class=\"cs-box\" x=\"40\" y=\"60\" width=\"230\" height=\"74\" rx=\"8\"/><text class=\"cs-t\" x=\"155\" y=\"86\">Property (SVA)</text><text class=\"cs-sub\" x=\"155\" y=\"106\">Deadlock-free FSM · invariant handshake</text><text class=\"cs-sub\" x=\"155\" y=\"123\">assert(req |-> ##[1:N] gnt); (illustrative)</text></g><g class=\"cs-part\" data-k=\"dut\" data-g=\"dut\"><rect class=\"cs-box\" x=\"40\" y=\"170\" width=\"230\" height=\"74\" rx=\"8\"/><text class=\"cs-t\" x=\"155\" y=\"196\">RTL under proof</text><text class=\"cs-sub\" x=\"155\" y=\"216\">Instruction FSM / PCIe·DDR3 handshake</text><text class=\"cs-sub\" x=\"155\" y=\"233\">Scope excludes the 256×256 array</text></g><line class=\"cs-arr\" x1=\"270\" y1=\"97\" x2=\"332\" y2=\"120\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"270\" y1=\"207\" x2=\"332\" y2=\"160\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"fpv\" data-g=\"fpv\"><rect class=\"cs-box\" x=\"336\" y=\"110\" width=\"180\" height=\"80\" rx=\"8\"/><text class=\"cs-t\" x=\"426\" y=\"140\">Formal engine</text><text class=\"cs-sub\" x=\"426\" y=\"160\">Explore all reachable states in scope</text><text class=\"cs-sub\" x=\"426\" y=\"177\">Mathematical proof, not trace simulation</text></g><line class=\"cs-arr\" x1=\"516\" y1=\"138\" x2=\"582\" y2=\"100\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"516\" y1=\"162\" x2=\"582\" y2=\"300\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"proven\" data-g=\"proven\"><rect class=\"cs-box\" x=\"586\" y=\"66\" width=\"120\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"646\" y=\"92\">PROVEN</text><text class=\"cs-sub\" x=\"646\" y=\"112\">Property invariant</text></g><g class=\"cs-part\" data-k=\"cex\" data-g=\"cex\"><rect class=\"cs-box\" x=\"586\" y=\"270\" width=\"120\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"646\" y=\"296\">Counterexample CEX</text><text class=\"cs-sub\" x=\"646\" y=\"316\">One violating waveform</text></g><g class=\"cs-part\" data-k=\"sim\" data-g=\"sim\"><rect class=\"cs-box\" x=\"40\" y=\"300\" width=\"476\" height=\"68\" rx=\"8\"/><text class=\"cs-t\" x=\"278\" y=\"326\">Contrast: simulation traverses only finite stimulus paths</text><text class=\"cs-sub\" x=\"278\" y=\"346\">Deep corners / rare state combinations may never occur → deadlock escapes</text></g><line class=\"cs-arr\" x1=\"278\" y1=\"244\" x2=\"278\" y2=\"296\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/></svg>",
+ "legend": [
+  {
+   "k": "prop",
+   "name": "Property under proof (SVA assertion)",
+   "desc": "Encode the guarantee in SystemVerilog Assertion: for example, once req occurs, gnt arrives within N cycles (no deadlock); valid/ready never lock up; or the FSM never enters an undefined state. The formal engine proves that property across all reachable states. assert(req |-> ##[1:N] gnt); is illustrative, not TPU disclosure."
+  },
+  {
+   "k": "dut",
+   "name": "RTL under proof (bounded scope)",
+   "desc": "Target control-intensive, narrow-data logic: host CISC decode/scheduling FSMs, PCIe handshakes, DDR3-controller handshakes, and CDC control. Scope is critical—never submit the full 256×256 array, 65,536 cells, unchanged, or exponential state growth prevents closure."
+  },
+  {
+   "k": "fpv",
+   "name": "Formal engine (exhaustive within scope)",
+   "desc": "Unlike simulation, which evaluates one supplied trace at a time, formal uses reachability, induction, and model checking to cover all reachable states in the scoped logic. For finite but corner-rich protocols and FSMs, it can guarantee behavior for every input sequence within assumptions."
+  },
+  {
+   "k": "proven",
+   "name": "PROVEN result (invariant property)",
+   "desc": "If the engine explores the reachable state space without a violation, it returns PROVEN: the property holds throughout the stated scope. The guarantee applies only to logic inside the proof boundary and to correctly specified environmental assumptions."
+  },
+  {
+   "k": "cex",
+   "name": "Counterexample (CEX)",
+   "desc": "If any input sequence violates the property, the engine returns a concrete waveform from reset to failure. Engineers can replay the complete signal trace to reproduce and localize the bug—one of formal verification's most valuable outputs."
+  },
+  {
+   "k": "sim",
+   "name": "Contrast: simulation traverses finite paths",
+   "desc": "Simulation covers only directed or randomly generated traces. A rare combination—such as FIFO nearly full during reset while two handshakes transition—may never occur and a deadlock can escape. Formal fills this gap without requiring engineers to imagine the trigger."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "prop",
+    "dut"
+   ],
+   "cap": "① Select control-intensive targets: instruction FSMs, PCIe/DDR3 handshakes, and CDC control. Express deadlock freedom, protocol invariants, and no illegal FSM state as SVA, explicitly excluding the large array datapath."
+  },
+  {
+   "keys": [
+    "dut",
+    "fpv"
+   ],
+   "cap": "② Give the scoped RTL, properties, and environmental constraints to the formal engine. It explores every reachable state mathematically rather than executing stimulus traces one by one."
+  },
+  {
+   "keys": [
+    "fpv",
+    "proven"
+   ],
+   "cap": "③ If all reachable states satisfy the property → PROVEN. This is materially stronger than “ten thousand simulations did not fail” within the declared scope."
+  },
+  {
+   "keys": [
+    "fpv",
+    "cex"
+   ],
+   "cap": "④ If a violation exists → counterexample waveform from reset through failure, directly reproducible for debugging."
+  },
+  {
+   "keys": [
+    "sim"
+   ],
+   "cap": "⑤ Simulation covers finite stimulus paths and can miss deep deadlocks. Formal's value is independence from whether someone happened to write the triggering test."
+  }
+ ],
+ "before": [
+  "<b>Select formal-suitable logic and define scope</b>: formal excels on control-dense, state-rich, narrow-data blocks such as TPU's host instruction FSM, PCIe/DDR3 interface handshakes, and CDC controls. A 256×256 array and Unified Buffer create exponential state growth, so exclude, abstract, or partition them before beginning.",
+  "<b>Translate guarantees into provable assertions</b>: formalize goals rather than “run and inspect”: every FSM progresses within finite time, every req eventually receives gnt, valid/ready cannot deadlock, no illegal state is reached, and counters remain in bounds. These SVA properties are the completion criteria.",
+  "<b>Constrain the environment with assume to prevent false counterexamples</b>: formal explores physically impossible inputs unless restricted. Encode protocol legality—for example, req cannot be withdrawn prematurely—so counterexamples remain meaningful. Assumptions must match interface specifications.",
+  "<b>Separate formal from simulation responsibilities</b>: within a bounded, correctly constrained proof scope, formal can exhaustively establish control and protocol properties; simulation and coverage validate broader datapaths and end-to-end function. Formal closes on PROVEN/CEX or an explicitly documented inconclusive result, while simulation closes on coverage and bug convergence. Assign every concern to avoid duplication or gaps."
+ ],
+ "during": [
+  "<b>Start with small properties and narrow scope, then expand</b>: prove one or two essential properties for one FSM or handshake and confirm timely PROVEN or CEX before adding properties and boundaries. A large block with dozens of properties can explode before yielding a conclusion.",
+  "<b>Rule: every control FSM needs deadlock-freedom/liveness proof</b>: deadlock under a rare state combination is easy to miss in simulation and difficult to debug in silicon. Prove liveness—every req eventually receives a response and every state can eventually exit—for TPU-like multi-interface, multi-clock control.",
+  "<b>Treat every counterexample seriously</b>: determine whether a CEX exposes a real RTL defect or a missing environmental assumption. Fix real logic; add only protocol-valid assumptions for false traces and prove again. Never modify RTL for an impossible trace or overconstrain away a real bug.",
+  "<b>Abstract and partition proofs that do not converge</b>: timeout/inconclusive is neither PROVEN nor CEX. Abstract wide data buses to arbitrary values while retaining controls, cut proof boundaries, or add helper invariants to reduce the problem to a closable state space.",
+  "<b>Trade-off: formal complements rather than replaces simulation</b>: formal guarantees all inputs within a scoped, assumed model, while simulation covers broader functionality but not every corner. Use formal for handshake/FSM deadlock and coverage-driven simulation for array datapath behavior.",
+  "<b>Scope note: TPU's formal environment is not public</b>: command FSMs, PCIe/DDR3 handshakes, and multiple clock domains follow from TPU v1 architecture, but tools, exact properties, and proof runtime are undisclosed engineering details. The workflow here is standard control-ASIC formal practice."
+ ],
+ "result": [
+  {
+   "label": "Best-suited targets",
+   "value": "Control FSMs · PCIe/DDR3 handshakes · CDC control paths"
+  },
+  {
+   "label": "Primary properties",
+   "value": "Deadlock freedom (liveness) · handshake invariants · no illegal state"
+  },
+  {
+   "label": "Property example (SVA)",
+   "value": "assert property(req |-> ##[1:N] gnt); (illustrative)"
+  },
+  {
+   "label": "Environment constraint example",
+   "value": "assume property(protocol-legal input); prevents false counterexamples (illustrative)"
+  },
+  {
+   "label": "Two outcomes",
+   "value": "PROVEN (invariant) / CEX (counterexample waveform)"
+  },
+  {
+   "label": "Scope boundary",
+   "value": "Exclude the 256×256 array datapath to prevent state explosion"
+  }
+ ],
+ "after": [
+  "<b>Confirm every property reaches PROVEN</b>: audit deadlock, liveness, and safety properties for each FSM and handshake. Do not silently treat timeout/inconclusive as success; abstract further or record an explicitly partial proof.",
+  "<b>Re-prove after every counterexample fix</b>: rerun the full formal property set after correcting RTL so the failed property becomes PROVEN and no new violation appears. Formal regression runs continuously alongside simulation regression.",
+  "<b>Audit assumptions to prevent false PROVEN</b>: overly strong assume statements can exclude violating behavior and prove an empty world. Review constraints, cover assumed behavior, and inspect reachability to ensure the proof is not overconstrained.",
+  "<b>Combine formal results with simulation coverage for signoff</b>: formal control/protocol proofs + simulation datapath coverage jointly establish functional verification. Only when formal is fully PROVEN and simulation coverage closes may the design proceed to synthesis (⑦).",
+  "<b>Document the evidence boundary</b>: distinguish TPU v1's public structural facts—command FSM, PCIe/DDR3 interfaces, and multiple domains—from standard methodology such as SVA, assume constraints, abstraction, and partitioning."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (public structures include host CISC commands over PCIe, off-chip DDR3, and a 700 MHz core array; exact formal tools, properties, and environments are standard-practice examples because TPU has not published its formal methodology)"
+}

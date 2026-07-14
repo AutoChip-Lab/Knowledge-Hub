@@ -1,0 +1,118 @@
+{
+ "secNum": "3.9",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Low-power RTL: making idle PE columns consume no dynamic power—clock gating and power intent",
+ "oneLine": "TPU's 256×256 MACs are not all busy every cycle. Letting an idle column continue toggling on a 700 MHz clock wastes dynamic power. The correct low-power RTL pattern is to code enable-controlled updates and let synthesis insert integrated clock-gating (ICG) cells—not to write clk & en by hand. Ad hoc clock gating creates glitches and disrupts DFT and timing, making it a classic RTL failure mode.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">Low-power RTL: code enables; let tools insert ICGs—never hand-gate a clock</text><g class=\"cs-part\" data-k=\"en\" data-g=\"src\"><rect class=\"cs-box\" x=\"40\" y=\"70\" width=\"150\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"115\" y=\"94\">Enable</text><text class=\"cs-sub\" x=\"115\" y=\"112\">Should this column work?</text></g><g class=\"cs-part\" data-k=\"clk\" data-g=\"src\"><rect class=\"cs-box\" x=\"40\" y=\"150\" width=\"150\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"115\" y=\"174\">Source clock clk</text><text class=\"cs-sub\" x=\"115\" y=\"192\">700 MHz free-running</text></g><line class=\"cs-arr\" x1=\"190\" y1=\"98\" x2=\"270\" y2=\"120\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"190\" y1=\"178\" x2=\"270\" y2=\"156\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"icg\" data-g=\"icg\"><rect class=\"cs-box\" x=\"272\" y=\"100\" width=\"150\" height=\"76\" rx=\"8\"/><text class=\"cs-t\" x=\"347\" y=\"126\">ICG cell</text><text class=\"cs-sub\" x=\"347\" y=\"146\">latch + AND</text><text class=\"cs-sub\" x=\"347\" y=\"164\">Inserted by synthesis</text></g><text class=\"cs-note\" x=\"278\" y=\"192\">enable=0 → gated_clk stops, glitch-free</text><line class=\"cs-arr\" x1=\"422\" y1=\"138\" x2=\"500\" y2=\"138\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"430\" y=\"128\">gated_clk</text><g class=\"cs-part\" data-k=\"regs\" data-g=\"regs\"><rect class=\"cs-box\" x=\"502\" y=\"100\" width=\"178\" height=\"76\" rx=\"8\"/><path d=\"M502,176 L502,160 L518,176 Z\" fill=\"#8b5cf6\"/><text class=\"cs-t\" x=\"591\" y=\"126\">Accumulator registers</text><text class=\"cs-sub\" x=\"591\" y=\"146\">Idle PE column</text><text class=\"cs-sub\" x=\"591\" y=\"164\">No switching = no dynamic power</text></g><g class=\"cs-part\" data-k=\"iso\" data-g=\"iso\"><rect class=\"cs-box\" x=\"40\" y=\"234\" width=\"320\" height=\"74\" rx=\"8\"/><text class=\"cs-t\" x=\"200\" y=\"260\">Operand isolation</text><text class=\"cs-sub\" x=\"200\" y=\"282\">Clamp unused multiplier inputs</text><text class=\"cs-sub\" x=\"200\" y=\"298\">Combinational logic stops switching</text></g><g class=\"cs-part\" data-k=\"upf\" data-g=\"upf\"><rect class=\"cs-box\" x=\"380\" y=\"234\" width=\"300\" height=\"74\" rx=\"8\"/><text class=\"cs-t\" x=\"530\" y=\"260\">UPF power intent (separate file)</text><text class=\"cs-sub\" x=\"530\" y=\"282\">Power domains / isolation / level shifters</text><text class=\"cs-sub\" x=\"530\" y=\"298\">RTL has no power wiring; UPF carries intent</text></g><g class=\"cs-part\" data-k=\"bad\" data-g=\"bad\"><rect class=\"cs-box\" x=\"40\" y=\"324\" width=\"640\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"348\">Wrong: assign gated = clk &amp; en; — glitches, broken DFT, broken timing</text><text class=\"cs-sub\" x=\"360\" y=\"368\">RTL writes only if(en) q&lt;=d; synthesis handles clock gating</text></g></svg>",
+ "legend": [
+  {
+   "k": "src",
+   "name": "Enable signal + source clock",
+   "desc": "An enable determines whether a PE column should work in the current cycle, while the 700 MHz TPU core clock runs continuously. RTL should express only the intent that registers update when enable is true; it must never gate clk directly with enable."
+  },
+  {
+   "k": "icg",
+   "name": "Integrated clock-gating cell (tool-inserted ICG)",
+   "desc": "A library clock-gating cell whose internal latch captures enable while the clock is low before an AND stage, structurally preventing glitches. Designers do not hand-code it: synthesis recognizes enable-controlled registers and inserts the ICG automatically. When enable is low, gated_clk stops toggling."
+  },
+  {
+   "k": "regs",
+   "name": "Gated register bank (idle PE column)",
+   "desc": "A group of accumulator registers driven by gated_clk, such as an array column temporarily not participating in computation. With its clock stopped, the flip-flops cease toggling. Because dynamic power is proportional to switching activity × capacitance × voltage², the column's dynamic power approaches zero, leaving primarily leakage."
+  },
+  {
+   "k": "iso",
+   "name": "Operand isolation",
+   "desc": "Clock gating suppresses sequential switching, but combinational logic—such as an unused multiplier—can still toggle whenever its inputs change. Operand isolation clamps inputs to constants when the block is inactive, eliminating unnecessary combinational activity. It complements clock gating."
+  },
+  {
+   "k": "upf",
+   "name": "UPF power intent (separate from RTL)",
+   "desc": "More aggressive techniques such as power-gating an entire domain or voltage scaling belong in a separate UPF/CPF power-intent file, which defines power domains, isolation and level shifters at boundaries, and retention behavior. RTL remains a description of logic while UPF describes the power architecture."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "en",
+    "regs"
+   ],
+   "cap": "① Express only the intent in RTL: always_ff @(posedge clk) if(en) acc<=acc+prod; (illustrative). This says that the accumulator column updates only when enable is true, without modifying the clock."
+  },
+  {
+   "keys": [
+    "icg",
+    "clk"
+   ],
+   "cap": "② Synthesis recognizes the enable-controlled register bank and automatically inserts a standard latch+AND ICG cell between clk and those registers. The designer neither needs nor should hand-code it."
+  },
+  {
+   "keys": [
+    "regs"
+   ],
+   "cap": "③ When enable is low because the PE column is idle, the ICG keeps gated_clk from toggling for full cycles. The register bank becomes quiescent, so its dynamic power falls with switching activity."
+  },
+  {
+   "keys": [
+    "iso"
+   ],
+   "cap": "④ Add operand isolation: clock gating stops registers, but an unused multiplier or other combinational block still toggles with its inputs. Clamp inactive inputs to constants so the combinational logic also becomes quiet."
+  },
+  {
+   "keys": [
+    "upf",
+    "bad"
+   ],
+   "cap": "⑤ Describe power domains, voltage control, and more aggressive power management in UPF while keeping RTL purely logical. Never write assign gated=clk&en;: it can glitch and break DFT and timing. Leave clock gating to the tools."
+  }
+ ],
+ "before": [
+  "<b>Establish the low-power coding rule: code enables, never a gated clock</b>. Require every gateable register bank to use always_ff @(posedge clk) if(en) q<=d;, allowing synthesis to insert an ICG. Prohibit clk & en and hand-built latch-based clock gates during review. This is the most important prerequisite for safe low-power RTL.",
+  "<b>Identify blocks worth gating</b>: the 256×256 TPU array is not fully active every cycle. Idle PE columns and temporarily unused buffers are high-value coarse-grain gating targets, while always-active critical paths may save little and incur extra delay. Select both targets and granularity before coding.",
+  "<b>Choose gating granularity and enable sources</b>: decide whether to gate per PE column or at a larger block level, and identify the control source—for example, a scheduler FSM signal indicating whether the column participates this cycle. Too-fine gating adds excessive ICG area and power; too-coarse gating misses savings.",
+  "<b>Keep power architecture in UPF rather than RTL</b>: state that RTL describes logic only—no supply/ground wiring or power-off behavior. Define power domains, isolation, level shifters, and retention in UPF/CPF. This division prevents power-implementation details from contaminating reusable RTL.",
+  "<b>State the evidence boundary</b>: clock-gating idle structures is a reasonable and standard low-power choice for a 28 nm, 28–40 W design with a large systolic array, but TPU v1's exact gating granularity, ICG count, and UPF are not public. The following is standard ASIC low-power RTL practice illustrated with the TPU structure."
+ ],
+ "during": [
+  "<b>Code gating as an enable-controlled update and let synthesis insert the ICG</b>: for example, always_ff @(posedge clk) if(en) acc<=acc+prod; This expresses behavior; the clock-gating flow implements it as an ICG plus registers. Clock gating is synthesized, not hand-written.",
+  "<b>Rule: never hand-code a gated clock</b>. assign gated_clk = clk & en; has three serious failures: ① glitches—enable changing while clk is high can create spurious clock pulses; ② broken DFT—ad hoc gates obstruct scan insertion and controllability; ③ broken timing—the generated clock may not be treated and balanced correctly, leading to uncontrolled skew. The latch inside an ICG exists precisely to prevent these issues.",
+  "<b>Add operand isolation for combinational logic</b>: clock gating stops register activity, but an upstream multiplier still switches whenever its inputs change. When the operator is unused, select constant inputs under enable so it remains quiet. Clock gating plus operand isolation covers sequential and combinational dynamic power.",
+  "<b>Trade-off: more gating is not always better</b>. Every ICG consumes area, leakage, and insertion delay; gating a highly active block may cost more in enable evaluation than it saves. Gate blocks with meaningful idle intervals at a sensible granularity. Accurate enable behavior matters more than scattering gates everywhere.",
+  "<b>Put power intent in UPF and keep RTL logical</b>: power gating, multiple voltage domains, and retention are described in UPF/CPF. Define domains, boundary isolation to prevent floating outputs from propagating, and level shifters. The same RTL can then support different power strategies.",
+  "<b>Scope note</b>: enable-controlled register updates, tool-inserted ICGs, the prohibition on hand-gated clocks, operand isolation, and UPF are standard low-power RTL practices. Public TPU facts include the 256×256 array, 700 MHz, 28 nm process, 28–40 W TDP, and weight-stationary organization; its exact clock-gating implementation is not disclosed."
+ ],
+ "result": [
+  {
+   "label": "Clock-gating RTL (illustrative)",
+   "value": "always_ff @(posedge clk) if(en) q<=d; (express enable only)"
+  },
+  {
+   "label": "Tool-generated structure",
+   "value": "Synthesis inserts a latch+AND ICG cell; designers do not hand-code it"
+  },
+  {
+   "label": "Explicitly prohibited",
+   "value": "assign gated_clk = clk & en; → glitches / broken DFT / broken timing"
+  },
+  {
+   "label": "Combinational power reduction",
+   "value": "Operand isolation clamps inactive multiplier inputs to stop switching"
+  },
+  {
+   "label": "Power-intent vehicle",
+   "value": "UPF/CPF: power domains + isolation + level shifters, separate from RTL"
+  },
+  {
+   "label": "TPU application",
+   "value": "Clock-gate idle PE columns: no switching ≈ zero dynamic power, except leakage"
+  }
+ ],
+ "after": [
+  "<b>Run lint and low-power structural checks</b>: detect hand-written clock gates, unisolated power-domain crossings, and power-down registers lacking retention. Confirm that every gateable bank follows the if(en) pattern so tools insert recognized ICG cells; static checking is essential because ordinary simulation often misses these violations.",
+  "<b>Measure power savings with activity-based analysis</b>: use VCD/SAIF switching activity to confirm that idle columns actually lose dynamic power and that enable-generation logic does not erase the savings. Compare gated and ungated estimates to verify that the chosen granularity has a positive net benefit.",
+  "<b>Verify ICG insertion and timing closure</b>: after synthesis, confirm ICGs were inserted where intended and gated_clk is treated as a clock through clock-tree synthesis and static timing. Ensure the gating logic introduces neither timing violations nor a functional change in the relationship between enable and data.",
+  "<b>Run UPF consistency and DFT checks</b>: verify that isolation, level shifters, and retention match the power intent in RTL/netlist views. Confirm clock gating remains scan-friendly through ICG test-enable support and does not reduce DFT coverage.",
+  "<b>Verify power-down and wake-up sequences</b>: hand verification explicit scenarios such as “disable then re-enable a PE column” and “power domain off then on,” covering retention and isolation-release order. Low-power defects frequently hide at transition boundaries and must be exercised before silicon."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the paper discloses TPU v1's 256×256 array, 700 MHz clock, 28 nm process, 28–40 W TDP, and weight-stationary organization; coding enables for tool-inserted ICGs, prohibiting hand-gated clocks, operand isolation, and UPF power intent are standard low-power RTL practices, while TPU's exact gating implementation is not public)"
+}

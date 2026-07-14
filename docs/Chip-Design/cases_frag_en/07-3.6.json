@@ -1,0 +1,118 @@
+{
+  "secNum": "3.6",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · Low-Power Synthesis: Automatic Clock Gating, Multi-Vt, Operand Isolation, and Power Domains",
+  "oneLine": "Power is optimized alongside timing and area during synthesis. The tool reads enable-based RTL, SDC, multi-Vt libraries, and UPF, then preserves function while inserting four classes of low-power implementation: ICG clock gates for idle register groups, HVT swaps on noncritical paths, operand isolation to suppress useless toggles, and isolation/level shifters at UPF power-domain boundaries.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 410\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">Low-power synthesis: insert structures under SDC/UPF</text><g class=\"cs-part\" data-k=\"rtl\" data-g=\"rtl\"><rect class=\"cs-box\" x=\"40\" y=\"50\" width=\"200\" height=\"78\" rx=\"8\"/><text class=\"cs-t\" x=\"140\" y=\"80\">RTL from ⑤</text><text class=\"cs-sub\" x=\"140\" y=\"100\">PE columns / UB control</text><text class=\"cs-sub\" x=\"140\" y=\"118\">Enable-controlled registers</text></g><g class=\"cs-part\" data-k=\"intent\" data-g=\"intent\"><rect class=\"cs-box\" x=\"40\" y=\"150\" width=\"200\" height=\"78\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"140\" y=\"180\">Power intent + constraints</text><text class=\"cs-sub\" x=\"140\" y=\"200\">SDC timing + UPF domains</text><text class=\"cs-sub\" x=\"140\" y=\"218\">Multi-Vt library + power target</text></g><line class=\"cs-arr\" x1=\"240\" y1=\"89\" x2=\"296\" y2=\"120\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"240\" y1=\"189\" x2=\"296\" y2=\"160\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"tool\" data-g=\"tool\"><rect class=\"cs-box\" x=\"300\" y=\"118\" width=\"150\" height=\"92\" rx=\"8\"/><text class=\"cs-t\" x=\"375\" y=\"150\">Synthesis tool</text><text class=\"cs-sub\" x=\"375\" y=\"172\">DC / Genus</text><text class=\"cs-sub\" x=\"375\" y=\"190\">Automatically insert low-power logic</text></g><line class=\"cs-arr\" x1=\"450\" y1=\"138\" x2=\"506\" y2=\"92\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"450\" y1=\"158\" x2=\"506\" y2=\"172\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"450\" y1=\"178\" x2=\"506\" y2=\"252\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"450\" y1=\"196\" x2=\"506\" y2=\"332\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"icg\" data-g=\"icg\"><rect class=\"cs-box\" x=\"510\" y=\"62\" width=\"180\" height=\"62\" rx=\"8\"/><text class=\"cs-t\" x=\"600\" y=\"86\">ICG clock gating</text><text class=\"cs-sub\" x=\"600\" y=\"106\">enable + clk → gated_clk</text></g><g class=\"cs-part\" data-k=\"vt\" data-g=\"vt\"><rect class=\"cs-box\" x=\"510\" y=\"142\" width=\"180\" height=\"62\" rx=\"8\"/><text class=\"cs-t\" x=\"600\" y=\"166\">Multi-Vt replacement</text><text class=\"cs-sub\" x=\"600\" y=\"186\">HVT on noncritical paths</text></g><g class=\"cs-part\" data-k=\"iso\" data-g=\"iso\"><rect class=\"cs-box\" x=\"510\" y=\"222\" width=\"180\" height=\"62\" rx=\"8\"/><text class=\"cs-t\" x=\"600\" y=\"246\">Operand isolation</text><text class=\"cs-sub\" x=\"600\" y=\"266\">Freeze idle-column inputs</text></g><g class=\"cs-part\" data-k=\"pd\" data-g=\"pd\"><rect class=\"cs-box\" x=\"510\" y=\"302\" width=\"180\" height=\"62\" rx=\"8\"/><text class=\"cs-t\" x=\"600\" y=\"326\">Multiple power domains (UPF)</text><text class=\"cs-sub\" x=\"600\" y=\"346\">Isolation / level shifters</text></g><g class=\"cs-part\" data-k=\"icgcell\" data-g=\"icgcell\"><rect class=\"cs-box\" x=\"40\" y=\"282\" width=\"430\" height=\"92\" rx=\"8\" fill=\"#ecfeff\" stroke=\"#67e8f9\"/><text class=\"cs-t\" x=\"255\" y=\"306\">ICG example: one gate before a register bank</text><text class=\"cs-sub\" x=\"255\" y=\"330\">enable ─┐  clk ─┤ICG├─ gated_clk → REG[*]   (inferred from RTL enable)</text><text class=\"cs-sub\" x=\"255\" y=\"352\">Idle PE column → enable=0 → clock stops → switching suppressed</text></g></svg>",
+  "legend": [
+    {
+      "k": "tool",
+      "name": "Inputs → tool-inserted low-power structures",
+      "desc": "Inputs combine enable-aware RTL for PE columns and UB control, SDC timing, multi-Vt Liberty libraries, UPF/CPF power intent, and joint PPA goals. Design Compiler or Genus rewrites the gate implementation with ICG, HVT, isolation, and level-shifting cells; later LEC protects equivalence. Engineers state intent; the tool implements it."
+    },
+    {
+      "k": "icg",
+      "name": "ICG clock gating (primary dynamic-power lever)",
+      "desc": "Clock activity is a major dynamic-power source. The tool recognizes enable-controlled register updates and inserts an integrated clock-gating cell before a bank: enable + clk → gated_clk. With enable=0, registers stop clocking. In TPU, an inactive PE column can gate its whole update bank."
+    },
+    {
+      "k": "vt",
+      "name": "Multi-Vt replacement (static/leakage power)",
+      "desc": "Libraries provide fast, leaky LVT and slower, efficient HVT equivalents. SDC slack guides the tool: preserve fast cells on critical paths, then replace relaxed logic with HVT without losing 700 MHz closure. Multi-Vt optimization is a standard leakage lever at 28 nm."
+    },
+    {
+      "k": "iso",
+      "name": "Operand isolation (suppress useless switching)",
+      "desc": "Even when clocks run, changing combinational inputs consume dynamic power. Latches or gates freeze inputs when a result will not be used—for example, an idle PE column—preventing needless transitions from propagating. It complements clock gating: one stops clocks, the other stops data toggles."
+    },
+    {
+      "k": "pd",
+      "name": "Multiple power domains (UPF/CPF-driven)",
+      "desc": "UPF/CPF partitions blocks into power domains that may lower voltage or shut down. Synthesis inserts isolation cells so powered-off outputs cannot contaminate always-on logic, plus level shifters between voltage domains. Engineers describe power intent; the tool realizes boundary logic."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "rtl",
+        "intent"
+      ],
+      "cap": "① Prepare enable-aware RTL plus SDC timing, multi-Vt libraries, UPF power domains, and a power target. Intent must be explicit before the tool can optimize it."
+    },
+    {
+      "keys": [
+        "tool"
+      ],
+      "cap": "② During mapping and optimization, synthesis treats power alongside timing and area, replacing implementation with functionally equivalent lower-power structures."
+    },
+    {
+      "keys": [
+        "rtl",
+        "icg",
+        "icgcell"
+      ],
+      "cap": "③ Clock gating: infer register enables and insert ICG cells so an idle PE column stops clock activity, the main dynamic-power lever."
+    },
+    {
+      "keys": [
+        "vt",
+        "iso"
+      ],
+      "cap": "④ Multi-Vt + operand isolation: use HVT on relaxed paths to reduce leakage and freeze idle datapath inputs to suppress dynamic toggles without touching critical timing."
+    },
+    {
+      "keys": [
+        "pd"
+      ],
+      "cap": "⑤ Under UPF/CPF, insert isolation and level-shifter cells at domain boundaries so large idle blocks can lower voltage or power off safely."
+    }
+  ],
+  "before": [
+    "<b>Expose power hooks in RTL</b>: Clock-gating opportunity originates in enable-controlled updates such as if(en) q<=d. Clear enable semantics let synthesis infer safe gating; unconditional updates leave nothing to gate.",
+    "<b>Provide multi-Vt libraries and power views</b>: Liberty must include LVT/SVT/HVT variants, characterized leakage/dynamic power, ICG cells, isolation cells, and level shifters. Missing cells prevent the corresponding optimization.",
+    "<b>Use SDC to distinguish critical and relaxed logic</b>: Clock, I/O delay, false-path, and multicycle constraints define which paths can tolerate HVT or ICG insertion without breaking 700 MHz timing. Inaccurate constraints either block savings or create violations.",
+    "<b>Declare power intent in UPF/CPF</b>: Define domain boundaries, switchable versus always-on relationships, isolation and level-shifting policy, and joint PPA goals. Intent precedes structure—the tool needs to know what may shut down and what must be protected."
+  ],
+  "during": [
+    "<b>Power is a first-class objective, not a post-processing patch</b>: Synthesis co-optimizes it with timing and area during mapping. Constraint-driven insertion of ICG, HVT, operand isolation, and domain cells is safer and more maintainable than hand-building gate logic in RTL.",
+    "<b>Compile RTL enables into real ICG cells</b>. The tool scans enable-controlled register groups and inserts integrated clock gates. For an inactive column in TPU's 256×256 array, clocking can stop across the column—the RTL intent becomes concrete ICG instances.",
+    "<b>Use slack to drive multi-Vt swaps</b>. Keep LVT/SVT on critical paths, replace relaxed logic with HVT, and preserve 700 MHz. Same-function cell swaps change implementation, not logic, and can materially reduce 28 nm leakage.",
+    "<b>Combine operand isolation with clock gating</b>: Gating stops sequential clock toggles; isolation stops combinational input toggles. Applying both to unused PE columns minimizes idle dynamic power.",
+    "<b>Complete power-domain boundaries automatically</b>: UPF/CPF drives insertion of isolation cells from switchable to always-on domains and level shifters across voltage boundaries. Omissions would propagate unknown values or incorrect voltage levels.",
+    "<b>State the disclosure boundary</b>: ICG inference, multi-Vt replacement, operand isolation, UPF domains, DC/Genus, SDC, Liberty, and LEC are standard large-ASIC methods. TPU's exact libraries, scripts, and savings are unpublished; its array, UB, 700 MHz, 28 nm, and dataflow provide context only."
+  ],
+  "result": [
+    {
+      "label": "SDC timing boundary (example)",
+      "value": "create_clock -name core_clk -period 1.43 [get_ports clk]  # 700 MHz"
+    },
+    {
+      "label": "Clock-gating command (example)",
+      "value": "set_clock_gating_style -sequential_cell latch; insert_clock_gating → infer ICG from enables"
+    },
+    {
+      "label": "Multi-Vt library (example)",
+      "value": "target_library = {stdcell_lvt.db, stdcell_svt.db, stdcell_hvt.db}; HVT on relaxed paths"
+    },
+    {
+      "label": "ICG netlist example",
+      "value": "CLKGATE_X1 u_icg (.EN(col_en), .CK(core_clk), .GCK(col_gclk)); REG[*].CK = col_gclk"
+    },
+    {
+      "label": "Operand isolation / domain cells",
+      "value": "Freeze datapath inputs; UPF inserts ISO isolation + LS level shifters"
+    },
+    {
+      "label": "Power report (illustrative)",
+      "value": "report_power → dynamic vs leakage; inspect gating coverage, HVT share, and timing"
+    }
+  ],
+  "after": [
+    "<b>Run LEC: low power must not change function</b>: Prove the ICG-, multi-Vt-, isolation-, and power-domain-enhanced netlist equivalent to RTL. For clock gating, verify enable=0 coincides exactly with cycles in which state must not update.",
+    "<b>Verify savings in power reports</b>: Separate dynamic clock/switching power from leakage. Review ICG register coverage, HVT share, and operand-isolation coverage. Low coverage may reveal missing RTL enables or overly conservative constraints.",
+    "<b>Reconfirm timing</b>: HVT swaps and ICG insertion affect delay. Rerun timing at the illustrative 1.43 ns period and ensure gate enables introduce no new critical violations. Power savings that break 700 MHz are invalid.",
+    "<b>Check UPF consistency</b>: Low-power verification must confirm complete isolation and level shifting, correct domain relationships, and clamped outputs from powered-off regions. Preserve identical intent from RTL through netlist and backend.",
+    "<b>Hand off the low-power netlist with intent</b>: After LEC, power, timing, and UPF checks pass, deliver the ICG/multi-Vt/isolation/domain netlist with SDC, UPF, and library settings. Backend uses them for domain floorplanning, power networks, and clock trees."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the 256×256 array, 24 MiB Unified Buffer, 700 MHz, 28 nm, and weight-stationary design are published. ICG insertion, multi-Vt swaps, operand isolation, UPF domains, DC/Genus, SDC, Liberty, and LEC are standard EDA practice; TPU-specific scripts and power savings are not public.)"
+}

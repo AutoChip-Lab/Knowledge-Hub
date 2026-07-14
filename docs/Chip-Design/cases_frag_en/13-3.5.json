@@ -1,0 +1,116 @@
+{
+ "secNum": "3.5",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Errata and Re-spin (Errata / Metal ECO): Record every first-silicon bug found during bring-up, assess severity, and choose among a software workaround, a metal-only ECO, or a full-layer re-spin according to workaround feasibility, impact, frequency, cost, and schedule for a 28 nm-class PCIe accelerator.",
+ "oneLine": "This case supports the errata and re-spin section. Almost no complex first silicon is perfect; bring-up exposes design and implementation defects. The question here is not how to find a bug, but how to disposition it and what each remedy costs. ① Errata: record each issue's symptom, trigger, scope, and severity. The list guides software workarounds and silicon-change decisions. ② Three remedies increase in cost and lead time. A software workaround changes the driver, compiler, firmware, or microcode without touching silicon; it is the fastest and least expensive, and some products ship permanently with the workaround. A metal ECO leaves device layers unchanged and revises selected metal/via masks and BEOL processing; it is far cheaper and faster than rebuilding the full mask set. A full-layer re-spin changes device layers, rebuilds all masks and wafers, and produces a new revision; it is the slowest and most expensive. ③ Preserve ECO options: because metal-only repair is much cheaper than a full re-spin, design spare cells and reconnectable resources so first-silicon defects are more likely to be repairable in software or metal. The public TPU v1 256×256 array, 24 MiB Unified Buffer, 700 MHz, 28 nm, ≤331 mm² die, PCIe 3.0 card, and TensorFlow/XLA stack serve only as the example. TPU v1's private errata, ECO/re-spin history, mask counts, labor, and costs are not public.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 420\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"26\">Bring-up finds bug → record erratum → triage by severity: software workaround | metal ECO (metal only) | full-layer re-spin. Cost and lead time increase from top to bottom.</text><g class=\"cs-part\" data-k=\"bug\" data-g=\"bug\"><rect class=\"cs-box\" x=\"24\" y=\"58\" width=\"180\" height=\"118\" rx=\"8\" fill=\"#fee2e2\" stroke=\"#fca5a5\"/><text class=\"cs-t\" x=\"114\" y=\"86\">Bug found during activation</text><text class=\"cs-sub\" x=\"114\" y=\"108\">First silicon exhibits a defect</text><text class=\"cs-sub\" x=\"114\" y=\"128\">Record each item in errata</text><text class=\"cs-sub\" x=\"114\" y=\"148\">Assess severity</text><text class=\"cs-sub\" x=\"114\" y=\"168\">(Work-aroundable? Fatal? Frequent?)</text></g><line class=\"cs-arr\" x1=\"204\" y1=\"117\" x2=\"256\" y2=\"117\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"triage\" data-g=\"triage\"><rect class=\"cs-box\" x=\"258\" y=\"78\" width=\"92\" height=\"78\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"304\" y=\"108\">Triage</text><text class=\"cs-sub\" x=\"304\" y=\"130\">Trade off</text><text class=\"cs-sub\" x=\"304\" y=\"148\">Risk / cost / time</text></g><polyline class=\"cs-arr\" points=\"350,100 388,96 392,96\" fill=\"none\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"350,117 388,232 392,232\" fill=\"none\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"350,134 388,352 392,352\" fill=\"none\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"sw\" data-g=\"sw\"><rect class=\"cs-box\" x=\"396\" y=\"60\" width=\"300\" height=\"76\" rx=\"8\" fill=\"#dcfce7\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"546\" y=\"84\">① Software workaround (fastest, least costly)</text><text class=\"cs-sub\" x=\"546\" y=\"106\">Avoid in driver/compiler/firmware; no silicon change</text><text class=\"cs-sub\" x=\"546\" y=\"124\">Some products ship with a permanent workaround</text></g><g class=\"cs-part\" data-k=\"metal\" data-g=\"metal\"><rect class=\"cs-box\" x=\"396\" y=\"196\" width=\"300\" height=\"84\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"546\" y=\"220\">② Metal ECO (metal layers only)</text><text class=\"cs-sub\" x=\"546\" y=\"242\">Keep devices; revise selected metal/via masks</text><text class=\"cs-sub\" x=\"546\" y=\"260\">Fewer masks + BEOL rerun → much cheaper/faster than re-spin</text></g><g class=\"cs-part\" data-k=\"respin\" data-g=\"respin\"><rect class=\"cs-box\" x=\"396\" y=\"316\" width=\"300\" height=\"84\" rx=\"8\" fill=\"#fee2e2\" stroke=\"#fca5a5\"/><text class=\"cs-t\" x=\"546\" y=\"340\">③ Full-layer re-spin (slowest, most costly)</text><text class=\"cs-sub\" x=\"546\" y=\"362\">Change device layers; rebuild all masks/wafers</text><text class=\"cs-sub\" x=\"546\" y=\"380\">New silicon revision with highest lead time and cost</text></g><g class=\"cs-part\" data-k=\"cost\" data-g=\"cost\"><rect class=\"cs-cell\" x=\"366\" y=\"60\" width=\"14\" height=\"340\" fill=\"#fef3c7\" stroke=\"#fcd34d\"/><text class=\"cs-cellt\" x=\"373\" y=\"54\">Low cost · fast</text><text class=\"cs-cellt\" x=\"373\" y=\"416\">High cost · slow</text></g></svg>",
+ "legend": [
+  {
+   "k": "bug",
+   "name": "Bug found during bring-up → record an erratum and assess severity",
+   "desc": "First silicon executing real workloads almost inevitably exposes a design or implementation corner missed by pre-silicon verification—logic, timing, or host-protocol behavior. Do not patch impulsively. Enter each issue in an errata database with its symptom, trigger, affected functions, severity, frequency, reproducibility, and external workaround feasibility. Externally, the list tells software and users what to avoid; internally, it drives whether silicon must change and at which layer. TPU v1's private errata entries are not public."
+  },
+  {
+   "k": "triage",
+   "name": "Triage / trade-off (choose by risk, cost, and schedule)",
+   "desc": "For every erratum, first ask whether software can avoid it. If yes and the performance/function penalty is acceptable, prefer a software workaround because silicon remains unchanged. Otherwise determine the minimum silicon depth required: use a metal ECO when reconnection alone suffices; reserve a full-layer re-spin for defects that require device-layer changes. Severe defects without a feasible workaround justify more expensive silicon repair, while minor issues may ship with a documented workaround. TPU v1's decisions are not public."
+  },
+  {
+   "k": "sw",
+   "name": "① Software workaround (no silicon change; fastest and least costly)",
+   "desc": "Leave the defect in silicon and avoid its trigger in driver, compiler, firmware, or microcode—for example, suppress an affected feature, prohibit one instruction sequence, or select an equivalent safe execution path. No masks or wafers change, so an update is fast, inexpensive, and remotely deployable. The trade-off is persistent silicon errata and possible performance or functionality loss. TPU v1's TensorFlow/XLA stack and roughly dozen CISC instructions over PCIe provide a natural control layer for such mitigation, although actual workarounds are not public."
+  },
+  {
+   "k": "metal",
+   "name": "② Metal ECO (metal-only, intermediate cost)",
+   "desc": "Above the transistor FEOL, many interconnect layers form the BEOL. A metal engineering change order leaves devices unchanged and revises selected metal/via patterns, often reconnecting spare cells placed in advance to repair logic or timing. Only affected masks and BEOL processing need to be repeated, and FEOL-complete wafers may continue, so the option is much faster and cheaper than a full re-spin. It requires spare gates and routing resources planned during design. Whether the 28 nm TPU v1 used a metal ECO, and how many layers, is not public."
+  },
+  {
+   "k": "respin",
+   "name": "③ Full-layer re-spin (device layers change; slowest and most costly)",
+   "desc": "When the logic/device structure itself must change and metal-only repair cannot recover the design, rebuild the complete mask set including FEOL layers, fabricate new wafers from the beginning, and bring up the next silicon revision. This can correct fundamental defects but repeats hundreds of process steps, incurs a months-scale cycle, requires another bring-up, and has the greatest cost and deployment impact. It is therefore reserved for severe defects that neither software nor metal-only changes can fix. TPU v1's re-spin history is not public."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "bug"
+   ],
+   "cap": "① When bring-up exposes a bug, enter it in errata: record symptom, trigger, affected scope, and severity. First silicon under real workload commonly reveals missed design/implementation corners; the record is the input to deciding whether and how deeply to change silicon."
+  },
+  {
+   "keys": [
+    "triage",
+    "cost"
+   ],
+   "cap": "② Triage by risk, cost, and time: ask whether software can avoid the defect, how severe and frequent it is, and whether any silicon fix needs metal or device layers. Cost rises software < metal ECO < re-spin."
+  },
+  {
+   "keys": [
+    "sw"
+   ],
+   "cap": "③ Software workaround (fastest and least costly): change driver/compiler/firmware to avoid the trigger without changing silicon. Some devices ship indefinitely with such mitigation; TPU's TF/XLA stack is a natural control layer."
+  },
+  {
+   "keys": [
+    "metal"
+   ],
+   "cap": "④ Metal ECO (metal-only, intermediate): if software cannot avoid the problem but reconnection can fix it, keep device layers and revise selected metal/via masks and BEOL processing. This is much cheaper and faster than full rebuilding, provided spare cells and reconnectable resources were planned."
+  },
+  {
+   "keys": [
+    "respin"
+   ],
+   "cap": "⑤ Full-layer re-spin (slowest and most costly): if device layers must change and metal-only repair is insufficient, rebuild the complete mask set and wafers, produce the next silicon revision, and repeat bring-up. Reserve this path for severe defects that neither software nor metal can resolve."
+  }
+ ],
+ "before": [
+  "<b>Assume that complex first silicon will contain defects</b>: treat post-silicon disposition and repair as part of the production plan rather than an emergency. Reserve schedule and budget before bring-up. This is a standard posture for TPU v1-class devices and does not imply any particular TPU defect.",
+  "<b>Define the errata schema and severity scale</b>: require symptom, trigger, affected function, severity, workaround feasibility, and reproduction steps for every item, with consistent fatal/functional/minor levels. A normalized database supports both software mitigation and silicon-change decisions.",
+  "<b>Preserve metal-ECO options during design</b>: because metal-only repair is much less expensive than a full re-spin, distribute spare cells and reconnectable routing resources in the layout so later defects can often be corrected without device-layer changes. TPU v1's actual reserve is not public.",
+  "<b>Prepare software mitigation capability</b>: ensure the driver, compiler, firmware, and microcode can disable a feature, replace a path, or avoid a triggering sequence. For TPU v1's PCIe delivery of roughly a dozen CISC instructions and TensorFlow/XLA compiler stack, software is a natural containment layer.",
+  "<b>Align cost and schedule limits</b>: establish the acceptable turnaround for a software release, the metal/via masks and lead time of a metal ECO, and the full mask-set and months-scale cost of a re-spin. Exact figures vary by design, process, and foundry and are not public for TPU."
+ ],
+ "during": [
+  "<b>The subject is disposition after discovery, not bug detection</b>. After bring-up exposes an issue, record its symptom, trigger, impact, severity, and software workaround feasibility in errata. This single source guides users and software while providing the evidence for any silicon change.",
+  "<b>The first triage question is always whether software can avoid the bug</b>. A driver, compiler, firmware, or microcode change can suppress the triggering path or feature without masks or wafers, making it the fastest, least expensive, and remotely deployable remedy. Prefer it whenever the performance/function cost is acceptable; some nonfatal errata remain permanently mitigated in shipping software. TensorFlow/XLA and PCIe-delivered CISC control make this practical for a TPU-class accelerator.",
+  "<b>If software cannot avoid it, determine metal versus device-layer change</b>. A chip contains transistors in FEOL and more than ten interconnect layers in BEOL. If rerouting and preplaced spare cells suffice, use a metal ECO: leave devices unchanged, revise only selected metal/via masks, and rerun BEOL. FEOL-complete wafers may continue, so this is the preferred hardware repair when design reserved ECO resources.",
+  "<b>Use a full-layer re-spin only when device layers must change</b>. Rebuild every mask including FEOL, fabricate new wafers through hundreds of process steps, and repeat bring-up for the next revision. It offers the broadest correction but takes months and costs the most, so only severe defects that cannot be mitigated in software or metal justify it.",
+  "<b>Software < metal ECO < re-spin is the cost-and-time ordering</b>. Deeper changes touch more masks and process steps. Always use the leftmost remedy that adequately controls risk; only a severe, frequent defect without a feasible workaround justifies moving right. Designing defects into the software- or metal-repairable space minimizes exposure to a full re-spin.",
+  "<b>Evidence boundary</b>: errata recording; triage by workaround feasibility, severity, and frequency; software workaround, metal-only ECO, and full-layer re-spin; spare-cell planning; and shipping with controlled errata are standard practices for 28 nm-class PCIe accelerators. TPU v1's private errata, ECO/re-spin timing, layer/mask counts, labor, and cost are not public. The known 256×256 array, 24 MiB UB, 700 MHz, 28 nm, ≤331 mm², PCIe 3.0 card, and TensorFlow/XLA stack are only the example."
+ ],
+ "result": [
+  {
+   "label": "Deliverable",
+   "value": "An errata database plus a disposition for every bug: software workaround, metal ECO, full-layer re-spin, or controlled shipment with the known issue."
+  },
+  {
+   "label": "Errata",
+   "value": "Per-item symptom / trigger / affected scope / severity / software workaround feasibility—the basis for both mitigation and silicon-change decisions."
+  },
+  {
+   "label": "Three remedies (increasing cost/time)",
+   "value": "Software workaround (no silicon change; fastest and least costly) < metal ECO (metal-only; intermediate) < full-layer re-spin (device layers change; slowest and most costly)."
+  },
+  {
+   "label": "Software workaround",
+   "value": "Avoid the defect in driver/compiler/firmware and deploy a software revision. Some products ship indefinitely with mitigation; TPU's TF/XLA stack provides a natural control layer."
+  },
+  {
+   "label": "Prerequisite for a metal ECO",
+   "value": "Revise selected metal/via masks and rerun BEOL instead of the full process, but only if design reserved spare cells and reconnectable resources."
+  },
+  {
+   "label": "Evidence boundary",
+   "value": "Errata entries, actual metal ECO/re-spin history, labor, mask counts, and cost are standard confidential bring-up/production data, not public TPU v1 information; known structure is only the repair example."
+  }
+ ],
+ "after": [
+  "<b>Implement each disposition and verify closure</b>: validate a software workaround on the bring-up platform and check for regressions. When revised metal-ECO or re-spin silicon returns, repeat activation and regression to prove the associated erratum is closed. An unverified fix is not a fix.",
+  "<b>Maintain errata and the software-mitigation manifest</b>: mark the status of every issue shipped with a workaround and keep its mitigation in the driver, compiler, or firmware delivered with the product so users and the software stack consistently avoid the trigger.",
+  "<b>Decide when a silicon change is economically justified</b>: leave sustainable software mitigations in place, aggregate defects that truly require silicon, and choose a combined metal ECO or full re-spin and revision schedule. Combining changes into one manufacturing cycle amortizes mask and wafer cost.",
+  "<b>Feed every root cause back into design and verification</b>: determine whether validation missed a case, a constraint was absent, or the specification was ambiguous; add tests and constraints so the next revision avoids the same class of error.",
+  "<b>Preserve an auditable record</b>: archive which path each bug took, what changed in any metal ECO or re-spin, and its cost and lead time. These are standard confidential accelerator-production records, not public TPU v1 disclosures."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the paper discloses the 256×256 8-bit-MAC systolic array, 24 MiB Unified Buffer, 700 MHz ≈ 92 TOPS, 28 nm, ≤331 mm² die, PCIe 3.0 accelerator card, TensorFlow/XLA stack, roughly a dozen CISC instructions over PCIe, and approximately 15 months from program start to deployment. These facts serve only as the example first silicon. Errata, triage by workaround feasibility/severity/frequency, software workaround, metal-only ECO, full-layer re-spin, their increasing cost and time, spare-cell/reconnectable-resource planning, and controlled shipment with software mitigation are standard 28 nm-class accelerator bring-up and production practices. TPU v1's private errata, ECO/re-spin history, labor, mask counts, and costs are not public; the triage diagram and cost axis are illustrative.)"
+}

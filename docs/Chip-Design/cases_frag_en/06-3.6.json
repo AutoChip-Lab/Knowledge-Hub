@@ -1,0 +1,123 @@
+{
+ "secNum": "3.6",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Building a chip-level verification environment with UVM: reusable Agents for array, memory, and instruction interfaces",
+ "oneLine": "This case applies UVM methodology by wrapping TPU's three interface classes—the systolic array, Unified Buffer/accumulators, and host CISC commands—into reusable UVM Agents, each containing sequencer → driver → monitor. An env assembles them at chip level while each test selects scenarios and configuration knobs. Constrained-random stimulus, functional coverage, and self-checking against a Reference Model all run inside this standard framework, allowing reuse across blocks and projects.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"26\">UVM hierarchy: Test configures → Env assembles → one reusable Agent per interface → Scoreboard checks the Reference Model</text><g class=\"cs-part\" data-k=\"test\" data-g=\"test\"><rect class=\"cs-box\" x=\"24\" y=\"44\" width=\"160\" height=\"48\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#c7d2fe\"/><text class=\"cs-t\" x=\"104\" y=\"66\">uvm_test</text><text class=\"cs-sub\" x=\"104\" y=\"82\">Select scenario · set knobs</text></g><line class=\"cs-arr\" x1=\"104\" y1=\"92\" x2=\"104\" y2=\"116\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"env\" data-g=\"env\"><rect class=\"cs-box\" x=\"24\" y=\"120\" width=\"672\" height=\"216\" rx=\"10\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-dasharray=\"6 4\"/><text class=\"cs-t\" x=\"104\" y=\"142\">uvm_env</text><text class=\"cs-sub\" x=\"104\" y=\"158\">Assemble Agents + SB</text></g><g class=\"cs-part\" data-k=\"agarray\" data-g=\"agarr\"><rect class=\"cs-box\" x=\"48\" y=\"172\" width=\"180\" height=\"150\" rx=\"8\" fill=\"#ecfdf5\" stroke=\"#a7f3d0\"/><text class=\"cs-t\" x=\"138\" y=\"192\">Array Agent</text><text class=\"cs-sub\" x=\"138\" y=\"208\">Systolic-array interface</text></g><g class=\"cs-part\" data-k=\"amem\" data-g=\"agmem\"><rect class=\"cs-box\" x=\"240\" y=\"172\" width=\"180\" height=\"150\" rx=\"8\" fill=\"#ecfdf5\" stroke=\"#a7f3d0\"/><text class=\"cs-t\" x=\"330\" y=\"192\">Mem Agent</text><text class=\"cs-sub\" x=\"330\" y=\"208\">UB / accumulator interface</text></g><g class=\"cs-part\" data-k=\"ainst\" data-g=\"aginst\"><rect class=\"cs-box\" x=\"432\" y=\"172\" width=\"180\" height=\"150\" rx=\"8\" fill=\"#ecfdf5\" stroke=\"#a7f3d0\"/><text class=\"cs-t\" x=\"522\" y=\"192\">Instr Agent</text><text class=\"cs-sub\" x=\"522\" y=\"208\">CISC instruction interface</text></g><g class=\"cs-part\" data-k=\"seqr\" data-g=\"seqr\"><rect class=\"cs-cell\" x=\"60\" y=\"220\" width=\"76\" height=\"40\" rx=\"4\"/><text class=\"cs-note\" x=\"70\" y=\"237\">Sequencer</text><text class=\"cs-note\" x=\"70\" y=\"252\">Constrained random</text></g><g class=\"cs-part\" data-k=\"drv\" data-g=\"drv\"><rect class=\"cs-cell\" x=\"144\" y=\"220\" width=\"72\" height=\"40\" rx=\"4\"/><text class=\"cs-note\" x=\"153\" y=\"237\">Driver</text><text class=\"cs-note\" x=\"153\" y=\"252\">→ DUT pins</text></g><g class=\"cs-part\" data-k=\"mon\" data-g=\"mon\"><rect class=\"cs-cell\" x=\"60\" y=\"272\" width=\"156\" height=\"38\" rx=\"4\"/><text class=\"cs-note\" x=\"70\" y=\"295\">Monitor → sample + covergroup</text></g><line class=\"cs-arr\" x1=\"138\" y1=\"240\" x2=\"144\" y2=\"240\" marker-end=\"url(#csar)\"/><rect class=\"cs-cell\" x=\"252\" y=\"220\" width=\"156\" height=\"40\" rx=\"4\"/><text class=\"cs-note\" x=\"262\" y=\"237\">Seqr→Drv→Mon</text><text class=\"cs-note\" x=\"262\" y=\"252\">(same structure · reusable)</text><rect class=\"cs-cell\" x=\"252\" y=\"272\" width=\"156\" height=\"38\" rx=\"4\"/><text class=\"cs-note\" x=\"262\" y=\"295\">Monitor → covergroup</text><rect class=\"cs-cell\" x=\"444\" y=\"220\" width=\"156\" height=\"40\" rx=\"4\"/><text class=\"cs-note\" x=\"454\" y=\"237\">Seqr→Drv→Mon</text><text class=\"cs-note\" x=\"454\" y=\"252\">(same structure · reusable)</text><rect class=\"cs-cell\" x=\"444\" y=\"272\" width=\"156\" height=\"38\" rx=\"4\"/><text class=\"cs-note\" x=\"454\" y=\"295\">Monitor → covergroup</text><line class=\"cs-arr\" x1=\"624\" y1=\"172\" x2=\"660\" y2=\"172\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"138\" y1=\"322\" x2=\"138\" y2=\"350\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"330\" y1=\"322\" x2=\"330\" y2=\"350\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"522\" y1=\"322\" x2=\"522\" y2=\"350\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"sb\" data-g=\"sb\"><rect class=\"cs-box\" x=\"624\" y=\"200\" width=\"72\" height=\"100\" rx=\"8\" fill=\"#fef3f2\" stroke=\"#fecaca\"/><text class=\"cs-t\" x=\"660\" y=\"244\">Score</text><text class=\"cs-t\" x=\"660\" y=\"262\">board</text><text class=\"cs-sub\" x=\"660\" y=\"282\">vs. Reference</text></g><g class=\"cs-part\" data-k=\"ref\" data-g=\"ref\"><rect class=\"cs-box\" x=\"24\" y=\"354\" width=\"672\" height=\"40\" rx=\"8\" fill=\"#fffbeb\" stroke=\"#fde68a\"/><text class=\"cs-t\" x=\"360\" y=\"378\">Three Monitors → Scoreboard compares each cycle/result with the TF/XLA Golden Model; mismatches fail</text></g></svg>",
+ "legend": [
+  {
+   "k": "test",
+   "name": "uvm_test (top-level scenario)",
+   "desc": "The highest verification layer does not touch DUT signals. Through the factory and config_db, it configures the env, chooses a smoke, full-array, UB stress, or instruction-boundary scenario, sets random seeds, and selects sequences. Changing tests changes only the test class while preserving env structure—the UVM separation of structure from stimulus intent."
+  },
+  {
+   "k": "env",
+   "name": "uvm_env (assembly container)",
+   "desc": "Instantiates Agents and Scoreboards and connects them through TLM ports into a chip-level environment. Environments can nest: a block-level env may contain one Agent, while a chip-level env combines array, memory, and instruction Agents. The same Agent is reusable at both levels."
+  },
+  {
+   "k": "agarr",
+   "name": "Agent = Sequencer → Driver → Monitor (reusable block)",
+   "desc": "UVM's central reuse unit: one Agent per interface. The Sequencer creates constrained-random transactions; the Driver translates transactions into pin-level DUT timing; the Monitor passively reconstructs interface traffic and feeds functional coverage. An active Agent drives and observes, while a passive Agent only observes a previously verified sub-block. TPU's three interfaces use three structurally similar Agents."
+  },
+  {
+   "k": "mon",
+   "name": "Monitor + covergroup (sampling and coverage)",
+   "desc": "The Monitor never drives; it broadcasts observed transactions to the Scoreboard and functional coverage. Covergroups sample meaningful points such as array fill depth, UB bank hits, and instruction type/length combinations, measuring whether planned scenarios occurred."
+  },
+  {
+   "k": "sb",
+   "name": "Scoreboard (self-check against Reference Model)",
+   "desc": "Collects transactions from all three Monitors and compares them cycle by cycle or result by result with expectations from a high-level Reference/Golden Model. TensorFlow/XLA golden results can provide expected behavior for a TPU-like design. Any mismatch fails automatically; checking remains centralized."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "test",
+    "env"
+   ],
+   "cap": "① The top-level test configures and builds the env through config_db. The test decides which scenario and randomization to run; the env determines how the environment is assembled—intent and structure remain separate."
+  },
+  {
+   "keys": [
+    "agarr",
+    "seqr",
+    "drv",
+    "mon"
+   ],
+   "cap": "② One Agent contains three components: Sequencer emits constrained-random transactions → Driver converts them to DUT pin timing → Monitor passively samples the interface. This is UVM's smallest reusable unit."
+  },
+  {
+   "keys": [
+    "agarr",
+    "agmem",
+    "aginst"
+   ],
+   "cap": "③ Give TPU's three interface classes structurally similar Agents: array, UB/accumulator memory, and host CISC instruction. Only their protocol layers differ; the chip-level env assembles all three."
+  },
+  {
+   "keys": [
+    "mon",
+    "sb"
+   ],
+   "cap": "④ The three Monitors send transactions to the Scoreboard for Reference Model comparison, while covergroups sample the same observations. Stimulus, checking, and coverage close the loop inside one framework."
+  },
+  {
+   "keys": [
+    "env",
+    "ref"
+   ],
+   "cap": "⑤ Reuse the same Agents/env from block to chip level and across projects. A Reference Model, including TF/XLA golden results, supplies expectations for every comparison—UVM's principal value."
+  }
+ ],
+ "before": [
+  "<b>Write the verification plan before any code</b>: list DUT features such as systolic-array fill/drain, parallel reads across UB banks, 4 MiB accumulator read-modify-write, and CISC decode/boundaries. For every feature, define stimulus, coverage, and pass criteria. The UVM environment implements this plan.",
+  "<b>Define the Reference Model</b>: choose the high-level behavior or TensorFlow/XLA golden output that determines expected behavior for each interface and the whole chip. Establish one authoritative correctness oracle for the Scoreboard.",
+  "<b>Choose Agent boundaries and reuse granularity</b>: partition by physical DUT interface—array, UB/accumulator memory, and host CISC instruction—and define each uvm_sequence_item's fields and protocol so the same Agent runs at block and chip level.",
+  "<b>Define stimulus and constraints</b>: use directed tests for reset and boundaries and constrained random for breadth. Constrain instruction distributions, UB address ranges, and 256×256 array limits so random generation remains legal and meaningful.",
+  "<b>Define completion criteria (coverage closure)</b>: before implementation, quantify completion as functional coverage + code coverage targets + mandatory regression + 0 unresolved bugs. These metrics drive convergence."
+ ],
+ "during": [
+  "<b>Verify one Agent per interface before chip-level assembly</b>: bring up each seqr→drv→mon Agent in a block-level env, then combine the verified array, memory, and instruction Agents in one chip-level env. This bottom-up approach keeps failures diagnosable.",
+  "<b>Driver translates, Sequencer generates, Monitor observes—never mix roles</b>: the Driver maps abstract transactions to pins but does not decide traffic; the Sequencer selects traffic but never touches pins; the Monitor passively samples and never drives. This division creates reuse across scenarios.",
+  "<b>Keep stimulus, checking, and coverage inside the framework</b>: use sequences for stimulus, Scoreboard + Reference Model for checks, and Monitor covergroups for coverage. Centralized components are reusable and regression-visible; ad hoc $display checks are not.",
+  "<b>Use factory + config_db for configurability</b>: the test injects active/passive mode, Agent enablement, random seeds, and selected sequences through config_db; the env does not hard-code them. One test-class change can move from smoke to full-load stress without structural edits.",
+  "<b>Make self-checking automatic</b>: the Reference Model predicts every stimulus and the Scoreboard reports uvm_error/uvm_fatal on mismatch. Waveforms are for debug only; the environment decides pass/fail so thousands of random tests can run unattended.",
+  "<b>Scope note</b>: UVM Sequencers, Drivers, Monitors, Scoreboards, constrained random, and coverage are industry-standard methodology. TPU v1's private environment and coverage metrics are not public. The documented array, UB/accumulator, and CISC interfaces are used only as the DUT context; covergroup and comparison snippets are illustrative."
+ ],
+ "result": [
+  {
+   "label": "Environment hierarchy",
+   "value": "uvm_test → uvm_env → uvm_agent{seqr→drv→mon} → Scoreboard (four standard levels)"
+  },
+  {
+   "label": "Three Agents for three interfaces",
+   "value": "Array Agent (systolic array) / Mem Agent (UB + accumulators) / Instr Agent (CISC), structurally reusable"
+  },
+  {
+   "label": "Constrained random (illustrative)",
+   "value": "class instr_item extends uvm_sequence_item; rand bit[3:0] op; constraint c{ op inside {LOAD_W,MATMUL,...}; } (illustrative, not TPU source)"
+  },
+  {
+   "label": "Functional coverage (illustrative)",
+   "value": "covergroup cg @(mon.clk); cp_op: coverpoint tr.op; cp_len: coverpoint tr.len; cross cp_op,cp_len; endgroup (attached to Monitor)"
+  },
+  {
+   "label": "Self-check/assertion (illustrative)",
+   "value": "Scoreboard: compare(dut_tr, ref_model.predict(stim)); protocol SVA: assert property(@(posedge clk) req |-> ##[1:N] ack);"
+  },
+  {
+   "label": "Reference Model",
+   "value": "High-level behavior / TensorFlow·XLA golden results; Scoreboard uses it for correctness"
+  }
+ ],
+ "after": [
+  "<b>Drive coverage convergence</b>: after regression, compare functional covergroups + code coverage with the plan. Add directed tests or adjust random constraints for each coverage hole until closure.",
+  "<b>Build an unattended regression suite</b>: collect directed and constrained-random tests across multiple seeds; the Scoreboard automatically decides pass/fail. Rerun after every RTL change to prevent regressions.",
+  "<b>Track the bug-convergence curve</b>: monitor new-defect rate as it falls toward zero. Add a reproducer for every fix and continue until the 0-unresolved-bug signoff criterion is met.",
+  "<b>Reuse and hand off methodology assets</b>: retain verified Agents, sequences, and Scoreboards as reusable IP. Insert block-level envs into the chip-level env and future projects, and submit coverage/regression/bug-status evidence for signoff.",
+  "<b>Release to synthesis only after signoff</b>: functional verification must meet coverage, all-green regression, and zero-bug gates before RTL enters synthesis. Any downstream functional change returns to this environment for regression."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the systolic array, Unified Buffer, accumulators, and CISC interface are documented architectural facts; UVM Sequencers/Drivers/Monitors/Scoreboards, constrained random, functional coverage, and Reference Model checking are standard verification practices, and diagram snippets are illustrative rather than private TPU verification disclosure)"
+}

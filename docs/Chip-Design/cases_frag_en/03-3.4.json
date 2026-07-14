@@ -1,0 +1,118 @@
+{
+  "secNum": "3.4",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · Flat Memory Hierarchy with a 24 MiB Unified Buffer",
+  "oneLine": "A memory hierarchy need not be a stack of caches. TPU takes the opposite approach: a large software-managed on-chip SRAM plus off-chip DDR3, deliberately trading hardware-cache complexity for predictability and silicon area—a workload-specific extreme.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"44\" y=\"34\">Near / fast / small ───────────────────────────────► Far / slow / large</text><text class=\"cs-note\" x=\"556\" y=\"62\">On-chip SRAM</text><g class=\"cs-part\" data-k=\"acc\" data-g=\"acc\"><rect class=\"cs-box\" x=\"44\" y=\"70\" width=\"612\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"350\" y=\"94\">Accumulators · 4 MiB</text><text class=\"cs-sub\" x=\"350\" y=\"113\">32-bit partial sums · beside MXU columns · captures 65,536 MAC results</text></g><g class=\"cs-part\" data-k=\"ub\" data-g=\"ub\"><rect class=\"cs-box\" x=\"44\" y=\"150\" width=\"612\" height=\"78\" rx=\"8\"/><text class=\"cs-t\" x=\"350\" y=\"178\">Unified Buffer · 24 MiB</text><text class=\"cs-sub\" x=\"350\" y=\"198\">Software-managed scratchpad · activations / intermediates</text><text class=\"cs-sub\" x=\"350\" y=\"216\">High bandwidth · feeds every row · compiler-scheduled transfers</text></g><text class=\"cs-note\" x=\"556\" y=\"262\">Off-chip memory</text><g class=\"cs-part\" data-k=\"ddr\" data-g=\"ddr\"><rect class=\"cs-box\" x=\"44\" y=\"270\" width=\"612\" height=\"78\" rx=\"8\"/><text class=\"cs-t\" x=\"350\" y=\"298\">Off-chip DDR3 · 8 GiB</text><text class=\"cs-sub\" x=\"350\" y=\"318\">Only ~30 GB/s · mainly model weights · streams through Weight FIFO</text><text class=\"cs-sub\" x=\"350\" y=\"336\">Bandwidth bottleneck · load once, reuse weight-stationary</text></g><g class=\"cs-part\" data-k=\"mxu\" data-g=\"mxu\"><rect class=\"cs-box\" x=\"44\" y=\"362\" width=\"300\" height=\"32\" rx=\"8\"/><text class=\"cs-t\" x=\"194\" y=\"384\">MXU 256×256 systolic array (compute core)</text></g><g class=\"cs-part\" data-k=\"nocache\" data-g=\"nocache\"><rect class=\"cs-box\" x=\"372\" y=\"362\" width=\"284\" height=\"32\" rx=\"8\" stroke-dasharray=\"5 4\"/><text class=\"cs-t\" x=\"514\" y=\"384\">✗ No hardware cache or prefetcher</text></g><line class=\"cs-arr\" x1=\"120\" y1=\"270\" x2=\"120\" y2=\"232\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"160\" y1=\"232\" x2=\"160\" y2=\"270\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"176\" y=\"252\">Weights ↑ / scheduled transfers ↓</text><line class=\"cs-arr\" x1=\"120\" y1=\"150\" x2=\"120\" y2=\"132\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"160\" y1=\"132\" x2=\"160\" y2=\"150\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"176\" y=\"146\">Activations ↑ / result writes ↓</text></svg>",
+  "legend": [
+    {
+      "k": "acc",
+      "name": "Accumulators",
+      "desc": "The nearest, fastest, and smallest level: 4 MiB of 32-bit storage beside the MXU column outputs, dedicated to high-precision partial sums from 65,536 MACs."
+    },
+    {
+      "k": "ub",
+      "name": "Unified Buffer",
+      "desc": "The main level is 24 MiB of on-chip SRAM. This software-managed scratchpad—not a hardware cache—holds activations and intermediates, with all movement scheduled statically by the compiler."
+    },
+    {
+      "k": "ddr",
+      "name": "Off-chip DDR3",
+      "desc": "The farthest, slowest, and largest level: 8 GiB at only ~30 GB/s, used mainly for model weights that stream through the Weight FIFO. It is v1's bandwidth bottleneck; v2+ adopted HBM."
+    },
+    {
+      "k": "mxu",
+      "name": "MXU (consumer)",
+      "desc": "The 256×256 systolic array drives every memory choice. Weights must remain resident and activations must arrive every cycle, so capacities and ports are derived from keeping this array fed."
+    },
+    {
+      "k": "nocache",
+      "name": "Hardware cache removed",
+      "desc": "TPU has no data cache, prefetcher, or cache-coherence machinery. Their area becomes SRAM and MACs, while software assumes full responsibility for data movement."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "ddr",
+        "ub"
+      ],
+      "cap": "① Fetch weights from 8 GiB of DDR3 while activations and intermediates reside in the 24 MiB Unified Buffer: large/slow storage for weights, medium/fast storage for activations."
+    },
+    {
+      "keys": [
+        "ub",
+        "mxu"
+      ],
+      "cap": "② The Unified Buffer feeds every array row each cycle. As a scratchpad, transfer timing and volume are statically planned by the compiler—there are no cache misses."
+    },
+    {
+      "keys": [
+        "mxu",
+        "acc"
+      ],
+      "cap": "③ Array partial sums enter the nearest level, 4 MiB of 32-bit accumulators; storage becomes smaller and faster closer to compute."
+    },
+    {
+      "keys": [
+        "acc",
+        "ub"
+      ],
+      "cap": "④ After activation and normalization, results return to the Unified Buffer as inputs to the next layer, avoiding DDR3 whenever possible."
+    },
+    {
+      "keys": [
+        "nocache"
+      ],
+      "cap": "⑤ No hardware cache participates. Saved area and power provide more SRAM and more deterministic latency."
+    }
+  ],
+  "before": [
+    "<b>Define the memory question</b>: Does this chip need a traditional multilevel cache pyramid, where should data live, and who controls transfers? TPU replaces hardware caches with one very large software-managed SRAM.",
+    "<b>Decisions to make</b>: Total on-chip SRAM, allocation between activation storage and accumulators, off-chip memory type and bandwidth, cache versus scratchpad semantics, and read/write port widths at each level.",
+    "<b>Required inputs</b>: Working-set sizes from §3.1, including per-layer activations/intermediates and total weights; bandwidth and weight-residency needs from compute (§3.3); and SRAM density, area, and power from the process library.",
+    "<b>Hard constraints</b>: SRAM competes with MACs for area and power; off-chip bandwidth limits weight delivery; and data-center tail-latency SLAs favor deterministic behavior over cache variability."
+  ],
+  "during": [
+    "<b>Recognize predictable locality</b>: Inference access patterns are regular and known at compile time, including each layer's activations and weights. Hardware that dynamically discovers locality is therefore unnecessary overhead.",
+    "<b>Choose scratchpad over cache</b>: Let XLA schedule explicit transfers into a software-managed scratchpad. Removing tags, comparators, coherence logic, and prefetchers yields deterministic latency and more usable storage.",
+    "<b>Size and partition storage</b>: Allocate 24 MiB to the Unified Buffer so most layer activations and intermediates stay on chip, plus 4 MiB of accumulators for 32-bit partial sums from 256 columns. Closer storage is smaller and faster.",
+    "<b>Select off-chip memory</b>: Weights are large but reused many times in a weight-stationary dataflow, amortizing bandwidth. TPU v1 therefore uses economical 8 GiB DDR3 at ~30 GB/s, which later became its main bottleneck and prompted HBM in v2+.",
+    "<b>Balance bandwidth and capacity</b>: The Unified Buffer must feed every array row each cycle, requiring wide read/write ports. Its size serves bandwidth and spill avoidance, not capacity alone.",
+    "<b>Accept the software cost</b>: Removing caches transfers complexity to the compiler. Every movement must be scheduled precisely; poor schedules starve the array. TPU exchanges software effort for deterministic hardware and usable area."
+  ],
+  "result": [
+    {
+      "label": "Primary on-chip buffer",
+      "value": "24 MiB Unified Buffer (software-managed scratchpad)"
+    },
+    {
+      "label": "Accumulators",
+      "value": "4 MiB · 32-bit"
+    },
+    {
+      "label": "Off-chip memory",
+      "value": "8 GiB DDR3 · ~30 GB/s"
+    },
+    {
+      "label": "Hierarchy",
+      "value": "Flat two-level design; no hardware cache or prefetch"
+    },
+    {
+      "label": "Transfer control",
+      "value": "Static compiler scheduling (XLA)"
+    },
+    {
+      "label": "Primary bottleneck",
+      "value": "Off-chip bandwidth (addressed with HBM in v2+)"
+    }
+  ],
+  "after": [
+    "<b>Validate the hierarchy</b>: Use roofline and cycle-level models to see whether compute or Unified Buffer delivery limits utilization. Measure actual DDR3 traffic and weight reuse; revise SRAM partitioning or off-chip memory if targets are missed.",
+    "<b>Propagate requirements</b>: Specify Unified Buffer↔MXU bandwidth for interconnect (§3.5), establish compiler-controlled movement as the dataflow contract (§3.6), and give the software stack the hard ~30 GB/s off-chip limit.",
+    "<b>Hand off to the compiler</b>: A scratchpad cannot hide latency automatically. XLA must schedule weight preloads, activation streams, and result writes on a deterministic timeline; document this responsibility explicitly.",
+    "<b>Add test and observability hooks</b>: Provide counters for Unified Buffer reads/writes, DDR3 utilization, and data-starvation stalls, plus MBIST for large SRAM arrays.",
+    "<b>Preserve an evolution path</b>: Record v1's off-chip bandwidth bottleneck as the top next-generation improvement—the direct motivation for HBM in TPU v2/v3."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017. Facts disclosed in the paper are distinguished from illustrative examples and standard industry practice; the latter are not presented as disclosed TPU v1 implementation details."
+}

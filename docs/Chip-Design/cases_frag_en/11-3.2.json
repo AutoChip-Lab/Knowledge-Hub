@@ -1,0 +1,115 @@
+{
+ "secNum": "3.2",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Wafer Fabrication lithography: coat → expose through a mask → develop, the manufacturing “brush” that draws the 256×256 array layer by layer into a 28 nm wafer",
+ "oneLine": "Tapeout ⑩ finalized layout, including OPC pre-distortion, and produced dozens of masks. In Wafer Fabrication, lithography realizes that design: spin-coat photoresist, project DUV light (193 nm immersion) through one layer's mask, and develop the image for etch. Resolution is approximately wavelength / numerical aperture: printing 28 nm with 193 nm light requires immersion, OPC, and multiple patterning; advanced nodes move to EUV. TPU v1's ≤331 mm² die, 256×256 array, and interconnect stack are built by repeating coat → expose → develop across dozens of layers.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">Lithography = manufacturing's brush: coat resist → expose through mask → develop, drawing layout layer by layer (28 nm uses 193i immersion DUV)</text><g class=\"cs-part\" data-k=\"coat\" data-g=\"coat\"><rect class=\"cs-box\" x=\"34\" y=\"58\" width=\"186\" height=\"96\" rx=\"8\"/><text class=\"cs-t\" x=\"127\" y=\"84\">① Coat</text><text class=\"cs-sub\" x=\"127\" y=\"104\">Spin-coat photoresist</text><text class=\"cs-sub\" x=\"127\" y=\"122\">(photosensitive) + soft bake</text><rect class=\"cs-cell\" x=\"54\" y=\"134\" width=\"146\" height=\"8\"/><rect x=\"54\" y=\"142\" width=\"146\" height=\"6\" fill=\"#cbd5e1\"/></g><line class=\"cs-arr\" x1=\"220\" y1=\"106\" x2=\"262\" y2=\"106\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"expose\" data-g=\"expose\"><rect class=\"cs-box\" x=\"266\" y=\"58\" width=\"186\" height=\"96\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"359\" y=\"82\">② Expose</text><text class=\"cs-sub\" x=\"359\" y=\"100\">DUV through mask</text><text class=\"cs-sub\" x=\"359\" y=\"116\">Project pattern into resist</text><line class=\"cs-arr\" x1=\"320\" y1=\"124\" x2=\"320\" y2=\"146\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"359\" y1=\"124\" x2=\"359\" y2=\"146\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"398\" y1=\"124\" x2=\"398\" y2=\"146\" marker-end=\"url(#csar)\"/></g><line class=\"cs-arr\" x1=\"452\" y1=\"106\" x2=\"494\" y2=\"106\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"develop\" data-g=\"develop\"><rect class=\"cs-box\" x=\"498\" y=\"58\" width=\"186\" height=\"96\" rx=\"8\" fill=\"#dcfce7\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"591\" y=\"84\">③ Develop</text><text class=\"cs-sub\" x=\"591\" y=\"104\">Remove modified resist</text><text class=\"cs-sub\" x=\"591\" y=\"122\">Reveal pattern → etch</text><rect class=\"cs-cell\" x=\"518\" y=\"134\" width=\"20\" height=\"8\"/><rect class=\"cs-cell\" x=\"552\" y=\"134\" width=\"20\" height=\"8\"/><rect class=\"cs-cell\" x=\"586\" y=\"134\" width=\"20\" height=\"8\"/><rect class=\"cs-cell\" x=\"620\" y=\"134\" width=\"20\" height=\"8\"/></g><g class=\"cs-part\" data-k=\"mask\" data-g=\"mask\"><rect class=\"cs-box\" x=\"266\" y=\"200\" width=\"186\" height=\"72\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"359\" y=\"226\">Mask / reticle</text><text class=\"cs-sub\" x=\"359\" y=\"246\">Master for this layer</text><text class=\"cs-sub\" x=\"359\" y=\"262\">Contains OPC pre-distortion</text></g><polyline class=\"cs-arr\" points=\"359,200 359,176 359,156\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"468\" y=\"232\">OPC/pre-distortion from ⑩</text><text class=\"cs-note\" x=\"468\" y=\"250\">is realized during</text><text class=\"cs-note\" x=\"468\" y=\"268\">physical exposure</text><g class=\"cs-part\" data-k=\"res\" data-g=\"res\"><rect class=\"cs-box\" x=\"34\" y=\"200\" width=\"200\" height=\"72\" rx=\"8\"/><text class=\"cs-t\" x=\"134\" y=\"226\">Resolution</text><text class=\"cs-sub\" x=\"134\" y=\"246\">Minimum feature ≈ wavelength / NA</text><text class=\"cs-sub\" x=\"134\" y=\"262\">Too small → multiple exposure</text></g><g class=\"cs-part\" data-k=\"layer\" data-g=\"layer\"><rect class=\"cs-box\" x=\"498\" y=\"200\" width=\"186\" height=\"72\" rx=\"8\"/><text class=\"cs-t\" x=\"591\" y=\"226\">Repeat by layer</text><text class=\"cs-sub\" x=\"591\" y=\"246\">Dozens of masks = dozens of layers</text><text class=\"cs-sub\" x=\"591\" y=\"262\">Array and wires build layer by layer</text></g><polyline class=\"cs-arr\" points=\"591,154 591,176 591,200\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"40\" y=\"304\">One mask defines one layer; a 28 nm large chip such as TPU v1's ≤331 mm² die repeats coat → expose → develop dozens of times for the 256×256 array and interconnect</text><text class=\"cs-note\" x=\"40\" y=\"326\">Resolution rule: minimum lithographic feature scales with wavelength / NA; 193 nm prints 28 nm using immersion (193i), OPC, and multiple patterning; advanced nodes use 13.5 nm EUV</text><text class=\"cs-note\" x=\"40\" y=\"348\">After develop, this is only a resist image, not circuitry; etch/implant/deposition transfers it into the wafer—lithography draws, etch cuts</text><text class=\"cs-note\" x=\"40\" y=\"378\">Scope: 193i immersion DUV, OPC, multiple patterning, and dozens of masks are standard 28 nm practice; TPU v1's private recipe/layers/foundry are not public; 256×256 array, ≤331 mm² die, and 28 nm are context</text></svg>",
+ "legend": [
+  {
+   "k": "coat",
+   "name": "① Coat",
+   "desc": "Spin-coat a uniform layer of photosensitive resist on the wafer, then soft-bake it. Resist is not circuitry; it is the canvas for the next image. Thin, uniform coating supports fine resolution. Every active or metal layer of a 28 nm TPU-class chip begins with this step."
+  },
+  {
+   "k": "expose",
+   "name": "② Expose",
+   "desc": "Project deep-ultraviolet light—193 nm immersion (193i) at 28 nm—through the current mask onto resist, chemically modifying illuminated regions. This is where design becomes physical: the OPC/pre-distortion created at Tapeout ⑩ counteracts optical distortion and prints geometry close to layout intent."
+  },
+  {
+   "k": "develop",
+   "name": "③ Develop",
+   "desc": "Developer removes either the exposed or unexposed resist, depending on resist tone, leaving the layer's pattern. Open regions expose the wafer while protected regions retain resist. This remains a resist image used as a mask for etch or implantation; lithography draws, while etch transfers."
+  },
+  {
+   "k": "mask",
+   "name": "Mask / reticle",
+   "desc": "The layer's photographic master. Each mask defines one layer, so a chip needs dozens of masks and lithography passes. Mask geometry is OPC-corrected rather than raw layout, with serifs and assist features that help 193 nm light reproduce 28 nm intent."
+  },
+  {
+   "k": "res",
+   "name": "Resolution",
+   "desc": "The smallest stable feature is roughly proportional to wavelength and inversely proportional to numerical aperture (NA). Printing 28 nm with 193 nm DUV—a ratio near 7—uses 193i immersion (water raises effective NA), OPC, and multiple patterning; at more advanced nodes, 13.5 nm EUV replaces DUV."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "coat"
+   ],
+   "cap": "① Coat: spin a uniform photoresist film and soft-bake it, preparing the canvas for this layer."
+  },
+  {
+   "keys": [
+    "mask",
+    "expose"
+   ],
+   "cap": "② Expose: project DUV light (193i immersion for 28 nm) through the mask into resist. The OPC-pre-distorted image from Tapeout ⑩ is physically realized."
+  },
+  {
+   "keys": [
+    "develop"
+   ],
+   "cap": "③ Develop: remove chemically selected resist, leaving the layer image as a masking film for etch or implantation."
+  },
+  {
+   "keys": [
+    "res"
+   ],
+   "cap": "④ Resolution sets the limit: minimum feature ≈ wavelength/NA. 193 nm printing of 28 nm uses immersion, OPC, and multiple patterning; EUV is used when these no longer suffice, determining how fine the lines in the 256×256 array can be."
+  },
+  {
+   "keys": [
+    "layer"
+   ],
+   "cap": "⑤ Repeat layer by layer: change masks and rerun coat → expose → develop dozens of times to build the 256×256 array, Unified Buffer, and interconnects."
+  }
+ ],
+ "before": [
+  "<b>Verify masks are available and qualified</b>: confirm the OPC-corrected physical masks from Tapeout ⑩ are inspected and that the correct revision and layer are selected. One wrong mask or order can scrap the wafer.",
+  "<b>Define the layer's lithography recipe</b>: select source, dose, focus, resist, develop time, and multiple-patterning plan for the required critical dimension. Critical 28 nm layers use 193 nm immersion DUV (193i), with selected layers split across exposures.",
+  "<b>Set alignment references and overlay budget</b>: every new layer must align to existing structures through alignment marks and overlay tolerances. Misregistration disconnects metal from active circuitry.",
+  "<b>Prepare wafer and surface</b>: ensure a clean, planar, residue-free surface so resist coats uniformly. Thickness variation changes linewidth across the wafer and reduces yield."
+ ],
+ "during": [
+  "<b>Three steps create the image: coat → expose → develop</b>: spin resist (canvas) → project DUV through the mask → develop the pattern. One pass images only one layer and leaves a resist mask, not the final circuit; etch/implantation transfers it into material.",
+  "<b>Resolution is a hard ceiling</b>: minimum feature ∝ wavelength / NA. Printing 28 nm from 193 nm light, nearly a 7-fold gap, requires immersion, OPC pre-distortion, and multiple exposures. At still smaller nodes, 13.5 nm EUV becomes necessary and lithography dominates cost and complexity.",
+  "<b>OPC is realized at exposure</b>: masks contain intentionally distorted corners and sub-resolution assist features from Tapeout ⑩. Optical distortion counteracts that pre-distortion so the wafer image approaches the intended design.",
+  "<b>Overlay every layer precisely</b>: each lithography pass locates alignment marks from lower layers and registers the new image. Overlay errors can disconnect interconnect from active regions; a regular 256×256 TPU array is especially sensitive to across-wafer CD and overlay uniformity.",
+  "<b>Linewidth uniformity determines yield</b>: stabilize dose and focus from wafer center to edge and wafer to wafer. A local CD shift or defect in the array kills a die; a large ≤331 mm² TPU v1 die presents more area for a fatal event.",
+  "<b>Scope note</b>: 193i immersion DUV, OPC, multiple patterning, and dozens of layer masks are standard 28 nm PCIe-accelerator practices. TPU v1's private lithography recipes, mask count, overlay budget, and foundry are not public. Its 256×256 array, Unified Buffer, ≤331 mm² die, and 28 nm node provide the imaging context."
+ ],
+ "result": [
+  {
+   "label": "Layer output",
+   "value": "Developed photoresist image on the wafer (masking film), not final circuitry"
+  },
+  {
+   "label": "Three lithography steps",
+   "value": "Coat → Expose (DUV 193i) → Develop"
+  },
+  {
+   "label": "Resolution relation",
+   "value": "Minimum feature ≈ k·wavelength/NA; 193 nm prints 28 nm through immersion + OPC + multiple patterning"
+  },
+  {
+   "label": "Mask role",
+   "value": "One mask = one layer master; includes OPC pre-distortion; one chip needs dozens"
+  },
+  {
+   "label": "Layer count",
+   "value": "Repeat coat → expose → develop dozens of times to build the 256×256 array and interconnects"
+  },
+  {
+   "label": "Next operation",
+   "value": "Send the resist pattern to etch/implantation to transfer it into the wafer"
+  }
+ ],
+ "after": [
+  "<b>Perform after-develop inspection (ADI)</b>: measure critical dimension (CD) and overlay and inspect for linewidth shifts or defects. Before etch, failed wafers can be reworked by stripping and recoating/re-exposing.",
+  "<b>Transfer the image through etch</b>: qualified resist masks protect covered regions while exposed material is removed. Lithography draws; etch transfers.",
+  "<b>Change masks and proceed to the next layer</b>: repeat coat → expose → develop for each layer until the 256×256 array, Unified Buffer, accumulators, and interconnects are complete.",
+  "<b>Feed data back into the recipe</b>: use across-wafer CD/overlay measurements to adjust dose, focus, OPC, and multiple-patterning strategy, improving uniformity and yield. Persistent shifts trigger mask/layout review.",
+  "<b>Preserve traceability</b>: archive lithography recipe, inspection, and overlay data for Wafer Fabrication, package/test, and yield analysis."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (coat/expose/develop lithography, 193i immersion DUV, OPC, multiple patterning, and layer-by-layer masks are standard manufacturing practice, not private TPU v1 disclosure)"
+}

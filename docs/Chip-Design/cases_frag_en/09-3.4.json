@@ -1,0 +1,112 @@
+{
+  "secNum": "3.4",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · Power Signoff: Dynamic + Leakage, Peak + Average, within 28–40 W",
+  "oneLine": "Power signoff computes both dynamic power—switching and short-circuit energy, approximately α·C·V²·f—and static leakage under real activity and worst corners. Post-route netlist/SPEF, characterized libraries, and VCD/SAIF or statistical activity yield peak power for supply integrity and average power for cooling/TDP. TPU's multi-Vt leakage savings and full-load array activity receive their final pre-silicon check here.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 408\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-t\" x=\"360\" y=\"26\">Power signoff: dynamic + leakage, peak + average, all within budget</text><text class=\"cs-note\" x=\"24\" y=\"46\">Read left to right: real inputs → signoff power analysis → TDP decision</text><g class=\"cs-part\" data-k=\"inp\" data-g=\"inp\"><rect class=\"cs-box\" x=\"20\" y=\"62\" width=\"180\" height=\"150\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"110\" y=\"86\">① Real inputs</text><text class=\"cs-sub\" x=\"110\" y=\"108\">Gate netlist + SPEF</text><text class=\"cs-sub\" x=\"110\" y=\"128\">.lib (leakage/capacitance/energy)</text><text class=\"cs-sub\" x=\"110\" y=\"148\">Activity: VCD/SAIF or</text><text class=\"cs-sub\" x=\"110\" y=\"166\">vectors + statistical activity</text><text class=\"cs-sub\" x=\"110\" y=\"186\">MMMC P/V/T corners</text><text class=\"cs-sub\" x=\"110\" y=\"204\">(leakage rises with heat/process)</text></g><line class=\"cs-arr\" x1=\"200\" y1=\"137\" x2=\"244\" y2=\"137\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"tool\" data-g=\"tool\"><rect class=\"cs-box\" x=\"248\" y=\"62\" width=\"190\" height=\"150\" rx=\"8\"/><text class=\"cs-t\" x=\"343\" y=\"86\">② Signoff power analysis</text><text class=\"cs-sub\" x=\"343\" y=\"108\">P_total = P_dyn + P_leak</text><g class=\"cs-part\" data-k=\"dyn\" data-g=\"dyn\"><rect class=\"cs-cell\" x=\"262\" y=\"120\" width=\"162\" height=\"36\"/><text class=\"cs-cellt\" x=\"343\" y=\"136\">Dynamic: switching + short circuit</text><text class=\"cs-cellt\" x=\"343\" y=\"150\">∝ α·C·V²·f</text></g><g class=\"cs-part\" data-k=\"leak\" data-g=\"leak\"><rect class=\"cs-cell\" x=\"262\" y=\"162\" width=\"162\" height=\"40\"/><text class=\"cs-cellt\" x=\"343\" y=\"178\">Leakage: subthreshold / gate</text><text class=\"cs-cellt\" x=\"343\" y=\"192\">Consumes power while idle; validates multi-Vt</text></g></g><line class=\"cs-arr\" x1=\"438\" y1=\"110\" x2=\"492\" y2=\"100\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"438\" y1=\"165\" x2=\"492\" y2=\"175\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"peak\" data-g=\"peak\"><rect class=\"cs-box\" x=\"496\" y=\"62\" width=\"204\" height=\"70\" rx=\"8\" fill=\"#fff7ed\" stroke=\"#fdba74\"/><text class=\"cs-t\" x=\"598\" y=\"86\">③ Peak power (transient)</text><text class=\"cs-sub\" x=\"598\" y=\"106\">Worst full-array switching window</text><text class=\"cs-sub\" x=\"598\" y=\"124\">→ supply integrity / IR spike</text></g><g class=\"cs-part\" data-k=\"avg\" data-g=\"avg\"><rect class=\"cs-box\" x=\"496\" y=\"142\" width=\"204\" height=\"70\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"598\" y=\"166\">③ Average power (thermal)</text><text class=\"cs-sub\" x=\"598\" y=\"186\">Integrated representative workload</text><text class=\"cs-sub\" x=\"598\" y=\"204\">→ cooling / sustained TDP</text></g><line class=\"cs-arr\" x1=\"598\" y1=\"132\" x2=\"598\" y2=\"142\"/><g class=\"cs-part\" data-k=\"budget\" data-g=\"budget\"><rect class=\"cs-box\" x=\"180\" y=\"246\" width=\"360\" height=\"120\" rx=\"8\" fill=\"#fefce8\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"360\" y=\"270\">④ TDP gate (28–40 W range; illustrative)</text><rect x=\"220\" y=\"284\" width=\"56\" height=\"56\" rx=\"3\" fill=\"#bfdbfe\" stroke=\"#60a5fa\"/><text class=\"cs-cellt\" x=\"248\" y=\"356\">Dynamic (average)</text><rect x=\"220\" y=\"284\" width=\"56\" height=\"22\" rx=\"3\" fill=\"#fde68a\" stroke=\"#f59e0b\"/><text class=\"cs-cellt\" x=\"248\" y=\"299\">Leakage</text><rect x=\"300\" y=\"270\" width=\"56\" height=\"70\" rx=\"3\" fill=\"#bfdbfe\" stroke=\"#60a5fa\"/><text class=\"cs-cellt\" x=\"328\" y=\"356\">Dynamic (peak)</text><rect x=\"300\" y=\"270\" width=\"56\" height=\"22\" rx=\"3\" fill=\"#fde68a\" stroke=\"#f59e0b\"/><text class=\"cs-cellt\" x=\"328\" y=\"285\">Leakage</text><line x1=\"200\" y1=\"262\" x2=\"520\" y2=\"262\" stroke=\"#dc2626\" stroke-width=\"2\" stroke-dasharray=\"6 3\"/><text class=\"cs-note\" x=\"430\" y=\"258\" fill=\"#dc2626\">TDP ceiling ≤40 W</text><text class=\"cs-note\" x=\"392\" y=\"306\">Peak needs supply margin</text><text class=\"cs-note\" x=\"392\" y=\"324\">Average needs thermal margin</text><text class=\"cs-note\" x=\"392\" y=\"342\">Neither may exceed its limit</text></g><line class=\"cs-arr\" x1=\"598\" y1=\"212\" x2=\"500\" y2=\"252\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><line class=\"cs-arr\" x1=\"343\" y1=\"212\" x2=\"343\" y2=\"244\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"24\" y=\"384\">Dynamic/leakage categories and α·C·V²·f are standard models</text><text class=\"cs-note\" x=\"24\" y=\"402\">Bars and thresholds are illustrative, not published TPU breakdowns</text></svg>",
+  "legend": [
+    {
+      "k": "inp",
+      "name": "① Real inputs for power signoff",
+      "desc": "Use the post-route netlist plus SPEF for real capacitance, characterized .lib leakage/internal energy/pin capacitance, and switching activity from VCD/SAIF or statistical propagation. Evaluate MMMC corners because leakage rises sharply at hot, fast conditions. TPU's actual activity, SPEF, and corners are unpublished."
+    },
+    {
+      "k": "dyn",
+      "name": "Dynamic power (consumed by switching)",
+      "desc": "Charging/discharging load capacitance scales approximately as α·C·V²·f, plus short-circuit current during transitions. At 700 MHz with 65,536 MACs active, array switching can dominate. Weight-stationary reuse, regular dataflow, and idle-column gating reduce it; signoff quantifies the result."
+    },
+    {
+      "k": "leak",
+      "name": "Leakage power (static)",
+      "desc": "Subthreshold and gate leakage flow even without switching. Leakage rises strongly with temperature and fast-process corners, creating thermal feedback. Multi-Vt uses HVT on relaxed paths and LVT only where timing requires; signoff measures whether that compromise controls worst-case leakage."
+    },
+    {
+      "k": "peak",
+      "name": "③ Peak power (transient supply integrity)",
+      "desc": "Peak power captures a worst short window such as simultaneous full-array switching. Its current pulse can create IR-drop and di/dt noise, so it must fit transient supply margin and becomes an input to EM/IR analysis. Scenarios and values are illustrative."
+    },
+    {
+      "k": "budget",
+      "name": "④ TDP gate (both peak and average must pass)",
+      "desc": "Average power over representative workloads determines sustained cooling/TDP; peak power determines transient supply integrity. Either can block release. TPU's disclosed 28–40 W range supplies context, while the 40 W line and plotted proportions are illustrative rather than a published breakdown."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "inp"
+      ],
+      "cap": "① Prepare the post-route netlist and SPEF, characterized power libraries, VCD/SAIF or statistical switching activity, and MMMC corners including worst hot/fast leakage."
+    },
+    {
+      "keys": [
+        "tool",
+        "dyn",
+        "leak"
+      ],
+      "cap": "② Compute P_total = dynamic switching/short-circuit power + static leakage using real activity; quantify the effect of multi-Vt leakage reduction."
+    },
+    {
+      "keys": [
+        "peak",
+        "avg"
+      ],
+      "cap": "③ Separate peak power from the worst full-array switching window and average power over representative workloads. Peak drives IR integrity; average drives thermal/TDP."
+    },
+    {
+      "keys": [
+        "budget"
+      ],
+      "cap": "④ Release only if average power fits sustained cooling/TDP, peak power fits transient supply margin, and full-load operation remains in the illustrative 28–40 W budget band."
+    }
+  ],
+  "before": [
+    "<b>Use real post-route inputs</b>: Power signoff requires the final gate netlist and SPEF capacitance/resistance, plus .lib leakage, internal energy, and pin capacitance. Pre-layout capacitance estimates are insufficient.",
+    "<b>Choose traceable activity sources</b>: Use representative functional VCD or compressed SAIF/SAF where possible; otherwise propagate statistical toggles. Define separate activity data for typical average workloads and worst full-array peak scenarios.",
+    "<b>Define corners and criteria</b>: Evaluate peak leakage at the highest junction temperature and fastest process, and representative average power at nominal conditions. Require average ≤ sustained TDP and peak ≤ transient supply margin; exact values are illustrative.",
+    "<b>Align multi-Vt and low-power acceptance</b>: Define leakage budget, acceptable LVT use, and whether gating or power domains are active in each power mode. Signoff measures whether these implementation choices deliver their promised savings.",
+    "<b>Disclosure boundary</b>: Dynamic/leakage decomposition, α·C·V²·f, VCD/SAIF, MMMC, peak versus average, TDP/IR criteria, and multi-Vt are standard practices. TPU's power breakdown, activity, corners, and Vt mix are not public."
+  ],
+  "during": [
+    "<b>Core rule: compute dynamic + leakage and inspect peak + average</b>. Dynamic dominates active switching; leakage persists at idle and rises with temperature. Peak governs supply integrity; average governs cooling. Omitting any term leaves signoff incomplete.",
+    "<b>Activity quality dominates accuracy</b>. The same layout differs greatly between idle and full-array matrix multiply. Use reviewed, traceable typical and worst-case activity. Underestimating activity creates a false pass; gross overestimation causes unnecessary overdesign.",
+    "<b>Sign leakage at the worst hot/fast corner</b>. Temperature and fast process increase leakage and can reinforce heating. Confirm total power remains controlled at the maximum intended junction condition.",
+    "<b>Feed peak current into power integrity</b>. Simultaneous 256×256-array switching can create IR-drop spikes and di/dt noise. Pass the worst peak-current waveform to EM/IR signoff (§3.5), not merely compare it with TDP.",
+    "<b>Validate the multi-Vt tradeoff</b>. Measure leakage from LVT needed for critical paths. If budget is exceeded, replace relaxed LVT/SVT cells with HVT through ECO while preserving timing.",
+    "<b>State methodology provenance</b>: PrimePower/PowerPro/Voltus-class power analysis, activity files, MMMC, and the dynamic/leakage equations are standard signoff methods. TPU's 28–40 W and architecture provide context; all plots, scenarios, and thresholds are illustrative."
+  ],
+  "result": [
+    {
+      "label": "Total power decomposition",
+      "value": "P_total = P_dynamic (switching ∝α·C·V²·f + short circuit) + P_leakage (static)"
+    },
+    {
+      "label": "Dynamic power (example)",
+      "value": "Dominant under full-array activity; reduced by weight-stationary dataflow and gating; average must fit TDP"
+    },
+    {
+      "label": "Leakage power (example)",
+      "value": "Evaluate at hottest/fastest corner; control with HVT on noncritical paths and avoid thermal runaway"
+    },
+    {
+      "label": "Peak power → power integrity",
+      "value": "Worst transient current ≤ supply margin; provide to §3.5 EM/IR analysis for IR-drop spikes"
+    },
+    {
+      "label": "Average power → TDP/thermal",
+      "value": "Long-term representative average ≤ sustainable cooling; TPU-class full-load context is 28–40 W"
+    },
+    {
+      "label": "Release criterion (example)",
+      "value": "Average ≤ TDP and peak ≤ transient margin and leakage ≤ budget"
+    }
+  ],
+  "after": [
+    "<b>Return failures to ⑧ ECO and re-sign</b>: Reduce average with HVT, downsizing, or gating; reduce peaks with decoupling, stronger PDN, or staggered activity. Rerun identical activity/corners and reconfirm timing.",
+    "<b>Close the loop with EM/IR</b>: Provide worst peak current to §3.5. If IR drop or EM fails, jointly strengthen the PDN or reduce peak activity and rerun both analyses.",
+    "<b>Cross-check timing after power ECO</b>: HVT, voltage reduction, gating, and power domains can slow paths or alter activity. Rerun STA at 700 MHz; neither timing nor power may be fixed by breaking the other.",
+    "<b>Feed the overall tapeout gate</b>: Power passes only when dynamic/leakage and peak/average are all within budget, alongside green STA, EM/IR, DRC/LVS, and LEC.",
+    "<b>Compare predictions with silicon later</b>: Measure full-load and temperature-dependent leakage after fabrication. Systematic error should refine future activity assumptions and libraries; no private TPU measurement is invented here."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the 65,536 8-bit MAC array, 700 MHz≈92 TOPS, 24 MiB Unified Buffer, 28 nm, die ≤331 mm², 28–40 W full-load range, and weight-stationary dataflow are published context. Dynamic/leakage models, α·C·V²·f, VCD/SAIF, MMMC, peak/average accounting, multi-Vt, TDP/IR criteria, and power tools are standard illustrative signoff practice, not a published TPU breakdown, activity set, corner, leakage share, or Vt mix.)"
+}

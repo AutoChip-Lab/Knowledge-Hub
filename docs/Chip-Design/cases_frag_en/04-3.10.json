@@ -1,0 +1,114 @@
+{
+ "secNum": "3.10",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · CDC and Reset Release Across Core, PCIe, and DDR3 Clock Domains",
+ "oneLine": "A TPU-class chip spans at least three independent clock domains: the ~700 MHz compute core, PCIe host interface, and DDR3 memory interface. Single-bit controls use two-flop synchronizers, multibit data uses asynchronous FIFOs, and reset is released in an ordered sequence per domain—the practical engineering scope of clock-domain crossing and reset design.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 380\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">Three independent clock domains (common multi-interface ASIC practice)</text><g class=\"cs-part\" data-k=\"pcie\" data-g=\"pcie\"><rect class=\"cs-box\" x=\"40\" y=\"50\" width=\"180\" height=\"80\" rx=\"8\"/><text class=\"cs-t\" x=\"130\" y=\"82\">PCIe domain</text><text class=\"cs-sub\" x=\"130\" y=\"100\">Host interface / command I/O</text><text class=\"cs-sub\" x=\"130\" y=\"118\">PCIe 3.0 link clock</text></g><g class=\"cs-part\" data-k=\"core\" data-g=\"core\"><rect class=\"cs-box\" x=\"270\" y=\"150\" width=\"180\" height=\"90\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"184\">Core array domain</text><text class=\"cs-sub\" x=\"360\" y=\"202\">256×256 MXU + UB</text><text class=\"cs-sub\" x=\"360\" y=\"220\">~700 MHz</text></g><g class=\"cs-part\" data-k=\"ddr\" data-g=\"ddr\"><rect class=\"cs-box\" x=\"500\" y=\"50\" width=\"180\" height=\"80\" rx=\"8\"/><text class=\"cs-t\" x=\"590\" y=\"82\">DDR3 domain</text><text class=\"cs-sub\" x=\"590\" y=\"100\">Off-chip weight memory</text><text class=\"cs-sub\" x=\"590\" y=\"118\">DDR3 interface clock · ~30 GB/s</text></g><g class=\"cs-part\" data-k=\"fifo1\" data-g=\"cdc\"><rect class=\"cs-box\" x=\"170\" y=\"160\" width=\"80\" height=\"70\" rx=\"8\"/><text class=\"cs-t\" x=\"210\" y=\"190\">Async</text><text class=\"cs-t\" x=\"210\" y=\"210\">FIFO</text></g><g class=\"cs-part\" data-k=\"fifo2\" data-g=\"cdc\"><rect class=\"cs-box\" x=\"470\" y=\"160\" width=\"80\" height=\"70\" rx=\"8\"/><text class=\"cs-t\" x=\"510\" y=\"190\">Async</text><text class=\"cs-t\" x=\"510\" y=\"210\">FIFO</text></g><g class=\"cs-part\" data-g=\"a1\"><polyline class=\"cs-arr\" points=\"170,130 150,160 175,178\" fill=\"none\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"80\" y=\"152\">Commands/data (multibit)</text><g class=\"cs-part\" data-g=\"a2\"><line class=\"cs-arr\" x1=\"250\" y1=\"195\" x2=\"266\" y2=\"195\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-g=\"a3\"><line class=\"cs-arr\" x1=\"450\" y1=\"195\" x2=\"466\" y2=\"195\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-g=\"a4\"><polyline class=\"cs-arr\" points=\"550,178 575,160 575,130\" fill=\"none\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"560\" y=\"152\">Weight bursts (multibit)</text><g class=\"cs-part\" data-k=\"sync\" data-g=\"sync\"><rect class=\"cs-box\" x=\"270\" y=\"280\" width=\"180\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"308\">Two-flop synchronizer</text><text class=\"cs-sub\" x=\"360\" y=\"326\">Single-bit control / interrupt / done</text></g><g class=\"cs-part\" data-g=\"a5\"><polyline class=\"cs-arr\" points=\"130,130 130,312 266,312\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-g=\"a6\"><polyline class=\"cs-arr\" points=\"360,280 360,242\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"150\" y=\"360\">Single-bit CDC: two stages contain metastability</text></svg>",
+ "legend": [
+  {
+   "k": "core",
+   "name": "Core array domain (~700 MHz)",
+   "desc": "The 256×256 systolic array, 24 MiB Unified Buffer, and accumulator run at the main compute frequency. This domain contains the chip’s arithmetic capacity and receives traffic from the interface domains."
+  },
+  {
+   "k": "pcie",
+   "name": "PCIe host-interface domain",
+   "desc": "PCIe 3.0 exchanges CISC commands and data with the host using a clock recovered from the link, whose frequency and phase are unrelated to the core domain."
+  },
+  {
+   "k": "ddr",
+   "name": "DDR3 memory domain",
+   "desc": "The interface clock for 8 GiB of off-chip DDR3 at ~30 GB/s controls burst reads of weights into the chip and forms another independent asynchronous domain."
+  },
+  {
+   "k": "cdc",
+   "name": "Asynchronous FIFO (multibit CDC)",
+   "desc": "Commands, activations, weights, and other multibit buses cross through dual-port asynchronous FIFOs. Gray-coded read and write pointers are synchronized so only one bit changes per step and no torn intermediate pointer is sampled."
+  },
+  {
+   "k": "sync",
+   "name": "Two-flop synchronizer (single-bit CDC)",
+   "desc": "Single-bit levels or pulses such as done, interrupt, and enable pass through two destination-domain flops to contain metastability. A 1~2-cycle latency trades for an extremely low failure probability."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "pcie",
+    "fifo1",
+    "core"
+   ],
+   "cap": "① Commands and activations arriving in the PCIe domain are written to an asynchronous FIFO and safely read by the ~700 MHz core domain. Independent clocks are decoupled while the FIFO absorbs rate differences and bursts."
+  },
+  {
+   "keys": [
+    "ddr",
+    "fifo2",
+    "core"
+   ],
+   "cap": "② Weight bursts from the DDR3 domain likewise cross through an asynchronous FIFO into the core domain before weight-stationary loading of the systolic array."
+  },
+  {
+   "keys": [
+    "sync"
+   ],
+   "cap": "③ Single-bit done, interrupt, and enable signals do not need a FIFO; a two-flop synchronizer in the destination domain contains metastability before the FSM samples them."
+  },
+  {
+   "keys": [
+    "pcie",
+    "core",
+    "ddr"
+   ],
+   "cap": "④ Each clock domain has its own reset. Use asynchronous assertion and synchronous release, sequenced by dependency—stabilize memory and interface domains first, then release the core—to avoid partial-reset operation."
+  }
+ ],
+ "before": [
+  "<b>Enumerate the clock domains</b>: A TPU-class device decouples interface timing into at least the ~700 MHz compute-core domain, PCIe host-interface domain, and off-chip DDR3 memory domain. Each has an independent source, frequency, and phase. The exact partition is common multi-interface datacenter-ASIC practice, not itemized v1 disclosure.",
+  "<b>Inventory and classify every crossing</b>: Record every signal that crosses a boundary and separate single-bit control/status, such as done, interrupt, and handshake levels, from multibit data/address buses such as commands, activations, and weights. Their safe crossing mechanisms are different; mixing them is a primary CDC bug source.",
+  "<b>Define frequency and throughput constraints</b>: With a ~700 MHz core, PCIe 3.0 link, and DDR3 at ~30 GB/s, size each cross-domain FIFO from source bursts, destination consumption rate, and synchronization latency. It must not be too shallow to retain data or needlessly deep to waste SRAM.",
+  "<b>Define reset sources and scope</b>: Determine which resets originate from power-on, host control, or watchdog; which domains each affects; and which trained DDR3 or configured link state must survive a soft reset."
+ ],
+ "during": [
+  "<b>Cross single-bit signals safely</b>: Use two-stage, or when required three-stage, destination-domain synchronizers to contain metastability. The source must hold a level long enough for at least two destination clocks; a narrow pulse crossing into a slower domain must first be stretched or converted to a level-and-acknowledge handshake.",
+  "<b>Cross multibit data safely</b>: Never synchronize each bus bit independently because bits may settle on different cycles and create a torn word. Use an asynchronous FIFO with Gray-coded pointers for streams; for sparse configuration registers, hold data stable and synchronize a 1-bit enable through a handshake.",
+  "<b>Trade FIFO depth against backpressure</b>: Greater depth absorbs larger bursts but consumes SRAM and adds latency. High-throughput weight and activation streams need enough depth to keep the array busy plus almost-full backpressure so the source can stop in time.",
+  "<b>Use asynchronous assertion and synchronous release</b>: Reset may assert immediately without a clock, but release must align to each local clock through a reset synchronizer. Otherwise flops leave reset at different times and an FSM can enter an illegal state.",
+  "<b>Sequence reset release by dependency</b>: Stabilize clocks and PLLs, then bring up interface and memory domains, and release the core only after its FIFOs and dependencies are ready. Reversing the order risks reading uninitialized state.",
+  "<b>Evidence boundary</b>: Public TPU v1 material does not disclose synchronizer depth, FIFO sizes, or reset-tree parameters. The mechanisms described are standard CDC/reset practice for datacenter-inference ASICs; the disclosed background is the presence of ~700 MHz compute, PCIe, and DDR3 interfaces."
+ ],
+ "result": [
+  {
+   "label": "Clock-domain count",
+   "value": "≥3 (core ~700 MHz / PCIe / DDR3)"
+  },
+  {
+   "label": "Single-bit CDC",
+   "value": "Two-flop synchronizer, 2 stages (common practice)"
+  },
+  {
+   "label": "Multibit CDC",
+   "value": "Asynchronous FIFO with Gray pointers / handshake (common practice)"
+  },
+  {
+   "label": "FIFO depth",
+   "value": "Sized from burst and consumption rate, with almost-full backpressure (not public for v1)"
+  },
+  {
+   "label": "Reset policy",
+   "value": "Asynchronous assertion + synchronous release (common practice)"
+  },
+  {
+   "label": "Release order",
+   "value": "Interface/memory ready first; core array last (common practice)"
+  }
+ ],
+ "after": [
+  "<b>Run static CDC analysis</b>: Scan all domain crossings to ensure each single-bit path has a synchronizer, every multibit path uses a FIFO or handshake, and no bus is independently synchronized bit by bit. Confirm synchronizer flops are preserved through synthesis.",
+  "<b>Evaluate metastability and MTBF</b>: Estimate mean time between failure for critical synchronizers at target frequencies. Add a third stage if two do not provide sufficient margin.",
+  "<b>Simulate CDC and reset extremes</b>: Use multiple clocks with randomized phase and jitter to cover FIFO full/empty backpressure, narrow pulses into slow domains, and reset release at adverse phases. Verify no loss, duplication, or illegal state.",
+  "<b>Verify every reset sequence</b>: Exercise power-on, host soft reset, and watchdog reset. Ensure the core always releases last and soft reset does not erase trained DDR3 or configured link state that should be retained.",
+  "<b>Hand constraints to physical design</b>: Encode asynchronous clock groups and FIFO false-path or maximum-delay constraints in SDC so STA neither reports meaningless asynchronous timing nor misses real synchronizer constraints."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the paper discloses multiple interfaces and ~700 MHz/PCIe/DDR3 facts; synchronizer depth, FIFO size, and reset-tree details are not public for v1 and follow standard datacenter-inference ASIC practice)"
+}

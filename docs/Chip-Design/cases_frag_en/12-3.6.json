@@ -1,0 +1,119 @@
+{
+  "secNum": "3.6",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · Final Test (FT) and ATE: Scan/LBIST, SRAM MBIST, At-Speed Functional, I/O, and Parametric Qualification of Every Packaged Device",
+  "oneLine": "This case covers final test after package assembly and before shipment. The packaged TPU device or accelerator-card assembly becomes the device under test (DUT) in an ATE socket. A production test program applies stimuli, captures responses, and compares them with golden expectations across four categories. Scan and logic BIST target manufacturing defects in digital logic; escaped-defect risk depends on the DFT structures and resulting fault coverage. MBIST efficiently exercises the 24 MiB Unified Buffer, 4 MiB accumulators, and other SRAM arrays. At-speed functional patterns run the chip at 700 MHz to verify not only that it was manufactured correctly but that it meets rated speed. I/O and parametric tests measure PCIe 3.0 and DDR3 behavior, voltage, current, leakage, and related electrical limits. The governing economic tradeoff is coverage versus test time: additional patterns reduce defect escapes but every extra ATE second multiplied across production volume becomes direct unit cost. Each packaged unit receives pass/fail and bin classification; only passing units become qualified devices for shipment. ATE platform, socket, exact program and vectors, achieved coverage, test time, yield, and bins are standard private production details and are not public for TPU v1.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 415\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"26\">Final test: packaged TPU in an ATE socket → scan/BIST + MBIST + at-speed + I/O/parametric → pass or fail</text><g class=\"cs-part\" data-k=\"dut\" data-g=\"dut\"><rect class=\"cs-box\" x=\"24\" y=\"60\" width=\"150\" height=\"120\" rx=\"8\"/><text class=\"cs-t\" x=\"99\" y=\"86\">Packaged TPU</text><text class=\"cs-sub\" x=\"99\" y=\"106\">PCIe card / packaged DUT</text><rect class=\"cs-cell\" x=\"50\" y=\"122\" width=\"98\" height=\"40\"/><text class=\"cs-cellt\" x=\"99\" y=\"146\">256×256 array</text><text class=\"cs-sub\" x=\"99\" y=\"174\">Load into test socket</text></g><line class=\"cs-arr\" x1=\"174\" y1=\"120\" x2=\"214\" y2=\"120\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"ate\" data-g=\"ate\"><rect class=\"cs-box\" x=\"218\" y=\"60\" width=\"200\" height=\"120\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"318\" y=\"86\">Automated test equipment</text><text class=\"cs-sub\" x=\"318\" y=\"106\">Socket contacts the DUT</text><g class=\"cs-part\" data-k=\"prog\" data-g=\"prog\"><rect class=\"cs-cell\" x=\"240\" y=\"122\" width=\"156\" height=\"40\"/><text class=\"cs-cellt\" x=\"318\" y=\"140\">Test program / patterns</text><text class=\"cs-sub\" x=\"318\" y=\"156\">Drive stimuli · capture · compare</text></g></g><line class=\"cs-arr\" x1=\"418\" y1=\"120\" x2=\"458\" y2=\"120\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"judge\" data-g=\"judge\"><rect class=\"cs-box\" x=\"462\" y=\"60\" width=\"234\" height=\"120\" rx=\"8\" fill=\"#dcfce7\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"579\" y=\"86\">Classify each unit pass / fail</text><text class=\"cs-sub\" x=\"579\" y=\"106\">Qualified device or fail bin</text><rect class=\"cs-cell\" x=\"486\" y=\"122\" width=\"86\" height=\"40\" fill=\"#bbf7d0\"/><text class=\"cs-cellt\" x=\"529\" y=\"146\">PASS</text><rect class=\"cs-cell\" x=\"588\" y=\"122\" width=\"86\" height=\"40\" fill=\"#fecaca\"/><text class=\"cs-cellt\" x=\"631\" y=\"146\">FAIL</text></g><text class=\"cs-note\" x=\"24\" y=\"210\">Four production-test categories:</text><g class=\"cs-part\" data-k=\"scan\" data-g=\"scan\"><rect class=\"cs-box\" x=\"24\" y=\"222\" width=\"160\" height=\"74\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"104\" y=\"248\">Scan / logic BIST</text><text class=\"cs-sub\" x=\"104\" y=\"268\">Shift patterns for logic defects</text><text class=\"cs-sub\" x=\"104\" y=\"286\">DFT determines fault coverage</text></g><g class=\"cs-part\" data-k=\"mbist\" data-g=\"mbist\"><rect class=\"cs-box\" x=\"190\" y=\"222\" width=\"160\" height=\"74\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"270\" y=\"248\">Array / SRAM MBIST</text><text class=\"cs-sub\" x=\"270\" y=\"268\">Test 24 MiB UB + 4 MiB accumulators</text><text class=\"cs-sub\" x=\"270\" y=\"286\">Efficient full-array self-test</text></g><g class=\"cs-part\" data-k=\"func\" data-g=\"func\"><rect class=\"cs-box\" x=\"356\" y=\"222\" width=\"160\" height=\"74\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"436\" y=\"248\">At-speed functional</text><text class=\"cs-sub\" x=\"436\" y=\"268\">Run at rated 700 MHz</text><text class=\"cs-sub\" x=\"436\" y=\"286\">Exercise instructions / datapaths</text></g><g class=\"cs-part\" data-k=\"io\" data-g=\"io\"><rect class=\"cs-box\" x=\"522\" y=\"222\" width=\"174\" height=\"74\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"609\" y=\"248\">I/O + parametric</text><text class=\"cs-sub\" x=\"609\" y=\"268\">PCIe / DDR3 · voltage / current</text><text class=\"cs-sub\" x=\"609\" y=\"286\">Verify interfaces and electrical limits</text></g><g class=\"cs-part\" data-k=\"tradeoff\" data-g=\"tradeoff\"><rect class=\"cs-box\" x=\"24\" y=\"312\" width=\"672\" height=\"44\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"334\">Core tradeoff: higher coverage reduces escapes; longer test time directly increases cost</text><text class=\"cs-sub\" x=\"360\" y=\"350\">DFT sets coverage; ATE seconds per device × volume = production-test cost</text></g><text class=\"cs-note\" x=\"24\" y=\"378\">FT verifies both correct manufacture and correct operation at the rated 700 MHz</text><text class=\"cs-note\" x=\"24\" y=\"400\">Disclosure: ATE, socket, program, vectors, coverage, time, yield, and bins are not public TPU v1 data</text></svg>",
+  "legend": [
+    {
+      "k": "ate",
+      "name": "Automated Test Equipment (ATE)",
+      "desc": "ATE precisely powers a DUT, applies timed digital stimuli, captures pin and scan responses, and compares them bit by bit against expected results. The packaged device sits in a production socket that provides electrical contact, while the test program executes each measurement and returns a per-unit decision, often in milliseconds to seconds per test section. Production volume makes ATE utilization and test duration major cost drivers. A TPU v1-class packaged accelerator also requires FT; the exact tester, load board, socket, and program are private production details."
+    },
+    {
+      "k": "scan",
+      "name": "Scan and Logic BIST (Digital Manufacturing-Defect Test)",
+      "desc": "DFT implements scan chains throughout the product, with structural insertion generally concentrated after synthesis and then refined through physical implementation and signoff. At FT, ATE shifts ATPG patterns into the signed-off chains, applies capture cycles, and shifts responses out for comparison, targeting faults such as stuck-at and transition defects. Logic BIST generates and compacts patterns on chip. The detected fraction of modeled defects is fault coverage; inadequate DFT or coverage allows bad devices to escape. TPU v1's pattern set and achieved coverage are not public."
+    },
+    {
+      "k": "mbist",
+      "name": "Memory BIST (Efficient Test of Large SRAM Arrays)",
+      "desc": "TPU v1 includes a 24 MiB Unified Buffer and 4 MiB of 32-bit accumulators. Testing every memory cell through external vectors would consume excessive pins and time, so on-chip MBIST controllers execute algorithms such as March sequences that write and read defined backgrounds across the array and detect write, read, retention, and coupling faults. A compact pass/fail result returns to the ATE. MBIST is essential to test large SRAM capacity efficiently. TPU v1's MBIST architecture and results are not public."
+    },
+    {
+      "k": "func",
+      "name": "At-Speed Functional Test (Verify Rated 700 MHz Operation)",
+      "desc": "Structural tests can run at lower frequencies and detect many static faults; at-speed testing drives functional or structural transitions at the rated 700 MHz. Patterns exercise the 256×256 systolic array, multiply-accumulate datapaths, the host-programmed CISC instruction flow over PCIe, and weight-stationary operation so that results remain correct under production-speed timing. This captures delay-sensitive defects that pass at low speed but fail at rate. A passing device can support the published approximately 92 TOPS target. TPU v1's actual functional vectors are not public."
+    },
+    {
+      "k": "io",
+      "name": "I/O and Parametric Test (Interfaces and Electrical Limits)",
+      "desc": "I/O tests verify external receivers and transmitters, including the PCIe 3.0 host link and the interface to 8 GiB DDR3 at approximately 30 GB/s. DC and AC parametric tests measure operating current, leakage, pin thresholds, standby power, and related electrical limits within the 28–40 W product context. Correct internal logic is insufficient if an interface cannot communicate or electrical behavior violates limits. TPU v1's actual measurements and production limits are not public."
+    },
+    {
+      "k": "tradeoff",
+      "name": "Fault Coverage vs. Test Time (Quality vs. Cost)",
+      "desc": "Higher fault coverage reduces defect escapes, but additional patterns and measurements extend per-device ATE time. Multiplied by production volume, every added second becomes direct test cost and consumes tester capacity. A large device with 24 MiB of Unified Buffer, 4 MiB of accumulators, and substantial logic therefore relies on DFT methods such as scan compression, BIST, and multisite or parallel execution to raise coverage while controlling time. TPU v1's achieved coverage and test duration are private; the tradeoff is standard test economics."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "dut",
+        "ate"
+      ],
+      "cap": "① Load the DUT: place the packaged TPU device or card assembly in the ATE socket, establish electrical contact, and load the qualified production-test program. FT automatically exercises each unit and records its result."
+    },
+    {
+      "keys": [
+        "scan",
+        "mbist",
+        "prog"
+      ],
+      "cap": "② Run structural tests for manufacturing correctness: shift scan and logic-BIST patterns through DFT structures to detect digital faults, and invoke MBIST to test the 24 MiB Unified Buffer, 4 MiB accumulators, and other large SRAM arrays efficiently."
+    },
+    {
+      "keys": [
+        "func",
+        "io"
+      ],
+      "cap": "③ Run performance, interface, and electrical tests: execute at-speed patterns at 700 MHz, then verify PCIe 3.0 and DDR3 I/O together with voltage, current, leakage, and related parametric limits. Logic, speed, interfaces, and electrical behavior must all pass."
+    },
+    {
+      "keys": [
+        "tradeoff",
+        "judge"
+      ],
+      "cap": "④ Assign pass/fail and manage the economic tradeoff: passing units become qualified devices for inventory and shipment; failures enter diagnostic bins. Balance defect coverage against ATE time so the large SRAM and logic content is tested thoroughly without unacceptable unit cost."
+    }
+  ],
+  "before": [
+    "<b>Receive packaged DUTs assembled from CP-screened die</b>: FT follows package assembly. Incoming units should be packaged devices built from KGD identified at wafer sort, with lot identity and package condition verified. KGD describes the pre-package die; the packaged unit is not a qualified device until it passes FT and any required reliability screens.",
+    "<b>Complete and correlate the production test program</b>: Scan/ATPG vectors, LBIST, MBIST configuration, at-speed patterns, I/O measurements, and parametric tests must be developed, debugged on the ATE, and correlated with golden expectations. Their effectiveness depends directly on DFT structures implemented, verified, and signed off through the design flow.",
+    "<b>Set fault-coverage goals and pass/fail limits</b>: Define target fault coverage, frequency, voltage, current, leakage, and I/O timing windows, plus diagnostic bin definitions. Limits that are too loose allow defect escapes; limits that are too tight overkill good units. Derive them from product specifications and outgoing-quality targets.",
+    "<b>Reserve the ATE configuration and sockets</b>: Schedule tester capacity and qualify the socket, interface or load board, power delivery, and high-speed channels for the package. Production volume must fit available ATE capacity because tester time is a direct cost.",
+    "<b>Budget coverage against test time</b>: More patterns raise coverage but extend each device's test duration. For a TPU-class device with large SRAM and logic content, use scan compression, BIST, concurrent resources, and multisite opportunities to achieve quality targets without exceeding the cost and capacity budget."
+  ],
+  "during": [
+    "<b>Seat the DUT and let the ATE execute the controlled sequence</b>. The socket establishes electrical contact and the ATE supplies power. For every test section, the program drives defined stimuli, captures pin or scan responses, compares them with golden values, and records failures without per-unit manual intervention.",
+    "<b>Scan and logic BIST verify that digital logic was manufactured correctly</b>. ATPG vectors shift through DFT scan chains, capture combinational responses, and shift results out for comparison, targeting stuck-at, transition, and related defects. LBIST generates and compacts patterns on chip. Achieved fault coverage quantifies modeled-defect detection; inadequate coverage creates outgoing escape risk.",
+    "<b>MBIST tests large SRAM capacity efficiently</b>. On-chip controllers execute March-style write/read sequences across the 24 MiB Unified Buffer and 4 MiB accumulators, detecting address, write, read, retention, and coupling faults while returning compact results to the ATE. This avoids impractical external pattern and pin demands.",
+    "<b>At-speed testing verifies operation at 700 MHz</b>. Rated-frequency patterns exercise the 256×256 systolic array, multiply-accumulate datapaths, host-issued CISC operations, and weight-stationary dataflow. They detect delay-sensitive defects that look correct at low speed but fail at rate, establishing that the device can deliver the published approximately 92 TOPS context.",
+    "<b>I/O and parametric tests verify the external and electrical foundation</b>. Exercise the PCIe 3.0 host interface and 8 GiB DDR3 path at approximately 30 GB/s, and measure operating current, leakage, thresholds, and power within the 28–40 W specification context. A device with correct compute logic still fails if its interfaces or electrical parameters do not meet limits.",
+    "<b>Coverage versus test time remains the governing tradeoff, with a clear disclosure boundary</b>. More coverage reduces escapes but consumes more ATE seconds; seconds per device multiplied by volume become direct cost. Scan compression, BIST, test ordering, parallelism, and multisite testing are standard methods for controlling both. ATE execution, scan/ATPG/LBIST, MBIST, at-speed, I/O and parametric testing, and binning are standard practices for large accelerators. TPU v1 does not publish its private program, vectors, achieved coverage, test time, yield, bins, tester, socket, or OSAT. Its known architecture is used only as the illustrative DUT."
+  ],
+  "result": [
+    {
+      "label": "Output of This Step",
+      "value": "Every packaged TPU completes the ATE program and receives a per-unit decision: passing units become qualified devices for inventory and shipment; failures are rejected or assigned diagnostic bins"
+    },
+    {
+      "label": "Two Questions Answered",
+      "value": "① Was it manufactured correctly, as shown by passing scan/LBIST/MBIST and parametric tests? ② Can it operate at rated speed, as shown by passing 700 MHz at-speed tests?"
+    },
+    {
+      "label": "Four Test Categories",
+      "value": "Scan/LBIST for logic defects · MBIST for the 24 MiB UB, 4 MiB accumulators, and SRAM · at-speed at 700 MHz · PCIe/DDR3 I/O plus voltage, current, and leakage"
+    },
+    {
+      "label": "Source of Coverage",
+      "value": "Defect-escape risk depends on fault coverage, which is enabled by DFT structures such as scan chains, compression, and BIST; insufficient coverage allows defective units to ship"
+    },
+    {
+      "label": "Core Tradeoff",
+      "value": "Higher coverage reduces escapes, while longer ATE time raises direct unit cost; test large SRAM and logic both thoroughly and efficiently"
+    },
+    {
+      "label": "Disclosure Boundary",
+      "value": "ATE model, socket, program, vectors, achieved coverage, test time, yield, and bin definitions are private production details rather than public TPU v1 data"
+    }
+  ],
+  "after": [
+    "<b>Release passing units and bin failures</b>: Move pass devices into qualified inventory and shipment. Sort failures by scan, MBIST, at-speed, I/O, and parametric signatures. Bins enforce outgoing quality and preserve diagnostic information. TPU v1's actual bin definitions are not public.",
+    "<b>Perform failure analysis</b>: Analyze representative and systematic failures to distinguish package defects, wafer-fabrication defects, and test-system issues, and localize them to structures or operations. Feed findings back across fabrication, DFT, package assembly, and test.",
+    "<b>Audit coverage and escapes</b>: If reliability screening or field operation finds a defect that FT missed, review fault coverage, add patterns, or strengthen future DFT. If overkill is high, recalibrate limits and correlation. Continue tuning the pass/fail decision using evidence.",
+    "<b>Optimize the program to reduce cost</b>: Measure time per section and yield fallout, remove redundant patterns, apply scan compression and parallel execution, and order tests so inexpensive high-fallout screens run first. Reduce ATE seconds without sacrificing required coverage.",
+    "<b>Preserve traceability and transfer qualified devices onward</b>: Archive pass rate, failure bins, program and limit revisions, coverage, and test time for yield analysis and audit. Qualified devices proceed to any required burn-in or reliability screen and then shipment. These records are private production data rather than public TPU v1 disclosures."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the paper discloses TPU v1's 256×256 8-bit MAC systolic array, 24 MiB Unified Buffer, 4 MiB of 32-bit accumulators, 700 MHz and approximately 92 TOPS, off-package 8 GiB DDR3 at approximately 30 GB/s, weight-stationary dataflow, host-issued CISC instructions over PCIe 3.0, PCIe accelerator-card form, 28 nm process, ≤331 mm² die, and 28–40 W envelope, which provide the known DUT context; post-package ATE scan/ATPG/LBIST, SRAM MBIST, at-speed functional, I/O and parametric testing, DFT-driven fault coverage, coverage-versus-time economics, per-unit pass/fail, and diagnostic binning are standard OSAT and industry production-test practices, while TPU v1's private program, vectors, achieved coverage, test time, yield, bins, ATE, socket, and OSAT are not public; depicted tests and decisions are illustrative)"
+}

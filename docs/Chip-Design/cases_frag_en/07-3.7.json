@@ -1,0 +1,115 @@
+{
+  "secNum": "3.7",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 Public Structure · DFT-Ready Synthesis: Clean Clocks, Resets, and Macro Models before Insertion",
+  "oneLine": "This case shows how DFT enters its main structural implementation window during synthesis. Stage ⑦ does not replace the complete scan/ATPG flow; it creates a netlist baseline for DFT and backend iteration. Clocks, gating, and resets must be test-controllable, SRAM/IP test models available, and loops, black boxes, and X sources resolved through DFT-ready DRC. TPU v1's actual DFT is unpublished; its public structure only provides context.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"26\">DFT-ready synthesis: remove testability blockers early</text><g class=\"cs-part\" data-k=\"clk\" data-g=\"input\"><rect class=\"cs-box\" x=\"24\" y=\"54\" width=\"180\" height=\"68\" rx=\"8\"/><text class=\"cs-t\" x=\"114\" y=\"80\">Clocks / gating</text><text class=\"cs-sub\" x=\"114\" y=\"102\">Test-controllable · ICG bypass</text></g><g class=\"cs-part\" data-k=\"rst\" data-g=\"input\"><rect class=\"cs-box\" x=\"24\" y=\"132\" width=\"180\" height=\"68\" rx=\"8\"/><text class=\"cs-t\" x=\"114\" y=\"158\">Reset / X sources</text><text class=\"cs-sub\" x=\"114\" y=\"180\">Defined polarity · controllable · modeled</text></g><g class=\"cs-part\" data-k=\"macro\" data-g=\"input\"><rect class=\"cs-box\" x=\"24\" y=\"210\" width=\"180\" height=\"68\" rx=\"8\"/><text class=\"cs-t\" x=\"114\" y=\"236\">SRAM / IP macros</text><text class=\"cs-sub\" x=\"114\" y=\"258\">Test model · MBIST interface</text></g><g class=\"cs-part\" data-k=\"drc\" data-g=\"gate\"><rect class=\"cs-box\" x=\"270\" y=\"100\" width=\"190\" height=\"132\" rx=\"10\"/><text class=\"cs-t\" x=\"365\" y=\"134\">DFT-ready DRC</text><text class=\"cs-sub\" x=\"365\" y=\"158\">Uncontrollable clock/reset?</text><text class=\"cs-sub\" x=\"365\" y=\"180\">Combinational loop / black box / latch?</text><text class=\"cs-sub\" x=\"365\" y=\"202\">Scan cell / test model complete?</text></g><line class=\"cs-arr\" x1=\"204\" y1=\"88\" x2=\"268\" y2=\"132\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"204\" y1=\"166\" x2=\"268\" y2=\"166\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"204\" y1=\"244\" x2=\"268\" y2=\"200\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"fix\" data-g=\"loop\"><rect class=\"cs-box\" x=\"270\" y=\"278\" width=\"190\" height=\"70\" rx=\"8\"/><text class=\"cs-t\" x=\"365\" y=\"304\">Repair / waiver loop</text><text class=\"cs-sub\" x=\"365\" y=\"326\">Return to RTL/constraints/models · retain evidence</text></g><polyline class=\"cs-arr\" points=\"365,232 365,276\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"out\" data-g=\"out\"><rect class=\"cs-box\" x=\"522\" y=\"100\" width=\"174\" height=\"132\" rx=\"10\"/><text class=\"cs-t\" x=\"609\" y=\"134\">DFT-ready baseline</text><text class=\"cs-sub\" x=\"609\" y=\"160\">Netlist + SDC/UPF</text><text class=\"cs-sub\" x=\"609\" y=\"182\">Scan/test libraries + macro models</text><text class=\"cs-sub\" x=\"609\" y=\"204\">DRC/LEC/version evidence</text></g><line class=\"cs-arr\" x1=\"460\" y1=\"166\" x2=\"520\" y2=\"166\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"492\" y=\"254\">→ Main window: insert scan/compression/MBIST and start ATPG</text><text class=\"cs-note\" x=\"24\" y=\"382\">Note: v1 test bypass, scan libraries, macro models, and DRC are unpublished</text></svg>",
+  "legend": [
+    {
+      "k": "clk",
+      "name": "Test-controllable clocks and gating",
+      "desc": "Scan shift/capture, MBIST, and at-speed test require controllable clocks. ICGs, PLLs, and derived clocks need explicit test-mode control so no clock island remains inaccessible."
+    },
+    {
+      "k": "rst",
+      "name": "Reset and X-source control",
+      "desc": "Asynchronous resets, uninitialized state, powered-down domains, and black-box outputs may create uncontrollable values or X contamination in test. Define polarity, test behavior, and models before handoff."
+    },
+    {
+      "k": "macro",
+      "name": "SRAM / IP test models",
+      "desc": "Large SRAM is not covered by ordinary logic scan. It needs memory test models, MBIST ports, and optional repair information; third-party IP needs a wrapper or documented black-box test contract."
+    },
+    {
+      "k": "drc",
+      "name": "DFT-ready rule checks",
+      "desc": "Check uncontrollable clocks/resets, combinational loops, latches, tri-states, black boxes, nonscannable registers, and missing scan cells or test models. This is not ordinary lint."
+    },
+    {
+      "k": "fix",
+      "name": "Repair and waiver closure",
+      "desc": "Return real structural issues to RTL, synthesis, constraints, or models. Any unavoidable exception must document impact, verification, owner, and approval; never ignore it silently."
+    },
+    {
+      "k": "out",
+      "name": "Traceable shared DFT/backend baseline",
+      "desc": "Freeze the synthesized netlist, SDC/UPF, test port/clock/reset definitions, scan/test libraries, macro models, DRC/LEC evidence, and version manifest together so insertion, early ATPG, and backend iteration are reproducible."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "clk"
+      ],
+      "cap": "① Define functional, shift, capture, and MBIST clocks and how ICGs/PLLs are controlled safely in test mode."
+    },
+    {
+      "keys": [
+        "rst"
+      ],
+      "cap": "② Control reset and X sources: define asynchronous controls, powered-down domains, uninitialized state, and black-box outputs so response compression is not contaminated."
+    },
+    {
+      "keys": [
+        "macro"
+      ],
+      "cap": "③ Complete macro/IP test contracts: SRAM test models, MBIST interfaces, scan cells, and third-party wrappers must match the synthesized netlist version."
+    },
+    {
+      "keys": [
+        "drc",
+        "fix"
+      ],
+      "cap": "④ Run DFT-ready DRC and close every issue through RTL/constraint/model repair or an auditable waiver."
+    },
+    {
+      "keys": [
+        "out"
+      ],
+      "cap": "⑤ Freeze a shared baseline—netlist, SDC/UPF, libraries/macros, DRC/LEC, and version manifest—for insertion, early ATPG, and backend coordination."
+    }
+  ],
+  "before": [
+    "<b>Establish the DFT specification interface</b>: Synthesis must know scan, OCC, MBIST, clock-domain, power-domain, and test-mode requirements before the netlist enters the main insertion and early ATPG window.",
+    "<b>Prepare real libraries and models</b>: Target scan cells, ICGs, lockups, memory test models, and third-party IP test information are all required.",
+    "<b>Unify netlist and constraint versions</b>: RTL, SDC/UPF, libraries, and black-box models must correspond to one build or DFT DRC cannot be reproduced.",
+    "<b>Limit the case honestly</b>: The TPU paper publishes compute array, memory, frequency, and process facts, not specific DFT-ready rules or results."
+  ],
+  "during": [
+    "<b>Audit every clock source and gate</b>: List primary and derived clocks, PLLs, ICGs, and asynchronous sources; define controllable paths and bypasses for each test mode.",
+    "<b>Audit resets and controls</b>: Ensure asynchronous reset cannot disturb scan shift/capture and test-control signals contain no combinational loop or uncontrollable dependency.",
+    "<b>Audit registers and black boxes</b>: Find nonscannable registers, latches, tri-states, combinational feedback, and unknown outputs; repair, wrap, or explicitly exclude them.",
+    "<b>Audit memory/IP contracts</b>: Give every SRAM the correct test model and MBIST ports, and every third-party IP an access or bypass mechanism.",
+    "<b>Run DFT-ready DRC + LEC</b>: Recheck rules after repair and prove that synthesized output remains functionally equivalent to verified RTL."
+  ],
+  "result": [
+    {
+      "label": "Clocks / resets",
+      "value": "Controllable in functional, shift, capture, and MBIST modes; ICG/PLL bypass defined"
+    },
+    {
+      "label": "Logic structure",
+      "value": "No unexplained loop, latch, nonscannable register, or blocking black box"
+    },
+    {
+      "label": "Macros / libraries",
+      "value": "Version-matched scan/test cells, SRAM models, and MBIST/IP interfaces"
+    },
+    {
+      "label": "Evidence",
+      "value": "No blocking DFT-ready DRC issue + LEC passes + auditable waivers"
+    },
+    {
+      "label": "Handoff package",
+      "value": "Synthesized netlist + SDC/UPF + test definitions + libraries/models + manifest/tag"
+    }
+  ],
+  "after": [
+    "<b>Enter the main DFT implementation window</b>: Insert scan, compression, test points, OCC, MBIST, and JTAG, then start ATPG; continue iterating with physical design and signoff.",
+    "<b>Re-prove every insertion or ECO</b>: After DFT modifies the netlist, rerun functional-mode LEC, post-DFT DRC, and coverage. Never inherit conclusions from the old netlist.",
+    "<b>Feed physical constraints back</b>: If congestion, timing, or test power requires chain, compression, or control changes, iterate from the controlled baseline rather than applying ad hoc patches.",
+    "<b>Keep final patterns aligned with the final netlist</b>: Regenerate and revalidate ATPG patterns after scan reordering, ECOs, or clock changes.",
+    "<b>Preserve honest labeling</b>: Do not present illustrative scan, MBIST, OCC structures, targets, or DRC results as published TPU v1 facts."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (published v1 array, memory, frequency, and process data provide structural context only. DFT-ready clock/reset control, macro test models, rule checks, and versioned handoff are standard DFT/synthesis practice, not private TPU v1 disclosure.)"
+}

@@ -1,0 +1,116 @@
+{
+  "secNum": "3.9",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · Manufacturability and Reliability Signoff: DFM, ESD/Latch-Up, and Aging",
+  "oneLine": "Clean function, timing, power, and DRC are not enough. Signoff must also prove acceptable manufacturing yield and reliable 24×7 service over years. DFM improves redundant-via and lithographic robustness; ESD/latch-up checks protect assembly and transients; aging-aware analysis covers HCI, NBTI, and EM at end of life. All three feed a yield + lifetime gate. TPU's private yield and reliability values remain undisclosed.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"26\">Reliability/manufacturability: DFM + ESD/latch-up + aging → yield + lifetime gate</text><g class=\"cs-part\" data-k=\"layout\" data-g=\"layout\"><rect class=\"cs-box\" x=\"24\" y=\"150\" width=\"150\" height=\"120\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"99\" y=\"178\">Layout under signoff</text><text class=\"cs-sub\" x=\"99\" y=\"202\">256×256 systolic array</text><text class=\"cs-sub\" x=\"99\" y=\"222\">24 MiB UB (~29% die)</text><text class=\"cs-sub\" x=\"99\" y=\"242\">28 nm / ≤331 mm²</text><text class=\"cs-sub\" x=\"99\" y=\"262\">700 MHz / 28–40 W</text></g><line class=\"cs-arr\" x1=\"174\" y1=\"178\" x2=\"234\" y2=\"120\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"174\" y1=\"210\" x2=\"234\" y2=\"210\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"174\" y1=\"242\" x2=\"234\" y2=\"300\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"dfm\" data-g=\"dfm\"><rect class=\"cs-box\" x=\"238\" y=\"86\" width=\"246\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"361\" y=\"112\">DFM</text><text class=\"cs-sub\" x=\"361\" y=\"134\">Redundant vias · lithography · yield</text></g><g class=\"cs-part\" data-k=\"esd\" data-g=\"esd\"><rect class=\"cs-box\" x=\"238\" y=\"180\" width=\"246\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"361\" y=\"206\">ESD / latch-up</text><text class=\"cs-sub\" x=\"361\" y=\"228\">I/O clamps · well/substrate taps</text></g><g class=\"cs-part\" data-k=\"aging\" data-g=\"aging\"><rect class=\"cs-box\" x=\"238\" y=\"274\" width=\"246\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"361\" y=\"300\">Aging reliability</text><text class=\"cs-sub\" x=\"361\" y=\"322\">HCI / NBTI / EM lifetime margin</text></g><line class=\"cs-arr\" x1=\"484\" y1=\"118\" x2=\"548\" y2=\"180\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"484\" y1=\"212\" x2=\"548\" y2=\"212\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"484\" y1=\"306\" x2=\"548\" y2=\"244\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"gate\" data-g=\"gate\"><rect class=\"cs-box\" x=\"552\" y=\"156\" width=\"146\" height=\"112\" rx=\"8\" fill=\"#fefce8\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"625\" y=\"184\">Yield + lifetime gate</text><text class=\"cs-sub\" x=\"625\" y=\"208\">All three pass</text><text class=\"cs-sub\" x=\"625\" y=\"228\">Production yield OK</text><text class=\"cs-sub\" x=\"625\" y=\"248\">24×7 lifetime OK</text></g><line class=\"cs-arr\" x1=\"625\" y1=\"268\" x2=\"625\" y2=\"312\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"tapeout\" data-g=\"tapeout\"><rect class=\"cs-box\" x=\"552\" y=\"316\" width=\"146\" height=\"44\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"625\" y=\"340\">Release → ⑩ fabrication</text><text class=\"cs-sub\" x=\"625\" y=\"356\">Manufacturable + durable</text></g><polyline class=\"cs-arr\" points=\"552,230 516,230 516,378 99,378 99,270\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"118\" y=\"374\">Any failure → ⑧ ECO (vias/protection/stress) → recheck</text></svg>",
+  "legend": [
+    {
+      "k": "layout",
+      "name": "Converged GDSII under signoff",
+      "desc": "A large 28 nm, ≤331 mm² die is sensitive to random defects and systematic process variation, while continuous data-center inference demands years of service. Public TPU architecture supplies context; actual yield and reliability reports are not public."
+    },
+    {
+      "k": "dfm",
+      "name": "DFM signoff (redundant vias / lithography / yield)",
+      "desc": "DRC legality does not guarantee high yield. Foundry DFM decks evaluate redundant-via coverage, CMP fill and pattern regularity, lithographic hotspots, critical spacing, and yield prediction. Illustrative acceptance requires target via coverage, no unwaived hotspot, and project DFM/yield score."
+    },
+    {
+      "k": "esd",
+      "name": "ESD / latch-up protection signoff",
+      "desc": "Verify every I/O has an adequate ESD clamp and complete discharge path, and that well/substrate taps and spacing suppress parasitic PNPN latch-up. ESD or latch-up failure can destroy a part during assembly, power-up, or a transient. Exact TPU protection is unpublished."
+    },
+    {
+      "k": "aging",
+      "name": "Aging signoff (HCI / NBTI / EM)",
+      "desc": "HCI and NBTI shift transistor thresholds and slow gates over time; EM degrades high-current metal. Aging-aware STA and foundry degradation models must show positive end-of-life timing and EM margin under hot, high-activity full-array use."
+    },
+    {
+      "k": "gate",
+      "name": "Yield + lifetime gate",
+      "desc": "Aggregate DFM, ESD/latch-up, and aging. The chip must be manufacturable at acceptable yield and survive continuous service to its design lifetime. All three dimensions must pass; exact TPU targets and thresholds are private."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "layout"
+      ],
+      "cap": "① Evaluate the converged large-die layout for two risks: yield sensitivity at 28 nm/≤331 mm² and long-term degradation under 24×7 data-center service."
+    },
+    {
+      "keys": [
+        "dfm"
+      ],
+      "cap": "② Run DFM: add redundant vias, regularize/fill patterns, fix lithographic hotspots, and meet illustrative via-coverage and yield-prediction gates."
+    },
+    {
+      "keys": [
+        "esd"
+      ],
+      "cap": "③ Run ESD/latch-up checks: verify I/O clamps, discharge paths, and well/substrate taps; zero unapproved protection-rule violations is a hard criterion."
+    },
+    {
+      "keys": [
+        "aging"
+      ],
+      "cap": "④ Run aging-aware HCI/NBTI/EM analysis at end of life and full-load activity, requiring nonnegative path slack and compliant EM lifetime margin."
+    },
+    {
+      "keys": [
+        "gate",
+        "tapeout"
+      ],
+      "cap": "⑤ Pass the yield + lifetime gate only when DFM, ESD/latch-up, and aging are green; otherwise return to ⑧ ECO and recheck."
+    }
+  ],
+  "before": [
+    "<b>Define DFM runsets and yield criteria</b>: Agree on foundry 28 nm redundant-via coverage, CMP density, lithographic-hotspot, printability, and yield-score requirements. DFM optimizes robustness; DRC only establishes legality.",
+    "<b>Define ESD/latch-up protection requirements</b>: Set HBM/CDM clamp targets, discharge paths, well/substrate tap density, and I/O-to-core spacing. Illustratively, protection-rule violations must be zero.",
+    "<b>Define aging models, lifetime, and stress</b>: Select foundry HCI/NBTI and EM models, the continuous-service target, temperature, and activity. Evaluate the fully active array as a high-stress case and require positive end-of-life timing/EM margin.",
+    "<b>Fix golden tools and waiver governance</b>: Use Calibre-class DFM/LFD, layout-level ESD/latch-up checks, aging-aware STA, and RedHawk/Voltus-class EM. Define who may approve exceptions and how evidence is recorded.",
+    "<b>Keep the objective distinct</b>: This stage is not rechecking immediate functionality. It asks whether the design can be produced at acceptable yield and continue operating reliably over years."
+  ],
+  "during": [
+    "<b>Core rule: DFM passing is not DRC passing</b>. A legal large die full of single vias or lithography-sensitive patterns may still yield poorly. DFM proactively hardens the layout with via redundancy, fill, and hotspot repair.",
+    "<b>ESD and latch-up are non-negotiable survival gates</b>. Inadequate clamps, discharge paths, or taps can kill a chip before normal service. Clear every issue or retain only formally approved waivers.",
+    "<b>Analyze end-of-life, full-load conditions—not day zero</b>. Add HCI/NBTI delay degradation and EM lifetime stress under hot, high-activity operation. A fresh chip's clean timing does not guarantee years of 24×7 service.",
+    "<b>The three checks cover different failure modes</b>. DFM addresses yield, ESD/latch-up transient survival, and aging long-term degradation. One green result cannot substitute for another.",
+    "<b>Signoff exposes issues; backend creates margin</b>. Return insufficient via redundancy, missing protection, or negative EOL timing to ⑧ for added vias, clamps/taps, or reduced stress. The signoff team preserves criteria.",
+    "<b>Disclosure boundary</b>: DFM, ESD/latch-up, and HCI/NBTI/EM aging are standard large-ASIC signoff. TPU's via coverage, ESD ratings, lifetime target, and margins are unpublished; all criteria shown are illustrative."
+  ],
+  "result": [
+    {
+      "label": "Signoff proposition",
+      "value": "Manufacturable at acceptable yield + reliable for years of 24×7 data-center operation"
+    },
+    {
+      "label": "DFM signoff",
+      "value": "Redundant vias / fill / lithographic hotspots / yield optimization; illustrative coverage and yield gates"
+    },
+    {
+      "label": "ESD / latch-up signoff",
+      "value": "I/O clamps and discharge paths + well/substrate taps; zero unapproved rule violations"
+    },
+    {
+      "label": "Aging signoff",
+      "value": "End-of-life HCI/NBTI delay + EM under full load; path slack ≥0 and EM lifetime margin positive"
+    },
+    {
+      "label": "Aggregate gate",
+      "value": "All three pass the yield + lifetime gate before ⑩ fabrication"
+    },
+    {
+      "label": "Release / reject",
+      "value": "Pass → release; failure → ⑧ ECO for vias, ESD/taps, or stress margin → recheck"
+    }
+  ],
+  "after": [
+    "<b>Return each failure to targeted ⑧ ECO</b>: Add redundant vias/fill or fix lithography for DFM; add clamps and taps for protection; add timing/metal margin or reduce stress for aging.",
+    "<b>Recheck affected and coupled dimensions</b>: Vias/fill alter parasitics and density, protection devices alter I/O layout, and aging margin affects timing. Re-extract and ensure no regression in STA, IR, or DRC.",
+    "<b>Apply the yield + lifetime gate</b>: Compare DFM, ESD/latch-up, and aging reports with predefined criteria. Any red or unreviewed exception blocks release.",
+    "<b>Feed the overall tapeout gate</b>: Reliability/manufacturability joins STA, EM/IR, DRC/LVS, LEC, and power. Only an all-green GDSII proceeds to fabrication.",
+    "<b>Archive traceable reliability evidence</b>: Preserve DFM/yield, ESD/latch-up, EOL aging reports, runsets, models, and waivers for post-silicon yield or early-life failure investigations."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (published TPU v1 array, 24 MiB Unified Buffer, 700 MHz, 28 nm, ≤331 mm², 28–40 W, weight-stationary dataflow, and data-center inference role provide context. Redundant-via/lithography/yield DFM, ESD/latch-up checks, HCI/NBTI/EM aging, and yield+lifetime governance are standard illustrative signoff practices, not private TPU yield, reliability, ESD, lifetime, or margin data.)"
+}

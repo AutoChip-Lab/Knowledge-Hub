@@ -1,0 +1,125 @@
+{
+ "secNum": "3.7",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Pipelining, valid/ready handshakes, and backpressure RTL between the Weight FIFO and systolic array",
+ "oneLine": "Pipelines, handshakes, and FIFOs are the three essential RTL mechanisms for reliably connecting modules with different throughput and variable latency. Between DMA→UB and Weight FIFO→systolic array, the TPU uses bidirectional valid/ready handshakes, read/write pointers to track FIFO full/empty state, and stage-by-stage pipeline registers. Together they keep the array—hungry for an entire column every cycle—from stalling, while backpressure prevents upstream overflow and end-to-end deadlock.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">Producer → FIFO → consumer: bidirectional valid/ready with end-to-end backpressure</text><g class=\"cs-part\" data-k=\"prod\" data-g=\"prod\"><rect class=\"cs-box\" x=\"40\" y=\"48\" width=\"158\" height=\"78\" rx=\"8\"/><text class=\"cs-t\" x=\"119\" y=\"76\">Producer (DMA)</text><text class=\"cs-sub\" x=\"119\" y=\"96\">DDR3→UB transfer</text><text class=\"cs-sub\" x=\"119\" y=\"114\">out_valid=1: data available</text></g><g class=\"cs-part\" data-k=\"vr1\" data-g=\"hs\"><line class=\"cs-arr\" x1=\"198\" y1=\"74\" x2=\"276\" y2=\"74\" marker-end=\"url(#csar)\"/><text class=\"cs-sub\" x=\"200\" y=\"66\">valid →</text><line class=\"cs-arr\" x1=\"276\" y1=\"100\" x2=\"198\" y2=\"100\" marker-end=\"url(#csar)\"/><text class=\"cs-sub\" x=\"200\" y=\"118\">← ready</text></g><g class=\"cs-part\" data-k=\"fifo\" data-g=\"fifo\"><rect class=\"cs-box\" x=\"280\" y=\"40\" width=\"178\" height=\"120\" rx=\"8\"/><text class=\"cs-t\" x=\"369\" y=\"64\">Weight FIFO</text><rect class=\"cs-cell\" x=\"300\" y=\"78\" width=\"138\" height=\"16\"/><text class=\"cs-cellt\" x=\"369\" y=\"91\">wr_ptr →</text><rect class=\"cs-cell\" x=\"300\" y=\"98\" width=\"138\" height=\"16\"/><rect class=\"cs-cell\" x=\"300\" y=\"118\" width=\"138\" height=\"16\"/><text class=\"cs-cellt\" x=\"369\" y=\"131\">rd_ptr →</text><text class=\"cs-sub\" x=\"369\" y=\"152\">full/empty from pointers</text></g><g class=\"cs-part\" data-k=\"vr2\" data-g=\"hs\"><line class=\"cs-arr\" x1=\"458\" y1=\"86\" x2=\"536\" y2=\"86\" marker-end=\"url(#csar)\"/><text class=\"cs-sub\" x=\"460\" y=\"78\">valid →</text><line class=\"cs-arr\" x1=\"536\" y1=\"112\" x2=\"458\" y2=\"112\" marker-end=\"url(#csar)\"/><text class=\"cs-sub\" x=\"460\" y=\"130\">← ready</text></g><g class=\"cs-part\" data-k=\"cons\" data-g=\"cons\"><rect class=\"cs-box\" x=\"540\" y=\"48\" width=\"150\" height=\"100\" rx=\"8\"/><text class=\"cs-t\" x=\"615\" y=\"78\">Consumer</text><text class=\"cs-sub\" x=\"615\" y=\"98\">Systolic-array pipeline</text><text class=\"cs-sub\" x=\"615\" y=\"116\">256×256 MACs</text><text class=\"cs-sub\" x=\"615\" y=\"134\">in_ready=1: can accept</text></g><g class=\"cs-part\" data-k=\"pipe\" data-g=\"pipe\"><rect class=\"cs-box\" x=\"40\" y=\"196\" width=\"650\" height=\"80\" rx=\"8\"/><text class=\"cs-t\" x=\"70\" y=\"220\" text-anchor=\"start\">Stage registers (skid/holding)</text><rect class=\"cs-cell\" x=\"120\" y=\"236\" width=\"56\" height=\"26\"/><text class=\"cs-cellt\" x=\"148\" y=\"253\">stage0</text><line class=\"cs-arr\" x1=\"176\" y1=\"249\" x2=\"214\" y2=\"249\" marker-end=\"url(#csar)\"/><rect class=\"cs-cell\" x=\"216\" y=\"236\" width=\"56\" height=\"26\"/><text class=\"cs-cellt\" x=\"244\" y=\"253\">stage1</text><line class=\"cs-arr\" x1=\"272\" y1=\"249\" x2=\"310\" y2=\"249\" marker-end=\"url(#csar)\"/><rect class=\"cs-cell\" x=\"312\" y=\"236\" width=\"56\" height=\"26\"/><text class=\"cs-cellt\" x=\"340\" y=\"253\">stage2</text><line class=\"cs-arr\" x1=\"368\" y1=\"249\" x2=\"406\" y2=\"249\" marker-end=\"url(#csar)\"/><rect class=\"cs-cell\" x=\"408\" y=\"236\" width=\"56\" height=\"26\"/><text class=\"cs-cellt\" x=\"436\" y=\"253\">stage3</text><text class=\"cs-sub\" x=\"640\" y=\"253\" text-anchor=\"end\">always_ff @(posedge clk)</text></g><g class=\"cs-part\" data-k=\"bp\" data-g=\"bp\"><polyline class=\"cs-arr\" points=\"615,148 615,176 369,176 369,160\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"369,176 119,176 119,126\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-sub\" x=\"300\" y=\"190\">Backpressure: ready deassertion propagates upstream; producer stalls</text></g><text class=\"cs-note\" x=\"40\" y=\"300\">Rule 1: no handshake loop—ready must not combinationally depend on forward valid</text><text class=\"cs-note\" x=\"40\" y=\"320\">Rule 2: no write when full, no read when empty—advance pointers only when permitted</text><text class=\"cs-note\" x=\"40\" y=\"340\">Rule 3: end-to-end backpressure must be deadlock-free—sustain utilization without losing data</text><text class=\"cs-note\" x=\"40\" y=\"382\">Note: HDL is illustrative standard RTL; TPU v1 RTL is not public</text></svg>",
+ "legend": [
+  {
+   "k": "prod",
+   "name": "Producer (DMA transfer engine)",
+   "desc": "The source that moves weights/activations from off-chip DDR3 or the Unified Buffer downstream. It asserts out_valid=1 to indicate valid data. A transfer occurs only on a cycle when downstream ready is also 1: valid is driven by the producer, ready by the consumer, and valid && ready marks one successful transfer."
+  },
+  {
+   "k": "fifo",
+   "name": "Weight FIFO (read/write pointers + full/empty)",
+   "desc": "An elastic buffer that decouples unequal rates. wr_ptr increments when a write handshake occurs and !full; rd_ptr increments when a read handshake occurs and !empty. full/empty are derived from the pointer relationship. The FIFO is a consumer upstream (ready=!full) and a producer downstream (valid=!empty), isolating the two rates."
+  },
+  {
+   "k": "cons",
+   "name": "Consumer (systolic-array pipeline)",
+   "desc": "The 256×256 MAC systolic array, which needs fresh data every cycle. It asserts in_ready when it can accept an item. If its internal pipeline cannot accept data temporarily (in_ready=0), that condition propagates backward through the handshake as backpressure—first to the FIFO, then to DMA."
+  },
+  {
+   "k": "pipe",
+   "name": "Pipeline registers (stage-by-stage)",
+   "desc": "The datapath is partitioned into stage0→stage1→… with registers between stages; always_ff @(posedge clk) advances data one stage per cycle. This shortens long combinational paths to raise frequency. During stalls, skid buffers or holding registers retain an in-flight item so no data is lost."
+  },
+  {
+   "k": "bp",
+   "name": "Backpressure path (ready propagates upstream)",
+   "desc": "A control flow opposite to the data direction: consumer deasserts ready → FIFO fills → FIFO deasserts upstream ready → DMA stops issuing. Backpressure makes the chain run at the pace of its slowest stage without overflow or futile work. The reverse path must not form a combinational loop with forward valid, and the full chain must remain deadlock-free."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "prod",
+    "vr1",
+    "fifo"
+   ],
+   "cap": "① Enqueue handshake: DMA drives data and asserts out_valid at the FIFO input. On a cycle when the FIFO is not full (ready=!full) and valid is high, the data is written and wr_ptr increments. If full, ready falls; no write occurs and the producer must hold the item."
+  },
+  {
+   "keys": [
+    "fifo",
+    "vr2",
+    "cons"
+   ],
+   "cap": "② Dequeue handshake: when nonempty, the FIFO drives valid=!empty toward the array. The array asserts in_ready when it can accept data; when both are high, the item is consumed and rd_ptr increments. Read and write sides advance at their own rates, with FIFO occupancy absorbing the difference."
+  },
+  {
+   "keys": [
+    "cons",
+    "pipe"
+   ],
+   "cap": "③ Pipeline advance: dequeued data enters a stage-by-stage pipeline (stage0→stage1→…). always_ff advances it at each clock edge; interstage registers split long paths and support 700 MHz timing."
+  },
+  {
+   "keys": [
+    "cons",
+    "bp",
+    "fifo",
+    "prod"
+   ],
+   "cap": "④ Backpressure propagation: if the array pipeline cannot accept data temporarily, in_ready falls → the FIFO fills → upstream ready falls → DMA stops issuing. This stop condition propagates upstream stage by stage so no stage overwrites unconsumed data."
+  },
+  {
+   "keys": [
+    "prod",
+    "fifo",
+    "cons"
+   ],
+   "cap": "⑤ Steady-state streaming: while FIFO occupancy stays between empty and full and handshakes complete on both sides, the producer keeps issuing and the array keeps consuming—approaching zero array bubbles and ~92 TOPS, with no upstream overflow or end-to-end deadlock."
+  }
+ ],
+ "before": [
+  "<b>Define the handshake protocol and semantics first</b>: use a bidirectional valid/ready protocol (AXI-Stream-like)—valid is driven upstream, ready downstream, and a beat transfers only when both are high. Specify explicitly that once valid rises, it must remain asserted and data must remain stable until the handshake completes. This is the foundation for preventing loss and duplication.",
+  "<b>Choose FIFO depth, width, and clocking</b>: size depth from the bandwidth–latency product / Little's law—enough to cover upstream fetch latency without wasting SRAM. Width equals one transfer beat. Then determine whether read and write sides share a clock: use ordinary binary/counting pointers for one domain; use Gray-coded pointers plus two-flop synchronizers for an asynchronous FIFO across domains.",
+  "<b>Choose pipeline depth and reset/stall behavior</b>: partition the datapath according to the 700 MHz target; standardize reset style (for this series: synchronous reset on posedge clk); and define whether a stall freezes the whole pipeline through clock enable or uses skid/holding registers to capture in-flight data.",
+  "<b>State synthesizability constraints</b>: handshake and pointer logic must be synthesizable and free of combinational loops. full/empty must update correctly on the same cycle as a write/read to avoid off-by-one overflow or empty reads. Specify interface widths (8-bit weights, 32-bit accumulators) and boundary signals such as last/tlast for tile completion.",
+  "<b>Write measurable success criteria</b>: “under arbitrary backpressure, no beat is lost or duplicated, no overflow or empty read occurs”; “the chain remains deadlock-free under worst-case backpressure”; and “array stalls caused by missing data are approximately zero for the target layer.” Each criterion must be directly verifiable by targeted stimulus."
+ ],
+ "during": [
+  "<b>Handshake detection must be combinational and loop-free</b>: one transfer is fire = valid && ready. A key rule is that ready must not combinationally depend on forward valid; otherwise valid→ready→valid can form a combinational loop and prevent synthesis convergence. Commonly, ready depends only on local capacity (for example !full or a registered downstream-ready signal).",
+  "<b>Implement the FIFO with read/write pointers and full/empty flags</b>: write side: if(wr_en && !full) begin mem[wr_ptr]<=din; wr_ptr<=wr_ptr+1; end; read side: if(rd_en && !empty) rd_ptr<=rd_ptr+1; empty=(wr_ptr==rd_ptr); full uses an extra wrap bit or an occupancy counter. This is illustrative industry-standard RTL, not disclosed line-by-line TPU RTL.",
+  "<b>Register every pipeline stage; keep combinational logic local</b>: each always_ff @(posedge clk) captures the prior stage and advances it; only one bounded combinational segment (for example acc<=acc+a*b in the array) sits between registers. During a stall, freeze all stages with a shared clock enable or capture the in-flight beat in a skid register—never let it disappear.",
+  "<b>Connect backpressure end to end</b>: downstream in_ready falls → FIFO fills → FIFO deasserts upstream ready → DMA holds its item. The stop condition may propagate only after data is safely registered. If a stage stalls valid but not the corresponding data register, it can lose or duplicate a beat.",
+  "<b>Guard against three classic failures: combinational loops, off-by-one flags, and deadlock</b>. A combinational loop comes from mutual valid/ready dependence; an off-by-one full/empty decision permits one extra write or read; deadlock occurs when A waits for B's ready while B waits for A's valid. Break every wait cycle at the protocol level by ensuring at least one side can move unconditionally.",
+  "<b>Scope note</b>: valid/ready, pointer-controlled FIFOs, registered pipelines, and skid buffers are standard RTL techniques. The diagram and snippets are illustrative. TPU v1 RTL is not public; this case uses the documented Weight FIFO, systolic array, and UB structure only as a concrete vehicle for these concepts."
+ ],
+ "result": [
+  {
+   "label": "Handshake protocol",
+   "value": "Bidirectional valid/ready; valid && ready in one cycle is fire (AXI-Stream-like illustration)"
+  },
+  {
+   "label": "Core handshake rule",
+   "value": "ready has no combinational dependence on forward valid; once valid rises, data remains stable"
+  },
+  {
+   "label": "FIFO control",
+   "value": "wr_ptr/rd_ptr + full/empty; write only when !full and read only when !empty"
+  },
+  {
+   "label": "Pipeline RTL (illustrative)",
+   "value": "always_ff @(posedge clk) if(en) stage1<=stage0; register each stage, with a skid buffer for in-flight data"
+  },
+  {
+   "label": "Backpressure objective",
+   "value": "Zero array bubbles + no upstream overflow + no end-to-end deadlock"
+  },
+  {
+   "label": "Three primary hazards",
+   "value": "Combinational loop / full–empty off-by-one / circular-wait deadlock"
+  }
+ ],
+ "after": [
+  "<b>Run lint and CDC checks first</b>: use RTL lint to find combinational loops, undriven/multiply driven signals, and blocking/nonblocking misuse. If FIFO ports cross clock domains, run CDC analysis to confirm Gray-coded pointers, two-flop synchronization, and no reconvergent single-bit paths that can propagate metastability.",
+  "<b>Simulate directed and randomized backpressure</b>: randomly deassert consumer ready in many patterns and assert no loss, duplication, overflow, or empty read. Cover boundary cycles at full, empty, and rapid full/empty transitions to confirm full/empty flags have no off-by-one error.",
+  "<b>Prove deadlock freedom and liveness formally</b>: write SVA properties for the handshake and FIFO: no combinational loop, no write fire while full, no read fire while empty, and “if upstream has data and downstream eventually accepts, the item eventually advances.” Use formal analysis to prove no deadlock or starvation under worst-case backpressure.",
+  "<b>Run trial synthesis for timing</b>: confirm that stage-by-stage registering brings critical paths, such as the array MAC segment, near the target frequency and that handshake logic does not create an unintended long path. If a stage misses timing, add a pipeline stage or revise the skid-buffer boundary.",
+  "<b>Freeze the interface specification for verification and integration</b>: document valid/ready timing, FIFO depth/width, the backpressure chain, pipeline depth, and last/boundary signaling. Deliver these with assertions so the DMA→UB→array chain integrates with consistent behavior."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the paper discloses the Weight FIFO, Unified Buffer, and systolic array; valid/ready handshakes, pointer-based FIFOs, registered pipelines, and skid-buffer RTL are standard practices, and the diagram/HDL snippets are illustrative rather than line-by-line TPU v1 implementation)"
+}

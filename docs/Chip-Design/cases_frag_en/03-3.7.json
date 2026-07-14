@@ -1,0 +1,120 @@
+{
+  "secNum": "3.7",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · External I/O and Connectivity with PCIe + DDR3",
+  "oneLine": "TPU reduces external I/O to two trunks: PCIe to the host, because it is a host-driven coprocessor, and a DDR3 PHY to off-chip weight memory. Larger-scale expansion is left to ICI and optical switching in later TPU pods.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 360\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"36\">Host server (CPU side)</text><g class=\"cs-part\" data-k=\"host\" data-g=\"host\"><rect class=\"cs-box\" x=\"40\" y=\"48\" width=\"150\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"115\" y=\"76\">Host CPU</text><text class=\"cs-sub\" x=\"115\" y=\"94\">Issues CISC commands / supplies data</text></g><line class=\"cs-arr\" x1=\"190\" y1=\"80\" x2=\"262\" y2=\"80\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"262\" y1=\"98\" x2=\"190\" y2=\"98\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"pcie\" data-g=\"pcie\"><rect class=\"cs-box\" x=\"266\" y=\"50\" width=\"120\" height=\"62\" rx=\"8\"/><text class=\"cs-t\" x=\"326\" y=\"76\">PCIe 3.0</text><text class=\"cs-sub\" x=\"326\" y=\"94\">×16 · ~16 GB/s</text></g><text class=\"cs-note\" x=\"222\" y=\"124\">Host-driven coprocessor</text><g class=\"cs-part\" data-k=\"card\" data-g=\"card\"><rect class=\"cs-box\" x=\"430\" y=\"40\" width=\"262\" height=\"290\" rx=\"10\"/><text class=\"cs-t\" x=\"561\" y=\"62\">TPU v1 accelerator card</text></g><line class=\"cs-arr\" x1=\"386\" y1=\"80\" x2=\"446\" y2=\"80\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"iface\" data-g=\"iface\"><rect class=\"cs-box\" x=\"452\" y=\"86\" width=\"218\" height=\"40\" rx=\"8\"/><text class=\"cs-t\" x=\"561\" y=\"111\">PCIe interface / command queue</text></g><line class=\"cs-arr\" x1=\"561\" y1=\"126\" x2=\"561\" y2=\"150\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"core\" data-g=\"core\"><rect class=\"cs-box\" x=\"452\" y=\"152\" width=\"218\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"561\" y=\"178\">MXU + 24 MiB UB</text><text class=\"cs-sub\" x=\"561\" y=\"196\">Compute / on-chip memory</text></g><line class=\"cs-arr\" x1=\"500\" y1=\"210\" x2=\"500\" y2=\"236\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"540\" y1=\"236\" x2=\"540\" y2=\"210\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"phy\" data-g=\"phy\"><rect class=\"cs-box\" x=\"452\" y=\"238\" width=\"218\" height=\"40\" rx=\"8\"/><text class=\"cs-t\" x=\"561\" y=\"263\">DDR3 memory-interface PHY</text></g><line class=\"cs-arr\" x1=\"561\" y1=\"278\" x2=\"561\" y2=\"298\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"dram\" data-g=\"dram\"><rect class=\"cs-box\" x=\"452\" y=\"300\" width=\"218\" height=\"26\" rx=\"8\"/><text class=\"cs-t\" x=\"561\" y=\"318\">Off-chip 8 GiB DDR3 · ~30 GB/s</text></g><g class=\"cs-part\" data-k=\"ici\" data-g=\"ici\"><rect class=\"cs-box\" x=\"40\" y=\"262\" width=\"350\" height=\"64\" rx=\"8\" stroke-dasharray=\"5 4\"/><text class=\"cs-t\" x=\"215\" y=\"288\">Scale-out: TPU v2/v3 pods</text><text class=\"cs-sub\" x=\"215\" y=\"308\">ICI + OCS optical switching (not in v1)</text></g><text class=\"cs-note\" x=\"40\" y=\"252\">Scale-out beyond one v1 card</text></svg>",
+  "legend": [
+    {
+      "k": "pcie",
+      "name": "PCIe 3.0 (to host)",
+      "desc": "TPU v1 is a server-attached coprocessor. PCIe 3.0 ×16, at about 16 GB/s in each direction, carries host-issued CISC commands and data. The small instruction set—about a dozen commands—keeps interface traffic modest."
+    },
+    {
+      "k": "iface",
+      "name": "PCIe interface / command queue",
+      "desc": "The card's PCIe endpoint and control interface queue host commands for the compute core. In a host-driven model, the chip does not fetch instructions autonomously; it waits for the host."
+    },
+    {
+      "k": "phy",
+      "name": "DDR3 memory-interface PHY",
+      "desc": "The PHY connects on-chip logic to 8 GiB of off-chip DDR3 and brings weights into the chip. Its ~30 GB/s bandwidth (paper Table 1) is a frequent v1 inference bottleneck."
+    },
+    {
+      "k": "dram",
+      "name": "Off-chip 8 GiB DDR3",
+      "desc": "Large-capacity storage for model weights. Capacity is sufficient, but bandwidth is low relative to compute—v1's central I/O tradeoff."
+    },
+    {
+      "k": "ici",
+      "name": "Scale-out (not in v1)",
+      "desc": "TPU v1 is a single card without a high-speed chip-to-chip link. Later TPU v2/v3 pods scale through ICI links and OCS optical switching; that is family evolution, not a v1 feature."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "host",
+        "pcie"
+      ],
+      "cap": "① The host pushes CISC commands and input activations over PCIe 3.0; TPU is a passive coprocessor driven by the host."
+    },
+    {
+      "keys": [
+        "iface",
+        "core"
+      ],
+      "cap": "② The card's PCIe interface queues commands for the MXU and Unified Buffer."
+    },
+    {
+      "keys": [
+        "phy",
+        "dram"
+      ],
+      "cap": "③ The compute core fetches weights from 8 GiB of DDR3 through the PHY at ~30 GB/s, a common I/O bottleneck."
+    },
+    {
+      "keys": [
+        "core",
+        "iface",
+        "pcie",
+        "host"
+      ],
+      "cap": "④ Results return to the host over PCIe, completing one inference request."
+    },
+    {
+      "keys": [
+        "ici"
+      ],
+      "cap": "⑤ Beyond one card, v1 has no chip-to-chip fabric; later pods add ICI and optical circuit switching (OCS)."
+    }
+  ],
+  "before": [
+    "<b>Define external connections</b>: What must the chip connect to, through which interfaces, and at what bandwidth? TPU v1 is intentionally restrained: only a host over PCIe and off-chip weight memory over DDR3.",
+    "<b>Decisions to make</b>: PCIe generation and lane count, memory-interface type and width, target I/O bandwidths, system role (standalone SoC or coprocessor), and whether chip-to-chip links are required.",
+    "<b>Required inputs</b>: Weight capacity and delivery cadence from the workload profile (§3.1), the deployment form factor—an add-in card for existing servers—and how TensorFlow/XLA submits work.",
+    "<b>Hard constraints</b>: Compatibility with deployed servers favors mature PCIe; large weight capacity requires off-chip DRAM; and package pins, power, and area limit memory width and PHY count."
+  ],
+  "during": [
+    "<b>Choose the system role</b>: Make TPU a coprocessor rather than a standalone system. Reusing host CPU, networking, and storage reduces external connectivity to PCIe and simplifies deployment in existing servers.",
+    "<b>Select the host interface</b>: Mature PCIe 3.0 fits a host-driven model in which the host issues a few coarse CISC commands and the chip avoids complex fetch and scheduling logic. The tradeoff is dependence on host timing.",
+    "<b>Select the memory interface</b>: Model weights exceed on-chip capacity, requiring external DRAM. Choose 8 GiB of DDR3 and prioritize capacity, with a DDR3 PHY at the physical boundary.",
+    "<b>Confront the bandwidth tradeoff</b>: ~30 GB/s of DDR3 is low beside ~92 TOPS of compute—the v1 memory wall. A 24 MiB Unified Buffer and weight-stationary reuse mitigate it, but weight-heavy, small-batch workloads remain I/O-bound.",
+    "<b>Defer scale-out</b>: v1 invests in a single card, not high-speed chip-to-chip connectivity. Directly connected pods appear in v2/v3 through ICI and OCS, outside v1's scope.",
+    "<b>State disclosure limits</b>: PCIe endpoint, DDR PHY protocol, coherency, and link-training details follow standard data-center ASIC practice where the v1 paper is silent. Only published bandwidth figures are treated as v1 facts."
+  ],
+  "result": [
+    {
+      "label": "Host interface",
+      "value": "PCIe 3.0 ×16 · ~16 GB/s each direction"
+    },
+    {
+      "label": "Execution model",
+      "value": "Host-driven coprocessor using CISC commands"
+    },
+    {
+      "label": "Memory interface",
+      "value": "DDR3 PHY → off-chip DRAM"
+    },
+    {
+      "label": "Off-chip memory",
+      "value": "8 GiB DDR3 · ~30 GB/s"
+    },
+    {
+      "label": "Scaling model",
+      "value": "Single-card v1; v2/v3 pods use ICI + OCS"
+    },
+    {
+      "label": "I/O philosophy",
+      "value": "Minimize interfaces; keep complexity inside the chip"
+    }
+  ],
+  "after": [
+    "<b>Validate I/O performance</b>: Measure PCIe and DDR3 utilization on real workloads to identify compute versus I/O limits. Many measured v1 workloads are memory- or PCIe-bound rather than peak-compute-bound.",
+    "<b>Propagate physical needs</b>: Specify PHY count and width for package pins, I/O rails for power integrity, and PHY placement/routing constraints for physical implementation (⑤).",
+    "<b>Hand off to system integration</b>: Confirm the card fits target servers, trains and enumerates on PCIe, and exchanges tasks correctly with TensorFlow/XLA.",
+    "<b>Add test and observability hooks</b>: Include PCIe/DDR3 bandwidth and stall counters plus standard DFT and loopback for I/O PHYs; these details are general ASIC practice, not disclosed v1 mechanisms.",
+    "<b>Plan the next generation</b>: Scale-out requires chip-to-chip ICI and OCS switching—the direction taken by TPU v2/v3 pods."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (PCIe and DDR3 bandwidths are published; ~30 GB/s for weight memory follows Table 1. PHY/link-training details are standard data-center ASIC practice, not itemized for v1; ICI/OCS pods apply to TPU v2/v3.)"
+}

@@ -1,0 +1,119 @@
+{
+ "secNum": "3.3",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Building the Power Backbone for a 256×256 Systolic Array: Rings and Mesh Control IR-Drop and Electromigration (Illustrative Layout)",
+ "oneLine": "Power-distribution planning turns stable on-die voltage into a physical backbone: a wide power ring feeds an orthogonal strap mesh, and vias descend to every standard cell. TPU’s 256×256 = 65,536 8-bit MACs can switch together at 700 MHz, creating a concentrated transient-current hotspot. A weak PDN causes resistive IR-drop, slowing cells enough to miss 700 MHz or fail functionally, while sustained current density risks electromigration (EM). The first power rule is therefore to place sufficiently wide, dense rings and mesh over the high-activity array before signal routing consumes the metal.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">PDN: wide ring + strap mesh keep IR-drop / EM within budget for the 256×256 array (illustrative)</text><g class=\"cs-part\" data-k=\"die\" data-g=\"die\"><rect class=\"cs-box\" x=\"120\" y=\"56\" width=\"480\" height=\"300\" rx=\"10\" fill=\"none\"/></g><g class=\"cs-part\" data-k=\"ring\" data-g=\"ring\"><rect class=\"cs-box\" x=\"150\" y=\"84\" width=\"420\" height=\"248\" rx=\"6\" fill=\"none\" stroke=\"#0ea5e9\" stroke-width=\"8\"/><text class=\"cs-sub\" x=\"360\" y=\"78\">Power ring (wide top-metal VDD/VSS)</text></g><g class=\"cs-part\" data-k=\"strap\" data-g=\"strap\"><line x1=\"208\" y1=\"84\" x2=\"208\" y2=\"332\" stroke=\"#0ea5e9\" stroke-width=\"4\"/><line x1=\"266\" y1=\"84\" x2=\"266\" y2=\"332\" stroke=\"#0ea5e9\" stroke-width=\"4\"/><line x1=\"324\" y1=\"84\" x2=\"324\" y2=\"332\" stroke=\"#0ea5e9\" stroke-width=\"4\"/><line x1=\"382\" y1=\"84\" x2=\"382\" y2=\"332\" stroke=\"#0ea5e9\" stroke-width=\"4\"/><line x1=\"440\" y1=\"84\" x2=\"440\" y2=\"332\" stroke=\"#0ea5e9\" stroke-width=\"4\"/><line x1=\"498\" y1=\"84\" x2=\"498\" y2=\"332\" stroke=\"#0ea5e9\" stroke-width=\"4\"/><line x1=\"150\" y1=\"132\" x2=\"570\" y2=\"132\" stroke=\"#f59e0b\" stroke-width=\"4\"/><line x1=\"150\" y1=\"184\" x2=\"570\" y2=\"184\" stroke=\"#f59e0b\" stroke-width=\"4\"/><line x1=\"150\" y1=\"236\" x2=\"570\" y2=\"236\" stroke=\"#f59e0b\" stroke-width=\"4\"/><line x1=\"150\" y1=\"288\" x2=\"570\" y2=\"288\" stroke=\"#f59e0b\" stroke-width=\"4\"/><text class=\"cs-sub\" x=\"360\" y=\"350\">Straps / mesh (orthogonal grid linked by via arrays)</text></g><g class=\"cs-part\" data-k=\"mxu\" data-g=\"mxu\"><rect class=\"cs-box\" x=\"226\" y=\"150\" width=\"190\" height=\"120\" rx=\"6\" fill=\"#fde68a\" fill-opacity=\"0.5\"/><text class=\"cs-t\" x=\"321\" y=\"200\">256×256 MXU</text><text class=\"cs-sub\" x=\"321\" y=\"220\">High switching → current hotspot</text><text class=\"cs-sub\" x=\"321\" y=\"236\">Densest, strongest PDN here</text></g><g class=\"cs-part\" data-k=\"ub\" data-g=\"ub\"><rect class=\"cs-box\" x=\"426\" y=\"150\" width=\"128\" height=\"120\" rx=\"6\" fill=\"#e0e7ff\" fill-opacity=\"0.6\"/><text class=\"cs-t\" x=\"490\" y=\"204\">24 MiB UB</text><text class=\"cs-sub\" x=\"490\" y=\"222\">Large SRAM block</text></g><g class=\"cs-part\" data-k=\"bump\" data-g=\"bump\"><circle cx=\"180\" cy=\"114\" r=\"7\" fill=\"#10b981\"/><circle cx=\"300\" cy=\"114\" r=\"7\" fill=\"#10b981\"/><circle cx=\"420\" cy=\"114\" r=\"7\" fill=\"#10b981\"/><circle cx=\"540\" cy=\"114\" r=\"7\" fill=\"#10b981\"/><text class=\"cs-sub\" x=\"360\" y=\"372\">Package power bump/C4 feeds top-level ring and mesh</text></g><line class=\"cs-arr\" x1=\"640\" y1=\"120\" x2=\"574\" y2=\"120\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"648\" y=\"116\">External</text><text class=\"cs-note\" x=\"648\" y=\"130\">VDD</text></svg>",
+ "legend": [
+  {
+   "k": "ring",
+   "name": "Power ring—the wide backbone around the core",
+   "desc": "Wide top-metal VDD and VSS rings surround the core and form the main power trunk. Package bumps first inject current into the ring, which distributes it to the internal mesh. Greater width reduces resistance, creating a low-impedance supply artery; a high-current TPU-scale device needs sufficient ring width."
+  },
+  {
+   "k": "strap",
+   "name": "Power straps / PDN mesh—orthogonal distribution to cells",
+   "desc": "Vertical and horizontal straps extend inward from the ring, connect through via arrays into a multilayer mesh, and feed narrow M1 rails at standard cells. Denser, wider metal lowers effective resistance and IR-drop, but consumes tracks needed by signals—the central PDN-versus-routing trade-off."
+  },
+  {
+   "k": "mxu",
+   "name": "256×256 MXU array—the largest current hotspot",
+   "desc": "At full inference load, 65,536 8-bit MACs switch near-simultaneously at 700 MHz, producing the highest concentrated current density. An undersized grid causes local IR-drop first here, slowing cells or corrupting computation. Floorplanning should allocate the strongest mesh above the array based on its current map."
+  },
+  {
+   "k": "bump",
+   "name": "Power bumps / C4—external current entry",
+   "desc": "Flip-chip C4 bumps inject package VDD/VSS from the die surface into top-level rings and mesh. Bump position and count determine current path length. Greater distance from the hotspot increases path resistance and IR-drop, so connect supply entry to the MXU through short, wide paths."
+  },
+  {
+   "k": "die",
+   "name": "Die / core—the globally powered layout",
+   "desc": "The core contains the MXU, 24 MiB Unified Buffer SRAM, accumulator, and other blocks. PDN is a global structure spanning all modules and must meet voltage requirements everywhere across an illustrative 28 nm, ≤331 mm² layout, not merely inside one block."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "die",
+    "bump"
+   ],
+   "cap": "① Define supply entry: package bumps/C4 inject external VDD/VSS from the die surface. Entry location and distance to current hotspots set a lower bound on achievable IR-drop."
+  },
+  {
+   "keys": [
+    "ring"
+   ],
+   "cap": "② Build the power ring: surround the core with sufficiently wide VDD/VSS top-metal rings that collect bump current into a low-resistance backbone for inward distribution."
+  },
+  {
+   "keys": [
+    "strap"
+   ],
+   "cap": "③ Build the mesh: route orthogonal straps from the ring, join layers with vias, and descend to M1 cell rails. Strap pitch and width directly determine IR-drop."
+  },
+  {
+   "keys": [
+    "mxu",
+    "strap"
+   ],
+   "cap": "④ Strengthen hotspots: the fully active 256×256 MXU draws the most current, so allocate the densest, widest mesh and most vias above it."
+  },
+  {
+   "keys": [
+    "mxu",
+    "strap",
+    "ring"
+   ],
+   "cap": "⑤ Enforce two hard limits: static/dynamic IR-drop must stay within budget so the array meets 700 MHz, and metal current density must remain below EM limits for lifetime reliability—while preserving enough metal for signal routing."
+  }
+ ],
+ "before": [
+  "<b>Obtain process power rules and EM/IR limits</b>: From the PDK, collect sheet resistance per metal layer, maximum current density, via current capacity, supply voltage, and allowable IR-drop—illustratively 5% of VDD. These limits determine strap width and mesh density.",
+  "<b>Estimate current from power</b>: Use chip power, illustratively TPU v1 card power of 28–40 W, and supply voltage to estimate total current, then allocate it by block. The fully active 256×256 MXU is the largest concentrated hotspot. A current map is required before mesh reinforcement can be targeted.",
+  "<b>Co-design PDN with the floorplan</b>: Ring width, strap layers/width/pitch, bump positions, and the 24 MiB UB SRAM and accumulator locations must be decided together. PDN consumes metal, so late planning conflicts with signal routing; power is a first-class floorplanning constraint.",
+  "<b>Partition the metal stack</b>: Decide which thick upper and middle layers primarily carry power and which remain available for signals. Stronger PDN improves voltage but reduces routing capacity, so establish this boundary before implementation.",
+  "<b>Evidence boundary</b>: Power rings, strap mesh, bump/C4 delivery, IR-drop/EM analysis with tools such as Voltus or RedHawk, and PDN generation in Innovus/ICC2 are standard practice. TPU v1 does not disclose its floorplan, metal stack, PDN, or EM/IR data. The 256×256 array, 24 MiB UB, 700 MHz, 28 nm, and ≤331 mm² define the powered object; utilization, layer assignments, and drop percentages here are illustrative."
+ ],
+ "during": [
+  "<b>Build from coarse to fine and outside inward</b>: Follow bump → power ring → strap mesh → M1 cell rail. Establish low-resistance top-metal trunks first, then refine downward toward cells. A weak backbone cannot be rescued by dense local rails alone.",
+  "<b>Hard rule 1: keep IR-drop within budget</b>. Analyze both static drop under average current and dynamic drop from simultaneous switching plus package inductance. Excess voltage loss at the array increases cell delay, prevents 700 MHz operation, and may cause functional errors.",
+  "<b>Hard rule 2: keep metal and vias below EM limits</b>. Sustained high current—especially over the MXU—can drive metal atoms and eventually open a wire. Check every segment and via against process lifetime limits; widen metal or add vias where current density is excessive.",
+  "<b>Densify hotspots while keeping global coverage uniform</b>: Narrow strap pitch, increase width, and add vias over the 256×256 MXU, while maintaining uniform coverage elsewhere so corners far from bumps do not become voltage depressions.",
+  "<b>Hard rule 3: PDN competes with signal routing</b>. A denser mesh improves voltage integrity but consumes tracks and can create routing congestion. Meet the power target, leave metal for signals, and preserve room for iteration rather than maximizing either side blindly.",
+  "<b>Use thick upper metal for supply trunks</b>: Upper layers have lower sheet resistance and suit wide rings and primary straps. Finer lower layers perform local distribution and cell access. Separate the upper-level supply backbone from lower-level capillary delivery."
+ ],
+ "result": [
+  {
+   "label": "Power topology",
+   "value": "Package bump/C4 → wide top-metal VDD/VSS ring → orthogonal strap mesh → M1 cell rails"
+  },
+  {
+   "label": "Metal allocation (illustrative)",
+   "value": "Power trunks on thick upper/mid layers (illustrative M_top); signals mainly on M1–M_mid"
+  },
+  {
+   "label": "Hotspot strategy",
+   "value": "Densest mesh, widest straps, and most vias above the 256×256 MXU; otherwise uniform coverage"
+  },
+  {
+   "label": "IR-drop target (illustrative)",
+   "value": "Static + dynamic drop ≤ about 5% of VDD; array region must remain within budget"
+  },
+  {
+   "label": "EM check",
+   "value": "Current density in every power segment/via ≤ process EM limit; widen or add vias on violations"
+  },
+  {
+   "label": "Resource/setup (illustrative)",
+   "value": "PDN consumes some routing tracks; ~70% core utilization preserves power and signal margin"
+  }
+ ],
+ "after": [
+  "<b>Run static and dynamic IR-drop analysis</b>: Use Voltus/RedHawk-class tools with realistic activity to generate voltage heatmaps. Focus on red regions in the 256×256 MXU; widen or densify straps and vias until the full die passes.",
+  "<b>Run EM analysis for lifetime reliability</b>: Check every power segment and via against process lifetime limits. EM failures may appear only after years, so remove all overcurrent points, especially primary supply paths above the MXU, before sign-off.",
+  "<b>Check whether PDN creates routing congestion</b>: Inspect trial/global-route congestion. If the mesh consumes too much metal, relax density outside hotspots or revise layer allocation while keeping supply integrity within limits.",
+  "<b>Run IR-aware STA</b>: Local voltage drop slows cells, so nominal-voltage timing is insufficient. Analyze timing at the voltage implied by drop and confirm the MXU still meets 700 MHz; strengthen PDN where lost voltage consumes slack.",
+  "<b>Freeze and hand off the converged PDN</b>: When IR-drop, EM, congestion, and IR-aware timing all pass, freeze the power structure and pass it with the layout to placement, routing, DRC/LVS, and SPEF extraction for continued sign-off checks."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the disclosed 256×256 8-bit MAC array, 700 MHz/~92 TOPS, 24 MiB Unified Buffer, weight-stationary flow, 28 nm/≤331 mm², and 28–40 W provide the powered-object and current-scale context for v1; power rings/mesh/bumps, static/dynamic IR-drop and EM analysis, Innovus/ICC2 PDN generation, Voltus/RedHawk-class analysis, metal allocation, 70% utilization, and ≤5% drop are standard back-end EDA practice or illustrative settings, not private TPU v1 disclosure)"
+}

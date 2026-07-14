@@ -1,0 +1,118 @@
+{
+  "secNum": "3.9",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · 28–40 W Power Architecture: Quantize, Move Less, Remove Overhead",
+  "oneLine": "Power architecture is not an afterthought; it decides where every joule goes from the outset. TPU uses three levers to minimize energy per MAC, reaching a 28–40 W card TDP far below contemporary GPUs.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"32\">Three energy-efficiency levers (minimize joules per MAC)</text><g class=\"cs-part\" data-k=\"quant\" data-g=\"quant\"><rect class=\"cs-box\" x=\"40\" y=\"48\" width=\"200\" height=\"62\" rx=\"8\"/><text class=\"cs-t\" x=\"140\" y=\"72\">① Quantize</text><text class=\"cs-sub\" x=\"140\" y=\"90\">INT8 multiply / INT32 accumulate</text><text class=\"cs-sub\" x=\"140\" y=\"104\">Smaller MACs · lower energy than FP</text></g><g class=\"cs-part\" data-k=\"nomove\" data-g=\"nomove\"><rect class=\"cs-box\" x=\"260\" y=\"48\" width=\"200\" height=\"62\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"72\">② Move less data</text><text class=\"cs-sub\" x=\"360\" y=\"90\">Direct transfers among 64K ALUs</text><text class=\"cs-sub\" x=\"360\" y=\"104\">Almost no memory access</text></g><g class=\"cs-part\" data-k=\"strip\" data-g=\"strip\"><rect class=\"cs-box\" x=\"480\" y=\"48\" width=\"200\" height=\"62\" rx=\"8\"/><text class=\"cs-t\" x=\"580\" y=\"72\">③ Remove overhead</text><text class=\"cs-sub\" x=\"580\" y=\"90\">No cache / OoO / branch prediction</text><text class=\"cs-sub\" x=\"580\" y=\"104\">Spend area on MACs</text></g><line class=\"cs-arr\" x1=\"140\" y1=\"110\" x2=\"220\" y2=\"158\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"360\" y1=\"110\" x2=\"360\" y2=\"158\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"580\" y1=\"110\" x2=\"500\" y2=\"158\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"40\" y=\"180\">Power allocation (where joules go at equal compute)</text><g class=\"cs-part\" data-k=\"pmac\" data-g=\"pmac\"><rect class=\"cs-box\" x=\"40\" y=\"190\" width=\"430\" height=\"48\" rx=\"8\"/><text class=\"cs-t\" x=\"255\" y=\"214\">MAC systolic array — useful computation</text><text class=\"cs-sub\" x=\"255\" y=\"230\">Dominant share · 65,536 active MACs</text></g><g class=\"cs-part\" data-k=\"pmove\" data-g=\"pmove\"><rect class=\"cs-box\" x=\"478\" y=\"190\" width=\"120\" height=\"48\" rx=\"8\"/><text class=\"cs-t\" x=\"538\" y=\"214\">Data movement</text><text class=\"cs-sub\" x=\"538\" y=\"230\">Minimized</text></g><g class=\"cs-part\" data-k=\"pctrl\" data-g=\"pctrl\"><rect class=\"cs-box\" x=\"604\" y=\"190\" width=\"76\" height=\"48\" rx=\"8\"/><text class=\"cs-t\" x=\"642\" y=\"212\">Control</text><text class=\"cs-sub\" x=\"642\" y=\"228\">Minimal</text></g><line class=\"cs-arr\" x1=\"220\" y1=\"158\" x2=\"240\" y2=\"186\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"360\" y1=\"158\" x2=\"520\" y2=\"186\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"500\" y1=\"158\" x2=\"640\" y2=\"186\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"40\" y=\"268\">Power domains (standard practice; not disclosed for v1)</text><g class=\"cs-part\" data-k=\"dcore\" data-g=\"dcore\"><rect class=\"cs-box\" x=\"40\" y=\"280\" width=\"200\" height=\"50\" rx=\"8\"/><text class=\"cs-t\" x=\"140\" y=\"302\">Compute domain</text><text class=\"cs-sub\" x=\"140\" y=\"318\">MXU + accumulators (largest share)</text></g><g class=\"cs-part\" data-k=\"dmem\" data-g=\"dmem\"><rect class=\"cs-box\" x=\"260\" y=\"280\" width=\"200\" height=\"50\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"302\">On-chip memory domain</text><text class=\"cs-sub\" x=\"360\" y=\"318\">24 MiB Unified Buffer SRAM</text></g><g class=\"cs-part\" data-k=\"dio\" data-g=\"dio\"><rect class=\"cs-box\" x=\"480\" y=\"280\" width=\"200\" height=\"50\" rx=\"8\"/><text class=\"cs-t\" x=\"580\" y=\"302\">I/O domain</text><text class=\"cs-sub\" x=\"580\" y=\"318\">DDR3 + PCIe (independent V/F possible)</text></g><g class=\"cs-part\" data-k=\"tdp\" data-g=\"tdp\"><rect class=\"cs-box\" x=\"180\" y=\"348\" width=\"360\" height=\"40\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"372\">Card TDP: 28–40 W (well below contemporary GPUs)</text></g><polyline class=\"cs-arr\" points=\"140,330 140,368 176,368\" fill=\"none\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"360,330 360,346\" fill=\"none\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"580,330 580,368 544,368\" fill=\"none\" marker-end=\"url(#csar)\"/></svg>",
+  "legend": [
+    {
+      "k": "quant",
+      "name": "Lever ① Quantize",
+      "desc": "Inference tolerates low precision, enabling 8-bit integer multiplication with 32-bit accumulation. Narrow multipliers consume markedly less area and dynamic power than floating-point units."
+    },
+    {
+      "k": "nomove",
+      "name": "Lever ② Move less data",
+      "desc": "A systolic array transfers values directly among 65,536 ALUs cycle by cycle with almost no memory access, as the paper notes. Data movement often costs more energy than arithmetic, so removing it attacks the dominant waste."
+    },
+    {
+      "k": "strip",
+      "name": "Lever ③ Remove overhead",
+      "desc": "Eliminate hardware caches, out-of-order machinery, and branch prediction—general-purpose CPU structures that save latency but consume area and power—and dedicate the budget to the MAC array."
+    },
+    {
+      "k": "pmac",
+      "name": "MACs dominate useful power",
+      "desc": "The objective is to spend most joules on useful MAC work rather than data movement or control. That allocation is the practical measure of high efficiency."
+    },
+    {
+      "k": "tdp",
+      "name": "TDP budget",
+      "desc": "Together, the three levers yield a 28–40 W card TDP. This ceiling in turn limits how many MACs §3.3 can deploy; compute and power are coupled design knobs."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "quant"
+      ],
+      "cap": "① Reduce precision: accept INT8 inference, shrink multipliers, and lower energy per MAC."
+    },
+    {
+      "keys": [
+        "nomove",
+        "pmove"
+      ],
+      "cap": "② Reduce memory traffic: pass data directly between PEs in the systolic array, minimizing data-movement power."
+    },
+    {
+      "keys": [
+        "strip",
+        "pctrl"
+      ],
+      "cap": "③ Remove control overhead: eliminate caches, out-of-order execution, and branch prediction so area and power serve compute."
+    },
+    {
+      "keys": [
+        "pmac"
+      ],
+      "cap": "④ Result: at equal throughput, most power performs useful work in the MAC array, maximizing energy efficiency."
+    },
+    {
+      "keys": [
+        "dcore",
+        "dmem",
+        "dio",
+        "tdp"
+      ],
+      "cap": "⑤ Partition power domains using standard practice: manage compute, on-chip memory, and I/O separately while meeting a 28–40 W card TDP."
+    }
+  ],
+  "before": [
+    "<b>Set the global power budget</b>: How much card TDP, delivery current, and air cooling can a data-center server provide? TPU targets 28–40 W, the hard ceiling for every downstream tradeoff.",
+    "<b>Decisions to make</b>: Numerical precision, dataflow and its memory traffic, retention of caches/out-of-order execution/branch prediction, target voltage and frequency, SRAM capacity, and power-domain partitioning.",
+    "<b>Required inputs</b>: Workload profile (§3.1), per-operation and per-bit movement energy from the process library, and facility power and cooling limits.",
+    "<b>Hard constraint</b>: Data centers optimize TOPS/W, not peak TOPS alone. The power ceiling directly limits MAC count in §3.3; the two must be co-designed."
+  ],
+  "during": [
+    "<b>Identify the largest energy cost</b>: In an array accelerator, memory access and long-distance movement often consume more energy than one multiply-accumulate. The first rule is therefore to move less data.",
+    "<b>Lever ① trade precision for energy</b>: INT8 inference uses narrower, lower-capacitance multipliers and cuts storage and bandwidth energy by about 4× versus floating point. Use 32-bit accumulation only where needed to control overflow.",
+    "<b>Lever ② trade dataflow for fewer accesses</b>: In a weight-stationary systolic flow, weights remain fixed, activations stream, and partial sums move between PEs. Local reuse minimizes memory energy; the paper reports no memory access during transfers among 64K ALUs.",
+    "<b>Lever ③ remove structures for density</b>: Caches, out-of-order machinery, and branch predictors reduce latency but consume area and power. Deterministic host-driven inference can omit them and devote the budget to MACs.",
+    "<b>Accept the tradeoffs</b>: Replacing caches with a 24 MiB software-managed Unified Buffer makes the compiler responsible for placement and timing. Low precision likewise requires a quantization strategy that preserves accuracy.",
+    "<b>Partition power domains carefully</b>: Data-center inference ASICs commonly separate compute, on-chip memory, and I/O for independent voltage/frequency management and clock gating. TPU v1 did not disclose its voltage domains or DVFS implementation."
+  ],
+  "result": [
+    {
+      "label": "Card TDP",
+      "value": "28–40 W (well below contemporary GPUs)"
+    },
+    {
+      "label": "Lever ① Quantize",
+      "value": "INT8 multiply / INT32 accumulate; smaller MACs"
+    },
+    {
+      "label": "Lever ② Move less",
+      "value": "Direct 64K-ALU transfers with almost no memory access"
+    },
+    {
+      "label": "Lever ③ Remove overhead",
+      "value": "No cache / out-of-order / branch prediction"
+    },
+    {
+      "label": "Largest power share",
+      "value": "MAC array performing useful computation"
+    },
+    {
+      "label": "Power domains (general)",
+      "value": "Compute / on-chip memory / I/O; v1 DVFS not disclosed"
+    }
+  ],
+  "after": [
+    "<b>Validate energy efficiency</b>: Measure TOPS/W and block-level power on real workloads. If movement or control consumes too much, revise the dataflow or on-chip SRAM capacity.",
+    "<b>Reconcile with compute</b>: Feed measured power back to §3.3. If over budget, reduce array size or frequency and iterate until both TDP and throughput targets hold.",
+    "<b>Propagate constraints</b>: Give physical implementation (⑥) power budgets, domain partitioning, PDN, and thermal requirements; give microarchitecture (④) clock-gating and idle-block shutdown hooks.",
+    "<b>Add power observability</b>: Include power/utilization counters and temperature sensors for production TOPS/W monitoring. These details follow standard data-center ASIC practice where v1 is not public."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (undisclosed power-domain and DVFS details are described only as standard data-center inference-ASIC practice.)"
+}

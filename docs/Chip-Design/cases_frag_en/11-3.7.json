@@ -1,0 +1,111 @@
+{
+ "secNum": "3.7",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Defects, yield, and defect density (defect / yield / D0): a randomly distributed killer defect scraps whichever die it strikes; yield is governed approximately by “defect density D0 × die area.” Larger dies are more likely to contain a defect, reducing yield and increasing per-chip cost. TPU v1’s ≤331 mm² large die lies in the range most sensitive to defect density—also the physical reason stage ③ emphasizes that area directly drives cost and very large chips motivate chiplets",
+ "oneLine": "This case focuses on “defects, yield, and defect density.” Even precision manufacturing leaves random killer defects—particles, pinholes, opens, shorts, and other pattern faults—across a wafer. If one lands in a critical region of a die, that die is scrapped. Yield Y (good die / total die) is therefore not a knob a factory can simply turn up; it is dominated by defect density D0 (killer defects per cm²) and die area A. Intuitive models include Y ≈ 1/(1+D0·A), the α = 1 simplified negative-binomial clustered-defect form, and Y = e^(−D0·A), the Poisson zero-defect form. As A grows, the probability that a die contains at least one defect rises and yield declines; the Poisson model produces an exponential decline, while clustered-defect models have a different functional form. This explains large-die sensitivity: to accommodate 65,536 8-bit MACs in a 256×256 systolic array plus a 24 MiB Unified Buffer occupying nearly 29% of the die, TPU v1 reaches ≤331 mm². Fewer complete dies fit on a wafer, and each is more likely to be hit, jointly reducing good TPUs per wafer and increasing unit cost. This is the physical basis for stage ③’s repeated point that “area directly enters cost” and that very large chips motivate chiplet partitioning. The discussion uses TPU’s known 256×256 array, 24 MiB UB, 700 MHz, 28 nm process, ≤331 mm² die, and PCIe card only as the object exposed to defects and screened by yield. Defect density, yield models, and unit-cost relationships are standard foundry practice for this class of 28 nm large chip; TPU v1 does not disclose proprietary D0, yield, cost, or foundry data.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 420\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"24\">Defects, yield, and defect density: randomly distributed killer defects (red dots) scrap whichever die they strike; yield is governed approximately by “defect density D0 × die area”—the larger the die, the greater the hit probability and the lower the yield</text><g class=\"cs-part\" data-k=\"wafer\" data-g=\"wafer\"><circle cx=\"190\" cy=\"240\" r=\"150\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"2\"/><text class=\"cs-t\" x=\"190\" y=\"60\">Same wafer: large dies vs small dies</text><text class=\"cs-sub\" x=\"190\" y=\"80\">Same defect density D0, different consequences</text><g class=\"cs-part\" data-k=\"bigdie\" data-g=\"bigdie\"><rect class=\"cs-cell\" x=\"120\" y=\"170\" width=\"64\" height=\"64\"/><rect class=\"cs-cell\" x=\"190\" y=\"170\" width=\"64\" height=\"64\"/><rect class=\"cs-cell\" x=\"120\" y=\"240\" width=\"64\" height=\"64\"/><rect class=\"cs-cell\" x=\"190\" y=\"240\" width=\"64\" height=\"64\"/><rect class=\"cs-cell\" x=\"88\" y=\"205\" width=\"26\" height=\"64\"/><rect class=\"cs-cell\" x=\"260\" y=\"205\" width=\"26\" height=\"64\"/><rect class=\"cs-cell\" x=\"155\" y=\"138\" width=\"64\" height=\"26\"/><rect class=\"cs-cell\" x=\"155\" y=\"310\" width=\"64\" height=\"26\"/><text class=\"cs-cellt\" x=\"152\" y=\"206\">Large die</text><text class=\"cs-cellt\" x=\"222\" y=\"206\">≤331</text><text class=\"cs-cellt\" x=\"152\" y=\"276\">mm²</text><text class=\"cs-cellt\" x=\"222\" y=\"276\">TPU</text></g><g class=\"cs-part\" data-k=\"defect\" data-g=\"defect\"><circle cx=\"148\" cy=\"190\" r=\"5\" fill=\"#ef4444\"/><circle cx=\"214\" cy=\"262\" r=\"5\" fill=\"#ef4444\"/><circle cx=\"98\" cy=\"232\" r=\"5\" fill=\"#ef4444\"/><circle cx=\"240\" cy=\"320\" r=\"5\" fill=\"#ef4444\"/><circle cx=\"178\" cy=\"150\" r=\"5\" fill=\"#ef4444\"/></g></g><g class=\"cs-part\" data-k=\"yield\" data-g=\"yield\"><rect class=\"cs-box\" x=\"372\" y=\"64\" width=\"324\" height=\"120\" rx=\"8\" fill=\"#fefce8\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"534\" y=\"92\">Yield Y (fraction of good dies)</text><text class=\"cs-sub\" x=\"534\" y=\"116\">≈ 1 /(1 + D0·A)  or  e^(−D0·A)</text><text class=\"cs-sub\" x=\"534\" y=\"138\">D0 = defect density (count/cm²) · A = die area</text><text class=\"cs-sub\" x=\"534\" y=\"160\">A↑ → hit probability↑ → Y↓ (model-dependent decline)</text><text class=\"cs-sub\" x=\"534\" y=\"178\">Large TPU die is most sensitive to D0</text></g><g class=\"cs-part\" data-k=\"curve\" data-g=\"curve\"><rect class=\"cs-box\" x=\"372\" y=\"200\" width=\"160\" height=\"170\" rx=\"8\"/><text class=\"cs-t\" x=\"452\" y=\"224\">Y decreases with area A</text><polyline points=\"392,344 392,250\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1.5\"/><polyline points=\"392,344 516,344\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1.5\"/><path d=\"M392,256 C430,300 470,330 512,340\" fill=\"none\" stroke=\"#ef4444\" stroke-width=\"2\"/><text class=\"cs-sub\" x=\"452\" y=\"362\">→ area A</text><text class=\"cs-sub\" x=\"452\" y=\"246\">Small die, high Y</text></g><line class=\"cs-arr\" x1=\"286\" y1=\"220\" x2=\"368\" y2=\"120\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"cost\" data-g=\"cost\"><rect class=\"cs-box\" x=\"548\" y=\"200\" width=\"148\" height=\"170\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"622\" y=\"226\">Yield determines unit cost</text><text class=\"cs-sub\" x=\"622\" y=\"252\">Unit cost ≈</text><text class=\"cs-sub\" x=\"622\" y=\"272\">wafer cost /(dies per wafer · Y)</text><text class=\"cs-sub\" x=\"622\" y=\"298\">Large die: fewer dies × lower Y</text><text class=\"cs-sub\" x=\"622\" y=\"318\">→ unit cost increases twice over</text><text class=\"cs-sub\" x=\"622\" y=\"344\">(③ Why very large chips motivate chiplets)</text></g><line class=\"cs-arr\" x1=\"532\" y1=\"285\" x2=\"544\" y2=\"285\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"24\" y=\"406\">Disclosure boundary: defect density D0, Poisson and clustered-defect yield models, killer defects, and unit cost follow standard foundry practice for this class of 28 nm large chip; TPU v1 does not disclose D0/yield/cost/foundry data, and the die grid, red-dot defects, and curve are illustrative</text></svg>",
+ "legend": [
+  {
+   "k": "defect",
+   "name": "Killer defect (red dots in the figure)",
+   "desc": "An unavoidable random disturbance in manufacturing: even in a cleanroom, particles can land on a wafer, pinholes can appear, and lithography or etch can create pattern opens or shorts. A defect in a critical die region that causes functional or electrical failure is a “killer defect.” The key is random distribution: defects do not favor large or small dies but are scattered probabilistically across the wafer, as shown by the red dots; a single defect can kill the entire die it occupies. This is why yield is inherently < 100% and where the large-die disadvantage begins. Exact defect types and counts are proprietary to the foundry and not disclosed by TPU."
+  },
+  {
+   "k": "yield",
+   "name": "Yield Y (fraction of good dies) and defect density D0",
+   "desc": "Yield Y = good die / total die, the usable fraction produced from a wafer. It is dominated by two quantities: defect density D0 (killer defects per cm², reflecting line cleanliness and maturity) and die area A. Intuitive models include Y ≈ 1/(1+D0·A), the α = 1 special case of a negative-binomial clustered-defect model, and Y = e^(−D0·A), the Poisson zero-defect model. The first expression is not the Murphy yield model; Murphy’s classic model uses a different functional form. Both use the product D0·A: the expected number of killer defects covered by one die. As it grows, the probability that the die has zero killer defects falls. D0 is set by process maturity and decreases as the line ramps; A is set by design and is fixed after tapeout."
+  },
+  {
+   "k": "curve",
+   "name": "Y falls as die area A grows",
+   "desc": "Plotting a yield model against die area A produces a steep downward curve. For a small die, D0·A is small and Y approaches its maximum; as A grows, D0·A enters a lower-yield region and Y drops sharply. The curve visualizes why large-chip yield is intrinsically lower: on the same line at the same D0, a small chip can yield well while a large chip performs poorly, solely because of area. TPU v1’s ≤331 mm² die lies toward the sensitive right side of this curve, where a small D0 change is amplified into a large yield swing; this heightened D0 sensitivity is an area effect. The curve illustrates a standard model, not measured TPU data."
+  },
+  {
+   "k": "bigdie",
+   "name": "Large die (TPU v1 ≤331 mm², greater area exposed to defects)",
+   "desc": "Each large square packed across the wafer represents a TPU die. Large area imposes two compounding penalties: fewer complete dies fit on a circular wafer, and each die covers more area, increasing its chance D0·A of containing a random defect and being scrapped. TPU accommodates a 256×256 systolic array and a 24 MiB UB occupying nearly 29% of the die in ≤331 mm², so it pays both penalties. This is the concrete form of large-chip defect sensitivity. TPU does not disclose dies per wafer or actual yield; the grid is illustrative."
+  },
+  {
+   "k": "cost",
+   "name": "Yield determines unit cost (the basis for chiplets in ③)",
+   "desc": "Yield is decisive for per-chip cost: unit cost ≈ wafer cost /(complete dies per wafer × yield Y). A large die shrinks both factors in the denominator—fewer dies per wafer and lower Y—significantly increasing TPU unit cost. This is where stage ③’s “area directly enters cost” becomes physical and why the industry partitions very large chips into chiplets: several smaller dies are packaged and interconnected so that each sits higher on the yield curve. Exact cost and yield accounting is foundry-proprietary and not disclosed by TPU; this section illustrates the standard mechanism."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "defect"
+   ],
+   "cap": "① Defects are randomly distributed: clean manufacturing lines still encounter particles, pinholes, pattern opens, and shorts. A single “killer defect” (red dot) in a critical region can destroy the entire die it occupies. Defects do not select die size and are scattered across the wafer, making yield inherently < 100%"
+  },
+  {
+   "keys": [
+    "yield"
+   ],
+   "cap": "② Yield is dominated by D0×A: yield Y = good die/total die ≈ 1/(1+D0·A) or e^(−D0·A). The key product is “defect density D0 × die area A,” the expected number of defects covered by one die; as it grows, the zero-defect probability and Y decrease"
+  },
+  {
+   "keys": [
+    "bigdie",
+    "curve"
+   ],
+   "cap": "③ Larger dies yield less: at the same D0, increasing area A moves D0·A into a lower-yield region and Y falls sharply along the curve. TPU v1’s ≤331 mm² large die lies in the sensitive region; fewer fit per wafer and each is more likely to be hit, making it especially sensitive to defect density"
+  },
+  {
+   "keys": [
+    "yield",
+    "cost"
+   ],
+   "cap": "④ Yield determines unit cost: unit cost ≈ wafer cost/(dies per wafer × Y). A large die suffers from “fewer dies × lower Y,” raising TPU’s unit cost—the physical basis for stage ③’s “area drives cost; very large chips motivate chiplets”"
+  }
+ ],
+ "before": [
+  "<b>Area A was already fixed in ③/⑩ and can only be accepted here</b>: Die area is an input locked by design and tapeout. TPU v1 reaches ≤331 mm² to accommodate its 256×256 array and 24 MiB UB occupying nearly 29% of the die; it cannot be changed during manufacturing/yield analysis. Yield implications must therefore be calculated before tapeout, not discovered only after bad dies emerge.",
+  "<b>Adopt a working assumption for defect density D0</b>: Use the defect density D0 (killer defects per cm²) corresponding to the selected 28 nm process and current manufacturing maturity as a yield-estimation input. D0 is high during initial ramp and falls as the line matures. Foundries supply D0 as proprietary data; TPU does not disclose its specific D0, so this working D0 illustrates only the standard mechanism.",
+  "<b>Select a yield model and define “killer defect”</b>: Agree on the yield model—Poisson e^(−D0·A), the simplified negative-binomial/clustered-defect form 1/(1+D0·A), the distinct Murphy model, or another appropriate choice—and define which defects are “killer,” meaning those in critical regions that cause functional or electrical failure. Do not use “Murphy” and “negative-binomial” as interchangeable names: they are different model families. Yield values are not comparable when models and criteria differ.",
+  "<b>Reserve manufacturability and repair margin (DFM)</b>: Large-die yield is intrinsically lower, so regular arrays such as the 256×256 MAC array and UB SRAM can include spare rows/columns or repair structures to prevent an isolated defect from killing the entire die. The amount of redundancy trades area cost against yield benefit and must be fixed before tapeout. TPU’s specific implementation is not public.",
+  "<b>Align cost targets and wafer starts</b>: Estimate good dies per wafer and unit-cost ranges from die area, D0, and the yield model, then determine the wafer starts needed for target volume and whether unit cost fits the budget. Large-chip economics must be settled in advance rather than repaired afterward. TPU’s actual cost and yield are not public; this is a standard-practice illustration."
+ ],
+ "during": [
+  "<b>Fundamental rule: yield is governed approximately by “defect density D0 × die area A,” not by a factory knob that can simply be turned up</b>. Y ≈ 1/(1+D0·A) or e^(−D0·A); the central quantity D0·A is the expected killer-defect count covered by one die. Either reduce D0 through a cleaner, more mature line—a long-term foundry task—or reduce A through a smaller die—a design task. Once area is locked in ③/⑩, manufacturing can influence only D0.",
+  "<b>Defects are randomly distributed, so a large die is inherently more likely to cover one</b>. On the same wafer with the same D0, defects are scattered probabilistically across the surface. As die area grows, each die covers more surface and the probability of covering at least one killer defect—proportional to D0·A—increases. This is the physical mechanism behind lower large-chip yield, independent of process quality and driven purely by area. TPU’s ≤331 mm² die sits at the disadvantaged end of this relationship.",
+  "<b>A larger die loses on both the numerator and denominator</b>. First, fewer complete square dies fit on a circular wafer, with additional arcuate edge waste. Second, each large die has a greater hit probability and lower yield Y. Together, these effects reduce usable TPUs per wafer from both directions—the unavoidable cost of a large die.",
+  "<b>Yield declines as die area grows, and TPU lies in a sensitive region</b>. A plot of Y versus A drops steeply: when the die is small, D0·A is small and Y is near its maximum; as A increases into a lower-yield region, Y can fall sharply. TPU v1’s large die lies toward the right, highly sensitive to D0. Any small D0 fluctuation is amplified by area into a large yield change, so large chips demand exceptional process stability.",
+  "<b>Yield directly determines unit cost and is the economic constraint for large chips</b>. Unit cost ≈ wafer cost /(complete dies per wafer × yield Y). A large die shrinks both denominator factors—fewer dies and lower Y—substantially increasing TPU unit cost. This is the physical realization of stage ③’s “area directly drives cost” and the fundamental reason very large chips motivate chiplets: split the design into smaller dies, package them together, and return each die to the high-yield portion of the curve.",
+  "<b>Disclosure boundary (applies throughout)</b>: Killer defects, defect density D0, Poisson, Murphy, and negative-binomial yield models, the yield-to-unit-cost relationship, redundancy, and DFM are standard foundry/industry practices for this class of 28 nm large chip. TPU v1 does not disclose its foundry, specific D0, wafer/die yield, dies per wafer, redundancy scheme, or unit cost. This section uses only TPU’s known 256×256 array, 24 MiB UB, 700 MHz, 28 nm process, ≤331 mm² die, and PCIe card as the object exposed to defects and screened by yield. The die grid, red-dot defects, and curve are illustrative and do not represent proprietary TPU data."
+ ],
+ "result": [
+  {
+   "label": "Yield definition",
+   "value": "Y = good die / total die; the fraction of dies on a wafer that are usable, with zero killer defects and electrical performance within specification"
+  },
+  {
+   "label": "Dominant quantity",
+   "value": "Yield is governed approximately by “defect density D0 (count/cm²) × die area A”; D0·A = the expected number of killer defects covered by one die"
+  },
+  {
+   "label": "Intuitive models",
+   "value": "Y ≈ 1/(1+D0·A) is the α = 1 special case of a negative-binomial clustered-defect model; Y = e^(−D0·A) is the Poisson zero-defect model. The Murphy model is distinct. As A rises, both yields decline, but only the Poisson form declines exponentially"
+  },
+  {
+   "label": "Large-die penalty",
+   "value": "As die size grows: fewer fit per wafer (smaller denominator) × each has a higher random-defect hit probability (lower Y) → compounding penalties. TPU v1’s ≤331 mm² die lies in the sensitive region of the curve and is especially sensitive to D0"
+  },
+  {
+   "label": "Yield → cost",
+   "value": "Unit cost ≈ wafer cost/(dies per wafer × Y); the large die’s compounding penalties raise unit cost—the physical basis for ③ “area drives cost; very large chips motivate chiplets”"
+  },
+  {
+   "label": "Disclosure boundary",
+   "value": "D0, yield models, unit cost, and redundancy schemes follow standard foundry practice; TPU v1 does not disclose D0/yield/cost/foundry data, and the figure’s grid, red dots, and curve are illustrative"
+  }
+ ],
+ "after": [
+  "<b>Measure actual yield through wafer sort / CP</b>: After fabrication, probe and power every die, count the actual good-die fraction, and verify whether it falls within the range estimated before tapeout from D0×A. A large discrepancy means the D0 assumption or yield model requires revision. CP is standard practice; TPU’s measured yield is not public.",
+  "<b>Map yield and distinguish random from systematic defects</b>: Plot the spatial distribution of good and bad dies across the wafer. Uniformly random bad dies fit a defect-density model and do not require a major process redesign; clusters at a location, radius, or operation signature indicate systematic defects that must be traced to a specific process step rather than attributed to area.",
+  "<b>Feed back actions to reduce D0 or reduce A/add redundancy in design</b>: If yield misses target, pursue two paths in parallel. The manufacturing line continuously reduces defect density D0 through cleanliness, process tuning, and ramp maturity; the next design revision may reduce area, add spare rows/columns, or partition a very large chip into chiplets so each die returns to the high-yield region. TPU’s specific iterations are not public.",
+  "<b>Feed measured yield into unit-cost and volume planning</b>: Recalculate good TPUs per wafer and unit cost from measured yield, then determine additional wafer starts needed for target volume and whether unit cost meets budget. Every incremental yield improvement reduces both unit cost and required starts, so this accounting must be updated continuously.",
+  "<b>Preserve disclosure boundaries in records and hand off to packaging/test</b>: Archive defect distributions, yield maps, and CP results in manufacturing records for review during ⑫ packaging/test and subsequent yield analysis, then send good dies to packaging. Mark all D0/yield/cost values in this section as standard-practice illustrations rather than public TPU v1 data."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the paper discloses TPU v1’s known 256×256 8-bit MAC systolic array, 24 MiB Unified Buffer, 700 MHz, 28 nm process, ≤331 mm² die, and PCIe accelerator card, used here as the object exposed to defects and screened by yield; killer defects, defect density D0, the Poisson model e^(−D0·A), the simplified negative-binomial clustered-defect form 1/(1+D0·A), and the distinct Murphy yield model; the yield-to-unit-cost relationship, wafer-level electrical test, redundancy/DFM, and chiplet motivation are standard foundry/industry manufacturing, packaging/test, and volume-production practices for this class of 28 nm large chip; the die grid, red-dot defects, yield curve, and all D0/yield/cost values in the figure are illustrative and are not public disclosures of TPU v1’s foundry, proprietary defect density, wafer/die yield, or unit cost)"
+}

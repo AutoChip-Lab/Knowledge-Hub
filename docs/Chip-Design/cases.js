@@ -6320,120 +6320,117 @@ window.CASES = {
   "3.10": {
    "secNum": "3.10",
    "chip": "Google TPU v1",
-   "title": "TPU v1 · 综合产出与交接(给后端):28nm 门级网表 + 综合后 SDC + 时序/面积/功耗报告 + Scan/DFT 打包成交接包,交 ⑧ 物理设计开始布局布线",
-   "oneLine": "综合的终点是一个能交给后端的『交接包』:把 256×256 阵列、UB、累加器等 RTL 综合成的 28nm 门级网表(后端布局布线的起点)、随网表一起的综合后 SDC(700MHz 时钟与 IO/例外约束,后端原样复用做布局/CTS/布线)、QoR 报告(时序 WNS/TNS、面积、功耗、单元数——供评估这版 QoR 够不够格进后端)、以及 Scan/DFT 信息(scan 链、SDF、库与版本清单),四样冻结并附 LEC 通过证据一起交给 ⑧ 物理设计;网表+SDC 是后端的硬输入,报告是放行/退回的判据,后端若 STA 报出新违例还要带真实寄生回综合迭代。",
-   "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">综合收尾:把四样产物打包成『交接包』→ 交给 ⑧ 物理设计开始布局布线</text><g class=\"cs-part\" data-k=\"net\" data-g=\"net\"><rect class=\"cs-box\" x=\"40\" y=\"56\" width=\"280\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"180\" y=\"82\">门级网表 Netlist</text><text class=\"cs-sub\" x=\"180\" y=\"100\">28nm 标准单元 + 连线(后端起点)</text></g><g class=\"cs-part\" data-k=\"sdc\" data-g=\"sdc\"><rect class=\"cs-box\" x=\"40\" y=\"124\" width=\"280\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"180\" y=\"150\">综合后 SDC 约束</text><text class=\"cs-sub\" x=\"180\" y=\"168\">700MHz 时钟 / IO 延迟 / 例外(后端复用)</text></g><g class=\"cs-part\" data-k=\"rpt\" data-g=\"rpt\"><rect class=\"cs-box\" x=\"40\" y=\"192\" width=\"280\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"180\" y=\"218\">QoR 报告</text><text class=\"cs-sub\" x=\"180\" y=\"236\">时序 WNS/TNS · 面积 · 功耗 · 单元数</text></g><g class=\"cs-part\" data-k=\"scan\" data-g=\"scan\"><rect class=\"cs-box\" x=\"40\" y=\"260\" width=\"280\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"180\" y=\"286\">Scan / DFT 信息</text><text class=\"cs-sub\" x=\"180\" y=\"304\">scan 链 / SDF / DEF / 库与版本清单</text></g><g class=\"cs-part\" data-k=\"pack\" data-g=\"pack\"><rect class=\"cs-box\" x=\"356\" y=\"150\" width=\"150\" height=\"100\" rx=\"8\"/><text class=\"cs-t\" x=\"431\" y=\"194\">综合交接包</text><text class=\"cs-sub\" x=\"431\" y=\"214\">四样冻结打包</text><text class=\"cs-sub\" x=\"431\" y=\"232\">+LEC 通过证据</text></g><line class=\"cs-arr\" x1=\"320\" y1=\"85\" x2=\"360\" y2=\"168\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"320\" y1=\"153\" x2=\"360\" y2=\"182\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"320\" y1=\"221\" x2=\"360\" y2=\"216\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"320\" y1=\"289\" x2=\"360\" y2=\"230\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"pd\" data-g=\"pd\"><rect class=\"cs-box\" x=\"542\" y=\"150\" width=\"150\" height=\"100\" rx=\"8\"/><text class=\"cs-t\" x=\"617\" y=\"194\">⑧ 物理设计</text><text class=\"cs-sub\" x=\"617\" y=\"214\">布局 / 时钟树 / 布线</text><text class=\"cs-sub\" x=\"617\" y=\"232\">网表+SDC 为输入</text></g><line class=\"cs-arr\" x1=\"506\" y1=\"200\" x2=\"538\" y2=\"200\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"512\" y=\"280\">交接前 LEC:网表 ≡ RTL</text><polyline class=\"cs-arr\" points=\"617,250 617,300 431,300 431,254\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"356\" y=\"332\">后端 STA 报新违例 → 带真实寄生回综合迭代</text></svg>",
+   "title": "TPU v1 公开结构示意 · 综合基线如何驱动 DFT 主要落地并与物理设计迭代",
+   "oneLine": "综合收尾不是把一个孤立网表直接扔给后端,而是把门级网表、SDC/UPF、工艺库、QoR 报告、LEC 证据和 DFT-ready 定义冻结成同一版本基线。DFT设计在这套基线上集中插入 scan/压缩/MBIST 并启动 ATPG/验证,形成可供 ⑧ 物理设计启动的带测试结构版本;随后 scan reorder、时序、拥塞、功耗与 ECO 反馈继续推动网表、链和图样迭代。以 TPU v1 公开的阵列和存储结构作被综合对象,协同机制为通行工程实践,并非其私有流程披露。",
+   "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 410\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"26\">综合收尾:自洽基线 → DFT 主要落地 ⇄ 带测试结构的物理实现</text><g class=\"cs-part\" data-k=\"net\" data-g=\"input\"><rect class=\"cs-box\" x=\"24\" y=\"54\" width=\"184\" height=\"70\" rx=\"8\"/><text class=\"cs-t\" x=\"116\" y=\"82\">门级网表</text><text class=\"cs-sub\" x=\"116\" y=\"103\">28nm 标准单元 + 连线</text></g><g class=\"cs-part\" data-k=\"intent\" data-g=\"input\"><rect class=\"cs-box\" x=\"24\" y=\"134\" width=\"184\" height=\"70\" rx=\"8\"/><text class=\"cs-t\" x=\"116\" y=\"162\">约束与意图</text><text class=\"cs-sub\" x=\"116\" y=\"183\">SDC · UPF · 库/宏模型</text></g><g class=\"cs-part\" data-k=\"proof\" data-g=\"input\"><rect class=\"cs-box\" x=\"24\" y=\"214\" width=\"184\" height=\"70\" rx=\"8\"/><text class=\"cs-t\" x=\"116\" y=\"242\">放行证据</text><text class=\"cs-sub\" x=\"116\" y=\"263\">QoR · LEC · DFT-ready DRC</text></g><g class=\"cs-part\" data-k=\"base\" data-g=\"base\"><rect class=\"cs-box\" x=\"260\" y=\"108\" width=\"168\" height=\"122\" rx=\"10\"/><text class=\"cs-t\" x=\"344\" y=\"142\">综合基线包</text><text class=\"cs-sub\" x=\"344\" y=\"166\">同一 tag / 同一库角</text><text class=\"cs-sub\" x=\"344\" y=\"188\">网表、约束、报告成套</text><text class=\"cs-sub\" x=\"344\" y=\"210\">可复现 · 可追溯</text></g><line class=\"cs-arr\" x1=\"208\" y1=\"89\" x2=\"258\" y2=\"140\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"208\" y1=\"169\" x2=\"258\" y2=\"169\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"208\" y1=\"249\" x2=\"258\" y2=\"198\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"dft\" data-g=\"dft\"><rect class=\"cs-box\" x=\"476\" y=\"64\" width=\"220\" height=\"116\" rx=\"10\"/><text class=\"cs-t\" x=\"586\" y=\"94\">DFT设计</text><text class=\"cs-sub\" x=\"586\" y=\"118\">scan / 压缩 / MBIST / OCC</text><text class=\"cs-sub\" x=\"586\" y=\"140\">ATPG + 覆盖率 + LEC/DRC</text><text class=\"cs-sub\" x=\"586\" y=\"162\">形成后端启动版本</text></g><line class=\"cs-arr\" x1=\"428\" y1=\"146\" x2=\"474\" y2=\"122\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"pd\" data-g=\"pd\"><rect class=\"cs-box\" x=\"476\" y=\"220\" width=\"220\" height=\"100\" rx=\"10\"/><text class=\"cs-t\" x=\"586\" y=\"250\">⑧ 物理设计</text><text class=\"cs-sub\" x=\"586\" y=\"274\">带 DFT 网表 + test SDC</text><text class=\"cs-sub\" x=\"586\" y=\"296\">ScanDEF / 链映射 / 宏约束</text></g><line class=\"cs-arr\" x1=\"586\" y1=\"180\" x2=\"586\" y2=\"218\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"476,270 442,270 442,230 414,230\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"255\" y=\"304\">DFT/后端发现版本、时序或可实现性问题 → 回基线修正并重新证明</text><text class=\"cs-note\" x=\"24\" y=\"354\">铁律:网表、SDC/UPF、库、QoR、LEC 与 DFT 定义必须对应同一版本;不能东拼西凑</text><text class=\"cs-note\" x=\"24\" y=\"382\">诚实边界:TPU v1 的真实综合网表、DFT/后端交接包和工具脚本未公开;本图只借公开结构讲通行接口</text></svg>",
    "legend": [
     {
      "k": "net",
-     "name": "门级网表(Netlist)——后端的起点",
-     "desc": "综合的核心产物:把 TPU 的 256×256 脉动阵列、24 MiB Unified Buffer 控制、4 MiB 累加器等 RTL 全部映射成 28nm 工艺标准单元(与/或/触发器等具体单元)及它们之间连线的网表(Verilog 门级)。它取代 RTL 成为物理设计的输入——布局布线对着这张网表摆单元、连金属线。网表里每个 cell 都是库里真实存在的标准单元,这是『可制造』的第一份描述。"
+     "name": "门级网表",
+     "desc": "⑦ 的核心产物:RTL 被映射成目标工艺库里的标准单元与连接。它是 DFT 结构插入和物理设计协同迭代的共同逻辑基线。"
     },
     {
-     "k": "sdc",
-     "name": "综合后 SDC 约束——后端原样复用",
-     "desc": "综合用的时序约束(create_clock 定义 700MHz、set_input/output_delay 定义边界、false_path/multicycle 等例外)随网表一起交给后端。后端做布局、时钟树综合(CTS)、布线、签核 STA 时不重写一套,而是复用并细化这份 SDC——保证综合和后端对『什么是关键路径、跑多快、哪些是假路径』的理解一致。约束若不随网表交付,后端会用错误的时序意图优化,前功尽弃。"
+     "k": "intent",
+     "name": "约束、功耗意图与模型",
+     "desc": "SDC/UPF、Liberty、scan cell、存储器宏测试模型和黑盒定义必须与网表同版。DFT 和后端都要在同一份功能意图上继续工作。"
     },
     {
-     "k": "rpt",
-     "name": "QoR 报告——进后端的放行判据",
-     "desc": "时序(WNS/TNS,最差/总负裕量)、面积(标准单元总面积、单元数)、功耗(动态+漏电)三张报告,是评估这版综合 QoR 够不够格进后端的客观依据。综合阶段时序就一堆负 slack、或面积/功耗远超预算,说明 RTL 或约束还有问题,不该硬塞给后端——后端只会让寄生和偏差把情况变得更糟。报告达标(留足后端裕量)才放行。"
+     "k": "proof",
+     "name": "QoR / LEC / DFT-ready 证据",
+     "desc": "时序、面积、功耗报告说明这版网表是否值得放行;LEC 证明综合没有改功能;可测性 DRC 说明时钟、复位、黑盒与宏接口适合进入结构插入和初步 ATPG 的主要窗口。"
     },
     {
-     "k": "scan",
-     "name": "Scan / DFT 信息 + 配套文件",
-     "desc": "综合阶段插入的可测性结构(scan 链:把触发器串成移位链便于量产测试)的连接信息,连同时序标注 SDF、物理约束 DEF、以及『用了哪个工艺库、哪个版本、哪些单元』的库与版本清单一起交付。后端要靠这些做 scan 链重排序、反标时序、对齐库版本——缺一样都可能让后端用错数据或测试结构失效。"
+     "k": "base",
+     "name": "可追溯的综合基线包",
+     "desc": "网表、约束、库、报告与版本清单统一 tag。基线的价值是让后续每次 DFT 插入、ECO 和回退都知道相对哪一版、改了什么、证据是否仍有效。"
     },
     {
-     "k": "pack",
-     "name": "综合交接包(含 LEC 证据)",
-     "desc": "把上面四样冻结、版本化打包成一个交接包,并附上形式等价检查(LEC)通过的证据——证明门级网表与 RTL 逻辑等价、综合只改了实现没改功能。打包冻结意味着这一版网表/约束/报告对应同一次综合,后端拿到的是自洽的一套,而非东拼西凑的不同版本。交接包随后交给 ⑧ 物理设计:它以网表+SDC 为硬输入做布局/CTS/布线,在真实寄生下重做签核 STA,若报出新违例则带真实信息回综合迭代。"
+     "k": "dft",
+     "name": "DFT 主要落地窗口",
+     "desc": "DFT 在综合基线上集中插 scan、压缩、MBIST/OCC 等结构,启动 ATPG、故障覆盖率、连接与功能模式等价性收敛,形成可供后端启动的带测试结构版本。"
+    },
+    {
+     "k": "pd",
+     "name": "物理设计与 DFT 协同迭代",
+     "desc": "⑧ 基于带 DFT 网表、功能/测试 SDC、ScanDEF/链映射与宏约束启动布局,再把 scan reorder、拥塞、时序、功耗与 ECO 反馈回专项基线。"
     }
    ],
    "steps": [
     {
      "keys": [
-      "net"
-     ],
-     "cap": "① 出网表:综合把 256×256 阵列、UB 控制、累加器等 RTL 映射成 28nm 标准单元门级网表——它取代 RTL 成为后端布局布线的起点,每个 cell 都是库里真实存在的可制造单元"
-    },
-    {
-     "keys": [
       "net",
-      "sdc"
+      "intent"
      ],
-     "cap": "② 配约束:把综合用的 SDC(700MHz 时钟、IO 延迟、false/multicycle 例外)随网表一起交付,后端做布局/CTS/布线/STA 时原样复用并细化,保证时序意图一致"
+     "cap": "① 固化综合网表与完整意图:门级网表必须与 SDC/UPF、工艺库、scan cell 和存储器宏模型成套,否则下游会在错误基线上工作"
     },
     {
      "keys": [
-      "rpt"
+      "proof"
      ],
-     "cap": "③ 看 QoR 决定放行:用时序 WNS/TNS、面积、功耗、单元数三张报告判断这版 QoR 够不够进后端——达标(留足后端裕量)才放行,负 slack 一堆就该退回修 RTL/约束"
+     "cap": "② 设置综合出口闸门:QoR 达标、LEC 全等价、DFT-ready DRC 无阻断问题,才允许进入测试结构插入"
     },
     {
      "keys": [
-      "scan",
-      "pack"
+      "base"
      ],
-     "cap": "④ 带齐 DFT 与配套打包:把 scan 链/DFT 信息、SDF、DEF、库与版本清单一并附上,连同 LEC 通过证据冻结成版本化的『综合交接包』"
+     "cap": "③ 统一冻结:为网表、约束、库、报告、waiver 和版本清单打同一 tag,形成可复现、可审计的综合基线包"
     },
     {
      "keys": [
-      "pack",
+      "dft"
+     ],
+     "cap": "④ 进入主要落地窗口:在基线上插 scan/压缩/MBIST/OCC,启动 ATPG、故障覆盖率、连接与 LEC;任何改动都保留版本证据"
+    },
+    {
+     "keys": [
       "pd"
      ],
-     "cap": "⑤ 交后端并留迭代回路:把交接包交给 ⑧ 物理设计开始布局布线;后端在真实寄生下重做签核 STA,若报出新违例,带真实信息回综合迭代——这条回路让综合与后端协同收敛"
+     "cap": "⑤ 以带测试结构版本启动物理设计并双向迭代:test SDC、ScanDEF/链信息成套进入后端,物理反馈再回到受控基线修正"
     }
    ],
    "before": [
-    "<b>先约定交接清单与版本规则</b>:在收口前就定清交接包必须含哪几样——门级网表、综合后 SDC、QoR 报告(时序/面积/功耗)、Scan/DFT 信息及 SDF/DEF、库与版本清单、LEC 证据——并约定全部对应同一次综合、统一打 tag。清单不明,后端极易拿到版本对不上的网表与约束。",
-    "<b>定『够格进后端』的 QoR 验收线</b>:写清放行门槛——700MHz 下时序 WNS≥0(或留好后端裕量)、面积/功耗在预算内、无 hold 等基础问题。这条线让『放行 or 退回修 RTL/约束』有客观判据,而不是综合一跑完就硬塞给后端。",
-    "<b>明确 SDC 要随网表交付且口径一致</b>:确认交给后端的 SDC 与综合实际所用一致(时钟、IO 延迟、false/multicycle 例外齐全),并约定后端复用而非另起一套。综合和后端时序约束口径不一,是两边各说各话、反复返工的常见根源。",
-    "<b>定好 DFT/scan 的交付内容</b>:确认 scan 链结构、scan 配置、SDF 反标信息、DEF 物理约束这些后端要用的 DFT 产物都在交付范围内,并对齐它们与网表的版本。后端要靠这些做 scan 重排序和反标,缺失会让测试结构或时序标注失效。",
-    "<b>诚实边界</b>:门级网表、SDC、Liberty 库、QoR 报告、scan/DFT、SDF/DEF、LEC 以及综合→物理设计的交接流程都是通行 EDA 综合实践,Design Compiler/Genus/Yosys、Conformal/Formality 等工具都支持。TPU v1 不会公开其网表、约束脚本、单元库或 QoR/DFT 数字。这里用 TPU 的已知结构(256×256 脉动阵列、24 MiB UB、4 MiB 累加器、700MHz、28nm、weight-stationary)作为被综合对象来讲交接产物,所有脚本/数字均为示意。"
+    "<b>先约定交接契约</b>:明确综合网表、SDC/UPF、库/宏模型、QoR、LEC、DFT-ready DRC、版本清单与 waiver 的必交项和命名规则。",
+    "<b>定放行线</b>:WNS/TNS、面积/功耗、未约束路径、LEC 与 DFT-ready 问题分别达到什么标准,谁能批准例外,必须在跑最终版前写清。",
+    "<b>统一工具与库口径</b>:综合、DFT、物理团队确认 PDK/Liberty/宏模型和脚本版本,防止同名不同版。",
+    "<b>诚实边界</b>:TPU v1 的 256×256 阵列、24 MiB Unified Buffer、4 MiB 累加器、700MHz 与 28nm 来自公开论文;其真实交接包与 DFT 数据未公开。"
    ],
    "during": [
-    "<b>固化门级网表为后端起点</b>:导出映射到 28nm 标准单元的门级 Verilog 网表,确认阵列由同一 PE 网表例化复用、UB/累加器等块都已落到真实库单元上。这张网表从此取代 RTL——后端所有布局布线动作都对着它做,网表一旦交付就是物理实现的事实基准。",
-    "<b>随网表交付综合后 SDC,口径与综合一致</b>:示意 —— create_clock -period 1.43 [get_ports clk](700MHz)、set_input_delay/set_output_delay 定边界、必要的 set_false_path/set_multicycle_path 例外。约束要与综合实际所用完全一致并交后端复用;后端据此做布局、CTS、布线和签核 STA,避免两边时序意图分叉。",
-    "<b>生成三张 QoR 报告并据此放行</b>:report_timing 出 WNS/TNS、report_area 出面积/单元数、report_power 出动态+漏电(均示意)。三表联合判读:时序无负 slack(或留足后端裕量)、面积/功耗在预算,才判这版 QoR 够格进后端;否则退回查 RTL 或约束,不把问题甩给后端放大。",
-    "<b>带齐 Scan/DFT 与配套物理文件</b>:交付 scan 链连接信息与 DFT 配置,附时序标注 SDF、物理约束 DEF,以及『用了哪个工艺库哪个版本、含哪些单元』的库/版本清单。后端要靠这些做 scan 链重排序、反标时序、对齐库版本——任一缺失都可能让后端用错数据或测试结构失效。",
-    "<b>交接前做 LEC 并附通过证据</b>:用形式等价检查(LEC,如 Conformal/Formality)证明门级网表与 RTL 逻辑等价,确认综合(映射/优化/retiming/DFT 插入)只改了实现没改功能;把 LEC 通过报告随包交付,后端拿到的是一份已证等价的网表,而非可能藏功能 bug 的产物。",
-    "<b>铁律:冻结打包,版本必须自洽</b>。网表、SDC、报告、scan/DFT、库清单、LEC 证据必须全部对应同一次综合并统一冻结打 tag——后端拿到的是一套自洽的输入,绝不能网表是这版、约束是那版、报告是另一版。版本错位是后端踩坑、问题难追溯的头号来源。"
+    "<b>导出门级网表</b>:确认所有层次、黑盒、宏实例和命名可被下游稳定识别,并清理 unresolved reference、latch/loop 等阻断问题。",
+    "<b>同步约束与功耗意图</b>:交付实际用于这次综合的 SDC/UPF,不是另抄一份;同时带出时钟、复位、测试端口与宏测试模型。",
+    "<b>生成证据包</b>:QoR 报告说明时序/面积/功耗,LEC 证明网表与 RTL 功能等价,DFT-ready DRC 说明可测性入口没有结构性障碍。",
+    "<b>冻结同一 tag</b>:对网表、约束、库版本、报告、脚本 commit 与 waiver 建 manifest/hash,保证任何人可复现。",
+    "<b>用共同基线衔接 DFT 与后端</b>:先形成完成首轮结构插入和初步覆盖率检查的版本供物理设计启动;此后按物理反馈持续更新网表、链信息、测试约束和图样。"
    ],
    "result": [
     {
-     "label": "门级网表(产物)",
-     "value": "28nm 标准单元 Verilog 网表;阵列由同一 PE 网表例化复用——后端布局布线的起点"
+     "label": "综合基线",
+     "value": "28nm 门级网表 + 同版 RTL/LEC 参考 + manifest/tag"
     },
     {
-     "label": "综合后 SDC(示意)",
-     "value": "create_clock -period 1.43 [get_ports clk]  // 700MHz,随网表交后端复用,示意"
+     "label": "约束与意图",
+     "value": "功能 SDC、UPF、时钟/复位/测试端口定义、库与宏模型"
     },
     {
-     "label": "QoR 报告(示意)",
-     "value": "report_timing(WNS/TNS)+ report_area + report_power(动态/漏电)+ 单元数 —— 进后端的放行判据"
+     "label": "放行证据",
+     "value": "时序/面积/功耗 QoR + LEC + DFT-ready DRC + waiver"
     },
     {
-     "label": "Scan / DFT 信息",
-     "value": "scan 链结构 / DFT 配置 + SDF 反标 + DEF 物理约束 + 库与版本清单"
+     "label": "DFT 输入",
+     "value": "可插 scan/压缩/MBIST/OCC 的稳定网表与完整测试模型"
     },
     {
-     "label": "LEC 通过证据",
-     "value": "门级网表 ≡ RTL 等价检查报告,证明只改实现未改功能,随包交付"
-    },
-    {
-     "label": "交接包",
-     "value": "上述全部冻结、统一打 tag 版本化打包 → 交 ⑧ 物理设计开始布局布线"
+     "label": "后端启动基线",
+     "value": "首轮带 DFT 网表 + test-mode SDC + ScanDEF/chain map + 宏约束;随物理反馈持续更新"
     }
    ],
    "after": [
-    "<b>交付前自检交接包完整且自洽</b>:核对网表、SDC、三张 QoR 报告、scan/DFT、SDF/DEF、库与版本清单、LEC 证据是否齐全,且全部对应同一次综合的同一 tag。任何一样缺失或版本对不上,先补齐再交——别让后端在缺料的输入上空跑半天。",
-    "<b>用 QoR 报告做放行/退回决策</b>:三表联合判读——时序无负 slack(且留足后端布线寄生/CTS/OCV 要吃掉的裕量)、面积/功耗在预算,才放行进后端。若综合阶段就一堆违例或超预算,退回查 RTL/约束,不把放大后的难题甩给后端。",
-    "<b>确认 SDC 与 DFT 能被后端正确接手</b>:跟后端对齐 SDC 是被复用细化而非另写一套、scan 链能正确重排序、SDF/DEF 与网表版本匹配。交接处的口径对齐做实了,后端才不会一上来就因约束/数据不一致而返工。",
-    "<b>留好综合↔后端迭代回路</b>:后端在真实寄生下重做签核 STA,可能报出综合阶段看不到的新违例(布线延迟、CTS 偏差、OCV)。约定好这些违例带着真实寄生回综合迭代(调约束/局部优化/微调网表),每轮只动一处、可追溯,直至两端时序联合收敛。",
-    "<b>冻结基线并归档</b>:本版交接包放行后冻结为基线,归档网表、综合脚本与约束、QoR 报告、LEC 证据及版本清单;后续 ECO 或后端回迭代都从这个可追溯的基线出发,保证『改了什么、为什么改、相对哪一版』全程清楚。"
+    "<b>DFT 每次改网表都重证</b>:插入、test point 或 ECO 后重跑功能模式 LEC、DFT DRC 与 ATPG/覆盖率,不能沿用旧证据。",
+    "<b>后端 reorder/ECO 也要回签</b>:链顺序、时钟或网表变化后更新 ScanDEF/链映射并重新验证最终图样和 test-mode STA。",
+    "<b>保持双向迭代</b>:DFT/物理若发现拥塞、时序、测试功耗或不可控结构,带具体报告回综合/RTL修正,不要在下游隐性打补丁。",
+    "<b>归档可重现基线</b>:保留脚本、日志、库版本、manifest、报告和批准记录,为 ECO、re-spin 和硅后诊断提供事实来源。",
+    "<b>核对诚实表述</b>:案例只说明大规模数字芯片的通行交接关系,不声称 TPU v1 采用了图中的具体工具、scan 架构或放行指标。"
    ],
-   "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(256×256 8-bit MAC 脉动阵列、700MHz、24 MiB Unified Buffer、4 MiB 累加器、weight-stationary、28nm 为 v1 披露,作为被综合对象;门级网表、综合后 SDC、QoR 报告、Scan/DFT、SDF/DEF、Liberty 库、LEC 及综合→物理设计交接流程、所有脚本/数字为通行 EDA 综合实践与示意,非 TPU v1 私有披露)"
+   "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(公开的 TPU v1 结构/工艺/频率仅作为被综合对象背景;综合基线、综合网表后的 DFT 集中插入/初步 ATPG、以及与物理设计双向迭代的版本化协同为通行 EDA/DFT 实践示意,非 TPU v1 私有网表、脚本、scan 架构或覆盖率披露)"
   },
   "3.2": {
    "secNum": "3.2",
@@ -7023,123 +7020,117 @@ window.CASES = {
   "3.7": {
    "secNum": "3.7",
    "chip": "Google TPU v1",
-   "title": "TPU v1 · DFT 综合(scan 插入):把脉动阵列上万个触发器换成 scan FF 串成链 + 压缩 + SRAM MBIST,让芯片量产可测",
-   "oneLine": "本案例落到「DFT 综合(scan 插入)」小节:综合工具在生成门级网表的同时,把 256×256 阵列与控制逻辑里成千上万个普通 D 触发器替换成带 MUX 的 scan FF、把它们缝成可移位的 scan chain、再插 test compression 把少量管脚扩成数百条内部链、并给 24 MiB UB / 4 MiB 累加器等 SRAM 接上 MBIST;之后用 ATPG 跑出测试向量、达到覆盖率目标——DFT 友好的 RTL 正是在这一步才插得进 scan,从而保证流片回来后每颗芯片都能在测试机上被点亮、良率算得清。",
-   "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"26\">DFT 综合:综合时把普通 FF 换成 scan FF、串成 scan chain、再插 test compression,让成千上万 MAC 寄存器量产可测</text><g class=\"cs-part\" data-k=\"ff\" data-g=\"ff\"><rect class=\"cs-box\" x=\"24\" y=\"56\" width=\"150\" height=\"86\" rx=\"8\"/><text class=\"cs-t\" x=\"99\" y=\"84\">普通 D 触发器</text><text class=\"cs-sub\" x=\"99\" y=\"104\">阵列里成千上万个</text><text class=\"cs-sub\" x=\"99\" y=\"122\">D→Q,不可控不可观</text></g><line class=\"cs-arr\" x1=\"174\" y1=\"99\" x2=\"232\" y2=\"99\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"182\" y=\"92\">scan 替换</text><g class=\"cs-part\" data-k=\"sff\" data-g=\"sff\"><rect class=\"cs-box\" x=\"236\" y=\"48\" width=\"170\" height=\"102\" rx=\"8\"/><text class=\"cs-t\" x=\"321\" y=\"74\">Scan FF(带 MUX)</text><g class=\"cs-part\" data-k=\"mux\" data-g=\"mux\"><rect class=\"cs-cell\" x=\"252\" y=\"86\" width=\"138\" height=\"26\"/><text class=\"cs-cellt\" x=\"321\" y=\"104\">D / SI 二选一 ← SE</text></g><text class=\"cs-sub\" x=\"321\" y=\"132\">SE=0 跑功能,SE=1 移位</text></g><line class=\"cs-arr\" x1=\"406\" y1=\"99\" x2=\"464\" y2=\"99\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"chain\" data-g=\"chain\"><rect class=\"cs-box\" x=\"468\" y=\"48\" width=\"228\" height=\"102\" rx=\"8\"/><text class=\"cs-t\" x=\"582\" y=\"72\">串成 scan chain</text><g class=\"cs-part\" data-k=\"link\" data-g=\"link\"><rect class=\"cs-cell\" x=\"486\" y=\"86\" width=\"40\" height=\"26\"/><text class=\"cs-cellt\" x=\"506\" y=\"104\">SFF</text><line class=\"cs-arr\" x1=\"526\" y1=\"99\" x2=\"540\" y2=\"99\" marker-end=\"url(#csar)\"/><rect class=\"cs-cell\" x=\"542\" y=\"86\" width=\"40\" height=\"26\"/><text class=\"cs-cellt\" x=\"562\" y=\"104\">SFF</text><line class=\"cs-arr\" x1=\"582\" y1=\"99\" x2=\"596\" y2=\"99\" marker-end=\"url(#csar)\"/><rect class=\"cs-cell\" x=\"598\" y=\"86\" width=\"40\" height=\"26\"/><text class=\"cs-cellt\" x=\"618\" y=\"104\">SFF</text><line class=\"cs-arr\" x1=\"638\" y1=\"99\" x2=\"652\" y2=\"99\" marker-end=\"url(#csar)\"/><rect class=\"cs-cell\" x=\"654\" y=\"86\" width=\"34\" height=\"26\"/><text class=\"cs-cellt\" x=\"671\" y=\"104\">SO</text></g><text class=\"cs-sub\" x=\"582\" y=\"134\">SI→SFF→SFF→…→SO 一条移位链</text></g><g class=\"cs-part\" data-k=\"comp\" data-g=\"comp\"><rect class=\"cs-box\" x=\"200\" y=\"186\" width=\"320\" height=\"76\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"212\">Test Compression(压缩/解压)</text><text class=\"cs-sub\" x=\"360\" y=\"234\">decompressor 喂多条短链,compactor 收结果</text><text class=\"cs-sub\" x=\"360\" y=\"252\">少量 scan 引脚 驱动 数百条内部链,省测试时间/管脚</text></g><line class=\"cs-arr\" x1=\"582\" y1=\"150\" x2=\"450\" y2=\"184\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><g class=\"cs-part\" data-k=\"mbist\" data-g=\"mbist\"><rect class=\"cs-box\" x=\"24\" y=\"186\" width=\"150\" height=\"76\" rx=\"8\"/><text class=\"cs-t\" x=\"99\" y=\"212\">SRAM → MBIST</text><text class=\"cs-sub\" x=\"99\" y=\"234\">24 MiB UB / 4 MiB</text><text class=\"cs-sub\" x=\"99\" y=\"252\">累加器 自测引擎</text></g><g class=\"cs-part\" data-k=\"atpg\" data-g=\"atpg\"><rect class=\"cs-box\" x=\"540\" y=\"186\" width=\"156\" height=\"76\" rx=\"8\"/><text class=\"cs-t\" x=\"618\" y=\"212\">ATPG 生成向量</text><text class=\"cs-sub\" x=\"618\" y=\"234\">stuck-at / transition</text><text class=\"cs-sub\" x=\"618\" y=\"252\">覆盖率达标</text></g><line class=\"cs-arr\" x1=\"520\" y1=\"224\" x2=\"538\" y2=\"224\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"net\" data-g=\"net\"><rect class=\"cs-box\" x=\"160\" y=\"300\" width=\"400\" height=\"74\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"328\">DFT 后门级网表</text><text class=\"cs-sub\" x=\"360\" y=\"350\">scan FF 已替换 + chain 已缝 + 压缩/MBIST 已插</text><text class=\"cs-sub\" x=\"360\" y=\"368\">量产可测,良率算得清</text></g><line class=\"cs-arr\" x1=\"360\" y1=\"262\" x2=\"360\" y2=\"298\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"24\" y=\"396\">注:scan 替换/缝链/压缩/MBIST/ATPG 为通行 EDA 综合实践;TPU v1 不公开其 DFT 脚本与覆盖率,图为示意,借已知结构作被综合对象</text></svg>",
+   "title": "TPU v1 公开结构示意 · DFT-ready 综合:先清时钟/复位/宏模型,再让 DFT 插得进",
+   "oneLine": "本案例说明 DFT设计如何在逻辑综合阶段进入结构集中落地窗口:⑦ 不在这里替代完整 scan/ATPG 流程,而是产出可供 DFT 工具和后端共同迭代的网表基线。对大规模阵列与 SRAM,要让所有功能时钟/门控/复位在测试模式可控,提供 scan cell 与存储器测试模型,清理组合环、不可解释黑盒和 X 源,并用 DFT-ready DRC 尽早暴露问题。TPU v1 的真实 DFT 实现未公开,图只借其公开结构讲通行准备工作。",
+   "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"26\">DFT-ready 综合:在主要落地窗口前清掉“插不进、控不住、看不到”的问题</text><g class=\"cs-part\" data-k=\"clk\" data-g=\"input\"><rect class=\"cs-box\" x=\"24\" y=\"54\" width=\"180\" height=\"68\" rx=\"8\"/><text class=\"cs-t\" x=\"114\" y=\"80\">时钟 / 门控</text><text class=\"cs-sub\" x=\"114\" y=\"102\">测试模式可控 · ICG 可旁路</text></g><g class=\"cs-part\" data-k=\"rst\" data-g=\"input\"><rect class=\"cs-box\" x=\"24\" y=\"132\" width=\"180\" height=\"68\" rx=\"8\"/><text class=\"cs-t\" x=\"114\" y=\"158\">复位 / X 源</text><text class=\"cs-sub\" x=\"114\" y=\"180\">极性明确 · 可控 · 可建模</text></g><g class=\"cs-part\" data-k=\"macro\" data-g=\"input\"><rect class=\"cs-box\" x=\"24\" y=\"210\" width=\"180\" height=\"68\" rx=\"8\"/><text class=\"cs-t\" x=\"114\" y=\"236\">SRAM / IP 宏</text><text class=\"cs-sub\" x=\"114\" y=\"258\">测试模型 · MBIST 接口</text></g><g class=\"cs-part\" data-k=\"drc\" data-g=\"gate\"><rect class=\"cs-box\" x=\"270\" y=\"100\" width=\"190\" height=\"132\" rx=\"10\"/><text class=\"cs-t\" x=\"365\" y=\"134\">DFT-ready DRC</text><text class=\"cs-sub\" x=\"365\" y=\"158\">不可控 clock/reset?</text><text class=\"cs-sub\" x=\"365\" y=\"180\">组合环 / 黑盒 / latch?</text><text class=\"cs-sub\" x=\"365\" y=\"202\">scan cell / test model 齐?</text></g><line class=\"cs-arr\" x1=\"204\" y1=\"88\" x2=\"268\" y2=\"132\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"204\" y1=\"166\" x2=\"268\" y2=\"166\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"204\" y1=\"244\" x2=\"268\" y2=\"200\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"fix\" data-g=\"loop\"><rect class=\"cs-box\" x=\"270\" y=\"278\" width=\"190\" height=\"70\" rx=\"8\"/><text class=\"cs-t\" x=\"365\" y=\"304\">修复 / waiver 回路</text><text class=\"cs-sub\" x=\"365\" y=\"326\">回 RTL/约束/模型 · 留证据</text></g><polyline class=\"cs-arr\" points=\"365,232 365,276\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"out\" data-g=\"out\"><rect class=\"cs-box\" x=\"522\" y=\"100\" width=\"174\" height=\"132\" rx=\"10\"/><text class=\"cs-t\" x=\"609\" y=\"134\">DFT-ready 基线</text><text class=\"cs-sub\" x=\"609\" y=\"160\">网表 + SDC/UPF</text><text class=\"cs-sub\" x=\"609\" y=\"182\">scan/test 库 + 宏模型</text><text class=\"cs-sub\" x=\"609\" y=\"204\">DRC/LEC/版本证据</text></g><line class=\"cs-arr\" x1=\"460\" y1=\"166\" x2=\"520\" y2=\"166\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"492\" y=\"254\">→ 主要落地窗口:集中插 scan/压缩/MBIST,启动 ATPG</text><text class=\"cs-note\" x=\"24\" y=\"382\">注:TPU v1 未公开时钟测试旁路、scan 库、宏测试模型或 DFT DRC;所有结构均为通行流程示意</text></svg>",
    "legend": [
     {
-     "k": "ff",
-     "name": "普通 D 触发器(不可测的起点)",
-     "desc": "综合前 RTL 里的寄存器映射成普通 D 触发器:只有功能路径 D→Q。TPU 的 256×256=65,536 个 MAC 单元以及流水控制逻辑里藏着成千上万个这样的触发器,它们深埋内部,外部既无法直接给定值(不可控),也无法直接读出状态(不可观)——若不动它,流片回来的芯片内部故障根本测不出来。"
+     "k": "clk",
+     "name": "测试模式可控的时钟与门控",
+     "desc": "scan shift/capture、MBIST 与 at-speed 测试都依赖可控时钟。ICG、PLL 与派生时钟必须有明确的 test mode 控制,不能留下工具无法激活的时钟岛。"
     },
     {
-     "k": "sff",
-     "name": "Scan FF(替换后的 scan 触发器)",
-     "desc": "DFT 综合的第一步:把普通 FF 一对一替换成 scan FF——在 D 输入前加一个 2:1 MUX,多出扫描输入 SI 和扫描使能 SE。SE=0 时走 D,芯片照常跑功能;SE=1 时走 SI,整排 FF 变成可移位的寄存器。一个 MUX 换来了对每个寄存器的可控可观,是 scan 测试的物理基础。"
+     "k": "rst",
+     "name": "复位与 X 源治理",
+     "desc": "异步复位、未初始化状态、掉电域和黑盒输出可能在测试模式制造不可控或 X 污染。综合交接前要明确极性、模式行为和建模策略。"
     },
     {
-     "k": "chain",
-     "name": "Scan chain(把 scan FF 缝成移位链)",
-     "desc": "工具把替换后的 scan FF 的 SI/SO 首尾相连,串成一条(或多条)移位链:SI→SFF→SFF→…→SO。测试时先 SE=1 把已知测试图案移进所有 FF(可控),拉一拍功能时钟让组合逻辑反应(capture),再 SE=1 把结果移出来比对(可观)。上万个阵列寄存器就这样被一条链『穿』起来,逐个可访问。"
+     "k": "macro",
+     "name": "SRAM / IP 测试模型",
+     "desc": "大容量 SRAM 不靠普通 logic scan 覆盖,需要 memory test model、MBIST 端口与可选修复信息;第三方 IP 也要有 wrapper/黑盒测试契约。"
     },
     {
-     "k": "comp",
-     "name": "Test Compression(压缩/解压)",
-     "desc": "阵列上万个 FF 若只串成几条长链,移位要花极多周期、测试机时间昂贵。压缩在芯片里插 decompressor + compactor:用很少的 scan 输入管脚经解压器扇出去喂数百条短内部链,结果再经压缩器收回少数输出。链短了→移位周期数大降→测试时间和管脚数都省,是大规模阵列量产可测的关键。"
+     "k": "drc",
+     "name": "DFT-ready 规则检查",
+     "desc": "检查不可控 clock/reset、组合环、latch、三态、黑盒、不可扫描寄存器、缺失 scan cell/test model 等阻断项。它不等同于普通 lint。"
     },
     {
-     "k": "mbist",
-     "name": "SRAM → MBIST(存储器自测)",
-     "desc": "scan 链擅长测逻辑,但 24 MiB Unified Buffer、4 MiB 累加器这类大块 SRAM 不走 scan,而是插 MBIST(内建自测)引擎:芯片内部自带状态机跑 March 等算法,自己写读存储阵列、就地判好坏。逻辑用 scan+ATPG、存储用 MBIST,两条 DFT 路并行插入,才覆盖得全。"
+     "k": "fix",
+     "name": "修复与 waiver 闭环",
+     "desc": "真正的结构问题回 RTL/综合/约束或模型修复;无法消除的例外必须写清影响、验证方法、责任人与批准,不能静默忽略。"
+    },
+    {
+     "k": "out",
+     "name": "DFT 与后端共享的可追溯基线",
+     "desc": "综合网表、SDC/UPF、测试端口/时钟/复位定义、scan/test 库、宏模型、DRC/LEC 与版本清单成套冻结,让结构插入、初步 ATPG 和后端迭代都能稳定复现。"
     }
    ],
    "steps": [
     {
      "keys": [
-      "ff",
-      "sff"
+      "clk"
      ],
-     "cap": "① scan 替换:综合/DFT 工具把 RTL 综合出的每个普通 D 触发器,一对一换成带 MUX 的 scan FF(多出 SI/SE)——SE=0 跑功能、SE=1 可移位,从此每个阵列寄存器都可控可观"
+     "cap": "① 先把时钟树入口和门控说清:功能、shift、capture、MBIST 各用什么时钟,ICG/PLL 如何在测试模式被安全控制"
     },
     {
      "keys": [
-      "sff",
-      "chain",
-      "link"
+      "rst"
      ],
-     "cap": "② 缝链:把所有 scan FF 的 SO 接下一个的 SI,串成 scan chain(SI→SFF→…→SO);TPU 阵列上万个 FF 被一条条链穿起来,测试图案可移进、结果可移出"
+     "cap": "② 治理复位与 X:明确异步控制、掉电域、未初始化状态和黑盒输出,避免响应压缩器被未知值污染"
     },
     {
      "keys": [
-      "chain",
-      "comp"
+      "macro"
      ],
-     "cap": "③ 插压缩:链太长移位太慢,插 test compression——decompressor 用少量管脚扇出喂数百条短链、compactor 收结果,移位周期数和测试管脚同时大降"
+     "cap": "③ 补齐宏与 IP 测试契约:SRAM test model/MBIST 接口、scan cell 和第三方 IP wrapper 资料必须与综合网表同版"
     },
     {
      "keys": [
-      "mbist"
+      "drc",
+      "fix"
      ],
-     "cap": "④ 存储走 MBIST:24 MiB UB、4 MiB 累加器等 SRAM 不串 scan,改插内建自测引擎(March 算法自写自读自判),与逻辑 scan 并行覆盖"
+     "cap": "④ 跑 DFT-ready DRC 并闭环:能修就回 RTL/约束/模型修;确需 waiver 的问题留下可审计证据"
     },
     {
      "keys": [
-      "comp",
-      "atpg",
-      "net"
+      "out"
      ],
-     "cap": "⑤ ATPG + 出网表:对插好 scan 的网表跑 ATPG 生成 stuck-at/transition 测试向量直到覆盖率达标,产出『DFT 后门级网表』——scan/压缩/MBIST 全部就位,量产可测、良率算得清"
+     "cap": "⑤ 冻结 DFT-ready 共同基线:网表、SDC/UPF、库/宏模型、DRC/LEC 与版本清单成套,供结构插入、初步 ATPG 和后端协同使用"
     }
    ],
    "before": [
-    "<b>先定可测性目标(DFT spec)</b>:开工前定下要测什么、测到什么程度——固定型故障(stuck-at)覆盖率目标、跳变延迟(transition)目标、scan 链条数与最大链长、压缩比、哪些 SRAM 走 MBIST。这是 DFT 综合收敛的标尺,不是事后补。",
-    "<b>给综合提供工艺库与 scan 单元</b>:DFT 综合要用到 28nm 标准单元库(Liberty/.lib)里的 scan 版触发器(scan FF)及其时序/面积模型,工具才能做 scan 替换并算清替换后的时序代价——这是通行 EDA 综合实践,TPU 不公开其具体库。",
-    "<b>把 DFT 约束写进 SDC / 测试协议</b>:声明 scan 时钟、SE/SI/SO 测试端口、scan 移位频率(通常远低于 700MHz 功能频率)、测试模式下的时钟门控旁路;移位是慢速、capture 才用功能频率,约束要分模式给。",
-    "<b>要求 DFT 友好的 RTL</b>:scan 能不能顺利插,取决于 RTL 写法——所有寄存器用单一同步复位/受控时钟、不写门控时钟的非标结构、不留组合环、不在不可控时钟域留黑洞。RTL 这步若不友好,scan 在这里就插不进或覆盖率上不去。",
-    "<b>诚实标注边界</b>:scan 插入、test compression、MBIST、ATPG、覆盖率收敛是通行 EDA 综合实践;TPU v1 不公开其 DFT 综合脚本、库与覆盖率数字。本案以 TPU 已知结构(256×256 脉动阵列、24 MiB UB、4 MiB 累加器、700MHz、28nm)作为被综合对象讲 DFT 概念,SDC/数字均为示意。"
+    "<b>建立 DFT spec 接口</b>:综合团队必须提前知道 scan/OCC/MBIST、时钟域、电源域和测试模式要求;综合网表形成后通常进入结构集中插入与初步 ATPG 的主要落地窗口。",
+    "<b>准备真实库与模型</b>:目标工艺 scan cell、ICG、lockup、存储器 test model 和第三方 IP 测试信息缺一不可。",
+    "<b>统一网表与约束版本</b>:RTL、SDC/UPF、库和黑盒模型对应同一次 build;否则 DFT DRC 结果不可复现。",
+    "<b>限定案例边界</b>:TPU 论文只公开计算阵列、存储、频率和工艺等结构信息,不公开具体 DFT-ready 规则或结果。"
    ],
    "during": [
-    "<b>scan 替换在综合内完成,不是后处理</b>:综合工具(如 Design Compiler / Genus 这类)在把 RTL 映射到 28nm 标准单元时,直接用库里的 scan FF 替换普通 FF,顺带评估对时序/面积的影响——替换与综合一体,而非综合完再硬塞,这样时序代价能被一起优化。",
-    "<b>缝链要兼顾时序与平衡</b>(示意,通行实践):工具把 scan FF 串链时,既要让各链长度均衡(最长链决定移位周期数),又要注意 scan 路径不能恶化功能时序;阵列规整、FF 密集,正适合切成多条等长链并行移位。",
-    "<b>移位是慢速、capture 才上功能频率——SDC 分模式给</b>(示意):<br><code>create_clock -name clk -period 1.43 [get_ports clk]   # 功能 ~700MHz,示意<br>create_clock -name sclk -period 20.0 [get_ports sclk] # scan 移位慢速,示意<br>set_dft_signal -view spec -type ScanEnable -port se</code><br>移位用 sclk 慢跑省功耗与 IR-drop,capture 那一拍才用 clk 测真实速度路径。",
-    "<b>压缩比是省测试时间与可调试性的权衡</b>:压缩比越高,scan 管脚越省、移位越快,但解压/压缩逻辑会增面积、且故障定位(diagnosis)更难。对 TPU 这种上万 FF 的大阵列,通常上较高压缩;比例由 DFT spec 与测试机能力定。",
-    "<b>大 SRAM 单独走 MBIST,不强塞 scan</b>:24 MiB UB、4 MiB 累加器若用 scan 逐位移代价巨大且测不了存储阵列内的耦合故障,改在综合阶段例化 MBIST 控制器接到这些 SRAM 端口,逻辑 scan 与存储 MBIST 两条路并行插,集成进同一网表。",
-    "<b>诚实边界</b>:以上 SDC 片段(create_clock 1.43ns、set_dft_signal)与压缩/链长写法是 SDC + DFT 综合的通行工业示意,数值仅为说明 700MHz≈1.43ns;TPU v1 未公开其约束脚本、链结构与覆盖率,这里只借其已知结构当被综合对象,未编造 TPU 私有综合数字。"
+    "<b>检查所有时钟源与门控</b>:列出主时钟、派生时钟、PLL、ICG 和异步源,为每种测试模式定义可控路径与 bypass。",
+    "<b>检查复位与控制</b>:确认 scan shift/capture 时不会被异步复位误触发,测试控制信号无组合环和不可控依赖。",
+    "<b>检查寄存器与黑盒</b>:识别不可扫描寄存器、latch、三态、组合反馈与未知输出,决定修复、wrapper 或明确排除。",
+    "<b>检查存储器/IP 测试契约</b>:每个 SRAM 宏都有正确 test model/MBIST 端口,第三方 IP 有可访问/旁路方式。",
+    "<b>跑 DFT-ready DRC + LEC</b>:修复后重跑规则检查,并证明综合输出仍与已验证 RTL 功能等价。"
    ],
    "result": [
     {
-     "label": "DFT 综合产物",
-     "value": "DFT 后门级网表:普通 FF 已换 scan FF + scan chain 已缝 + test compression 已插 + SRAM 接 MBIST"
+     "label": "时钟/复位",
+     "value": "功能、shift、capture、MBIST 模式下均可控,门控/PLL bypass 定义清楚"
     },
     {
-     "label": "scan 单元(库)",
-     "value": "映射到 28nm 库里的 scan FF(D/SI 经 MUX、受 SE 选),替换由综合工具一体完成(通行实践)"
+     "label": "逻辑结构",
+     "value": "无未解释组合环/latch/不可扫描寄存器/黑盒阻断项"
     },
     {
-     "label": "scan 约束(示意 SDC)",
-     "value": "create_clock -period 1.43 [get_ports clk](功能,示意)/ set_dft_signal ScanEnable/ScanIn/ScanOut(示意)"
+     "label": "宏与库",
+     "value": "scan/test 单元、SRAM test model、MBIST/IP 测试接口版本齐全"
     },
     {
-     "label": "压缩 / 链(示意)",
-     "value": "少量 scan 管脚 → decompressor → 数百条短内部链 → compactor;移位用慢速 sclk,capture 用功能频率"
+     "label": "证明",
+     "value": "DFT-ready DRC 无阻断项 + LEC 通过 + waiver 可审计"
     },
     {
-     "label": "存储测试",
-     "value": "24 MiB UB / 4 MiB 累加器等 SRAM 例化 MBIST 引擎(March 算法自测),与逻辑 scan 并行"
-    },
-    {
-     "label": "测试向量 / 覆盖率",
-     "value": "对插好 scan 的网表跑 ATPG 出 stuck-at/transition 向量,迭代到覆盖率达标(数字为通行目标,非 TPU 公开)"
+     "label": "交接包",
+     "value": "综合网表 + SDC/UPF + 测试定义 + 库/宏模型 + manifest/tag"
     }
    ],
    "after": [
-    "<b>看 DFT 报告:覆盖率与链状态</b>:综合后查 ATPG 报告的故障覆盖率(stuck-at/transition)是否达到 DFT spec,scan 链条数/链长是否均衡、有无未串进链的『丢失 FF』(uncovered)与卡链点;不达标就回去补 scan 或修 DFT 友好性问题再综合。",
-    "<b>等价检查(LEC):scan 插入不改功能</b>:对插 scan 前后的网表跑形式等价检查(LEC)——在功能模式(SE=0)下,带 scan 的网表必须与原 RTL/网表逻辑等价。scan 是测试结构,绝不能动功能,LEC 通过才放行。",
-    "<b>核 DFT 时序与面积代价</b>:scan FF 比普通 FF 略大、scan 路径与压缩逻辑占面积、SE 走全片是高扇出网络——综合后看这些是否吃掉时序裕量或超面积预算;移位路径要在 sclk 下满足时序、capture 路径在功能频率下满足。",
-    "<b>迭代到 DFT 收敛</b>:覆盖率、链平衡、时序、面积四项中任一不过,调链长/压缩比/约束或回 RTL 改可测性,重跑 DFT 综合——直到覆盖率达标、LEC 通过、时序面积可接受,DFT 才算收敛。",
-    "<b>交后端:scan 链进物理实现</b>:DFT 后网表连同 scan 链定义、测试协议(STIL/SDC)一并交布局布线;后端会做 scan reorder(按物理位置就近重排链以省线、改善移位时序),最终把可测结构带进 GDSII,流片后供测试机点亮量产芯片。"
+    "<b>DFT 进入主要落地窗口</b>:基于该版本集中完成 scan/压缩/test point/OCC、MBIST/JTAG 集成并启动 ATPG;相关结论随后仍与物理、签核迭代。",
+    "<b>任何插入/ECO 都重新证明</b>:DFT 改网表后重跑功能模式 LEC、post-DFT DRC 与覆盖率,不能继承旧结论。",
+    "<b>把物理反馈带回</b>:拥塞、时序或测试功耗若要求改链/压缩/控制结构,回到受控基线迭代而非临时打补丁。",
+    "<b>让最终图样跟随最终网表</b>:scan reorder、ECO 或时钟变化后更新链信息并重新生成/验证 ATPG 图样。",
+    "<b>保持诚实标注</b>:不把示意的 scan/MBIST/OCC 结构、目标或 DRC 结果写成 TPU v1 已公开事实。"
    ],
-   "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(256×256 脉动阵列、24 MiB Unified Buffer、4 MiB 累加器、700MHz、28nm 为该文披露的已知结构;scan 插入、test compression、MBIST、ATPG、覆盖率收敛、LEC 等为通行 EDA 综合实践,图与 SDC 片段为示意,非 TPU v1 公开的 DFT 综合脚本、库或覆盖率数字)"
+   "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(公开的 TPU v1 阵列/存储/频率/工艺仅作为结构背景;DFT-ready 时钟复位治理、宏测试模型、规则检查与版本化交接为通行 DFT/综合实践示意,非 TPU v1 私有 DFT 披露)"
   },
   "3.8": {
    "secNum": "3.8",
@@ -7375,8 +7366,8 @@ window.CASES = {
     "<b>读 LEC 报告,先看配对再看结论</b>:确认 Unmatched 端点为 0(或每个未配对都有合法原因),再看比对结论是否全 Equivalent。配对没干净就下『等价』结论,等于在沙地上盖章——配对状态是 LEC 报告里第一要核的栏。",
     "<b>逐条复核人为豁免</b>:把所有被 set-equivalent/turn-off 的端点单独列出,核对每处理由是否成立。豁免是 LEC 假阳性的主要藏身处,签核评审要能解释清每一条,杜绝用豁免把真不等价『刷绿』。",
     "<b>不等价时定位根因并迭代</b>:用反例向量复现差异,判定是约束误导(如错误 false_path)、retiming/优化配置、ECO 接线错,还是工具 bug;改在根因处而非改 LEC 设置去回避,改完重跑直到全等价归零。",
-    "<b>把 LEC 通过钉进综合签核出口</b>:LEC 全等价是网表交后端前的硬门槛之一,与时序(WNS/TNS 归零)、面积/功耗达标并列。功能在此被数学地『锁』在门级——后端布局布线只改物理实现、不应再动逻辑,后端 ECO 后还要再跑一轮 LEC 守住这条线。",
-    "<b>留存等价记录,交付后端</b>:把通过的 LEC 报告、配对/豁免清单随门级网表与 SDC 一并交付;后续任何 ECO 都以这次的网表为新参考再做 LEC,形成『改一次、证一次』的链条,保证功能从⑥到流片始终未被悄悄改动。"
+    "<b>把 LEC 通过钉进综合签核出口</b>:LEC 全等价是网表进入 DFT 插入前的硬门槛之一,与时序(WNS/TNS 归零)、面积/功耗达标并列。功能在此被数学地『锁』在门级;DFT 插入、后端 ECO 或其他网表变化后还要以相应基线再跑 LEC 守住这条线。",
+    "<b>留存等价记录,交付 DFT 与后端</b>:把通过的 LEC 报告、配对/豁免清单随门级网表与 SDC 一并交付;后续每次 DFT 插入、scan reorder 或 ECO 都形成『改一次、证一次』的记录,保证功能从⑥到流片始终未被悄悄改动。"
    ],
    "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(256×256 8-bit MAC 脉动阵列、24 MiB Unified Buffer、CISC 指令控制器、700MHz/~92 TOPS、weight-stationary、28nm/331mm² 为 v1 披露,作为被证明等价的对象;形式等价检查(LEC)、Formality/Conformal、配对/逻辑锥比对/反例向量、签核出口条件为通行 EDA 签核实践,文中命令片段与流程描述为示意,非 TPU v1 私有 LEC 脚本或结果披露)"
   }
@@ -12091,8 +12082,8 @@ window.CASES = {
    "secNum": "3.6",
    "chip": "Google TPU v1",
    "title": "TPU v1 · 成品测试(FT)与 ATE:封装好的 TPU 加速卡放进测试座,由 ATE 自动测试设备跑一套测试程序——scan/逻辑 BIST 图样、阵列/SRAM 的 MBIST 自测、at-speed 满速功能、IO 与参数测试,逐颗确认这颗 256×256 脉动阵列、24MiB UB 的大芯片『造得对、跑得到 700MHz』,判 pass/fail 后才放行出货",
-   "oneLine": "本案例落到「成品测试(FT)与 ATE」小节:芯片封装完之后、出货之前,要在自动测试设备(ATE)上做最终的成品测试(Final Test, FT)。封装好的 TPU(做成 PCIe 加速卡)作为被测件(DUT)坐进 ATE 的测试座(socket),ATE 按预先编好的测试程序给它加激励、收响应、和黄金期望比对,跑四类测项:① scan / 逻辑 BIST——移入测试向量、捕获、移出比对,专查封装/制造引入的逻辑缺陷,漏检率由 ⑦DFT 阶段做进去的可测性和测试覆盖率决定;② MBIST——对 24 MiB Unified Buffer、4 MiB 累加器这类海量 SRAM 做内建自测,高效遍历存储单元;③ at-speed 功能——让芯片在 700 MHz 满速跑功能图样,验『不只造得对,还跑得到额定速度』;④ IO + 参数测试——测 PCIe 3.0 / DDR3 接口和电压、电流、漏电等电气参数。核心取舍是『测试覆盖率 vs 测试时间』:覆盖率越高漏检越少,但 ATE 上每颗多耗的秒数乘以海量芯片就是真金白银的测试成本,海量 SRAM/逻辑必须测得既全又快。逐颗判 pass/fail，合格入库出货、失败剔除或分箱。这里把 TPU 已知结构(256×256 8-bit MAC 脉动阵列、24 MiB UB、4 MiB 累加器、700 MHz、PCIe 卡、DDR3)当作『被 ATE 点测、判好坏』的对象来讲 FT 概念;ATE 机型、测试座、具体测试程序/向量、实际覆盖率、测试时间与良率分箱均为这类大芯片/PCIe 卡的通行成品测试实践,TPU v1 不公开其私有 FT 流程与数据。",
-   "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 415\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"26\">成品测试(FT):已封装的 TPU 加速卡放进测试座,用 ATE 自动测试设备跑测试程序 → scan/BIST 图样 + at-speed 功能 + IO + 参数 → 逐颗判 pass/fail</text><g class=\"cs-part\" data-k=\"dut\" data-g=\"dut\"><rect class=\"cs-box\" x=\"24\" y=\"60\" width=\"150\" height=\"120\" rx=\"8\"/><text class=\"cs-t\" x=\"99\" y=\"86\">封装好的 TPU</text><text class=\"cs-sub\" x=\"99\" y=\"106\">PCIe 卡 / 封装件(DUT)</text><rect class=\"cs-cell\" x=\"50\" y=\"122\" width=\"98\" height=\"40\"/><text class=\"cs-cellt\" x=\"99\" y=\"146\">256×256 阵列</text><text class=\"cs-sub\" x=\"99\" y=\"174\">坐进测试座</text></g><line class=\"cs-arr\" x1=\"174\" y1=\"120\" x2=\"214\" y2=\"120\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"ate\" data-g=\"ate\"><rect class=\"cs-box\" x=\"218\" y=\"60\" width=\"200\" height=\"120\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"318\" y=\"86\">ATE 自动测试设备</text><text class=\"cs-sub\" x=\"318\" y=\"106\">测试座(socket)夹住 DUT</text><g class=\"cs-part\" data-k=\"prog\" data-g=\"prog\"><rect class=\"cs-cell\" x=\"240\" y=\"122\" width=\"156\" height=\"40\"/><text class=\"cs-cellt\" x=\"318\" y=\"140\">测试程序 / pattern</text><text class=\"cs-sub\" x=\"318\" y=\"156\">加激励、收响应、比对</text></g></g><line class=\"cs-arr\" x1=\"418\" y1=\"120\" x2=\"458\" y2=\"120\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"judge\" data-g=\"judge\"><rect class=\"cs-box\" x=\"462\" y=\"60\" width=\"234\" height=\"120\" rx=\"8\" fill=\"#dcfce7\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"579\" y=\"86\">逐颗判 pass / fail</text><text class=\"cs-sub\" x=\"579\" y=\"106\">合格入库,失败剔除/分箱</text><rect class=\"cs-cell\" x=\"486\" y=\"122\" width=\"86\" height=\"40\" fill=\"#bbf7d0\"/><text class=\"cs-cellt\" x=\"529\" y=\"146\">PASS 合格</text><rect class=\"cs-cell\" x=\"588\" y=\"122\" width=\"86\" height=\"40\" fill=\"#fecaca\"/><text class=\"cs-cellt\" x=\"631\" y=\"146\">FAIL 剔除</text></g><text class=\"cs-note\" x=\"24\" y=\"210\">测试程序里跑四类图样 / 测项:</text><g class=\"cs-part\" data-k=\"scan\" data-g=\"scan\"><rect class=\"cs-box\" x=\"24\" y=\"222\" width=\"160\" height=\"74\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"104\" y=\"248\">scan / 逻辑 BIST</text><text class=\"cs-sub\" x=\"104\" y=\"268\">移位测试向量查制造缺陷</text><text class=\"cs-sub\" x=\"104\" y=\"286\">靠 ⑦DFT,定测试覆盖率</text></g><g class=\"cs-part\" data-k=\"mbist\" data-g=\"mbist\"><rect class=\"cs-box\" x=\"190\" y=\"222\" width=\"160\" height=\"74\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"270\" y=\"248\">MBIST 阵列/SRAM</text><text class=\"cs-sub\" x=\"270\" y=\"268\">自测 24MiB UB+4MiB 累加</text><text class=\"cs-sub\" x=\"270\" y=\"286\">海量 SRAM 高效自测</text></g><g class=\"cs-part\" data-k=\"func\" data-g=\"func\"><rect class=\"cs-box\" x=\"356\" y=\"222\" width=\"160\" height=\"74\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"436\" y=\"248\">at-speed 功能</text><text class=\"cs-sub\" x=\"436\" y=\"268\">满速跑,验 700MHz 正常</text><text class=\"cs-sub\" x=\"436\" y=\"286\">CISC 指令/数据通路</text></g><g class=\"cs-part\" data-k=\"io\" data-g=\"io\"><rect class=\"cs-box\" x=\"522\" y=\"222\" width=\"174\" height=\"74\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"609\" y=\"248\">IO + 参数测试</text><text class=\"cs-sub\" x=\"609\" y=\"268\">PCIe/DDR3 接口、电压电流</text><text class=\"cs-sub\" x=\"609\" y=\"286\">查接口与电气参数</text></g><g class=\"cs-part\" data-k=\"tradeoff\" data-g=\"tradeoff\"><rect class=\"cs-box\" x=\"24\" y=\"312\" width=\"672\" height=\"44\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"334\">核心取舍:测试覆盖率 ↑(少漏检)  vs  测试时间 ↑(直接进成本)——海量 SRAM/逻辑要测得既全又快</text><text class=\"cs-sub\" x=\"360\" y=\"350\">覆盖率由 ⑦DFT 决定;每颗在 ATE 上的秒数 × 海量芯片 = 测试成本</text></g><text class=\"cs-note\" x=\"24\" y=\"378\">FT 验证两件事:① 造得对(无制造缺陷,scan/BIST/参数测项通过)② 跑得到速(at-speed 满速功能在 700MHz 下正常)</text><text class=\"cs-note\" x=\"24\" y=\"400\">诚实边界:ATE 机型、测试座、具体测试程序/向量、覆盖率指标、测试时间与良率分箱均为这类大芯片/PCIe 卡的通行成品测试实践;TPU v1 不公开其私有 FT 流程与数据,本图借其已知结构作被测对象讲概念</text></svg>",
+   "oneLine": "本案例落到「成品测试(FT)与 ATE」小节:芯片封装完之后、出货之前,要在自动测试设备(ATE)上做最终的成品测试(Final Test, FT)。封装好的 TPU(做成 PCIe 加速卡)作为被测件(DUT)坐进 ATE 的测试座(socket),ATE 按预先编好的测试程序给它加激励、收响应、和黄金期望比对,跑四类测项:① scan / 逻辑 BIST——移入测试向量、捕获、移出比对,专查封装/制造引入的逻辑缺陷,漏检率由 DFT设计一路实现并签核的可测性和测试覆盖率决定;② MBIST——对 24 MiB Unified Buffer、4 MiB 累加器这类海量 SRAM 做内建自测,高效遍历存储单元;③ at-speed 功能——让芯片在 700 MHz 满速跑功能图样,验『不只造得对,还跑得到额定速度』;④ IO + 参数测试——测 PCIe 3.0 / DDR3 接口和电压、电流、漏电等电气参数。核心取舍是『测试覆盖率 vs 测试时间』:覆盖率越高漏检越少,但 ATE 上每颗多耗的秒数乘以海量芯片就是真金白银的测试成本,海量 SRAM/逻辑必须测得既全又快。逐颗判 pass/fail，合格入库出货、失败剔除或分箱。这里把 TPU 已知结构(256×256 8-bit MAC 脉动阵列、24 MiB UB、4 MiB 累加器、700 MHz、PCIe 卡、DDR3)当作『被 ATE 点测、判好坏』的对象来讲 FT 概念;ATE 机型、测试座、具体测试程序/向量、实际覆盖率、测试时间与良率分箱均为这类大芯片/PCIe 卡的通行成品测试实践,TPU v1 不公开其私有 FT 流程与数据。",
+   "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 415\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"26\">成品测试(FT):已封装的 TPU 加速卡放进测试座,用 ATE 自动测试设备跑测试程序 → scan/BIST 图样 + at-speed 功能 + IO + 参数 → 逐颗判 pass/fail</text><g class=\"cs-part\" data-k=\"dut\" data-g=\"dut\"><rect class=\"cs-box\" x=\"24\" y=\"60\" width=\"150\" height=\"120\" rx=\"8\"/><text class=\"cs-t\" x=\"99\" y=\"86\">封装好的 TPU</text><text class=\"cs-sub\" x=\"99\" y=\"106\">PCIe 卡 / 封装件(DUT)</text><rect class=\"cs-cell\" x=\"50\" y=\"122\" width=\"98\" height=\"40\"/><text class=\"cs-cellt\" x=\"99\" y=\"146\">256×256 阵列</text><text class=\"cs-sub\" x=\"99\" y=\"174\">坐进测试座</text></g><line class=\"cs-arr\" x1=\"174\" y1=\"120\" x2=\"214\" y2=\"120\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"ate\" data-g=\"ate\"><rect class=\"cs-box\" x=\"218\" y=\"60\" width=\"200\" height=\"120\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"318\" y=\"86\">ATE 自动测试设备</text><text class=\"cs-sub\" x=\"318\" y=\"106\">测试座(socket)夹住 DUT</text><g class=\"cs-part\" data-k=\"prog\" data-g=\"prog\"><rect class=\"cs-cell\" x=\"240\" y=\"122\" width=\"156\" height=\"40\"/><text class=\"cs-cellt\" x=\"318\" y=\"140\">测试程序 / pattern</text><text class=\"cs-sub\" x=\"318\" y=\"156\">加激励、收响应、比对</text></g></g><line class=\"cs-arr\" x1=\"418\" y1=\"120\" x2=\"458\" y2=\"120\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"judge\" data-g=\"judge\"><rect class=\"cs-box\" x=\"462\" y=\"60\" width=\"234\" height=\"120\" rx=\"8\" fill=\"#dcfce7\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"579\" y=\"86\">逐颗判 pass / fail</text><text class=\"cs-sub\" x=\"579\" y=\"106\">合格入库,失败剔除/分箱</text><rect class=\"cs-cell\" x=\"486\" y=\"122\" width=\"86\" height=\"40\" fill=\"#bbf7d0\"/><text class=\"cs-cellt\" x=\"529\" y=\"146\">PASS 合格</text><rect class=\"cs-cell\" x=\"588\" y=\"122\" width=\"86\" height=\"40\" fill=\"#fecaca\"/><text class=\"cs-cellt\" x=\"631\" y=\"146\">FAIL 剔除</text></g><text class=\"cs-note\" x=\"24\" y=\"210\">测试程序里跑四类图样 / 测项:</text><g class=\"cs-part\" data-k=\"scan\" data-g=\"scan\"><rect class=\"cs-box\" x=\"24\" y=\"222\" width=\"160\" height=\"74\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"104\" y=\"248\">scan / 逻辑 BIST</text><text class=\"cs-sub\" x=\"104\" y=\"268\">移位测试向量查制造缺陷</text><text class=\"cs-sub\" x=\"104\" y=\"286\">靠 DFT,定测试覆盖率</text></g><g class=\"cs-part\" data-k=\"mbist\" data-g=\"mbist\"><rect class=\"cs-box\" x=\"190\" y=\"222\" width=\"160\" height=\"74\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"270\" y=\"248\">MBIST 阵列/SRAM</text><text class=\"cs-sub\" x=\"270\" y=\"268\">自测 24MiB UB+4MiB 累加</text><text class=\"cs-sub\" x=\"270\" y=\"286\">海量 SRAM 高效自测</text></g><g class=\"cs-part\" data-k=\"func\" data-g=\"func\"><rect class=\"cs-box\" x=\"356\" y=\"222\" width=\"160\" height=\"74\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"436\" y=\"248\">at-speed 功能</text><text class=\"cs-sub\" x=\"436\" y=\"268\">满速跑,验 700MHz 正常</text><text class=\"cs-sub\" x=\"436\" y=\"286\">CISC 指令/数据通路</text></g><g class=\"cs-part\" data-k=\"io\" data-g=\"io\"><rect class=\"cs-box\" x=\"522\" y=\"222\" width=\"174\" height=\"74\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"609\" y=\"248\">IO + 参数测试</text><text class=\"cs-sub\" x=\"609\" y=\"268\">PCIe/DDR3 接口、电压电流</text><text class=\"cs-sub\" x=\"609\" y=\"286\">查接口与电气参数</text></g><g class=\"cs-part\" data-k=\"tradeoff\" data-g=\"tradeoff\"><rect class=\"cs-box\" x=\"24\" y=\"312\" width=\"672\" height=\"44\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"334\">核心取舍:测试覆盖率 ↑(少漏检)  vs  测试时间 ↑(直接进成本)——海量 SRAM/逻辑要测得既全又快</text><text class=\"cs-sub\" x=\"360\" y=\"350\">覆盖率由 DFT 决定;每颗在 ATE 上的秒数 × 海量芯片 = 测试成本</text></g><text class=\"cs-note\" x=\"24\" y=\"378\">FT 验证两件事:① 造得对(无制造缺陷,scan/BIST/参数测项通过)② 跑得到速(at-speed 满速功能在 700MHz 下正常)</text><text class=\"cs-note\" x=\"24\" y=\"400\">诚实边界:ATE 机型、测试座、具体测试程序/向量、覆盖率指标、测试时间与良率分箱均为这类大芯片/PCIe 卡的通行成品测试实践;TPU v1 不公开其私有 FT 流程与数据,本图借其已知结构作被测对象讲概念</text></svg>",
    "legend": [
     {
      "k": "ate",
@@ -12101,8 +12092,8 @@ window.CASES = {
     },
     {
      "k": "scan",
-     "name": "scan / 逻辑 BIST(查逻辑制造缺陷,覆盖率靠 ⑦DFT)",
-     "desc": "查『逻辑造得对不对』的主力测项。芯片在 ⑦DFT 阶段把成千上万触发器串成扫描链(scan chain),FT 时 ATE 通过扫描链把自动生成的测试向量(ATPG pattern)移入芯片内部、跑一拍捕获、再移出和期望比对,从而探出封装/制造引入的固定型(stuck-at)、跳变(transition)等缺陷;逻辑 BIST 则把图样生成与比对也做进片内。能探出多大比例的潜在缺陷叫『测试覆盖率』,它由 ⑦DFT 做进去的可测性结构决定——覆盖率不够,坏芯就会漏检流到客户手里。TPU 不公开其覆盖率与向量,scan/BIST 机制为通行 DFT/测试实践。"
+     "name": "scan / 逻辑 BIST(查逻辑制造缺陷,覆盖率靠 DFT)",
+     "desc": "查『逻辑造得对不对』的主力测项。芯片在 DFT设计中规划并实现扫描链(scan chain),综合网表后通常集中完成结构插入,再随物理与签核迭代;FT 时 ATE 通过最终签核的扫描链把自动生成的测试向量(ATPG pattern)移入芯片内部、跑一拍捕获、再移出和期望比对,从而探出封装/制造引入的固定型(stuck-at)、跳变(transition)等缺陷。逻辑 BIST 则把图样生成与比对也做进片内。能探出多大比例的潜在缺陷叫『测试覆盖率』,它由 DFT 做进去的可测性结构决定——覆盖率不够,坏芯就会漏检流到客户手里。TPU 不公开其覆盖率与向量,scan/BIST 机制为通行 DFT/测试实践。"
     },
     {
      "k": "mbist",
@@ -12122,7 +12113,7 @@ window.CASES = {
     {
      "k": "tradeoff",
      "name": "覆盖率 vs 测试时间(测得全 ↔ 测得起)",
-     "desc": "FT 贯穿始终的核心取舍。测试覆盖率越高,漏检的坏芯越少、出货质量越稳——但要测得更全,就得跑更多向量、更多测项,ATE 上每颗芯片耗的秒数随之上升;而每颗多花的测试时间乘以海量芯片,就是直接计入单颗成本的测试费用。TPU v1 这种带 24 MiB UB、4 MiB 累加器和大片逻辑的大芯片,存储与逻辑都海量,尤其要靠 ⑦DFT 的可测性设计(扫描压缩、BIST、并行测)把覆盖率做上去的同时压住测试时间,做到『既测得全又测得快/便宜』。覆盖率指标与实际测试时间为 TPU 私有、不公开,这层权衡是通行测试经济学。"
+     "desc": "FT 贯穿始终的核心取舍。测试覆盖率越高,漏检的坏芯越少、出货质量越稳——但要测得更全,就得跑更多向量、更多测项,ATE 上每颗芯片耗的秒数随之上升;而每颗多花的测试时间乘以海量芯片,就是直接计入单颗成本的测试费用。TPU v1 这种带 24 MiB UB、4 MiB 累加器和大片逻辑的大芯片,存储与逻辑都海量,尤其要靠 DFT 的可测性设计(扫描压缩、BIST、并行测)把覆盖率做上去的同时压住测试时间,做到『既测得全又测得快/便宜』。覆盖率指标与实际测试时间为 TPU 私有、不公开,这层权衡是通行测试经济学。"
     }
    ],
    "steps": [
@@ -12139,7 +12130,7 @@ window.CASES = {
       "mbist",
       "prog"
      ],
-     "cap": "② 跑结构测试查『造得对』:ATE 经扫描链移入 scan/逻辑 BIST 向量查逻辑制造缺陷(漏检率由 ⑦DFT 的覆盖率定),并触发 MBIST 对 24MiB UB、4MiB 累加器这类海量 SRAM 高效自测"
+     "cap": "② 跑结构测试查『造得对』:ATE 经扫描链移入 scan/逻辑 BIST 向量查逻辑制造缺陷(漏检率由 DFT 的覆盖率定),并触发 MBIST 对 24MiB UB、4MiB 累加器这类海量 SRAM 高效自测"
     },
     {
      "keys": [
@@ -12158,14 +12149,14 @@ window.CASES = {
    ],
    "before": [
     "<b>拿到已封装、CP 已筛过的好芯</b>:FT 是封装之后的最终测试,前提是裸 die 在晶圆级电测(CP)已筛过、坏 die 已剔,送来 FT 的是封装好的 TPU(做成 PCIe 卡 / 封装件);开工前确认这批 DUT 来历、封装良好,免得拿封坏的件白测。",
-    "<b>测试程序与向量已就绪</b>:FT 跑的 scan/ATPG 向量、逻辑 BIST、MBIST 配置、at-speed 功能图样、IO/参数测项,都要在测试前编好、在 ATE 上调通并和黄金期望对齐;这些向量的质量与 ⑦DFT 阶段做进去的可测性直接挂钩,决定能查出多大比例缺陷(覆盖率)。",
-    "<b>定测试覆盖率与 pass/fail 判据</b>:开测前要定这批要做到多高的测试覆盖率(由 ⑦DFT 能力托底)、每个测项的合格门限(频率、电压、电流、漏电、IO 时序等)、以及失败如何分箱(bin);判据定得松会漏检、定得严会误杀好芯,要按规格与质量目标定。",
+    "<b>测试程序与向量已就绪</b>:FT 跑的 scan/ATPG 向量、逻辑 BIST、MBIST 配置、at-speed 功能图样、IO/参数测项,都要在测试前编好、在 ATE 上调通并和黄金期望对齐;这些向量的质量与 DFT设计一路实现、验证并签核的可测性直接挂钩,决定能查出多大比例缺陷(覆盖率)。",
+    "<b>定测试覆盖率与 pass/fail 判据</b>:开测前要定这批要做到多高的测试覆盖率(由 DFT 能力托底)、每个测项的合格门限(频率、电压、电流、漏电、IO 时序等)、以及失败如何分箱(bin);判据定得松会漏检、定得严会误杀好芯,要按规格与质量目标定。",
     "<b>备好 ATE 资源与测试座</b>:安排 ATE 机时、配适配这颗封装的测试座(socket)/接口板(load board),保证 DUT 与 ATE 引脚精确接触、供电与高速 IO 通道齐备;海量芯片要排产能,ATE 机时本身就是成本。",
     "<b>对齐覆盖率 vs 测试时间预算</b>:FT 前就要权衡『测多全』与『测多久』——多跑向量提覆盖率会拉长每颗测试时间、推高单颗成本;对 TPU 这类带海量 SRAM/逻辑的大芯片,要靠扫描压缩、BIST、并行测等把覆盖率做上去的同时压住测试时长,定好这条平衡线。"
    ],
    "during": [
     "<b>DUT 上座、ATE 接管</b>。封装好的 TPU 作为被测件(DUT)放进测试座,ATE 与它的引脚建立电气接触并供电,然后按测试程序自动一项项跑:对每个测项,ATE 施加规定激励、采集芯片在各引脚/扫描链上的响应、和事先算好的黄金期望逐位比对,任一项不符即记为该测项 fail。整套对人无需逐颗干预,所以叫『自动』测试。",
-    "<b>scan / 逻辑 BIST:查『逻辑造得对』</b>。ATE 通过 ⑦DFT 串好的扫描链把测试向量(ATPG pattern)移入芯片内部触发器,跑一拍让组合逻辑响应、把结果捕获回触发器,再移出和期望比对——探出封装/制造引入的固定型、跳变等逻辑缺陷;逻辑 BIST 则把图样生成与比对做进片内、只报结果。能探出多大比例缺陷就是『测试覆盖率』,由 ⑦DFT 决定,覆盖率不够坏芯就漏检。",
+    "<b>scan / 逻辑 BIST:查『逻辑造得对』</b>。ATE 通过 DFT 串好的扫描链把测试向量(ATPG pattern)移入芯片内部触发器,跑一拍让组合逻辑响应、把结果捕获回触发器,再移出和期望比对——探出封装/制造引入的固定型、跳变等逻辑缺陷;逻辑 BIST 则把图样生成与比对做进片内、只报结果。能探出多大比例缺陷就是『测试覆盖率』,由 DFT 决定,覆盖率不够坏芯就漏检。",
     "<b>MBIST:高效测海量 SRAM</b>。TPU 片上 24 MiB Unified Buffer、4 MiB 累加器这类大块存储,若用外部向量逐格测既慢又占引脚,于是用片内 MBIST 控制器自动按 March 等算法对存储阵列写入/读回特定图样,遍历每个单元查写不进、读错、相邻干扰、保持失效,只把 pass/fail 报给 ATE——这是把海量 SRAM 测全又测快的关键手段。",
     "<b>at-speed 功能:查『跑得到 700MHz』</b>。结构测试多在慢时钟下查静态缺陷,而 at-speed 让芯片在 700 MHz 额定频率下真正跑功能图样——驱动 256×256 脉动阵列做乘累加、跑主机经 PCIe 发来的十几条 CISC 指令的数据通路、走 weight-stationary 数据流,确认满速时序下结果仍对。它专抓『慢速能过、满速就错』的速度相关缺陷,验的是这颗 TPU 能否以 ~92 TOPS 额定算力正常工作。",
     "<b>IO + 参数:查接口与电气底盘</b>。IO 测试验芯片对外接口收发正常——TPU 经 PCIe 3.0 通主机、外挂 8 GiB DDR3(~30 GB/s),这些高速 IO 要逐路确认电平/时序;参数测试量工作电流、漏电流、引脚电平门限、功耗等电气指标,确认落在 28–40W 与规格窗内。逻辑再对,IO 接不通或电参超标,这颗卡照样判废。",
@@ -12186,7 +12177,7 @@ window.CASES = {
     },
     {
      "label": "覆盖率来源",
-     "value": "漏检率由测试覆盖率决定,而覆盖率靠 ⑦DFT 做进去的可测性(扫描链、BIST)托底——覆盖率不够坏芯就漏检"
+     "value": "漏检率由测试覆盖率决定,而覆盖率靠 DFT 做进去的可测性(扫描链、BIST)托底——覆盖率不够坏芯就漏检"
     },
     {
      "label": "核心取舍",
@@ -12200,11 +12191,11 @@ window.CASES = {
    "after": [
     "<b>合格放行、失败分箱(binning)</b>:pass 的 TPU 入库、进入出货流程做成 PCIe 加速卡装机;fail 的按失败测项分箱——scan 失效、MBIST 失效、at-speed 失速、IO/参数超标各归各类,既是质量把关也为后续分析留线索。分箱判据为通行实践,TPU 不公开其具体 bin 定义。",
     "<b>失效分析(FA)定位根因</b>:对典型/批量失败件做失效分析,判是封装引入(键合/基板/翘曲)、制造缺陷还是测试本身的问题,定位到具体单元或工序;FA 结论回喂 ⑩~⑫各环节,是制造/封测的迭代闭环。具体 FA 数据为 TPU 私有、不公开。",
-    "<b>回看覆盖率与漏检</b>:若客户端或可靠性测出 FT 没拦住的缺陷,要回看测试覆盖率是否不足、向量是否要补、⑦DFT 可测性是否要加强;反之误杀偏高则放宽门限——持续校准 pass/fail 判据。覆盖率/漏检数据为 TPU 私有,机制为通行做法。",
+    "<b>回看覆盖率与漏检</b>:若客户端或可靠性测出 FT 没拦住的缺陷,要回看测试覆盖率是否不足、向量是否要补、DFT 可测性是否要加强;反之误杀偏高则放宽门限——持续校准 pass/fail 判据。覆盖率/漏检数据为 TPU 私有,机制为通行做法。",
     "<b>优化测试程序压成本</b>:把每颗测试时间、各测项耗时、良率分布回喂,删冗余向量、上扫描压缩/并行测、调测项顺序(先跑最易筛掉坏芯的项),在不掉覆盖率的前提下压测试时长与 ATE 机时——直接降单颗测试成本。",
     "<b>诚实留痕,交可靠性/出货</b>:本批的 pass 率、失败分箱、覆盖率、测试时间等记入封测档案供复查与良率分析;合格 TPU 进入(老化/可靠性)与出货环节,最终在数据中心上线。这些数据为 TPU 私有、本节不杜撰,记录与放行流程为通行封测/量产实践。"
    ],
-   "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(256×256 8-bit MAC 脉动阵列、24 MiB Unified Buffer、4 MiB 32-bit 累加器、700 MHz/~92 TOPS、外挂 8 GiB DDR3(~30 GB/s)、weight-stationary、主机经 PCIe 3.0 发约十几条 CISC 指令、做成 PCIe 加速卡、28nm/die ≤331mm²/28–40W 为该文披露的 TPU v1 已知结构,作为成品测试 FT 中被 ATE 点测/判好坏的对象;封装后用 ATE 跑 scan/ATPG/逻辑 BIST 查逻辑缺陷、MBIST 自测海量 SRAM、at-speed 满速功能验额定频率、IO/参数测试,测试覆盖率由 ⑦DFT 决定且与测试时间/成本权衡,逐颗判 pass/fail 并分箱等均为这类 28nm 大芯片/PCIe 加速卡的 OSAT/业界通行成品测试与量产实践,TPU v1 不公开其私有 FT 测试程序、向量、实际测试覆盖率、测试时间、良率/分箱数据与所用 ATE 机型/测试座/封测厂,图中测项与 pass/fail 为示意,非 TPU v1 私有披露)"
+   "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(256×256 8-bit MAC 脉动阵列、24 MiB Unified Buffer、4 MiB 32-bit 累加器、700 MHz/~92 TOPS、外挂 8 GiB DDR3(~30 GB/s)、weight-stationary、主机经 PCIe 3.0 发约十几条 CISC 指令、做成 PCIe 加速卡、28nm/die ≤331mm²/28–40W 为该文披露的 TPU v1 已知结构,作为成品测试 FT 中被 ATE 点测/判好坏的对象;封装后用 ATE 跑 scan/ATPG/逻辑 BIST 查逻辑缺陷、MBIST 自测海量 SRAM、at-speed 满速功能验额定频率、IO/参数测试,测试覆盖率由 DFT 决定且与测试时间/成本权衡,逐颗判 pass/fail 并分箱等均为这类 28nm 大芯片/PCIe 加速卡的 OSAT/业界通行成品测试与量产实践,TPU v1 不公开其私有 FT 测试程序、向量、实际测试覆盖率、测试时间、良率/分箱数据与所用 ATE 机型/测试座/封测厂,图中测项与 pass/fail 为示意,非 TPU v1 私有披露)"
   },
   "3.7": {
    "secNum": "3.7",
@@ -12689,7 +12680,7 @@ window.CASES = {
     {
      "k": "jtag",
      "name": "③ JTAG / scan 链(伸进芯片内部读写状态)",
-     "desc": "前两样还停在芯片『外面看脚』,JTAG/scan 才真正伸进硅里。JTAG 是标准调试接口,配合设计期植入的 scan 链(把成千上万个触发器串成一条可移位的长链),可以把芯片停机、把内部寄存器/状态一位位移出来读、也能移进去强写。它让你直接问芯片:『此刻你内部那些状态机/控制寄存器/计数器是什么值?』——这是从『结果错』倒推『内部哪一拍出错』的关键。但 scan 链必须在设计/DFT 阶段就织进硅里,流片后加不上;埋得不够,debug 时就只能干瞪眼。scan/JTAG 结构是通行 DFT/bring-up 实践,TPU v1 不公开其私有 scan 结构与调试接口。"
+     "desc": "前两样还停在芯片『外面看脚』,JTAG/scan 才真正伸进硅里。JTAG 是标准调试接口,配合设计期植入的 scan 链(把成千上万个触发器串成一条可移位的长链),可以把芯片停机、把内部寄存器/状态一位位移出来读、也能移进去强写。它让你直接问芯片:『此刻你内部那些状态机/控制寄存器/计数器是什么值?』——这是从『结果错』倒推『内部哪一拍出错』的关键。但 scan 链必须在 DFT设计中从架构、RTL 到实现阶段逐步规划并织进硅里,流片后加不上;埋得不够,debug 时就只能干瞪眼。scan/JTAG 结构是通行 DFT/bring-up 实践,TPU v1 不公开其私有 scan 结构与调试接口。"
     },
     {
      "k": "obs",
@@ -13393,6 +13384,129 @@ window.CASES = {
     "<b>诚实留痕</b>:本代的 qual 项目/判据/结果、量产良率与监控、现场失效与纠正、代际反馈全部记入可靠性与量产档案,供后续复查(均为芯片量产业界通行实践,非 TPU v1 公开数据;不含 TPU 私有 qual/良率/失效数字与代工厂)。"
    ],
    "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(256×256=65,536 个 8-bit MAC 脉动阵列、24MiB Unified Buffer、4MiB 累加器、700MHz、片外 8GiB DDR3 ~30GB/s、weight-stationary、主机经 PCIe 3.0 发约十几条 CISC 指令、做成 28nm/≤331mm²/28~40W 的 PCIe 加速卡、TensorFlow/XLA 栈,以及团队约 15 个月从立项到部署、公开发布前已在数据中心运行一年多,均为该文披露的 TPU v1 已知事实,本节作为被可靠性认证证明长期可靠、被持续量产、被现场监控、经验回喂下一代的对象;HTOL(高温高压老化)、温度循环/湿热、ESD/闩锁等可靠性认证(qualification)试验项目与条件、qual 通过判据、HVM 高产量制造与统计过程控制(SPC)/出货测试/量产良率、现场监控与失效分析(FA)及纠正、数据中心/车规的可靠性门槛、以及『一代验证→量产→现场监控→经验反馈下一代』的代际可靠性闭环,均为芯片量产的业界通行制造/封测/量产实践,TPU v1 不公开其私有 qual 条件/通过判据、量产良率、封装/失效与现场可靠性数据,也未公开其具体代工厂,图中流程为概念示意,非 TPU v1 私有披露)"
+  }
+ },
+ "dft": {
+  "3.3": {
+   "secNum": "3.3",
+   "chip": "Google TPU v1",
+   "title": "TPU v1 公开结构示意 · Scan/压缩/MBIST:让大规模阵列与片上存储具备量产可测性",
+   "oneLine": "本案例落到「Scan、测试压缩与可测结构插入」小节:以 TPU v1 公开的 256×256 阵列和大容量片上存储作为被测对象,说明通行 DFT 流程如何在综合网表上把普通触发器映射为 scan FF、缝成 scan chain、加入 test compression,并让 SRAM 走 MBIST;随后 ATPG 生成测试图样并收敛故障覆盖率。TPU v1 的真实 scan 链数、压缩结构、MBIST 架构与覆盖率均未公开,图中的结构和数量关系只用于解释方法。",
+   "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"26\">DFT 结构插入:在综合网表上把普通 FF 换成 scan FF、串成 scan chain、再插 test compression,让成千上万 MAC 寄存器量产可测</text><g class=\"cs-part\" data-k=\"ff\" data-g=\"ff\"><rect class=\"cs-box\" x=\"24\" y=\"56\" width=\"150\" height=\"86\" rx=\"8\"/><text class=\"cs-t\" x=\"99\" y=\"84\">普通 D 触发器</text><text class=\"cs-sub\" x=\"99\" y=\"104\">阵列里成千上万个</text><text class=\"cs-sub\" x=\"99\" y=\"122\">D→Q,不可控不可观</text></g><line class=\"cs-arr\" x1=\"174\" y1=\"99\" x2=\"232\" y2=\"99\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"182\" y=\"92\">scan 替换</text><g class=\"cs-part\" data-k=\"sff\" data-g=\"sff\"><rect class=\"cs-box\" x=\"236\" y=\"48\" width=\"170\" height=\"102\" rx=\"8\"/><text class=\"cs-t\" x=\"321\" y=\"74\">Scan FF(带 MUX)</text><g class=\"cs-part\" data-k=\"mux\" data-g=\"mux\"><rect class=\"cs-cell\" x=\"252\" y=\"86\" width=\"138\" height=\"26\"/><text class=\"cs-cellt\" x=\"321\" y=\"104\">D / SI 二选一 ← SE</text></g><text class=\"cs-sub\" x=\"321\" y=\"132\">SE=0 跑功能,SE=1 移位</text></g><line class=\"cs-arr\" x1=\"406\" y1=\"99\" x2=\"464\" y2=\"99\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"chain\" data-g=\"chain\"><rect class=\"cs-box\" x=\"468\" y=\"48\" width=\"228\" height=\"102\" rx=\"8\"/><text class=\"cs-t\" x=\"582\" y=\"72\">串成 scan chain</text><g class=\"cs-part\" data-k=\"link\" data-g=\"link\"><rect class=\"cs-cell\" x=\"486\" y=\"86\" width=\"40\" height=\"26\"/><text class=\"cs-cellt\" x=\"506\" y=\"104\">SFF</text><line class=\"cs-arr\" x1=\"526\" y1=\"99\" x2=\"540\" y2=\"99\" marker-end=\"url(#csar)\"/><rect class=\"cs-cell\" x=\"542\" y=\"86\" width=\"40\" height=\"26\"/><text class=\"cs-cellt\" x=\"562\" y=\"104\">SFF</text><line class=\"cs-arr\" x1=\"582\" y1=\"99\" x2=\"596\" y2=\"99\" marker-end=\"url(#csar)\"/><rect class=\"cs-cell\" x=\"598\" y=\"86\" width=\"40\" height=\"26\"/><text class=\"cs-cellt\" x=\"618\" y=\"104\">SFF</text><line class=\"cs-arr\" x1=\"638\" y1=\"99\" x2=\"652\" y2=\"99\" marker-end=\"url(#csar)\"/><rect class=\"cs-cell\" x=\"654\" y=\"86\" width=\"34\" height=\"26\"/><text class=\"cs-cellt\" x=\"671\" y=\"104\">SO</text></g><text class=\"cs-sub\" x=\"582\" y=\"134\">SI→SFF→SFF→…→SO 一条移位链</text></g><g class=\"cs-part\" data-k=\"comp\" data-g=\"comp\"><rect class=\"cs-box\" x=\"200\" y=\"186\" width=\"320\" height=\"76\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"212\">Test Compression(压缩/解压)</text><text class=\"cs-sub\" x=\"360\" y=\"234\">decompressor 喂多条短链,compactor 收结果</text><text class=\"cs-sub\" x=\"360\" y=\"252\">少量 scan 引脚 驱动 数百条内部链,省测试时间/管脚</text></g><line class=\"cs-arr\" x1=\"582\" y1=\"150\" x2=\"450\" y2=\"184\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><g class=\"cs-part\" data-k=\"mbist\" data-g=\"mbist\"><rect class=\"cs-box\" x=\"24\" y=\"186\" width=\"150\" height=\"76\" rx=\"8\"/><text class=\"cs-t\" x=\"99\" y=\"212\">SRAM → MBIST</text><text class=\"cs-sub\" x=\"99\" y=\"234\">24 MiB UB / 4 MiB</text><text class=\"cs-sub\" x=\"99\" y=\"252\">累加器 自测引擎</text></g><g class=\"cs-part\" data-k=\"atpg\" data-g=\"atpg\"><rect class=\"cs-box\" x=\"540\" y=\"186\" width=\"156\" height=\"76\" rx=\"8\"/><text class=\"cs-t\" x=\"618\" y=\"212\">ATPG 生成向量</text><text class=\"cs-sub\" x=\"618\" y=\"234\">stuck-at / transition</text><text class=\"cs-sub\" x=\"618\" y=\"252\">覆盖率达标</text></g><line class=\"cs-arr\" x1=\"520\" y1=\"224\" x2=\"538\" y2=\"224\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"net\" data-g=\"net\"><rect class=\"cs-box\" x=\"160\" y=\"300\" width=\"400\" height=\"74\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"328\">DFT 后门级网表</text><text class=\"cs-sub\" x=\"360\" y=\"350\">scan FF 已替换 + chain 已缝 + 压缩/MBIST 已插</text><text class=\"cs-sub\" x=\"360\" y=\"368\">量产可测,良率算得清</text></g><line class=\"cs-arr\" x1=\"360\" y1=\"262\" x2=\"360\" y2=\"298\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"24\" y=\"396\">注:scan 替换/缝链/压缩/MBIST/ATPG 为通行 EDA/DFT 实践;TPU v1 不公开其 DFT 脚本与覆盖率,图为示意,借已知结构作被综合对象</text></svg>",
+   "legend": [
+    {
+     "k": "ff",
+     "name": "普通 D 触发器(不可测的起点)",
+     "desc": "综合前 RTL 里的寄存器映射成普通 D 触发器:只有功能路径 D→Q。TPU 的 256×256=65,536 个 MAC 单元以及流水控制逻辑里藏着成千上万个这样的触发器,它们深埋内部,外部既无法直接给定值(不可控),也无法直接读出状态(不可观)——若不动它,流片回来的芯片内部故障根本测不出来。"
+    },
+    {
+     "k": "sff",
+     "name": "Scan FF(替换后的 scan 触发器)",
+     "desc": "DFT 结构插入的第一步:把普通 FF 一对一替换成 scan FF——在 D 输入前加一个 2:1 MUX,多出扫描输入 SI 和扫描使能 SE。SE=0 时走 D,芯片照常跑功能;SE=1 时走 SI,整排 FF 变成可移位的寄存器。一个 MUX 换来了对每个寄存器的可控可观,是 scan 测试的物理基础。"
+    },
+    {
+     "k": "chain",
+     "name": "Scan chain(把 scan FF 缝成移位链)",
+     "desc": "工具把替换后的 scan FF 的 SI/SO 首尾相连,串成一条(或多条)移位链:SI→SFF→SFF→…→SO。测试时先 SE=1 把已知测试图案移进所有 FF(可控),拉一拍功能时钟让组合逻辑反应(capture),再 SE=1 把结果移出来比对(可观)。上万个阵列寄存器就这样被一条链『穿』起来,逐个可访问。"
+    },
+    {
+     "k": "comp",
+     "name": "Test Compression(压缩/解压)",
+     "desc": "阵列上万个 FF 若只串成几条长链,移位要花极多周期、测试机时间昂贵。压缩在芯片里插 decompressor + compactor:用很少的 scan 输入管脚经解压器扇出去喂数百条短内部链,结果再经压缩器收回少数输出。链短了→移位周期数大降→测试时间和管脚数都省,是大规模阵列量产可测的关键。"
+    },
+    {
+     "k": "mbist",
+     "name": "SRAM → MBIST(存储器自测)",
+     "desc": "scan 链擅长测逻辑,但 24 MiB Unified Buffer、4 MiB 累加器这类大块 SRAM 不走 scan,而是插 MBIST(内建自测)引擎:芯片内部自带状态机跑 March 等算法,自己写读存储阵列、就地判好坏。逻辑用 scan+ATPG、存储用 MBIST,两条 DFT 路并行插入,才覆盖得全。"
+    }
+   ],
+   "steps": [
+    {
+     "keys": [
+      "ff",
+      "sff"
+     ],
+     "cap": "① scan 替换:综合/DFT 工具把 RTL 综合出的每个普通 D 触发器,一对一换成带 MUX 的 scan FF(多出 SI/SE)——SE=0 跑功能、SE=1 可移位,从此每个阵列寄存器都可控可观"
+    },
+    {
+     "keys": [
+      "sff",
+      "chain",
+      "link"
+     ],
+     "cap": "② 缝链:把所有 scan FF 的 SO 接下一个的 SI,串成 scan chain(SI→SFF→…→SO);TPU 阵列上万个 FF 被一条条链穿起来,测试图案可移进、结果可移出"
+    },
+    {
+     "keys": [
+      "chain",
+      "comp"
+     ],
+     "cap": "③ 插压缩:链太长移位太慢,插 test compression——decompressor 用少量管脚扇出喂数百条短链、compactor 收结果,移位周期数和测试管脚同时大降"
+    },
+    {
+     "keys": [
+      "mbist"
+     ],
+     "cap": "④ 存储走 MBIST:24 MiB UB、4 MiB 累加器等 SRAM 不串 scan,改插内建自测引擎(March 算法自写自读自判),与逻辑 scan 并行覆盖"
+    },
+    {
+     "keys": [
+      "comp",
+      "atpg",
+      "net"
+     ],
+     "cap": "⑤ ATPG + 出网表:对插好 scan 的网表跑 ATPG 生成 stuck-at/transition 测试向量直到覆盖率达标,产出『DFT 后门级网表』——scan/压缩/MBIST 全部就位,量产可测、良率算得清"
+    }
+   ],
+   "before": [
+    "<b>先定可测性目标(DFT spec)</b>:开工前定下要测什么、测到什么程度——固定型故障(stuck-at)覆盖率目标、跳变延迟(transition)目标、scan 链条数与最大链长、压缩比、哪些 SRAM 走 MBIST。这是 DFT 覆盖率收敛的标尺,不是事后补。",
+    "<b>给 DFT 工具提供工艺库与 scan 单元</b>:结构插入要用到 28nm 标准单元库(Liberty/.lib)里的 scan 版触发器(scan FF)及其时序/面积模型,工具才能做 scan 映射并评估时序/面积代价——这是通行 EDA/DFT 实践,TPU 不公开其具体库。",
+    "<b>把 DFT 约束写进 SDC / 测试协议</b>:声明 scan 时钟、SE/SI/SO 测试端口、scan 移位频率(通常远低于 700MHz 功能频率)、测试模式下的时钟门控旁路;移位是慢速、capture 才用功能频率,约束要分模式给。",
+    "<b>要求 DFT 友好的 RTL</b>:scan 能不能顺利插,取决于 RTL 写法——所有寄存器用单一同步复位/受控时钟、不写门控时钟的非标结构、不留组合环、不在不可控时钟域留黑洞。RTL 这步若不友好,scan 在这里就插不进或覆盖率上不去。",
+    "<b>诚实标注边界</b>:scan 插入、test compression、MBIST、ATPG、覆盖率收敛是通行 EDA/DFT 实践;TPU v1 不公开其 DFT 脚本、库与覆盖率数字。本案只以 TPU 已知结构(256×256 脉动阵列、24 MiB UB、4 MiB 累加器、700MHz、28nm)作为被测对象讲 DFT 概念,链数、压缩比、SDC 与图样均为示意。"
+   ],
+   "during": [
+    "<b>scan 映射必须与综合基线一致</b>:DFT 工具在综合网表上使用同一套 28nm 库中的 scan FF 映射普通 FF,并把功能时序/面积代价带回实现流程评估。不同公司会采用 scan-ready 综合或综合后插入等具体顺序;关键是库、网表、约束和 LEC 基线始终一致。",
+    "<b>缝链要兼顾时序与平衡</b>(示意,通行实践):工具把 scan FF 串链时,既要让各链长度均衡(最长链决定移位周期数),又要注意 scan 路径不能恶化功能时序;阵列规整、FF 密集,正适合切成多条等长链并行移位。",
+    "<b>移位是慢速、capture 才上功能频率——SDC 分模式给</b>(示意):<br><code>create_clock -name clk -period 1.43 [get_ports clk]   # 功能 ~700MHz,示意<br>create_clock -name sclk -period 20.0 [get_ports sclk] # scan 移位慢速,示意<br>set_dft_signal -view spec -type ScanEnable -port se</code><br>移位用 sclk 慢跑省功耗与 IR-drop,capture 那一拍才用 clk 测真实速度路径。",
+    "<b>压缩比是省测试时间与可调试性的权衡</b>:压缩比越高,scan 管脚越省、移位越快,但解压/压缩逻辑会增面积、且故障定位(diagnosis)更难。对 TPU 这种上万 FF 的大阵列,通常上较高压缩;比例由 DFT spec 与测试机能力定。",
+    "<b>大 SRAM 单独走 MBIST,不强塞 scan</b>:24 MiB UB、4 MiB 累加器若用 scan 逐位移代价巨大且难以覆盖存储阵列特有故障,通常会为相应 SRAM 集成 MBIST 控制与算法;logic scan 与 memory DFT 两条路并行收敛,再集成进同一网表。",
+    "<b>诚实边界</b>:以上 SDC 片段(create_clock 1.43ns、set_dft_signal)与压缩/链长写法是 SDC + DFT 的通行工业示意,数值仅用于说明 700MHz≈1.43ns;TPU v1 未公开其约束脚本、链结构与覆盖率,这里只借其已知结构当被测对象,未编造 TPU 私有数字。"
+   ],
+   "result": [
+    {
+     "label": "DFT 结构插入产物",
+     "value": "DFT 后门级网表:普通 FF 已换 scan FF + scan chain 已缝 + test compression 已插 + SRAM 接 MBIST"
+    },
+    {
+     "label": "scan 单元(库)",
+     "value": "映射到 28nm 库里的 scan FF(D/SI 经 MUX、受 SE 选),插入顺序依具体工具流,但必须与综合/LEC 基线一致"
+    },
+    {
+     "label": "scan 约束(示意 SDC)",
+     "value": "create_clock -period 1.43 [get_ports clk](功能,示意)/ set_dft_signal ScanEnable/ScanIn/ScanOut(示意)"
+    },
+    {
+     "label": "压缩 / 链(示意)",
+     "value": "少量 scan 管脚 → decompressor → 数百条短内部链 → compactor;移位用慢速 sclk,capture 用功能频率"
+    },
+    {
+     "label": "存储测试",
+     "value": "24 MiB UB / 4 MiB 累加器等 SRAM 例化 MBIST 引擎(March 算法自测),与逻辑 scan 并行"
+    },
+    {
+     "label": "测试向量 / 覆盖率",
+     "value": "对插好 scan 的网表跑 ATPG 出 stuck-at/transition 向量,迭代到覆盖率达标(数字为通行目标,非 TPU 公开)"
+    }
+   ],
+   "after": [
+    "<b>看 DFT 报告:覆盖率与链状态</b>:检查 ATPG 报告的故障覆盖率(stuck-at/transition)是否达到 DFT spec,scan 链条数/链长是否均衡、有无未串进链的 FF 与卡链点;不达标就补结构、修可测性问题并重新生成/验证图样。",
+    "<b>等价检查(LEC):scan 插入不改功能</b>:对插 scan 前后的网表跑形式等价检查(LEC)——在功能模式(SE=0)下,带 scan 的网表必须与原 RTL/网表逻辑等价。scan 是测试结构,绝不能动功能,LEC 通过才放行。",
+    "<b>核 DFT 时序与面积代价</b>:scan FF 比普通 FF 略大、scan 路径与压缩逻辑占面积、SE 走全片是高扇出网络——综合后看这些是否吃掉时序裕量或超面积预算;移位路径要在 sclk 下满足时序、capture 路径在功能频率下满足。",
+    "<b>迭代到 DFT 收敛</b>:覆盖率、链平衡、时序、面积四项中任一不过,调链长/压缩比/约束或回 RTL 改可测性,重跑 DFT 插入、ATPG 与验证——直到覆盖率达标、LEC 通过、时序面积可接受,DFT 才算收敛。",
+    "<b>交后端:scan 链进物理实现</b>:DFT 后网表连同 scan 链定义、测试协议(STIL/SDC)一并交布局布线;后端会做 scan reorder(按物理位置就近重排链以省线、改善移位时序),最终把可测结构带进 GDSII,流片后供测试机点亮量产芯片。"
+   ],
+   "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017(256×256 脉动阵列、24 MiB Unified Buffer、4 MiB 累加器、700MHz、28nm 为论文披露的已知结构;scan、test compression、MBIST、ATPG、覆盖率收敛与 LEC 为通行 DFT 实践,图、链数关系与 SDC 片段均为示意,并非 TPU v1 公开的 DFT 脚本、库或覆盖率数字)"
   }
  }
 };

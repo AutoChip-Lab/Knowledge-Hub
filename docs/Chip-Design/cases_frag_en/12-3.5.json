@@ -1,0 +1,117 @@
+{
+  "secNum": "3.5",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · CP Wafer Probe / Wafer Sort: Test Every Die Before Packaging, Build the Wafer Map, and Reject Failures Early",
+  "oneLine": "This case covers CP wafer probe, or wafer sort. After fabrication, hundreds of die remain joined on one wafer and their quality is unknown. Because package assembly is expensive, die that are already defective must not consume downstream material and test cost. A probe card contacts each die's pads before dicing, powers the die, applies test patterns, measures responses, and classifies the die as good or bad. The results form a wafer map indexed by physical coordinates. CP provides three benefits: it rejects failures at the least-expensive stage; instructs die pick and package assembly to select only known-good die; and feeds wafer yield and spatial failure patterns—edge rings, clusters, or random scatter—back to fabrication for defect diagnosis. The known TPU v1 configuration—256×256 systolic array, 24 MiB Unified Buffer, 700 MHz, 28 nm, ≤331 mm² large die, and PCIe accelerator-card use—is the illustrative device under probe. Probe card, ATE, test content and limits, yield, failure distribution, and wafer-map format are standard production details and are not public TPU v1 data.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 420\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"26\">CP wafer probe: contact each die before packaging → classify good ✓ / bad ✗ → create wafer map</text><g class=\"cs-part\" data-k=\"wafer\" data-g=\"wafer\"><rect class=\"cs-box\" x=\"24\" y=\"58\" width=\"206\" height=\"200\" rx=\"8\"/><text class=\"cs-t\" x=\"127\" y=\"82\">① Intact wafer of TPU die</text><text class=\"cs-sub\" x=\"127\" y=\"100\">Fabricated; not yet diced</text><rect class=\"cs-cell\" x=\"52\" y=\"116\" width=\"36\" height=\"36\"/><rect class=\"cs-cell\" x=\"92\" y=\"116\" width=\"36\" height=\"36\"/><rect class=\"cs-cell\" x=\"132\" y=\"116\" width=\"36\" height=\"36\"/><rect class=\"cs-cell\" x=\"172\" y=\"116\" width=\"36\" height=\"36\"/><rect class=\"cs-cell\" x=\"52\" y=\"156\" width=\"36\" height=\"36\"/><rect class=\"cs-cell\" x=\"92\" y=\"156\" width=\"36\" height=\"36\"/><rect class=\"cs-cell\" x=\"132\" y=\"156\" width=\"36\" height=\"36\"/><rect class=\"cs-cell\" x=\"172\" y=\"156\" width=\"36\" height=\"36\"/><rect class=\"cs-cell\" x=\"52\" y=\"196\" width=\"36\" height=\"36\"/><rect class=\"cs-cell\" x=\"92\" y=\"196\" width=\"36\" height=\"36\"/><rect class=\"cs-cell\" x=\"132\" y=\"196\" width=\"36\" height=\"36\"/><rect class=\"cs-cell\" x=\"172\" y=\"196\" width=\"36\" height=\"36\"/><text class=\"cs-sub\" x=\"127\" y=\"250\">Each cell = one ≤331 mm² die</text></g><line class=\"cs-arr\" x1=\"230\" y1=\"158\" x2=\"272\" y2=\"158\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"probe\" data-g=\"probe\"><rect class=\"cs-box\" x=\"276\" y=\"58\" width=\"186\" height=\"200\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"369\" y=\"82\">② Probe each die</text><text class=\"cs-sub\" x=\"369\" y=\"100\">Contact pads; power and test</text><line class=\"cs-arr\" x1=\"300\" y1=\"122\" x2=\"300\" y2=\"158\"/><line class=\"cs-arr\" x1=\"330\" y1=\"122\" x2=\"330\" y2=\"158\"/><line class=\"cs-arr\" x1=\"360\" y1=\"122\" x2=\"360\" y2=\"158\"/><line class=\"cs-arr\" x1=\"390\" y1=\"122\" x2=\"390\" y2=\"158\"/><line class=\"cs-arr\" x1=\"420\" y1=\"122\" x2=\"420\" y2=\"158\"/><rect class=\"cs-cell\" x=\"296\" y=\"160\" width=\"128\" height=\"40\"/><text class=\"cs-cellt\" x=\"360\" y=\"184\">Die currently under test</text><text class=\"cs-sub\" x=\"369\" y=\"222\">Apply patterns → measure response</text><text class=\"cs-sub\" x=\"369\" y=\"240\">Step across the full wafer</text></g><line class=\"cs-arr\" x1=\"462\" y1=\"158\" x2=\"504\" y2=\"158\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"map\" data-g=\"map\"><rect class=\"cs-box\" x=\"508\" y=\"58\" width=\"188\" height=\"200\" rx=\"8\" fill=\"#dcfce7\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"602\" y=\"82\">③ Wafer map</text><text class=\"cs-sub\" x=\"602\" y=\"100\">Classify each die good ✓ / bad ✗</text><g class=\"cs-part\" data-k=\"good\" data-g=\"good\"><rect class=\"cs-cell\" x=\"534\" y=\"116\" width=\"32\" height=\"32\"/><text class=\"cs-cellt\" x=\"550\" y=\"137\">✓</text><rect class=\"cs-cell\" x=\"570\" y=\"116\" width=\"32\" height=\"32\"/><text class=\"cs-cellt\" x=\"586\" y=\"137\">✓</text><rect class=\"cs-cell\" x=\"606\" y=\"116\" width=\"32\" height=\"32\"/><text class=\"cs-cellt\" x=\"622\" y=\"137\">✓</text><rect class=\"cs-cell\" x=\"534\" y=\"152\" width=\"32\" height=\"32\"/><text class=\"cs-cellt\" x=\"550\" y=\"173\">✓</text><rect class=\"cs-cell\" x=\"606\" y=\"152\" width=\"32\" height=\"32\"/><text class=\"cs-cellt\" x=\"622\" y=\"173\">✓</text><rect class=\"cs-cell\" x=\"570\" y=\"188\" width=\"32\" height=\"32\"/><text class=\"cs-cellt\" x=\"586\" y=\"209\">✓</text><rect class=\"cs-cell\" x=\"642\" y=\"116\" width=\"32\" height=\"32\"/><text class=\"cs-cellt\" x=\"658\" y=\"137\">✓</text></g><g class=\"cs-part\" data-k=\"bad\" data-g=\"bad\"><rect class=\"cs-cell\" x=\"642\" y=\"152\" width=\"32\" height=\"32\" fill=\"#fee2e2\" stroke=\"#fca5a5\"/><text class=\"cs-cellt\" x=\"658\" y=\"173\">✗</text><rect class=\"cs-cell\" x=\"534\" y=\"188\" width=\"32\" height=\"32\" fill=\"#fee2e2\" stroke=\"#fca5a5\"/><text class=\"cs-cellt\" x=\"550\" y=\"209\">✗</text><rect class=\"cs-cell\" x=\"606\" y=\"188\" width=\"32\" height=\"32\" fill=\"#fee2e2\" stroke=\"#fca5a5\"/><text class=\"cs-cellt\" x=\"622\" y=\"209\">✗</text></g><text class=\"cs-sub\" x=\"602\" y=\"240\">✓ package / ✗ reject early</text></g><g class=\"cs-part\" data-k=\"save\" data-g=\"save\"><rect class=\"cs-box\" x=\"24\" y=\"282\" width=\"330\" height=\"56\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"189\" y=\"306\">Early rejection saves package cost</text><text class=\"cs-sub\" x=\"189\" y=\"326\">Packaging and FT are costly → send only good die forward</text></g><g class=\"cs-part\" data-k=\"feedback\" data-g=\"feedback\"><rect class=\"cs-box\" x=\"366\" y=\"282\" width=\"330\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"531\" y=\"306\">Yield feedback to fabrication</text><text class=\"cs-sub\" x=\"531\" y=\"326\">Yield + spatial fail pattern → diagnose process defects</text></g><polyline class=\"cs-arr\" points=\"602,258 602,272 531,272 531,282\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"24\" y=\"362\">Point: test each die on the intact wafer; only good die proceed to dicing and packaging</text><text class=\"cs-note\" x=\"24\" y=\"384\">Why probe first: discovering a bad die after packaging wastes package and final-test cost</text><text class=\"cs-note\" x=\"24\" y=\"408\">Disclosure: CP content, limits, yield, failure distribution, and wafer-map format are not public TPU v1 data</text></svg>",
+  "legend": [
+    {
+      "k": "wafer",
+      "name": "Intact Wafer (TPU Die of Unknown Quality)",
+      "desc": "The CP input is a fully fabricated, undiced wafer containing repeated instances of the complete ≤331 mm² TPU design, including the 256×256 systolic array, 24 MiB Unified Buffer, and control logic. Manufacturing particles, overlay errors, and other defects mean that die on the same wafer do not all work. While they remain physically joined and unclassified, CP must test them individually and separate passing from failing coordinates before dicing."
+    },
+    {
+      "k": "probe",
+      "name": "Probe Each Die (Chip Probing)",
+      "desc": "A probe card carries fine contacts aligned to a die's I/O pads. Touchdown creates temporary electrical connections so the ATE can power the die, apply test patterns, and capture its response while the die remains on the wafer. After one test, the prober steps to the next coordinate until the wafer is covered. For a large die containing 65,536 8-bit MACs, CP applies a practical pattern set to screen the array, SRAM, control logic, and critical functions for pass/fail. Probe-card design, alignment, test content, and limits are standard production details and are not disclosed for TPU v1."
+    },
+    {
+      "k": "map",
+      "name": "Wafer Map (Spatial Pass/Fail Record)",
+      "desc": "Each die's result is stored at its physical wafer coordinate, creating a wafer map: good die are marked ✓ and failing die ✗. Downstream, the map is a die-pick instruction that selects only passing coordinates. Upstream, its spatial patterns are diagnostic: edge rings, local clusters, or random scatter suggest different process mechanisms. Some lines also mark failing die with ink dots. Wafer-map format and yield are standard manufacturing data and are not public for TPU v1."
+    },
+    {
+      "k": "good",
+      "name": "Good Die ✓ (Passed CP; Eligible for Packaging)",
+      "desc": "A die that passes the CP screen is marked ✓ and becomes eligible for dicing, die pick, and package assembly. This pre-package status is known-good die (KGD): it identifies the wafer die worth further investment but does not replace post-package qualification. Spending expensive package capacity only on KGD is the economic purpose of early screening. TPU v1's actual good-die count and wafer yield are not public."
+    },
+    {
+      "k": "bad",
+      "name": "Bad Die ✗ (Failed CP; Reject Before Packaging)",
+      "desc": "A die that fails CP is marked ✗ in the wafer map or with an ink dot and is excluded before package assembly. This is CP's highest-value decision: packaging and final test are expensive, so the earlier a defective die is stopped, the less cost it consumes. Discovering a failure in a ≤331 mm² TPU die only after assembly would waste the entire package investment. TPU v1's failing-die fraction and causes are private manufacturing data."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "wafer",
+        "probe"
+      ],
+      "cap": "① Probe every die: load the completed undiced wafer into the prober, align the probe card to one die's pads, power it, apply patterns, measure responses, and step to the next coordinate. Test the full wafer before dicing or packaging."
+    },
+    {
+      "keys": [
+        "good",
+        "bad"
+      ],
+      "cap": "② Classify each die: compare measured responses with the defined limits and assign pass / good ✓ or fail / bad ✗ while processing is still at the inexpensive wafer stage."
+    },
+    {
+      "keys": [
+        "map"
+      ],
+      "cap": "③ Generate the wafer map: place every pass/fail result at its physical coordinate. The map instructs downstream die pick to select ✓ and skip ✗, and provides a spatial diagnostic view of defects."
+    },
+    {
+      "keys": [
+        "save"
+      ],
+      "cap": "④ Save downstream cost through early rejection: packaging and final test are expensive, so only KGD from CP proceeds to dicing and package assembly. Do not spend assembly cost on a die already known to fail."
+    },
+    {
+      "keys": [
+        "feedback"
+      ],
+      "cap": "⑤ Feed yield information back to fabrication: use overall yield and edge-ring, clustered, or random failure patterns to identify process mechanisms and drive improvement. CP is both a product screen and a wafer-fabrication health report."
+    }
+  ],
+  "before": [
+    "<b>Complete both FEOL and BEOL fabrication</b>: CP can begin only after devices and multilayer interconnect are finished and the full TPU circuit is electrically complete. Verify that the incoming wafer is a completed lot awaiting probe, not work in process.",
+    "<b>Prepare the probe card and wafer-sort program</b>: Build a probe card that aligns reliably to the TPU pad layout and define the patterns, measured responses, and pass/fail limits. This test-content and limit set is the core of wafer sort. TPU v1's private implementation is not public.",
+    "<b>Define CP as a screening stage rather than exhaustive product test</b>: Wafer probe should efficiently identify dead die and major functional failures. More comprehensive function, performance, and reliability coverage can run after packaging. A deliberate division between fast CP screening and detailed final test avoids excessive probe time and cost.",
+    "<b>Align wafer-map and die-pick coordinate systems</b>: Ensure that the coordinate used to record a ✓ at CP identifies the same physical die later presented to the pick tool. A transform or orientation error can swap good and bad coordinates and defeat the screen.",
+    "<b>Define failing-die identification</b>: Decide whether failures exist only in the electronic wafer map or are also marked physically with ink dots. Downstream equipment must recognize the selected convention and skip failing coordinates."
+  ],
+  "during": [
+    "<b>Why testing must occur before package assembly</b>: Dicing, die attach, interconnect, encapsulation, and post-package testing consume material, equipment time, and money. Without CP, defective die would be assembled and discovered only after that investment. Wafer probe moves the first pass/fail decision to the least-expensive stage and rejects failures before they accumulate downstream cost.",
+    "<b>The probe card powers each die while it remains on the wafer</b>: Fine contacts align to the I/O pads and establish temporary electrical access. The tester powers the die, applies patterns, and captures outputs; the prober then steps to the next coordinate. Stable contact and precise alignment are essential, and a large die with many pads increases both contact and test-time demands.",
+    "<b>Classify every die immediately as pass or fail</b>: Measured responses are compared with expected limits. A TPU-class die with 65,536 MACs can receive a screening set that exercises the systolic array, SRAM structures such as the Unified Buffer and accumulators, control logic, and critical functions. CP seeks efficient detection of dead or clearly defective die rather than exhaustive product characterization.",
+    "<b>Consolidate results into a spatial wafer map</b>: The map records a ✓ or ✗ at every physical coordinate. It serves downstream as the exact selection plan for die pick and upstream as a process-health visualization showing yield and the location of failures.",
+    "<b>Spatial failure patterns carry process information</b>: An edge ring can indicate edge nonuniformity in deposition or etch; a local cluster can indicate particulate contamination or a localized operation defect; elevated random scatter can indicate high background defect density. Feeding both yield and geometry back to fabrication makes CP an important diagnosis input, not only a sorting step.",
+    "<b>Disclosure boundary</b>: Probe-card contact, step-and-repeat wafer test, pass/fail limits, wafer maps, ink-dot marking, spatial defect diagnosis, and the CP-versus-final-test division are standard practices for a large 28 nm PCIe accelerator. TPU v1 does not publish its CP patterns, limits, yield, or failure distribution. Its known 256×256 array, 24 MiB Unified Buffer, 700 MHz, ≤331 mm² die, 28 nm process, and PCIe use provide only the illustrative test object."
+  ],
+  "result": [
+    {
+      "label": "Output of This Step",
+      "value": "Every TPU die on the wafer has a good ✓ or bad ✗ classification, producing a complete coordinate-indexed wafer map"
+    },
+    {
+      "label": "Test Method",
+      "value": "A probe card contacts and powers each undiced die, applies patterns, and measures responses as a wafer-level screen before package assembly"
+    },
+    {
+      "label": "Wafer Map",
+      "value": "A spatial pass/fail record: ✓ identifies KGD eligible for dicing and packaging; ✗ identifies early rejects that downstream tools skip"
+    },
+    {
+      "label": "Value of Early Screening",
+      "value": "Packaging and final test are expensive; CP removes defective die at the least-expensive wafer stage and avoids wasting package cost"
+    },
+    {
+      "label": "Yield Feedback",
+      "value": "Overall yield plus edge-ring, clustered, or random failure patterns returns to fabrication to help identify process-defect mechanisms"
+    },
+    {
+      "label": "Disclosure Boundary",
+      "value": "Test content, limits, yield, failure distribution, and wafer-map format are standard production details rather than public TPU v1 data; its ≤331 mm² die is the example under probe"
+    }
+  ],
+  "after": [
+    "<b>Send only KGD to dicing and package assembly</b>: Use the wafer map to select only ✓ coordinates for dicing, die pick, and packaging. Failing die stop here. This is where CP's early screen converts directly into avoided package cost.",
+    "<b>Identify and skip failing die reliably</b>: Die-pick equipment uses the electronic map or physical ink marks to exclude ✗ coordinates. Maintaining map-to-wafer identity is essential, particularly for a large, high-value die.",
+    "<b>Feed yield and spatial distributions into process improvement</b>: Return lot yield, failure signatures, and map geometry to fabrication. Investigate edge rings for film or etch nonuniformity, clusters for particles or local excursions, and elevated random failure for background defect density.",
+    "<b>Use final test for detailed post-package qualification</b>: CP is a wafer-level screen. After assembly, the device still requires comprehensive functional, performance, electrical, and reliability tests that also detect package-induced defects. A CP good die is KGD before packaging; only a passing assembled unit is a qualified device.",
+    "<b>Preserve traceability</b>: Archive CP test content, revisions, limits, wafer map, yield, and failure distributions for later package selection, yield analysis, and defect tracing. These are standard private manufacturing records, not public TPU v1 values."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the paper discloses TPU v1's 256×256 8-bit MAC systolic array, 24 MiB Unified Buffer, 700 MHz clock, ≤331 mm² die, 28 nm process, and PCIe accelerator-card use, which provide the known device context; probe-card wafer testing, step-and-repeat die test, pass/fail limits, good ✓ / bad ✗ classification, wafer maps, ink-dot marking, pre-package cost avoidance, spatial defect diagnosis, and the division between CP screening and detailed final test are standard wafer-sort and OSAT practices for a large 28 nm PCIe accelerator, while TPU v1's private CP patterns, limits, yield, and failure distribution are not public and are not asserted)"
+}

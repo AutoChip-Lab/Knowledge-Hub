@@ -1,0 +1,119 @@
+{
+ "secNum": "3.1",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Back-End Overview: From Prepared Inputs to Manufacturable GDSII for the 256×256 Array",
+ "oneLine": "Physical design is not a one-step conversion from netlist to layout; it is a highly iterative back-end pipeline. Align the netlist, LEF, process rules, SDC, and SRAM macros, then run floorplan → power network → placement → clock-tree synthesis → routing → closure → GDSII. Timing, congestion, and power are reevaluated after every stage, with failures sent backward. This pipeline repeatedly places, connects, and closes TPU’s regular 65,536-MAC systolic array and the 24 MiB Unified Buffer SRAM that occupies nearly one-third of the die.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-t\" x=\"360\" y=\"28\">Physical-design pipeline: from input preparation to GDSII</text><g class=\"cs-part\" data-k=\"data\" data-g=\"data\"><rect class=\"cs-box\" x=\"20\" y=\"56\" width=\"186\" height=\"120\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"113\" y=\"84\">① Input preparation</text><text class=\"cs-sub\" x=\"113\" y=\"106\">Gate-level netlist (⑦)</text><text class=\"cs-sub\" x=\"113\" y=\"124\">Standard-cell LEF + .lib</text><text class=\"cs-sub\" x=\"113\" y=\"142\">tech LEF / DRC rules</text><text class=\"cs-sub\" x=\"113\" y=\"160\">SDC constraints + SRAM macros</text></g><line class=\"cs-arr\" x1=\"206\" y1=\"116\" x2=\"246\" y2=\"116\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"fp\" data-g=\"fp\"><rect class=\"cs-box\" x=\"248\" y=\"56\" width=\"150\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"323\" y=\"80\">② Floorplan</text><text class=\"cs-sub\" x=\"323\" y=\"98\">die/core · utilization · macros</text></g><g class=\"cs-part\" data-k=\"pdn\" data-g=\"pdn\"><rect class=\"cs-box\" x=\"248\" y=\"120\" width=\"150\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"323\" y=\"144\">③ Power network</text><text class=\"cs-sub\" x=\"323\" y=\"162\">ring / straps / PDN</text></g><line class=\"cs-arr\" x1=\"398\" y1=\"84\" x2=\"430\" y2=\"84\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"398\" y1=\"148\" x2=\"430\" y2=\"116\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"place\" data-g=\"place\"><rect class=\"cs-box\" x=\"432\" y=\"56\" width=\"130\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"497\" y=\"80\">④ Placement</text><text class=\"cs-sub\" x=\"497\" y=\"98\">placement</text></g><line class=\"cs-arr\" x1=\"562\" y1=\"84\" x2=\"594\" y2=\"84\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"cts\" data-g=\"cts\"><rect class=\"cs-box\" x=\"596\" y=\"56\" width=\"104\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"648\" y=\"80\">⑤ CTS</text><text class=\"cs-sub\" x=\"648\" y=\"98\">clock tree</text></g><line class=\"cs-arr\" x1=\"648\" y1=\"112\" x2=\"648\" y2=\"144\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"route\" data-g=\"route\"><rect class=\"cs-box\" x=\"432\" y=\"120\" width=\"268\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"566\" y=\"144\">⑥ Routing</text><text class=\"cs-sub\" x=\"566\" y=\"162\">Connect signals · share M1–Mx (illustrative)</text></g><line class=\"cs-arr\" x1=\"432\" y1=\"148\" x2=\"400\" y2=\"148\"/><g class=\"cs-part\" data-k=\"conv\" data-g=\"conv\"><rect class=\"cs-box\" x=\"248\" y=\"212\" width=\"452\" height=\"58\" rx=\"8\" fill=\"#fefce8\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"474\" y=\"236\">⑦ Closure: timing / congestion / IR-drop / DRC all pass</text><text class=\"cs-sub\" x=\"474\" y=\"256\">Post-route SPEF is authoritative → iterate backward on failure</text></g><line class=\"cs-arr\" x1=\"474\" y1=\"176\" x2=\"474\" y2=\"208\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"gds\" data-g=\"gds\"><rect class=\"cs-box\" x=\"380\" y=\"306\" width=\"320\" height=\"58\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"540\" y=\"330\">⑧ Layout deliverable → GDSII</text><text class=\"cs-sub\" x=\"540\" y=\"350\">DEF/SPEF/netlist · clean DRC/LVS · to sign-off/tapeout</text></g><line class=\"cs-arr\" x1=\"474\" y1=\"270\" x2=\"474\" y2=\"302\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"iter\" data-g=\"iter\"><rect class=\"cs-box\" x=\"20\" y=\"212\" width=\"206\" height=\"152\" rx=\"8\" fill=\"#fff7ed\" stroke=\"#fdba74\"/><text class=\"cs-t\" x=\"123\" y=\"240\">Highly iterative</text><text class=\"cs-sub\" x=\"123\" y=\"264\">Recheck every stage</text><text class=\"cs-sub\" x=\"123\" y=\"282\">timing / congestion / power</text><text class=\"cs-sub\" x=\"123\" y=\"304\">Fail → step backward</text><text class=\"cs-sub\" x=\"123\" y=\"326\">even resynthesize / revise RTL</text><text class=\"cs-sub\" x=\"123\" y=\"348\">until every metric closes</text></g><line class=\"cs-arr\" x1=\"226\" y1=\"288\" x2=\"248\" y2=\"240\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><line class=\"cs-arr\" x1=\"248\" y1=\"320\" x2=\"380\" y2=\"335\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/></svg>",
+ "legend": [
+  {
+   "k": "data",
+   "name": "① Input preparation (back-end entry)",
+   "desc": "Before implementation, align five input classes: the synthesized gate-level netlist and SDC from ⑦; standard-cell physical abstracts (LEF) and timing libraries (.lib); target-process tech LEF and DRC rules; and LEF/timing models for SRAM/IP macros such as TPU’s 24 MiB Unified Buffer and 4 MiB accumulator. A missing or mismatched version blocks the entire flow."
+  },
+  {
+   "k": "fp",
+   "name": "② Floorplanning",
+   "desc": "Set die/core dimensions, shape, and utilization; place the IO/pad ring and large macros such as the systolic array, SRAMs, and PLL; and reserve routing and power channels. For TPU, keep the 256×256 array regular and place the large UB SRAMs along its edge to shorten data-supply paths."
+  },
+  {
+   "k": "pdn",
+   "name": "③ Power distribution network (PDN)",
+   "desc": "Build power rings, straps, and mesh to deliver current while meeting IR-drop and electromigration (EM) limits. The fully active array draws substantial current, requiring a sufficiently strong grid. PDN and signals compete for the same metal resources and must be balanced."
+  },
+  {
+   "k": "place",
+   "name": "④ Placement + ⑤ CTS",
+   "desc": "Timing- and congestion-driven placement puts standard cells in legal sites. CTS then builds the actual clock network and distributes 700 MHz with low skew to thousands of flops. The array’s regularity supports orderly PE rows and manageable congestion."
+  },
+  {
+   "k": "route",
+   "name": "⑥ Routing → ⑧ GDSII deliverable",
+   "desc": "Route dense connections across metal layers, illustrated as M1–Mx. Post-route RC in SPEF is the authoritative interconnect model, so timing, congestion, IR-drop, and DRC must all pass together. After DRC/LVS, export GDSII for sign-off and tapeout."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "data"
+   ],
+   "cap": "① Prepare inputs: align the gate-level netlist + SDC, standard-cell LEF/.lib, tech LEF/DRC rules, and LEF/timing models for UB and accumulator SRAM macros—the five back-end input classes."
+  },
+  {
+   "keys": [
+    "fp",
+    "pdn"
+   ],
+   "cap": "② Floorplan + ③ PDN: set die size and utilization, place the 256×256 array and UB SRAM macros, reserve channels, then build rings and mesh that meet IR-drop and EM limits."
+  },
+  {
+   "keys": [
+    "place",
+    "cts"
+   ],
+   "cap": "④ Placement + ⑤ CTS: place and legalize standard cells under timing and congestion objectives, then distribute the 700 MHz clock with low skew across the array flops."
+  },
+  {
+   "keys": [
+    "route",
+    "conv"
+   ],
+   "cap": "⑥ Routing + ⑦ closure: connect every net on metal and extract SPEF, then make timing, congestion, IR-drop, and DRC pass simultaneously. Only here do front-end timing estimates meet physical reality."
+  },
+  {
+   "keys": [
+    "iter",
+    "gds"
+   ],
+   "cap": "⑧ Iterate to closure → export layout: any failed metric returns to an earlier stage, possibly synthesis or RTL. After full closure and clean DRC/LVS, export GDSII for sign-off and tapeout."
+  }
+ ],
+ "before": [
+  "<b>Collect physical libraries and process files</b>: Standard-cell LEF for dimensions, pins, and blockages; .lib timing; target 28 nm tech LEF and DRC rules; and the metal stack form the foundation for placing a logical netlist in physical space.",
+  "<b>Import the netlist and constraints</b>: Read the signed-off gate-level netlist and SDC, including the approximately 700 MHz primary clock, IO delays, and false/multicycle paths. Keep implementation constraints aligned with synthesis to avoid shifting timing baselines.",
+  "<b>Prepare every hard macro</b>: TPU’s 24 MiB Unified Buffer, 4 MiB accumulator, PLL, IO, and other SRAM/IP macros need LEF views for size, pins, and blockages plus timing models so the back end can place and connect them correctly.",
+  "<b>Define floorplan and power inputs</b>: Align die/core dimensions, target utilization (illustratively ~70% to preserve routing margin), IO/pad positions, macro constraints, and power-ring/mesh layers and widths with architecture and package planning.",
+  "<b>Declare power intent and DFT</b>: Express multiple voltage domains or gated clocks in UPF/CPF for implementation, and confirm scan-chain information is present in the netlist for physical routing."
+ ],
+ "during": [
+  "<b>First principle: the back end pays every physical debt</b>. Synthesis estimates wire delay before wires exist. After routing, cells have coordinates and interconnect has actual length, layer, and parasitic RC in SPEF. Designs that looked closed with optimistic models may fail here and require rework.",
+  "<b>All objectives must close simultaneously</b>: 700 MHz timing, die area, routability without congestion, power integrity within IR-drop/EM limits, and clean DRC/LVS. Passing timing alone while routing or voltage integrity fails is not closure.",
+  "<b>Floorplan determines global success</b>: Poor placement of the array and UB SRAM creates unavoidable congestion, timing loss, and PDN difficulty. Keep the regular array as a coherent block and place the UB SRAM, which occupies nearly 29% of die area, along its edge so data and power paths remain short.",
+  "<b>Size the power grid for current</b>: A fully switching 256×256 array draws high transient current and needs sufficiently wide PDN metal to control IR-drop. Otherwise reduced local voltage slows cells or causes functional failure. PDN strength must be balanced against signal-routing demand for metal.",
+  "<b>Exploit array regularity</b>: Roughly 6.5×10⁴ nearly identical PEs can be placed in rows with clear dataflow, manageable congestion, and a low-skew clock tree. Give priority to accumulation chains and inter-PE paths that become critical during routing.",
+  "<b>Evidence boundary</b>: Input preparation → floorplan → PDN → placement → CTS → routing → closure → GDSII, including LEF/DEF, SDC, SPEF, IR-drop, DRC/LVS, utilization, and illustrative M1–Mx layers, follows standard back-end EDA practice in tools such as Innovus, ICC2, and Calibre. TPU’s private floorplan, PDN, QoR, and layout are not public; the disclosed 256×256 array, 24 MiB UB, 700 MHz, 28 nm, ≤331 mm², and weight-stationary flow are used only as the implementation target."
+ ],
+ "result": [
+  {
+   "label": "Eight-stage back-end pipeline",
+   "value": "Input preparation → floorplan → PDN → placement → CTS → routing → closure → GDSII"
+  },
+  {
+   "label": "Inputs (five classes)",
+   "value": "Gate netlist + SDC / cell LEF+.lib / tech LEF+DRC rules / SRAM-macro LEF+timing"
+  },
+  {
+   "label": "Floorplan setup (illustrative)",
+   "value": "~70% utilization · regular array beside 24 MiB UB SRAM · reserved power/routing channels"
+  },
+  {
+   "label": "Power/routing resources (illustrative)",
+   "value": "PDN and signal routing share M1–Mx; size the power grid for array current"
+  },
+  {
+   "label": "Intermediate products",
+   "value": "DEF with coordinates · post-route SPEF with real parasitics · physical netlist"
+  },
+  {
+   "label": "Final product",
+   "value": "DRC/LVS-clean layout → GDSII for sign-off (⑨) and Tapeout (⑩)"
+  }
+ ],
+ "after": [
+  "<b>Recheck three dimensions at every stage</b>: timing slack, routing congestion, and power integrity through IR-drop/EM. Physical design is iterative; a miss returns to floorplan, PDN, placement, CTS, or routing.",
+  "<b>Run post-route sign-off STA with parasitics</b>: Recalculate timing using actual RC from SPEF and confirm 700 MHz still holds with real interconnect. This is where estimates become accountable physical timing.",
+  "<b>Run DRC and LVS</b>: The layout must pass design-rule checking and layout-versus-schematic comparison before advancing. Every error returns to placement or routing for correction.",
+  "<b>Return to synthesis or RTL when necessary</b>: If physical iteration cannot meet 700 MHz or resolve congestion, revisit synthesis constraints/libraries and, in extreme cases, modify RTL architecture before rerunning the flow.",
+  "<b>Hand off for sign-off and tapeout</b>: After all metrics close and DRC/LVS are clean, export GDSII and provide layout, SPEF, and netlist to sign-off (⑨) for timing, power, EM/IR, physical verification, and equivalence before Tapeout (⑩)."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (physical-design flow and layout data—including input preparation, floorplan, PDN, CTS, routing, SPEF, IR-drop, DRC/LVS, GDSII, utilization, and metal layers—follow standard back-end EDA practice and are illustrative, not public TPU back-end figures or private layout details)"
+}

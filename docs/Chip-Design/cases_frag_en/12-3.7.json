@@ -1,0 +1,117 @@
+{
+  "secNum": "3.7",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · Burn-In and Reliability Testing: Screen Infant-Mortality Failures Before 24×7 Data-Center Deployment",
+  "oneLine": "This case distinguishes final test from burn-in: FT asks whether a packaged device works now; burn-in accelerates latent weaknesses that would otherwise fail soon after shipment. Device failure rate over time follows the classic bathtub curve: a small population with latent process or assembly defects fails early during infant mortality, followed by a low and approximately constant useful-life region, and eventually a rising wear-out region. Many weak devices still pass FT because their defects emerge only after powered operation. Burn-in places FT-passing devices on burn-in boards under elevated temperature and electrical stress—often including increased voltage—for an extended operating interval. Post-stress retest removes units that failed or drifted, allowing only qualified devices that survived the early-life screen to proceed. This is especially important for TPU accelerators expected to run 24×7 in data centers, where early field failure is costly. Sample-based reliability tests such as temperature cycling, HTOL, and damp heat complement per-unit screening by assessing lot-level lifetime and environmental robustness. Stress conditions, duration, sampling, reliability results, and field failure rates are standard private product data and are not public for TPU v1.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 410\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"24\">Burn-in: stress FT-passing devices at high temperature and power to expose infant-mortality failures before shipment</text><g class=\"cs-part\" data-k=\"ft\" data-g=\"ft\"><rect class=\"cs-box\" x=\"24\" y=\"74\" width=\"120\" height=\"92\" rx=\"8\"/><text class=\"cs-t\" x=\"84\" y=\"104\">FT-passing devices</text><text class=\"cs-sub\" x=\"84\" y=\"124\">Packaged and tested</text><text class=\"cs-sub\" x=\"84\" y=\"142\">Appear good today</text><text class=\"cs-sub\" x=\"84\" y=\"160\">Some hide latent weakness</text></g><line class=\"cs-arr\" x1=\"144\" y1=\"120\" x2=\"176\" y2=\"120\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"oven\" data-g=\"oven\"><rect class=\"cs-box\" x=\"180\" y=\"74\" width=\"190\" height=\"92\" rx=\"8\" fill=\"#fff7ed\" stroke=\"#fdba74\"/><text class=\"cs-t\" x=\"275\" y=\"102\">Burn-in oven</text><text class=\"cs-sub\" x=\"275\" y=\"122\">High temperature + powered stress</text><text class=\"cs-sub\" x=\"275\" y=\"140\">Extended loaded operation</text><g class=\"cs-part\" data-k=\"stress\" data-g=\"stress\"><rect class=\"cs-cell\" x=\"200\" y=\"148\" width=\"22\" height=\"10\"/><rect class=\"cs-cell\" x=\"228\" y=\"148\" width=\"22\" height=\"10\"/><rect class=\"cs-cell\" x=\"256\" y=\"148\" width=\"22\" height=\"10\"/><rect class=\"cs-cell\" x=\"284\" y=\"148\" width=\"22\" height=\"10\"/><rect class=\"cs-cell\" x=\"312\" y=\"148\" width=\"22\" height=\"10\"/><text class=\"cs-cellt\" x=\"275\" y=\"156\"> </text></g></g><line class=\"cs-arr\" x1=\"370\" y1=\"120\" x2=\"402\" y2=\"120\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"screen\" data-g=\"screen\"><rect class=\"cs-box\" x=\"406\" y=\"74\" width=\"120\" height=\"92\" rx=\"8\" fill=\"#fef2f2\" stroke=\"#fca5a5\"/><text class=\"cs-t\" x=\"466\" y=\"104\">Post-burn-in retest</text><text class=\"cs-sub\" x=\"466\" y=\"124\">Weak units reveal failure</text><text class=\"cs-sub\" x=\"466\" y=\"142\">Reject failures</text><text class=\"cs-sub\" x=\"466\" y=\"160\">Release survivors</text></g><line class=\"cs-arr\" x1=\"526\" y1=\"120\" x2=\"558\" y2=\"120\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"ship\" data-g=\"ship\"><rect class=\"cs-box\" x=\"562\" y=\"74\" width=\"134\" height=\"92\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"629\" y=\"104\">Qualified survivors</text><text class=\"cs-sub\" x=\"629\" y=\"124\">Past early-life region</text><text class=\"cs-sub\" x=\"629\" y=\"142\">Enter data center</text><text class=\"cs-sub\" x=\"629\" y=\"160\">24×7 operation</text></g><g class=\"cs-part\" data-k=\"bathtub\" data-g=\"bathtub\"><rect class=\"cs-box\" x=\"24\" y=\"200\" width=\"672\" height=\"150\" rx=\"8\" fill=\"#f8fafc\" stroke=\"#cbd5e1\"/><text class=\"cs-t\" x=\"360\" y=\"224\">Bathtub curve: infant mortality → low steady failure rate → wear-out</text><line class=\"cs-arr\" x1=\"70\" y1=\"324\" x2=\"660\" y2=\"324\" marker-end=\"url(#csar)\"/><text class=\"cs-sub\" x=\"650\" y=\"342\">Operating time →</text><line class=\"cs-arr\" x1=\"70\" y1=\"324\" x2=\"70\" y2=\"240\" marker-end=\"url(#csar)\"/><text class=\"cs-sub\" x=\"118\" y=\"246\">Failure rate</text><path d=\"M84,250 C120,300 150,316 200,318 L520,318 C580,316 615,300 640,252\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\"/><g class=\"cs-part\" data-k=\"infant\" data-g=\"infant\"><rect class=\"cs-cell\" x=\"78\" y=\"244\" width=\"118\" height=\"78\" fill=\"#fee2e2\" stroke=\"#fca5a5\"/><text class=\"cs-cellt\" x=\"137\" y=\"270\">① Infant mortality</text><text class=\"cs-cellt\" x=\"137\" y=\"288\">Early-life failures</text><text class=\"cs-cellt\" x=\"137\" y=\"308\">Burn-in screens here</text></g><text class=\"cs-sub\" x=\"360\" y=\"306\">② Useful life (low random failures)</text><text class=\"cs-sub\" x=\"600\" y=\"300\">③ Wear-out</text></g><text class=\"cs-note\" x=\"24\" y=\"372\">Why stress: accelerate latent defects so weak devices fail before shipment, not soon after deployment</text><text class=\"cs-note\" x=\"24\" y=\"396\">Disclosure: burn-in conditions, sampling, reliability tests, pass rates, and field failure rates are not public TPU v1 data</text></svg>",
+  "legend": [
+    {
+      "k": "oven",
+      "name": "Burn-In Oven (Powered Thermal-Stress Chamber)",
+      "desc": "FT-passing qualified devices are mounted on burn-in boards and operated for a defined interval at elevated temperature and electrical stress, often with increased voltage and sustained activity. The purpose is not merely to repeat functional test but to accelerate degradation mechanisms so latent defects that might emerge after weeks or months appear before shipment. Whether burn-in is used and how severe it is depend on product reliability goals; 24×7 data-center accelerators place a high value on early-life screening. Temperature, voltage, duration, board design, and workload are private reliability-engineering choices and are not public for TPU v1."
+    },
+    {
+      "k": "infant",
+      "name": "Infant Mortality (Left Side of the Bathtub Curve)",
+      "desc": "A small subset of devices carries latent defects such as weak gate oxide, metal voids, or marginal bonds and bumps. They may pass outgoing electrical test but fail soon after powered operation begins, creating the initially high and then declining failure rate called infant mortality. Burn-in is intended to remove this portion of the population before shipment: accelerated stress causes weak units to fail, allowing surviving devices to begin service in the low-failure-rate useful-life region. TPU v1's early-life failure data are not public; the bathtub curve is a standard reliability model."
+    },
+    {
+      "k": "screen",
+      "name": "Post-Burn-In Retest and Screening",
+      "desc": "Stress alone is insufficient; the result must be read. After burn-in, or through in-situ monitoring, devices that have failed or whose parameters have drifted beyond limits are identified and removed. Units that complete the stress interval and still meet every limit proceed as qualified devices. Burn-in effectiveness therefore combines controlled stress with a defined post-stress screen. Retest content and drift limits are standard private reliability-program details and are not disclosed for TPU v1."
+    },
+    {
+      "k": "bathtub",
+      "name": "Bathtub Curve (Three Failure-Rate Regions)",
+      "desc": "The typical failure-rate-versus-time curve has three regions. Infant mortality begins high and falls as latent weak units fail; useful life has a low, roughly constant random failure rate; and wear-out rises late as aging mechanisms accumulate. Burn-in targets the first region specifically, removing early-life failures before shipment so deployed devices enter service nearer the useful-life region. This is a standard conceptual reliability model; TPU v1's measured curve and rates are not public."
+    },
+    {
+      "k": "ship",
+      "name": "Qualified Survivors (Ready for 24×7 Deployment)",
+      "desc": "Devices that survive the powered thermal stress and pass retest proceed to binning and shipment as qualified devices. They have passed an early-life screen intended to reduce infant-mortality risk. For a TPU accelerator installed in a data-center server, communicating over PCIe 3.0 and continuously running TensorFlow workloads, avoiding a failure shortly after deployment saves diagnosis, downtime, and replacement cost that greatly exceeds the screening cost. Actual burn-in pass rate and field failure rate are not public for TPU v1."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "ft",
+        "bathtub"
+      ],
+      "cap": "① Define the problem: FT confirms that a packaged device works now, but a small population can still occupy the infant-mortality region of the bathtub curve—passing today and failing soon after power-on. Burn-in is intended to remove that early-life population before shipment."
+    },
+    {
+      "keys": [
+        "oven",
+        "stress"
+      ],
+      "cap": "② Apply burn-in stress: mount qualified devices on burn-in boards and operate them for an extended interval at elevated temperature and powered stress, often with increased voltage. The stress accelerates latent degradation; it is not simply another functional test."
+    },
+    {
+      "keys": [
+        "screen",
+        "infant"
+      ],
+      "cap": "③ Retest and remove early-life failures: after stress, weak devices have failed or drifted. Identify and reject them through post-burn-in electrical test or in-situ monitoring. Effective burn-in requires both stress and screening."
+    },
+    {
+      "keys": [
+        "ship"
+      ],
+      "cap": "④ Release survivors and run complementary reliability qualification: qualified devices that survive proceed toward 24×7 deployment. Lot samples also undergo temperature cycling, HTOL, damp heat, and related tests to assess long-term lifetime and environmental robustness."
+    }
+  ],
+  "before": [
+    "<b>Begin with devices that passed final test</b>: Burn-in occurs late in packaging and test. Its inputs are packaged units that meet FT limits. Burn-in does not replace FT; it targets latent early-life weaknesses that conventional outgoing test cannot observe immediately.",
+    "<b>Decide whether burn-in is required and at what coverage</b>: Burn-in consumes oven capacity, energy, and time. The decision to screen every device, sample, or omit the screen depends on field-reliability objectives and failure cost. A 24×7 data-center accelerator is particularly sensitive to early-life failure. TPU v1's actual strategy is not public.",
+    "<b>Set temperature, voltage, workload, and duration</b>: Conditions must be severe enough to accelerate weak mechanisms but not so severe that they damage otherwise qualified devices or activate irrelevant mechanisms. This calibration balances screening effectiveness against induced over-stress. Product-specific values are private reliability data.",
+    "<b>Prepare burn-in boards and post-stress acceptance limits</b>: The board must power and exercise packaged devices reliably at temperature. Define post-burn-in functional and parametric limits, including permitted drift, before the run. Loose limits can release weak units; excessive limits can reject healthy ones.",
+    "<b>Plan lot-level reliability qualification</b>: In addition to per-unit screening, define sample tests such as temperature cycling, high-temperature operating life (HTOL), and damp heat to assess lifetime and environmental robustness. Test conditions and sample plans are private product-reliability choices."
+  ],
+  "during": [
+    "<b>The core distinction is simple: FT measures present performance; burn-in exposes near-term latent failure</b>. A production lot can contain marginal devices that pass today but fail shortly after operation begins. Burn-in accelerates those mechanisms and removes weak units before shipment instead of merely repeating the FT function set.",
+    "<b>Burn-in targets the left side of the bathtub curve</b>. Infant mortality is the initial high and declining failure-rate region, followed by low-rate useful life and later wear-out. Screening aims to consume the early-life interval before delivery so shipped devices begin operation closer to the stable useful-life region.",
+    "<b>Powered thermal stress accelerates time</b>. Elevated temperature, sustained activity, and often increased voltage accelerate degradation in weak oxide, metal voids, marginal bonds, bumps, and related latent defects by orders of magnitude. A failure that might take weeks or months in the field can emerge during the controlled factory interval. Stress must remain representative and avoid damaging healthy units.",
+    "<b>Stress without screening is ineffective</b>. Post-burn-in retest or in-situ monitoring identifies units that failed outright or experienced unacceptable parameter drift. Only devices that survive and still meet limits become qualified survivors. Burn-in effectiveness equals controlled stress plus an acceptance screen.",
+    "<b>The value is particularly high for data-center TPU deployment</b>. A TPU card communicates over PCIe 3.0 and runs TensorFlow/XLA workloads continuously. An early field failure creates diagnosis, downtime, service, and replacement cost far beyond the factory screen. High-reliability markets therefore accept screening cost to reduce infant-mortality escapes.",
+    "<b>Sample reliability tests assess long-term behavior</b>. Burn-in screens individual early-life weakness, while temperature cycling, HTOL, damp heat, and related sample tests assess package and silicon robustness over lifetime and environment. Together, burn-in supports early outgoing quality and qualification supports lot-level durability.",
+    "<b>Disclosure boundary (applies throughout)</b>: Burn-in ovens and boards, powered thermal stress, bathtub-curve screening, post-stress retest, temperature cycling, HTOL, and damp-heat qualification are standard reliability practices for large 28 nm PCIe accelerators. TPU v1 does not disclose temperature, voltage, duration, full-screen versus sample policy, test conditions, pass rate, or field failure rate. Its known 256×256 array, 24 MiB Unified Buffer, 700 MHz, ≤331 mm² die, 28–40 W, PCIe 3.0 accelerator form, and 24×7 TensorFlow use provide only the illustrative product context."
+  ],
+  "result": [
+    {
+      "label": "Role in the Flow",
+      "value": "A reliability gate after FT: final test establishes present conformance, while burn-in accelerates and rejects latent defects likely to cause early-life failure"
+    },
+    {
+      "label": "Burn-In Mechanism",
+      "value": "Operate packaged devices on burn-in boards for an extended period under elevated temperature and powered stress, often with increased voltage, to accelerate weak devices into failure before shipment"
+    },
+    {
+      "label": "Target: Left Side of Bathtub Curve",
+      "value": "Remove infant-mortality failures so shipped devices bypass the initial high-failure-rate population and enter the low, stable useful-life region"
+    },
+    {
+      "label": "Effectiveness = Stress + Screen",
+      "value": "Apply controlled stress, then retest or monitor and reject failed or drifted units. Only survivors that remain within limits proceed as qualified devices"
+    },
+    {
+      "label": "Why It Matters for TPU",
+      "value": "A TPU runs 24×7 in data centers; diagnosis, downtime, and replacement after an early field failure cost far more than factory screening"
+    },
+    {
+      "label": "Complementary Reliability Tests",
+      "value": "Sample temperature cycling, HTOL, damp heat, and related tests validate long-term lifetime and environmental robustness in addition to per-unit early-life screening"
+    },
+    {
+      "label": "Disclosure Boundary",
+      "value": "Temperature, voltage, duration, full-screen or sample strategy, reliability conditions, pass rate, and field failure rate are private product data and are not public for TPU v1"
+    }
+  ],
+  "after": [
+    "<b>Reject early-life failures and release qualified survivors to binning</b>: Post-stress retest removes infant-mortality units. Survivors that still meet specifications proceed to binning and shipment, ultimately entering 24×7 data-center service as qualified devices.",
+    "<b>Analyze burn-in failures and early-life modes</b>: Aggregate failure count and signatures, distinguishing isolated random events from lot-, process-, or package-specific patterns. Systematic early-life failures require fabrication or assembly root-cause analysis. TPU v1's actual data are not public.",
+    "<b>Interpret sampled reliability tests and release the lot</b>: Evaluate temperature-cycle, HTOL, damp-heat, and related results against qualification criteria. Release the lot only when long-term and environmental reliability requirements are met; otherwise hold it, investigate, or expand sampling.",
+    "<b>Feed results back into stress conditions, fabrication, package, and design</b>: If fallout is high or one failure mechanism repeats, refine temperature, voltage, duration, and retest limits while also correcting upstream process, package, or design margins. The objective is accurate screening without damaging good devices.",
+    "<b>Preserve traceability</b>: Archive stress conditions, pass rates, failure signatures, sample-test plans, and qualification results for field-reliability tracking and future-lot comparison. These are standard private reliability records, not public TPU v1 values."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the paper discloses TPU v1's 256×256 8-bit MAC systolic array, 24 MiB Unified Buffer, 700 MHz clock, approximately 92 TOPS, ≤331 mm² die, 28–40 W envelope, PCIe 3.0 accelerator-card form, and continuous TensorFlow/XLA data-center use, which provide the known product context; burn-in ovens and boards, powered high-temperature stress, bathtub-curve and infant-mortality screening, post-stress retest, temperature cycling, HTOL, damp heat, and the importance of screening in high-reliability applications are standard industry reliability and OSAT practices, while the depicted curve and flow are illustrative and TPU v1's private temperature, voltage, duration, sample policy, reliability conditions, burn-in pass rate, and field failure rate are not public)"
+}

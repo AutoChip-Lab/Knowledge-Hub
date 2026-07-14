@@ -1,0 +1,120 @@
+{
+  "secNum": "3.15",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · Software Stack: TensorFlow → XLA → CISC Commands → MXU",
+  "oneLine": "The programming interface decides who keeps the array full. Users do not write assembly; XLA compiles TensorFlow graphs into roughly a dozen CISC commands that the host sends over PCIe. Hardware executes them, while the TensorFlow/XLA ecosystem provides the durable advantage.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"30\">Software stack: progressively lower a model into array execution</text><g class=\"cs-part\" data-k=\"tf\" data-g=\"tf\"><rect class=\"cs-box\" x=\"180\" y=\"44\" width=\"360\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"68\">① TensorFlow model (dataflow graph)</text><text class=\"cs-sub\" x=\"360\" y=\"86\">Users describe what to compute, not hardware details</text></g><line class=\"cs-arr\" x1=\"360\" y1=\"100\" x2=\"360\" y2=\"128\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"370\" y=\"118\">Submit graph</text><g class=\"cs-part\" data-k=\"xla\" data-g=\"xla\"><rect class=\"cs-box\" x=\"180\" y=\"130\" width=\"360\" height=\"60\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"154\">② XLA compiler</text><text class=\"cs-sub\" x=\"360\" y=\"172\">Fuse ops / lay out tensors / place data in UB</text><text class=\"cs-sub\" x=\"360\" y=\"186\">Compile graph into ~a dozen CISC commands</text></g><line class=\"cs-arr\" x1=\"360\" y1=\"190\" x2=\"360\" y2=\"218\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"370\" y=\"208\">Compiled output</text><g class=\"cs-part\" data-k=\"isa\" data-g=\"isa\"><rect class=\"cs-box\" x=\"60\" y=\"220\" width=\"600\" height=\"74\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"242\">③ TPU CISC ISA (~a dozen commands, host-issued over PCIe)</text><g class=\"cs-part\" data-k=\"i_rw\" data-g=\"isa\"><rect class=\"cs-cell\" x=\"80\" y=\"256\" width=\"150\" height=\"28\" rx=\"4\"/><text class=\"cs-cellt\" x=\"155\" y=\"274\">Read_Weights</text></g><g class=\"cs-part\" data-k=\"i_mm\" data-g=\"isa\"><rect class=\"cs-cell\" x=\"244\" y=\"256\" width=\"170\" height=\"28\" rx=\"4\"/><text class=\"cs-cellt\" x=\"329\" y=\"274\">MatrixMultiply</text></g><g class=\"cs-part\" data-k=\"i_act\" data-g=\"isa\"><rect class=\"cs-cell\" x=\"428\" y=\"256\" width=\"150\" height=\"28\" rx=\"4\"/><text class=\"cs-cellt\" x=\"503\" y=\"274\">Activate</text></g></g><line class=\"cs-arr\" x1=\"360\" y1=\"294\" x2=\"360\" y2=\"322\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"370\" y=\"312\">Drive hardware</text><g class=\"cs-part\" data-k=\"hw\" data-g=\"hw\"><rect class=\"cs-box\" x=\"180\" y=\"324\" width=\"360\" height=\"60\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"348\">④ Hardware: MXU systolic array + Unified Buffer</text><text class=\"cs-sub\" x=\"360\" y=\"366\">256×256 MACs execute MatrixMultiply</text><text class=\"cs-sub\" x=\"360\" y=\"380\">Compiler manages data in the 24 MiB UB</text></g></svg>",
+  "legend": [
+    {
+      "k": "tf",
+      "name": "① TensorFlow model",
+      "desc": "The user entry point is a high-level dataflow graph describing what to compute. Users never handle the systolic array, Unified Buffer capacity, or instruction encoding; the compiler hides hardware complexity."
+    },
+    {
+      "k": "xla",
+      "name": "② XLA compiler",
+      "desc": "The center of the stack: fuse operators, lay out tensors, choose what resides in the 24 MiB Unified Buffer, and lower the graph to a short CISC stream. Compiler-managed movement is the necessary partner to a software-managed UB."
+    },
+    {
+      "k": "isa",
+      "name": "③ CISC instruction set",
+      "desc": "TPU exposes roughly a dozen coarse commands such as Read_Weights, MatrixMultiply, and Activate. Each performs substantial work, matching host-driven deterministic batch inference rather than fine-grained CPU-style execution."
+    },
+    {
+      "k": "i_mm",
+      "name": "MatrixMultiply command",
+      "desc": "One command drives the entire 256×256 systolic array through a large matrix multiply. Fetch and decode cost is amortized across tens of thousands of MAC operations, enabling minimal control hardware."
+    },
+    {
+      "k": "hw",
+      "name": "④ Hardware execution",
+      "desc": "The MXU and Unified Buffer execute submitted commands without making scheduling decisions. Intelligence resides in the compiler; brute-force arithmetic resides in the array—the boundary that defines the programming model."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "tf"
+      ],
+      "cap": "① Users build a TensorFlow dataflow graph that describes what to compute without exposing hardware details."
+    },
+    {
+      "keys": [
+        "xla"
+      ],
+      "cap": "② XLA fuses operators, lays out tensors, and decides how values occupy the 24 MiB Unified Buffer."
+    },
+    {
+      "keys": [
+        "isa",
+        "i_rw",
+        "i_mm",
+        "i_act"
+      ],
+      "cap": "③ Compilation produces roughly a dozen CISC commands, including Read_Weights, MatrixMultiply, and Activate."
+    },
+    {
+      "keys": [
+        "i_mm",
+        "hw"
+      ],
+      "cap": "④ The host sends commands over PCIe; one MatrixMultiply command drives the entire 256×256 array."
+    },
+    {
+      "keys": [
+        "tf",
+        "xla",
+        "isa",
+        "hw"
+      ],
+      "cap": "⑤ The full stack combines framework usability at the top, array throughput at the bottom, and compiler translation between them."
+    }
+  ],
+  "before": [
+    "<b>Choose the programmer</b>: The accelerator serves ML engineers who write models, not hardware engineers who write assembly. Users should keep their familiar framework, which requires a compiler layer rather than a new exposed ISA.",
+    "<b>Decisions to make</b>: RISC versus coarse CISC, instruction count and granularity, host-driven versus autonomous execution, framework/compiler integration, and the PCIe control plane.",
+    "<b>Required inputs</b>: The regular, matrix-heavy batch-inference workload (§3.1) and a key hardware constraint—the 24 MiB Unified Buffer is a software-managed scratchpad without hardware caching, so software must schedule movement explicitly.",
+    "<b>Hard constraint</b>: Ecosystem is a moat. Even the fastest array is unusable without the TensorFlow/XLA toolchain, so success depends equally on hardware and reuse of the existing framework."
+  ],
+  "during": [
+    "<b>Move complexity into the compiler</b>: Hardware removes caches, out-of-order execution, and branch prediction (§3.9). XLA replaces that intelligence at compile time through operator fusion, tensor layout, and UB-residency planning.",
+    "<b>Choose CISC over RISC</b>: A deliberately coarse MatrixMultiply command occupies the whole 256×256 array. Tens of thousands of MACs amortize fetch/decode overhead, minimizing control logic and fitting deterministic batch inference.",
+    "<b>Treat a small ISA as a feature</b>: About a dozen commands—Read_Weights, MatrixMultiply, Activate, and others—map to coarse neural-network primitives. Fewer commands mean simpler decode and pipelines, preserving area for MACs.",
+    "<b>Use a host-driven model</b>: TPU is a coprocessor, not an autonomous CPU. The host pushes compiled commands over PCIe 3.0, eliminating a complex on-chip fetch/scheduling frontend while requiring host software to order the sequence.",
+    "<b>Keep the boundary clear</b>: Scheduling, layout, and fusion belong to the compiler; matrix arithmetic belongs to the array. Because software fully manages the UB, hardware can omit cache coherence and remain much simpler.",
+    "<b>Accept the cost</b>: Static compile-time layout makes runtime simple but handles dynamic or irregular shapes poorly. Tight TensorFlow/XLA coupling also means other frameworks need a dedicated compiler backend."
+  ],
+  "result": [
+    {
+      "label": "Programming entry",
+      "value": "TensorFlow dataflow graph; users avoid hardware details"
+    },
+    {
+      "label": "Compiler",
+      "value": "XLA: fusion / layout / UB-residency decisions"
+    },
+    {
+      "label": "ISA style",
+      "value": "Coarse-grained CISC; roughly a dozen commands"
+    },
+    {
+      "label": "Representative commands",
+      "value": "Read_Weights / MatrixMultiply / Activate"
+    },
+    {
+      "label": "Control model",
+      "value": "Host-driven commands over PCIe 3.0"
+    },
+    {
+      "label": "Ecosystem advantage",
+      "value": "Reuse TensorFlow/XLA and reduce migration cost"
+    }
+  ],
+  "after": [
+    "<b>Verify the end-to-end compiler path</b>: Run real models through TensorFlow → XLA → CISC → array, checking correctness and utilization. Improve compiler layout and fusion before changing hardware when utilization is low.",
+    "<b>Reconcile memory and dataflow</b>: If XLA layouts do not fit the UB or frequently spill to DDR3, revisit the 24 MiB memory capacity and dataflow assumptions. The programming model and memory hierarchy are coupled.",
+    "<b>Propagate constraints</b>: Give microarchitecture (④) final ISA encodings and timing; give host software the PCIe submission protocol and queue model so the host-driven path does not bottleneck.",
+    "<b>Invest in the ecosystem</b>: Maintain the XLA TPU backend, operator libraries, and documentation so more TensorFlow models run unchanged. Long-term interface value comes from sustained software engineering, not a one-time hardware release."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017. Facts disclosed in the paper are distinguished from illustrative examples and standard industry practice; the latter are not presented as disclosed TPU v1 implementation details."
+}

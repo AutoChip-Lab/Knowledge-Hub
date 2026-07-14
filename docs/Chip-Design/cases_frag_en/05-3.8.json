@@ -1,0 +1,116 @@
+{
+ "secNum": "3.8",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Clock-domain-crossing RTL: safely transferring signals among the PCIe, core-array, and DDR3 domains",
+ "oneLine": "The host issues commands through PCIe, the on-chip 256×256 array runs at 700 MHz, and off-chip DDR3 operates in another clock domain. A signal crossing these domains without protection can become metastable. This case covers the standard CDC structures—two-flop synchronizers for single-bit controls and asynchronous FIFOs or handshakes for multibit payloads—and explains why CDC defects often pass simulation yet fail intermittently in silicon.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">Unprotected CDC risks metastability: two flops for 1 bit, async FIFO for multibit</text><line class=\"cs-arr\" x1=\"290\" y1=\"70\" x2=\"290\" y2=\"372\" stroke-dasharray=\"6 5\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"200\" y=\"64\">PCIe domain clk_pcie</text><text class=\"cs-note\" x=\"360\" y=\"64\">Core-array domain clk_core 700 MHz</text><g class=\"cs-part\" data-k=\"src\" data-g=\"src\"><rect class=\"cs-box\" x=\"40\" y=\"92\" width=\"150\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"115\" y=\"116\">Source register</text><text class=\"cs-sub\" x=\"115\" y=\"134\">always_ff @clk_pcie</text></g><line class=\"cs-arr\" x1=\"190\" y1=\"121\" x2=\"346\" y2=\"121\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"200\" y=\"112\">Single-bit control</text><g class=\"cs-part\" data-k=\"ff1\" data-g=\"sync\"><rect class=\"cs-box\" x=\"350\" y=\"92\" width=\"118\" height=\"58\" rx=\"8\"/><path d=\"M350,150 L362,150 L350,138 Z\" fill=\"#8b5cf6\"/><text class=\"cs-t\" x=\"409\" y=\"114\">First-stage FF</text><text class=\"cs-sub\" x=\"409\" y=\"132\">Absorbs metastability</text></g><line class=\"cs-arr\" x1=\"468\" y1=\"121\" x2=\"512\" y2=\"121\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"ff2\" data-g=\"sync\"><rect class=\"cs-box\" x=\"516\" y=\"92\" width=\"118\" height=\"58\" rx=\"8\"/><path d=\"M516,150 L528,150 L516,138 Z\" fill=\"#8b5cf6\"/><text class=\"cs-t\" x=\"575\" y=\"114\">Second-stage FF</text><text class=\"cs-sub\" x=\"575\" y=\"132\">Stable output</text></g><line class=\"cs-arr\" x1=\"634\" y1=\"121\" x2=\"690\" y2=\"121\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"638\" y=\"112\">Into core logic</text><text class=\"cs-note\" x=\"350\" y=\"174\">Both stages use clk_core → the second stage is overwhelmingly likely to be stable</text><g class=\"cs-part\" data-k=\"meta\" data-g=\"meta\"><rect class=\"cs-box\" x=\"40\" y=\"210\" width=\"230\" height=\"70\" rx=\"8\"/><text class=\"cs-t\" x=\"155\" y=\"236\">Direct crossing (wrong)</text><text class=\"cs-sub\" x=\"155\" y=\"256\">Metastable: between 0 and 1</text><text class=\"cs-sub\" x=\"155\" y=\"272\">Passes simulation · fails randomly in silicon</text></g><g class=\"cs-part\" data-k=\"fifo\" data-g=\"fifo\"><rect class=\"cs-box\" x=\"350\" y=\"210\" width=\"300\" height=\"70\" rx=\"8\"/><text class=\"cs-t\" x=\"500\" y=\"236\">Multibit CDC: asynchronous FIFO / handshake</text><text class=\"cs-sub\" x=\"500\" y=\"256\">Dual-port RAM + Gray-coded read/write pointers</text><text class=\"cs-sub\" x=\"500\" y=\"272\">Pointers use two-flop synchronization; payload stays word-aligned</text></g><line class=\"cs-arr\" x1=\"155\" y1=\"150\" x2=\"155\" y2=\"206\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"lint\" data-g=\"lint\"><rect class=\"cs-box\" x=\"40\" y=\"312\" width=\"610\" height=\"50\" rx=\"8\"/><text class=\"cs-t\" x=\"345\" y=\"335\">CDC analysis: verify every crossing uses a synchronizer/FIFO; no unprotected paths</text><text class=\"cs-sub\" x=\"345\" y=\"352\">Functional simulation cannot reveal metastability → structural CDC checks are mandatory</text></g></svg>",
+ "legend": [
+  {
+   "k": "src",
+   "name": "Source-domain register (sender)",
+   "desc": "A signal registered in the source clock domain, such as clk_pcie. Its transition is asynchronous to the destination clock and may land inside the setup/hold aperture of a destination flip-flop—the root cause of CDC risk."
+  },
+  {
+   "k": "sync",
+   "name": "Two-flop synchronizer (single bit)",
+   "desc": "Two cascaded flip-flops clocked by the destination domain (clk_core). The first stage absorbs possible metastability and receives a full cycle to resolve; the second stage is overwhelmingly likely to sample a stable value before it enters core logic. This is the standard minimum structure for a single-bit CDC."
+  },
+  {
+   "k": "meta",
+   "name": "Metastability (direct-crossing failure)",
+   "desc": "If an asynchronous signal directly drives destination logic, a flip-flop can remain between 0 and 1 for an unpredictable interval. Reconvergent paths may then observe inconsistent values and corrupt behavior. Ideal 0/1 functional simulation cannot expose this, so the design may pass simulation yet fail randomly after fabrication."
+  },
+  {
+   "k": "fifo",
+   "name": "Asynchronous FIFO / handshake (multibit)",
+   "desc": "A multibit bus must never be synchronized bit by bit; unequal arrival times can create a word that never existed at the source. Instead, store data in dual-port RAM and transfer Gray-coded read/write pointers—where only one bit changes at a time—through two-flop synchronizers so the payload crosses atomically and remains aligned."
+  },
+  {
+   "k": "lint",
+   "name": "CDC lint (static analysis)",
+   "desc": "Because ordinary functional simulation cannot reveal metastability, dedicated CDC analysis must enumerate every crossing and confirm it passes through a recognized synchronizer or asynchronous FIFO, with no unprotected signal crossing a domain boundary."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "src",
+    "ff1"
+   ],
+   "cap": "① A source register in the PCIe domain launches a single-bit control toward the core domain. The transition is asynchronous to clk_core and can occur inside a core flip-flop's sampling aperture."
+  },
+  {
+   "keys": [
+    "ff1",
+    "ff2",
+    "sync"
+   ],
+   "cap": "② At the core-domain boundary, pass the signal through a two-flop synchronizer. The first stage may briefly become metastable and receives one cycle to resolve; the second stage is overwhelmingly likely to deliver a clean 0 or 1 to the array logic."
+  },
+  {
+   "keys": [
+    "meta"
+   ],
+   "cap": "③ Counterexample: a direct asynchronous connection can drive a flip-flop metastable, leaving its output between 0 and 1 and allowing downstream paths to sample inconsistent values. Functional simulation misses this; silicon can fail intermittently."
+  },
+  {
+   "keys": [
+    "fifo"
+   ],
+   "cap": "④ For a multibit transfer such as a host command or address, do not synchronize bits independently. Use an asynchronous FIFO or bundled-data handshake: data enters dual-port RAM and synchronized Gray-coded pointers preserve whole-word alignment across domains."
+  },
+  {
+   "keys": [
+    "lint"
+   ],
+   "cap": "⑤ Run CDC lint after implementation. It statically checks every crossing for a recognized synchronizer or FIFO and flags all unprotected paths—an essential structural signoff that functional simulation cannot replace."
+  }
+ ],
+ "before": [
+  "<b>Inventory clock domains and draw their boundaries</b>: TPU v1 necessarily spans at least the host PCIe interface, the 700 MHz on-chip core array, and the off-chip DDR3 interface. Identify every asynchronous clock and every signal that crosses between them; each crossing is a potential metastability site.",
+  "<b>Classify each crossing as single-bit or multibit</b>: use a two-flop synchronizer for a single control such as valid, ready, or enable. Use an asynchronous FIFO or a bundled-data handshake for an address, data word, or instruction. This classification determines the RTL structure and must be settled before coding.",
+  "<b>Standardize reset and synchronizer style</b>: define the synchronizer depth (typically two stages, or three when extra MTBF margin is required), reset policy, and naming convention such as *_sync2 so CDC tools can recognize the structure consistently.",
+  "<b>Plan for a problem simulation cannot cover</b>: metastability does not exist in ideal two-state/logic-level functional simulation, and gate simulation models it only partially with specialized timing or statistical models. Make CDC static analysis a mandatory acceptance gate from the beginning."
+ ],
+ "during": [
+  "<b>For one bit, use a proper two-stage synchronizer</b>: in the destination domain, code two cascaded registers clocked by clk_core—for example, reg a_sync1, a_sync2; always_ff @(posedge clk_core) begin a_sync1 <= a_async; a_sync2 <= a_sync1; end. Downstream logic may use only a_sync2; a_sync1 is the metastability-absorbing stage.",
+  "<b>Never synchronize a multibit bus bit by bit</b>: separate synchronizers can resolve on different cycles and produce a torn word that the source never sent. Multibit payloads require an asynchronous FIFO or a bundled-data protocol in which data is held stable and a synchronized control qualifies the entire word.",
+  "<b>Gray-coded pointers are central to an asynchronous FIFO</b>: read and write pointers must cross domains to compute empty/full. Gray coding changes only one pointer bit per increment; when sampled near a transition, the destination sees either the old or new code rather than a hazardous multibit intermediate combination.",
+  "<b>Trade latency for safety</b>: synchronizers inherently add one or two cycles, and FIFOs add more. That latency is the cost of a safe crossing. “The signal changes slowly, so a direct connection should be fine” is not a valid exception; every CDC must use an appropriate synchronizer or FIFO.",
+  "<b>Preserve synchronizer structure through synthesis</b>: synthesis may otherwise merge or optimize the stages and reduce metastability resolution time. Encapsulate synchronizers in dedicated cells or use appropriate preservation attributes, and constrain asynchronous crossings with false-path/max-delay policies so ordinary timing closure does not distort the CDC structure.",
+  "<b>Scope note: TPU-specific CDC details are not public</b>: the PCIe, core, and DDR3 domains follow from TPU v1's documented architecture, but synchronizer depth, FIFO depth, and handshake protocol are implementation details. The structures here are standard multi-clock ASIC practice, not claimed TPU-specific RTL."
+ ],
+ "result": [
+  {
+   "label": "Single-bit CDC",
+   "value": "Two-flop synchronizer clocked by the destination domain"
+  },
+  {
+   "label": "Illustrative synchronizer RTL",
+   "value": "always_ff @(posedge clk_core): s1<=async; s2<=s1;"
+  },
+  {
+   "label": "Multibit CDC",
+   "value": "Asynchronous FIFO / bundled-data handshake; never per-bit synchronization"
+  },
+  {
+   "label": "FIFO pointer encoding",
+   "value": "Gray code (one bit changes per step), then synchronized"
+  },
+  {
+   "label": "Clock domains involved",
+   "value": "PCIe domain · 700 MHz core-array domain · DDR3 memory domain"
+  },
+  {
+   "label": "Primary signoff method",
+   "value": "Static CDC analysis (ordinary simulation is insufficient)"
+  }
+ ],
+ "after": [
+  "<b>Run dedicated CDC static analysis</b>: enumerate every clock-domain crossing and verify that each uses a recognized synchronizer or asynchronous FIFO. Also detect shared synchronizers, reconvergent paths, and multibit payloads incorrectly treated as independent single-bit crossings.",
+  "<b>Use metastability-injection simulation</b>: inject random delay or metastability models at crossing registers so simulation can exercise downstream robustness. Passing ideal functional simulation alone is not evidence of CDC safety.",
+  "<b>Inspect constraints and synthesis attributes</b>: confirm crossings have the intended false-path/max-delay constraints, synchronizer cells retain their preservation attributes, and both stages remain intact after synthesis.",
+  "<b>Review multi-clock operating scenarios with verification</b>: cover reset sequencing, clock start/stop behavior, and cross-domain valid/ready handshakes. CDC defects are high-risk because they can surface only intermittently in silicon, so structure, tools, and human review must all sign off at RTL."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (host commands over PCIe, a 700 MHz core array, and off-chip DDR3 establish the documented multi-clock context; two-flop synchronizers, asynchronous FIFOs, and CDC analysis are standard RTL practices, while TPU's detailed CDC implementation is not public)"
+}

@@ -1,0 +1,113 @@
+{
+  "secNum": "3.8",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · Binning and Yield Screening: Classify Pre-Package Die, Qualify Packaged Devices, and Convert Test Results into Shipment Decisions",
+  "oneLine": "This case explains how test data becomes a product disposition. Devices from the same design and process naturally vary: some meet the highest specification, some remain functional but have lower frequency or higher power, and some fail critical requirements. Binning assigns each tested unit to a grade using pass/fail status, sustainable speed, power, and quality measurements, enabling product differentiation rather than a simple good/bad split. Terminology must remain precise across the manufacturing boundary: a known-good die (KGD) is a bare die that passed pre-package wafer probe and is eligible to consume package cost; after package assembly, final test, and any required reliability screen, a passing unit is a qualified device and may ship on a PCIe accelerator card. Yield—the number of acceptable units divided by the number started—directly determines delivery volume and cost per shipped unit. The known TPU v1 configuration—256×256 systolic array, 24 MiB Unified Buffer, 700 MHz, 28 nm, ≤331 mm² die, and PCIe 3.0 accelerator-card use—is the illustrative product being classified. Bin limits, grade specifications, KGD criteria, post-package qualification limits, yields, and volumes are standard private production data and are not public for TPU v1.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 420\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"26\">Production disposition: test results → binning → KGD to packaging → qualified devices to PCIe cards</text><g class=\"cs-part\" data-k=\"tested\" data-g=\"tested\"><rect class=\"cs-box\" x=\"24\" y=\"58\" width=\"176\" height=\"120\" rx=\"8\"/><text class=\"cs-t\" x=\"112\" y=\"86\">① Tested production units</text><text class=\"cs-sub\" x=\"112\" y=\"106\">Each has measured results</text><rect class=\"cs-cell\" x=\"46\" y=\"122\"  width=\"32\" height=\"32\"/><rect class=\"cs-cell\" x=\"86\" y=\"122\" width=\"32\" height=\"32\"/><rect class=\"cs-cell\" x=\"126\" y=\"122\" width=\"32\" height=\"32\"/><rect class=\"cs-cell\" x=\"166\" y=\"122\" width=\"20\" height=\"32\"/><rect class=\"cs-cell\" x=\"46\" y=\"160\" width=\"32\" height=\"12\"/><text class=\"cs-sub\" x=\"112\" y=\"172\">Pass/fail · speed · power · quality</text></g><line class=\"cs-arr\" x1=\"200\" y1=\"118\" x2=\"246\" y2=\"118\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"bin\" data-g=\"bin\"><rect class=\"cs-box\" x=\"250\" y=\"46\" width=\"200\" height=\"200\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"350\" y=\"72\">② Binning</text><text class=\"cs-sub\" x=\"350\" y=\"90\">Assign each unit to a result-based grade</text><g class=\"cs-part\" data-k=\"kgd\" data-g=\"kgd\"><rect class=\"cs-cell\" x=\"268\" y=\"104\" width=\"164\" height=\"36\" fill=\"#dcfce7\" stroke=\"#86efac\"/><text class=\"cs-cellt\" x=\"350\" y=\"127\">KGD ✓ pre-package pass</text></g><g class=\"cs-part\" data-k=\"grade\" data-g=\"grade\"><rect class=\"cs-cell\" x=\"268\" y=\"148\" width=\"164\" height=\"36\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-cellt\" x=\"350\" y=\"171\">Lower grade · usable at reduced spec</text></g><g class=\"cs-part\" data-k=\"reject\" data-g=\"reject\"><rect class=\"cs-cell\" x=\"268\" y=\"192\" width=\"164\" height=\"36\" fill=\"#fee2e2\" stroke=\"#fca5a5\"/><text class=\"cs-cellt\" x=\"350\" y=\"215\">Fail ✗ reject / scrap</text></g></g><line class=\"cs-arr\" x1=\"450\" y1=\"122\" x2=\"496\" y2=\"122\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"ship\" data-g=\"ship\"><rect class=\"cs-box\" x=\"500\" y=\"58\" width=\"196\" height=\"90\" rx=\"8\" fill=\"#dcfce7\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"598\" y=\"86\">③ KGD to packaging</text><text class=\"cs-sub\" x=\"598\" y=\"106\">Known-good bare die → assembly</text><text class=\"cs-sub\" x=\"598\" y=\"126\">Qualified device → TPU PCIe card</text></g><polyline class=\"cs-arr\" points=\"350,228 350,258 550,258 550,248\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"yield\" data-g=\"yield\"><rect class=\"cs-box\" x=\"500\" y=\"166\" width=\"196\" height=\"80\" rx=\"8\"/><text class=\"cs-t\" x=\"598\" y=\"192\">Yield determines delivery</text><text class=\"cs-sub\" x=\"598\" y=\"212\">Acceptable units / units started</text><text class=\"cs-sub\" x=\"598\" y=\"230\">Sets volume and unit cost</text></g><text class=\"cs-note\" x=\"24\" y=\"290\">Binning converts natural performance variation into product grades rather than only good or bad</text><text class=\"cs-note\" x=\"24\" y=\"314\">KGD means a tested bare die before packaging; after assembly and FT, passing units are qualified devices</text><text class=\"cs-note\" x=\"24\" y=\"338\">Yield screening controls shipped volume, unit cost, and outgoing quality</text><text class=\"cs-note\" x=\"24\" y=\"364\">For TPU: bin the ≤331 mm² die, package KGD, then ship only qualified PCIe accelerator devices</text><text class=\"cs-note\" x=\"24\" y=\"396\">Disclosure: bin limits, KGD and qualification criteria, yield, and grade volumes are not public TPU v1 data</text></svg>",
+  "legend": [
+    {
+      "k": "bin",
+      "name": "Binning (Assign Tested Units to Result-Based Grades)",
+      "desc": "Even within one design, process, wafer, and lot, small manufacturing variations create a distribution. Some units meet the full specification, some remain functional but sustain a lower frequency or consume more power, and some fail a critical requirement. Binning uses pass/fail, maximum stable frequency, power, and quality metrics to assign grades. This can support multiple product specifications or SKUs and recover value from usable lower-performing silicon. Bin count and grade limits for a large ≤331 mm² TPU-class die are private product and test decisions and are not public for TPU v1."
+    },
+    {
+      "k": "kgd",
+      "name": "Known-Good Die / KGD (Pre-Package Bare-Die Status)",
+      "desc": "KGD means a bare die that has passed the required wafer-level tests and is eligible for dicing, die pick, and package assembly. Establishing KGD prevents a die already known to be defective from consuming expensive package capacity. KGD does not describe a packaged shipment. Once a KGD is assembled, it must pass final test and any required reliability screens; only then is the post-package unit a qualified device eligible for card assembly and shipment. The exact KGD limits for TPU v1 are not public."
+    },
+    {
+      "k": "grade",
+      "name": "Lower-Grade Bin (Functional at a Reduced Specification)",
+      "desc": "Some units retain core functionality but miss the highest frequency, power, or another noncritical grade limit. When the product strategy permits, they can enter a reduced-specification bin and operate at a more conservative frequency or wider power envelope instead of being scrapped. This converts natural manufacturing variation into differentiated product value. Whether such grades exist and how they are specified are private product decisions; no TPU v1 grade structure is asserted."
+    },
+    {
+      "k": "reject",
+      "name": "Reject / Scrap Bin (Critical Requirement Failed)",
+      "desc": "A unit with a failed critical function, short, excessive leakage, or severe specification violation cannot be recovered through a lower grade and must be isolated and scrapped. This hard rejection prevents defective silicon or packaged devices from reaching a TPU accelerator card and data center. Reject criteria and failure counts are private production data and are not public for TPU v1."
+    },
+    {
+      "k": "yield",
+      "name": "Yield Screening (Acceptable Fraction Determines Volume and Cost)",
+      "desc": "Yield is the number of acceptable units divided by the number started at the corresponding manufacturing stage. Pre-package die yield determines KGD available for assembly; package, FT, and reliability yields determine qualified devices available for shipment. Yield therefore controls both delivery volume and cost per accepted unit because wafer and assembly cost is spread across the survivors. Accurate screening must avoid both defect escapes and overkill. TPU v1's actual yields are not public."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "tested",
+        "bin"
+      ],
+      "cap": "① Use test results for binning: each wafer die or packaged unit has an identity-linked record containing pass/fail, sustainable speed, power, and quality measurements. Apply the appropriate stage-specific rules to assign it to a grade."
+    },
+    {
+      "keys": [
+        "kgd",
+        "grade",
+        "reject"
+      ],
+      "cap": "② Determine disposition: a bare die that meets pre-package limits becomes KGD ✓ and may enter assembly; a functional unit that misses a top grade may use a reduced-specification bin where product policy allows; a critical failure enters reject or scrap ✗."
+    },
+    {
+      "keys": [
+        "kgd",
+        "ship"
+      ],
+      "cap": "③ Preserve the package boundary: send KGD—not untested or failing die—to package assembly. After assembly, FT, and any required reliability screening, ship only qualified devices on TPU PCIe accelerator cards. Never call a post-package shipment KGD."
+    },
+    {
+      "keys": [
+        "yield"
+      ],
+      "cap": "④ Use yield to manage delivery and cost: the acceptable fraction at wafer, package, FT, and reliability stages determines how many qualified devices can ship and how much cost each carries. Accurate classification controls both outgoing quality and economics."
+    }
+  ],
+  "before": [
+    "<b>Complete identity-linked test records at each stage</b>: Wafer probe must record each bare die's pass/fail and available speed, power, and quality information. Final test and reliability screening must likewise record results against the packaged-device serial or lot identity. Do not merge pre-package KGD status with post-package qualification.",
+    "<b>Define stage-specific bins and specifications</b>: Establish the pre-package limits for KGD, any permitted reduced-grade die categories, package and FT limits for a qualified device, and hard reject criteria. The product specification and manufacturing strategy jointly define these rules. TPU v1's actual bins are not public.",
+    "<b>Define KGD and qualified-device release criteria separately</b>: KGD is the red line for admitting a bare die into packaging. Qualified-device criteria govern shipment after assembly and test. Loose limits create defect escapes; overly tight limits cause overkill. Both sets must reflect quality and economic objectives.",
+    "<b>Align delivery and cost targets with stage yields</b>: Use wafer yield, KGD count, package yield, FT pass rate, and reliability survival rate to project qualified-device volume and unit cost. A shortfall can prevent delivery or exceed the cost plan and must trigger capacity or process action.",
+    "<b>Prepare automated classification and traceability</b>: Configure systems to assign bins from measurements, mark or isolate rejects, and preserve every die and device disposition, yield statistic, and rule revision for later audit and process feedback."
+  ],
+  "during": [
+    "<b>Test produces measurements; binning produces disposition</b>. CP, FT, and reliability screens generate data. Binning and yield screening translate those data into decisions—admit a bare die to packaging, use a reduced grade, qualify a packaged unit for shipment, or reject it. The subject is not how measurements are made but how stage-appropriate rules act on them.",
+    "<b>Natural variation motivates grades rather than a binary split</b>. Small process variations cause units from the same design and wafer to differ in maximum frequency, power, leakage, and other parameters. Binning partitions that distribution into specification ranges, potentially supporting multiple product grades or SKUs and recovering value from usable lower-performing units.",
+    "<b>Use the correct three-way disposition at the correct stage</b>. A bare die meeting all required wafer-level limits becomes KGD and may be packaged. A unit that is functional but misses a top limit may enter a reduced grade if the product supports it. A critical functional or electrical failure is rejected. After packaging, the corresponding passing status is qualified device, never KGD.",
+    "<b>The package boundary is fundamental</b>. For a TPU accelerator expected to run 24×7 in a data center, packaging a known failing die wastes cost, while shipping an unqualified packaged unit creates card rework or field failure. KGD controls admission to package assembly; FT and reliability qualification control admission to shipment.",
+    "<b>Yield screening is both a quality and economic control</b>. Yield equals acceptable units divided by units started. Wafer yield determines available KGD, while compound assembly and test yield determines shippable qualified devices. It sets delivery volume and cost per accepted unit because fixed wafer and processing cost is distributed across survivors. Accurate limits must reject failures without unnecessarily discarding good units.",
+    "<b>Disclosure boundary</b>: Result-based binning, KGD/reduced-grade/reject die disposition, post-package qualified-device release, and stage-yield calculations are standard production practices for large 28 nm PCIe accelerators. TPU v1 does not publish bin rules, grade specifications, KGD or qualification thresholds, yields, or grade volumes. Its 256×256 array, 24 MiB Unified Buffer, 700 MHz, 28 nm process, ≤331 mm² die, and PCIe card are only the illustrative product context."
+  ],
+  "result": [
+    {
+      "label": "Output of This Step",
+      "value": "Every tested unit receives a clear stage-appropriate disposition: bare die become KGD, reduced grade, or reject; packaged units become qualified devices, lower grade where supported, or reject"
+    },
+    {
+      "label": "Binning",
+      "value": "Classify units by pass/fail, sustainable frequency, power, and quality so natural manufacturing variation can become differentiated product grades"
+    },
+    {
+      "label": "Three-Way Disposition",
+      "value": "Meets required limits → KGD before packaging or qualified device after packaging; usable below top specification → reduced grade; critical failure → reject or scrap"
+    },
+    {
+      "label": "Package-Boundary Terminology",
+      "value": "Only KGD enters package assembly; only qualified devices that pass post-package FT and required reliability screens are mounted on PCIe cards and shipped"
+    },
+    {
+      "label": "Yield Screening",
+      "value": "Stage yield = acceptable units / units started. KGD yield controls assembly input, while compound package-and-test yield controls qualified-device delivery and unit cost"
+    },
+    {
+      "label": "Disclosure Boundary",
+      "value": "Bin rules, grade specifications, KGD and qualified-device limits, yields, and grade volumes are private production data rather than public TPU v1 information"
+    }
+  ],
+  "after": [
+    "<b>Reconcile every bin and release list</b>: Confirm that KGD, reduced-grade, and reject counts sum to tested bare die, and that qualified-device, lower-grade, and reject counts sum to packaged units. Verify that every assembly input was KGD and every shipment is a qualified device.",
+    "<b>Send KGD to packaging and qualified devices to card assembly</b>: KGD bare die proceed to package assembly. Packaged units that pass FT and required reliability screening proceed as qualified devices to PCIe 3.0 card assembly and data-center delivery. Isolate lower-grade and reject material according to its approved disposition.",
+    "<b>Calculate stage and compound yield against volume and cost targets</b>: Compare wafer KGD yield and post-package qualified-device yield with the delivery forecast and unit-cost budget. A shortfall may require more wafer starts, capacity changes, or root-cause action. TPU v1's actual values are not public.",
+    "<b>Feed grade distributions and yield back into design and process improvement</b>: Persistent concentration in a reduced-frequency bin or low yield can indicate insufficient design margin, process variation, package effects, or test issues. Return the distribution to design, fabrication, assembly, and test teams for corrective iteration.",
+    "<b>Preserve traceability</b>: Archive counts by bin, stage yields, KGD and qualified-device criteria, rejects, and rule revisions for reliability, volume, and cost analysis. These are standard private manufacturing records and are not public TPU v1 data."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the paper discloses TPU v1's 256×256 8-bit MAC systolic array, 24 MiB Unified Buffer, 700 MHz and approximately 92 TOPS, 28 nm process, ≤331 mm² die, and PCIe 3.0 accelerator-card form, which provide the known product context; result-based binning, KGD/reduced-grade/reject pre-package die disposition, post-package qualified-device release, and stage yield as acceptable units divided by units started are standard production-test and manufacturing practices for a large 28 nm PCIe accelerator, while TPU v1's private bin rules, grade specifications, KGD and qualification thresholds, yields, and grade volumes are not public; depicted bins and counts are illustrative)"
+}

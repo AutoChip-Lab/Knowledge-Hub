@@ -1,0 +1,120 @@
+{
+  "secNum": "3.8",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · Synthesis Strategy: Hierarchical PE Reuse, Local Flattening, and Retiming for 700 MHz",
+  "oneLine": "TPU's 65,536 MACs replicate one PE, a textbook hierarchical-synthesis case. Synthesize one PE, preserve its boundary, and reuse it across the 256×256 array for manageable runtime, memory, and consistent results. Flatten only small timing-critical blocks for cross-boundary optimization; never flatten the entire array. Retiming repositions registers to balance pipeline stages without changing function.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">Hierarchical PE reuse versus flattening</text><g class=\"cs-part\" data-k=\"rtl\" data-g=\"rtl\"><rect class=\"cs-box\" x=\"280\" y=\"40\" width=\"160\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"66\">Synthesizable RTL</text><text class=\"cs-sub\" x=\"360\" y=\"84\">Contains module boundaries</text></g><line class=\"cs-arr\" x1=\"300\" y1=\"98\" x2=\"170\" y2=\"138\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"420\" y1=\"98\" x2=\"552\" y2=\"138\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"hier\" data-g=\"hier\"><rect class=\"cs-box\" x=\"40\" y=\"140\" width=\"262\" height=\"130\" rx=\"8\"/><text class=\"cs-t\" x=\"171\" y=\"166\">Hierarchical: synthesize one PE → reuse</text><text class=\"cs-sub\" x=\"171\" y=\"186\">Preserve boundaries; compile by block</text><text class=\"cs-note\" x=\"60\" y=\"210\" text-anchor=\"start\">Synthesize one 8-bit MAC PE</text><text class=\"cs-note\" x=\"60\" y=\"228\" text-anchor=\"start\">→ reuse across 256×256 array</text><text class=\"cs-note\" x=\"60\" y=\"246\" text-anchor=\"start\">Lower runtime/memory; identical PEs</text></g><g class=\"cs-part\" data-k=\"flat\" data-g=\"flat\"><rect class=\"cs-box\" x=\"420\" y=\"140\" width=\"262\" height=\"130\" rx=\"8\"/><text class=\"cs-t\" x=\"551\" y=\"166\">Flatten: remove boundaries</text><text class=\"cs-sub\" x=\"551\" y=\"186\">ungroup for cross-module optimization</text><text class=\"cs-note\" x=\"440\" y=\"210\" text-anchor=\"start\">Merge boundary logic / retime</text><text class=\"cs-note\" x=\"440\" y=\"228\" text-anchor=\"start\">Potential QoR gain; much higher runtime/memory</text><text class=\"cs-note\" x=\"440\" y=\"246\" text-anchor=\"start\">Flatten only small critical blocks</text></g><line class=\"cs-arr\" x1=\"171\" y1=\"270\" x2=\"300\" y2=\"306\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"551\" y1=\"270\" x2=\"420\" y2=\"306\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"retime\" data-g=\"retime\"><rect class=\"cs-box\" x=\"276\" y=\"300\" width=\"168\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"326\">Retiming</text><text class=\"cs-sub\" x=\"360\" y=\"344\">Move registers to balance stages</text></g><g class=\"cs-part\" data-k=\"net\" data-g=\"net\"><rect class=\"cs-box\" x=\"496\" y=\"304\" width=\"196\" height=\"54\" rx=\"8\"/><text class=\"cs-t\" x=\"594\" y=\"328\">Gate-level netlist</text><text class=\"cs-sub\" x=\"594\" y=\"346\">700 MHz closure / QoR reports</text></g><line class=\"cs-arr\" x1=\"444\" y1=\"330\" x2=\"496\" y2=\"330\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"warn\" data-g=\"warn\"><rect class=\"cs-box\" x=\"40\" y=\"304\" width=\"200\" height=\"54\" rx=\"8\"/><text class=\"cs-t\" x=\"140\" y=\"328\">Rule</text><text class=\"cs-sub\" x=\"140\" y=\"346\">Full-array flattening explodes runtime/memory</text></g></svg>",
+  "legend": [
+    {
+      "k": "hier",
+      "name": "Hierarchical synthesis (preserve + reuse)",
+      "desc": "Preserve RTL module boundaries and synthesize blocks independently. TPU replicates one 8-bit MAC PE 65,536 times, so compile one PE and reuse its netlist across the array. Runtime and memory scale with unique blocks, while every PE remains identical for debug and incremental ECO."
+    },
+    {
+      "k": "flat",
+      "name": "Flatten / ungroup (cross-boundary optimization)",
+      "desc": "Removing module boundaries lets the tool merge logic, remove redundancy, and retime across hierarchy for possible QoR improvement. Runtime and peak memory grow quickly, and reuse is lost. Flattening is a scalpel for small critical regions, not a whole-chip default."
+    },
+    {
+      "k": "retime",
+      "name": "Retiming",
+      "desc": "Move registers forward or backward through combinational logic while preserving sequential behavior, balancing deep and shallow pipeline stages for higher frequency. It can rescue a slow stage in TPU's 700 MHz pipeline, but RTL and netlist registers no longer correspond one-to-one, requiring retiming-aware equivalence checking."
+    },
+    {
+      "k": "net",
+      "name": "Gate netlist + QoR reports",
+      "desc": "Outputs are a standard-cell netlist and QoR reports for slack/WNS, area, power, and cell count. They determine objectively whether hierarchy, local flattening, and retiming meet 700 MHz and budget."
+    },
+    {
+      "k": "warn",
+      "name": "Rule: never flatten the entire array",
+      "desc": "Flattening all 65,536 PEs expands optimization to hundreds of thousands or millions of gates, potentially turning hours into days and exhausting memory while destroying PE reuse and incremental iteration. Flatten only where measured QoR gain justifies it."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "rtl",
+        "hier"
+      ],
+      "cap": "① Default to hierarchy: recognize the 256×256 array as one PE replicated massively, compile one 8-bit MAC PE, and reuse it for controlled runtime, memory, and identical implementation."
+    },
+    {
+      "keys": [
+        "rtl",
+        "flat"
+      ],
+      "cap": "② Locally flatten only small blocks that truly limit 700 MHz, such as an accumulation chain or decode boundary, enabling focused cross-boundary optimization with measurable benefit."
+    },
+    {
+      "keys": [
+        "hier",
+        "flat",
+        "retime"
+      ],
+      "cap": "③ Retime deep pipelines by moving registers to balance stage delay without changing sequential function, helping every stage close at 700 MHz."
+    },
+    {
+      "keys": [
+        "retime",
+        "net"
+      ],
+      "cap": "④ Emit the standard-cell netlist and QoR reports; judge the strategy by 700 MHz closure and area/power budgets."
+    },
+    {
+      "keys": [
+        "warn"
+      ],
+      "cap": "⑤ Never flatten all 65,536 PEs: runtime and memory explode and reuse disappears. Flattening must remain local, justified, and reversible."
+    }
+  ],
+  "before": [
+    "<b>Plan hierarchy versus flattening explicitly</b>: Preserve boundaries for large blocks such as the full array, UB control, and interconnect. Permit flattening only for a few known timing-critical regions and encode that policy in scripts.",
+    "<b>Organize synthesis around one reusable PE</b>: Exploit the regular replication of 65,536 MACs. Compile and reuse one PE instead of treating the array as an unstructured global netlist, keeping runtime and memory tied to unique logic.",
+    "<b>Define retiming scope and constraints</b>: Enable retiming only in suitable deep pipelines, protect boundary registers and reset/initial-state semantics, and plan retiming-aware LEC for those blocks.",
+    "<b>Set objective acceptance criteria</b>: Quantify 700 MHz timing, area/power, and acceptable synthesis runtime and memory so hierarchy, flattening, and retiming decisions can be compared objectively.",
+    "<b>Disclosure boundary</b>: Hierarchy, ungroup, retiming, and LEC are standard capabilities in Design Compiler, Genus, and Yosys. TPU scripts, libraries, and QoR are not public; the array and 700 MHz target provide illustrative context."
+  ],
+  "during": [
+    "<b>Preserve array and PE boundaries</b>: Use set_dont_touch or disable ungroup on the array top and PE so one compiled PE is instantiated 65,536 times. Runtime and peak memory scale with unique blocks, and every PE remains consistent for reuse and ECO.",
+    "<b>Use flattening as a measured local operation</b>: After timing identifies a real cross-boundary bottleneck, ungroup only that small region—for example, an accumulation chain—and compare QoR before and after. Revert when benefit is negligible.",
+    "<b>Never flatten the full array</b>: Ungrouping 256×256 PEs with upper hierarchy creates a massive global optimization that can turn hours into days, exhaust memory, and eliminate reusable PE structure.",
+    "<b>Balance deep pipelines with retiming</b>: Enable register optimization in selected datapaths so registers move through combinational logic to equalize stage delay and close 700 MHz. Remember that register correspondence with RTL changes.",
+    "<b>Budget hierarchical boundaries</b>: Because block-level optimization lacks full external context, assign realistic input/output or virtual-clock timing budgets and audit inter-block critical paths so individually closed blocks also close together.",
+    "<b>Optimize for QoR and iteration, not maximum flattening</b>: Combine default hierarchy, local critical flattening, and targeted retiming. Every action should have measurable benefit, controlled cost, and a rollback path."
+  ],
+  "result": [
+    {
+      "label": "Hierarchy (default)",
+      "value": "Preserve modules: synthesize one PE → reuse across 256×256 array"
+    },
+    {
+      "label": "Local flattening (example)",
+      "value": "ungroup -flatten -start_point u_acc_chain  // only critical accumulation block"
+    },
+    {
+      "label": "Retiming (example)",
+      "value": "set_optimize_registers true  // rebalance deep pipelines for 700 MHz"
+    },
+    {
+      "label": "Gate-level netlist",
+      "value": "28 nm cells; one PE implementation instantiated 65,536 times"
+    },
+    {
+      "label": "QoR reports",
+      "value": "700 MHz slack/WNS, area, power, and cell count"
+    },
+    {
+      "label": "Rule",
+      "value": "Do not flatten the full array: runtime/memory explode and reuse is lost"
+    }
+  ],
+  "after": [
+    "<b>Accept the strategy through QoR</b>: Verify WNS≥0 at 700 MHz, area/power within budget, and runtime/memory within limits. If a boundary path fails, distinguish missing local flattening from bad block budgeting.",
+    "<b>Use retiming-aware equivalence checking</b>: Retimed RTL and netlist registers no longer correspond directly. Run an LEC mode that supports retiming/sequential mapping; investigate retiming boundaries and reset semantics first on failure.",
+    "<b>Verify PE reuse consistency</b>: Confirm the array instantiates the same compiled PE rather than allowing location-specific independent optimization. If PEs diverge, inspect boundary constraints and dont_touch settings.",
+    "<b>Iterate narrowly</b>: For remaining failures, try retiming, then local flattening, then boundary changes. Modify one region at a time, compare QoR, and preserve rollback so runtime and causality remain controlled.",
+    "<b>Freeze and hand off</b>: Version the netlist and scripts—including hierarchy, ungroup scope, retiming, and SDC—with QoR and LEC evidence. Backend can use the same hierarchy for physical partitioning."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the replicated 256×256 8-bit MAC array, 700 MHz, 28 nm, and weight-stationary dataflow are published context. Hierarchical versus flat synthesis, ungroup, retiming, LEC, QoR, and all scripts/values are standard illustrative EDA practice, not private TPU v1 disclosure.)"
+}

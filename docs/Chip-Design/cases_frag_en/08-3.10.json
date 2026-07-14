@@ -1,0 +1,116 @@
+{
+ "secNum": "3.10",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Physical Implementation of Low Power and DFT on a 28 nm Layout: UPF Domains, Boundary Cells, Always-On Logic, and Scan Reordering",
+ "oneLine": "UPF specifies which logic is always on, which domain may power down, and how crossings are isolated or level-shifted; DFT inserts scan chains for testability. The back end turns those intentions into silicon by placing power switches in the array supply, isolation and level shifters at domain boundaries, always-on control on an uninterrupted rail, and physically verifying every UPF boundary. It also reorders scan flops by physical proximity so shift wiring stays short without changing functional logic. For TPU’s 256×256 = 65,536-MAC array, implementation means switchable compute, always-on control, correct boundary cells, and physically local scan chains.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 412\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"24\">Back end realizes UPF + DFT: domain boundaries, isolation/level shifters/switches, always-on rails, local scan reorder</text><g class=\"cs-part\" data-k=\"aon\" data-g=\"aon\"><rect class=\"cs-box\" x=\"24\" y=\"48\" width=\"190\" height=\"150\" rx=\"8\"/><text class=\"cs-t\" x=\"119\" y=\"74\">Always-on domain</text><text class=\"cs-sub\" x=\"119\" y=\"94\">Control / command / power management</text><text class=\"cs-sub\" x=\"119\" y=\"112\">Host sends CISC via PCIe</text><text class=\"cs-sub\" x=\"119\" y=\"132\">Never powered down</text><g class=\"cs-part\" data-k=\"psw\" data-g=\"psw\"><rect class=\"cs-cell\" x=\"40\" y=\"150\" width=\"158\" height=\"36\"/><text class=\"cs-cellt\" x=\"119\" y=\"166\">Power switch</text><text class=\"cs-cellt\" x=\"119\" y=\"180\">Switches array supply</text></g></g><line class=\"cs-arr\" x1=\"214\" y1=\"123\" x2=\"276\" y2=\"123\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"218\" y=\"114\">UPF</text><text class=\"cs-note\" x=\"218\" y=\"148\">boundary</text><g class=\"cs-part\" data-k=\"iso\" data-g=\"iso\"><rect class=\"cs-box\" x=\"280\" y=\"48\" width=\"180\" height=\"150\" rx=\"8\"/><text class=\"cs-t\" x=\"370\" y=\"74\">Power-domain boundary cells</text><text class=\"cs-sub\" x=\"370\" y=\"92\">Placed at domain interface</text><g class=\"cs-part\" data-k=\"isocell\" data-g=\"isocell\"><rect class=\"cs-cell\" x=\"296\" y=\"104\" width=\"150\" height=\"38\"/><text class=\"cs-cellt\" x=\"371\" y=\"120\">Isolation cell</text><text class=\"cs-cellt\" x=\"371\" y=\"134\">Clamp powered-down outputs</text></g><g class=\"cs-part\" data-k=\"ls\" data-g=\"ls\"><rect class=\"cs-cell\" x=\"296\" y=\"150\" width=\"150\" height=\"38\"/><text class=\"cs-cellt\" x=\"371\" y=\"166\">Level shifter</text><text class=\"cs-cellt\" x=\"371\" y=\"180\">Translate across voltages</text></g></g><line class=\"cs-arr\" x1=\"460\" y1=\"123\" x2=\"522\" y2=\"123\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"pd\" data-g=\"pd\"><rect class=\"cs-box\" x=\"526\" y=\"48\" width=\"170\" height=\"150\" rx=\"8\"/><text class=\"cs-t\" x=\"611\" y=\"74\">Switchable domain</text><text class=\"cs-sub\" x=\"611\" y=\"94\">256×256 systolic array</text><text class=\"cs-sub\" x=\"611\" y=\"112\">65,536 MACs</text><g class=\"cs-part\" data-k=\"colgate\" data-g=\"colgate\"><rect class=\"cs-cell\" x=\"542\" y=\"128\" width=\"138\" height=\"20\"/><text class=\"cs-cellt\" x=\"611\" y=\"142\">Gate idle PE columns</text><rect class=\"cs-cell\" x=\"542\" y=\"152\" width=\"138\" height=\"20\"/><text class=\"cs-cellt\" x=\"611\" y=\"166\">Power off / clamp when idle</text></g><text class=\"cs-sub\" x=\"611\" y=\"188\">Full power only when needed (illustrative)</text></g><line class=\"cs-arr\" x1=\"611\" y1=\"198\" x2=\"611\" y2=\"214\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><line class=\"cs-arr\" x1=\"119\" y1=\"198\" x2=\"119\" y2=\"214\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><g class=\"cs-part\" data-k=\"scan\" data-g=\"scan\"><rect class=\"cs-box\" x=\"24\" y=\"218\" width=\"672\" height=\"120\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"242\">DFT scan reorder: reconnect by physical proximity; save routing, preserve timing</text><text class=\"cs-sub\" x=\"150\" y=\"266\">Logical scan order after synthesis (long jumps)</text><g class=\"cs-part\" data-k=\"ffa\" data-g=\"ffa\"><rect class=\"cs-cell\" x=\"60\" y=\"278\" width=\"44\" height=\"26\"/><text class=\"cs-cellt\" x=\"82\" y=\"295\">FF1</text><rect class=\"cs-cell\" x=\"300\" y=\"278\" width=\"44\" height=\"26\"/><text class=\"cs-cellt\" x=\"322\" y=\"295\">FF2</text><rect class=\"cs-cell\" x=\"150\" y=\"278\" width=\"44\" height=\"26\"/><text class=\"cs-cellt\" x=\"172\" y=\"295\">FF3</text></g><polyline class=\"cs-arr\" points=\"104,291 150,291\" fill=\"none\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"194,291 300,291\" fill=\"none\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><text class=\"cs-sub\" x=\"500\" y=\"266\">After reorder: connect physical neighbors (short)</text><g class=\"cs-part\" data-k=\"ffb\" data-g=\"ffb\"><rect class=\"cs-cell\" x=\"470\" y=\"278\" width=\"44\" height=\"26\"/><text class=\"cs-cellt\" x=\"492\" y=\"295\">FF</text><rect class=\"cs-cell\" x=\"528\" y=\"278\" width=\"44\" height=\"26\"/><text class=\"cs-cellt\" x=\"550\" y=\"295\">FF</text><rect class=\"cs-cell\" x=\"586\" y=\"278\" width=\"44\" height=\"26\"/><text class=\"cs-cellt\" x=\"608\" y=\"295\">FF</text><rect class=\"cs-cell\" x=\"644\" y=\"278\" width=\"40\" height=\"26\"/><text class=\"cs-cellt\" x=\"664\" y=\"295\">FF</text></g><polyline class=\"cs-arr\" points=\"514,291 528,291\" fill=\"none\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"572,291 586,291\" fill=\"none\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"630,291 644,291\" fill=\"none\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"60\" y=\"326\">Scan changes only shift order, not function; local reorder shortens wiring without harming capture timing.</text></g><text class=\"cs-note\" x=\"24\" y=\"362\">Flow: always-on domain → boundary isolation/level shift → switchable array; below, scan reconnects by proximity.</text><text class=\"cs-note\" x=\"24\" y=\"384\">Note: switches/isolation/level shifting/always-on/UPF/scan reorder are standard practice; TPU v1 domains/UPF/DFT layout are not public.</text><text class=\"cs-note\" x=\"24\" y=\"404\">Context: TPU 256×256 array / 24 MiB UB / 700 MHz / 28 nm / weight-stationary. Domains, column gating, and voltages are illustrative, not private TPU data.</text></svg>",
+ "legend": [
+  {
+   "k": "aon",
+   "name": "Always-on domain (never powered down)",
+   "desc": "Power management, command reception, isolation/switch enables, and control required to wake other domains need an uninterrupted supply. TPU’s host sends roughly a dozen CISC operations over PCIe 3.0, so the command and array-power sequencing path must remain alive. The back end gives this logic an always-on rail physically separate from switchable compute. TPU’s actual domain partition is not public."
+  },
+  {
+   "k": "iso",
+   "name": "Boundary cells: isolation + level shifting at UPF crossings",
+   "desc": "Isolation clamps the output of a powered-down domain to defined 0 or 1 so floating signals cannot corrupt powered logic. Level shifters translate between different domain voltages. UPF declares both, including whether isolation clamps to 0 or 1; the back end places the correct direction and polarity at each domain boundary and connects their controls. Missing or misplaced cells cause functional failure."
+  },
+  {
+   "k": "pd",
+   "name": "Switchable domain: 256×256 systolic array",
+   "desc": "The 65,536-MAC array is a major power consumer and can illustratively form a switchable domain. Physical implementation connects a switched rail through power switches and separates it from always-on logic with boundary cells. Finer PE-column gating may power only active columns. This is an implementation example; the TPU v1 paper does not disclose such domains or savings."
+  },
+  {
+   "k": "psw",
+   "name": "Power switches in the supply path",
+   "desc": "A switchable domain requires distributed header/footer power-gating cells controlled from the always-on domain. Their placement and staged turn-on limit inrush-current IR-drop, while on-resistance must not undervolt the active array. Floorplan and PDN need dedicated area and switched rails. This is standard practice, not TPU disclosure."
+  },
+  {
+   "k": "scan",
+   "name": "Physical scan-chain reorder",
+   "desc": "DFT connects flops into shift chains. Synthesis logical order can jump across the die and waste routing. After placement, scan reorder changes only the test-shift serial order so physically neighboring flops connect, shortening scan wiring without touching functional data paths. It must preserve chain boundaries, shift/capture timing, and test coverage—particularly valuable with 65,536 MACs."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "aon",
+    "pd",
+    "psw"
+   ],
+   "cap": "① Partition domains and place switches: keep command/control/power management always on, make the 256×256 array illustratively switchable, and insert power switches controlled by the always-on domain."
+  },
+  {
+   "keys": [
+    "iso",
+    "isocell",
+    "ls"
+   ],
+   "cap": "② Place UPF boundary cells: put isolation on powered-down-domain outputs and level shifters across voltage boundaries, with correct direction, polarity, clamp value, and enable wiring."
+  },
+  {
+   "keys": [
+    "pd",
+    "colgate"
+   ],
+   "cap": "③ Implement fine-grained gating: physically realize illustrative idle-PE-column power/clock control so only required columns are active, reducing dynamic and leakage power across the 65,536-MAC array."
+  },
+  {
+   "keys": [
+    "scan",
+    "ffa",
+    "ffb"
+   ],
+   "cap": "④ Physically reorder scan: reconnect the synthesized logical scan order by flop proximity. Change only shift order, not functional logic, to reduce scan routing while preserving test and capture timing."
+  }
+ ],
+ "before": [
+  "<b>Obtain front-end power intent (UPF/CPF)</b>: UPF declares domain partition, always-on and switchable logic, voltages, isolation, level shifting, power switches, retention, and sequencing. The back end implements and validates that intent rather than inventing a different partition. TPU v1’s UPF is not public.",
+  "<b>Provide low-power cell libraries</b>: Physical LEF and timing .lib models must exist for isolation cells, level shifters, power-gating switches, and retention FFs. UPF cannot be implemented if the target 28 nm library lacks these cells.",
+  "<b>Define DFT structures and scan constraints</b>: Import inserted scan chains, compression/decompression, boundary scan, scan clocks and scan-enable timing, and rules for reorderable chain segments. Do not merge across forbidden power or clock domains.",
+  "<b>Co-plan power switches and PDN in the floorplan</b>: Reserve switch placement and separate switched and always-on rails during floorplanning (3.2) and PDN planning (3.3). Discovering insufficient switch/rail space after placement is too late.",
+  "<b>Evidence boundary</b>: UPF, power switches, isolation, level shifters, always-on domains, retention, and scan reorder are standard low-power/DFT implementation practice. TPU v1 does not publish its UPF, domains, DFT, or layout. The disclosed 256×256 array, 24 MiB UB, 700 MHz, 28 nm, weight-stationary flow, and PCIe CISC control provide only the implementation context; all domains, voltages, column gating, and scan settings are illustrative."
+ ],
+ "during": [
+  "<b>The back end realizes intent rather than redefining it</b>: UPF already decides which domains remain powered and how crossings behave. Implementation inserts switches in supply paths, places isolation/level shifters at boundaries, and routes always-on and switched rails separately, checking every result against UPF.",
+  "<b>Boundary location, direction, and polarity must be correct</b>: Isolation belongs on powered-down→powered crossings and must clamp to the functionally defined 0 or 1. A level shifter must match low→high or high→low direction. Incorrect placement, type, or clamp value creates floating or invalid levels during power transitions.",
+  "<b>Always-on logic must truly remain on</b>: Power management and switch/isolation enables need an uninterrupted rail and routes that do not pass through a switchable region. If wake control powers down with the array, no logic remains to restore power.",
+  "<b>Distribute switches and sequence turn-on to control inrush</b>: Reenergizing the 256×256 array charges substantial capacitance. Distributed switches and staged or daisy-chain enable spread inrush current and reduce IR-drop spikes while switch on-resistance is sized to preserve active voltage. This is illustrative standard practice.",
+  "<b>Scan reorder changes shift order only</b>: After placement, reconnect flops by proximity for short test nets, but never alter functional paths. Respect power/clock-domain boundaries, preserve test coverage, and balance chain length. A 65,536-MAC array can save substantial scan routing.",
+  "<b>Revalidate timing and coverage after low-power/DFT implementation</b>: Isolation and level shifters add path delay and area; scan reorder changes shift/capture timing. Check 700 MHz functional timing, scan timing, coverage, power, and area together."
+ ],
+ "result": [
+  {
+   "label": "Always-on domain",
+   "value": "Command reception / control / power management on an unswitched rail; PCIe CISC control remains able to wake the array (partition illustrative)"
+  },
+  {
+   "label": "Switchable domain + switches",
+   "value": "256×256 array on a switched rail through distributed power switches, controlled from always-on logic with staged wake-up"
+  },
+  {
+   "label": "UPF boundary cells",
+   "value": "Isolation clamps powered-down outputs + level shifters translate voltage; direction/polarity/clamp value must match intent"
+  },
+  {
+   "label": "Fine-grained gating (illustrative)",
+   "value": "Column-level control powers only active PE columns, reducing power across 65,536 MACs; not public TPU data"
+  },
+  {
+   "label": "Physical scan reorder",
+   "value": "Reconnect logical scan by physical proximity after placement; alter shift order only, shortening scan routes without changing function"
+  },
+  {
+   "label": "Post-implementation checks",
+   "value": "UPF consistency + functional timing + scan shift/capture timing + test coverage all remain valid"
+  }
+ ],
+ "after": [
+  "<b>Run UPF/low-power consistency checks</b>: Verify every crossing has required isolation and level shifting with correct clamp, polarity, and direction; always-on rails are uninterrupted; and enable paths do not traverse switchable logic. One missing cell can break powered-down behavior.",
+  "<b>Recheck 700 MHz and scan timing</b>: Isolation and level-shifter delays must still satisfy setup/hold at 700 MHz≈1.43 ns. Send failures to 3.7 ECO and confirm reordered scan shift timing also passes.",
+  "<b>Analyze inrush current and wake-up IR-drop</b>: Verify distributed switch sizing and sequence spread array charging, avoid an IR-drop spike in always-on logic, and prevent transient undervoltage or reset during wake.",
+  "<b>Recheck DFT rules and coverage</b>: Confirm chains are intact, do not cross forbidden power/clock domains, remain length-balanced, and retain fault coverage after reorder. Routing savings cannot reduce testability.",
+  "<b>Hand low-power and DFT structures to sign-off and DRC/LVS</b>: Boundary cells, power switches, and reordered scan chains are part of final layout. Perform multi-domain DRC/LVS, SDF/UPF gate-level power-sequence simulation, and test-mode validation before exporting GDSII."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the disclosed 256×256 8-bit MAC array, 24 MiB Unified Buffer, 700 MHz, 28 nm, weight-stationary flow, and PCIe CISC commands provide implementation context; UPF, power switches, isolation, level shifting, always-on domains, retention, power gating, physical scan reorder, low-power consistency, and multi-domain LVS are standard back-end low-power/DFT practice, while all domains, voltages, column gating, scan settings, and layout are illustrative rather than public TPU v1 data)"
+}

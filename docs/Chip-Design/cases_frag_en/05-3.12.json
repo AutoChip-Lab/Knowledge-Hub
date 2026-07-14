@@ -1,0 +1,116 @@
+{
+ "secNum": "3.12",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Coding standards, lint, and synthesis-oriented RTL: why passing simulation is only the starting point",
+ "oneLine": "Passing RTL simulation shows that tested behavior works, but it does not establish silicon readiness or 700 MHz timing. RTL must first pass lint for inferred latches, incomplete case/sensitivity handling, width mismatches, multiple drivers/X propagation, and unsynchronized clock crossings; it must also be synthesizable and avoid long combinational chains. TPU's array performs only one MAC—an 8-bit multiply plus 32-bit accumulation—per pipeline stage, naturally keeping critical paths short. Clean lint and bounded combinational depth make 700 MHz closure a structural outcome rather than an accident.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">Flow: completed RTL is only the start → lint → synthesis → qualified</text><g class=\"cs-part\" data-k=\"rtl\" data-g=\"rtl\"><rect class=\"cs-box\" x=\"40\" y=\"60\" width=\"150\" height=\"92\" rx=\"8\"/><text class=\"cs-t\" x=\"115\" y=\"92\">RTL (simulation passed)</text><text class=\"cs-sub\" x=\"115\" y=\"114\">always_ff / always_comb</text><text class=\"cs-sub\" x=\"115\" y=\"132\">PE = 8b multiply + 32b accumulate</text></g><line class=\"cs-arr\" x1=\"190\" y1=\"106\" x2=\"262\" y2=\"106\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"lint\" data-g=\"lint\"><rect class=\"cs-box\" x=\"266\" y=\"44\" width=\"190\" height=\"180\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"361\" y=\"68\">Lint gate</text><g class=\"cs-part\" data-k=\"latch\" data-g=\"lint\"><rect class=\"cs-cell\" x=\"282\" y=\"80\" width=\"158\" height=\"22\"/><text class=\"cs-cellt\" x=\"361\" y=\"95\">① Inferred latch</text></g><g class=\"cs-part\" data-k=\"case\" data-g=\"lint\"><rect class=\"cs-cell\" x=\"282\" y=\"106\" width=\"158\" height=\"22\"/><text class=\"cs-cellt\" x=\"361\" y=\"121\">② Incomplete case/sensitivity</text></g><g class=\"cs-part\" data-k=\"width\" data-g=\"lint\"><rect class=\"cs-cell\" x=\"282\" y=\"132\" width=\"158\" height=\"22\"/><text class=\"cs-cellt\" x=\"361\" y=\"147\">③ Width mismatch/truncation</text></g><g class=\"cs-part\" data-k=\"drive\" data-g=\"lint\"><rect class=\"cs-cell\" x=\"282\" y=\"158\" width=\"158\" height=\"22\"/><text class=\"cs-cellt\" x=\"361\" y=\"173\">④ Multiple drivers / X</text></g><g class=\"cs-part\" data-k=\"cdc\" data-g=\"lint\"><rect class=\"cs-cell\" x=\"282\" y=\"184\" width=\"158\" height=\"22\"/><text class=\"cs-cellt\" x=\"361\" y=\"199\">⑤ Unsynchronized CDC</text></g></g><line class=\"cs-arr\" x1=\"456\" y1=\"134\" x2=\"528\" y2=\"134\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"synth\" data-g=\"synth\"><rect class=\"cs-box\" x=\"532\" y=\"60\" width=\"158\" height=\"92\" rx=\"8\" fill=\"#dcfce7\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"611\" y=\"92\">Synthesis + timing</text><text class=\"cs-sub\" x=\"611\" y=\"114\">No long combinational chain</text><text class=\"cs-sub\" x=\"611\" y=\"132\">→ 700 MHz attainable</text></g><g class=\"cs-part\" data-k=\"chain\" data-g=\"chain\"><rect class=\"cs-box\" x=\"40\" y=\"248\" width=\"650\" height=\"72\" rx=\"8\"/><text class=\"cs-t\" x=\"70\" y=\"272\" text-anchor=\"start\">Short critical paths: one MAC per array stage</text><rect class=\"cs-cell\" x=\"120\" y=\"288\" width=\"120\" height=\"22\"/><text class=\"cs-cellt\" x=\"180\" y=\"303\">a*b (8b multiply)</text><line class=\"cs-arr\" x1=\"240\" y1=\"299\" x2=\"276\" y2=\"299\" marker-end=\"url(#csar)\"/><rect class=\"cs-cell\" x=\"280\" y=\"288\" width=\"120\" height=\"22\"/><text class=\"cs-cellt\" x=\"340\" y=\"303\">+acc (32b add)</text><line class=\"cs-arr\" x1=\"400\" y1=\"299\" x2=\"436\" y2=\"299\" marker-end=\"url(#csar)\"/><rect class=\"cs-cell\" x=\"440\" y=\"288\" width=\"150\" height=\"22\"/><text class=\"cs-cellt\" x=\"515\" y=\"303\">Register boundary each cycle</text><text class=\"cs-sub\" x=\"640\" y=\"303\" text-anchor=\"end\">acc&lt;=acc+a*b;</text></g><text class=\"cs-note\" x=\"40\" y=\"350\">Rule: each reg has one driver; complete default/else paths to prevent latches</text><text class=\"cs-note\" x=\"40\" y=\"370\">Rule: treat lint as compilation—release only with zero warnings</text><text class=\"cs-note\" x=\"40\" y=\"390\">Note: standard coding/lint practice illustrated with public TPU structure</text></svg>",
+ "legend": [
+  {
+   "k": "rtl",
+   "name": "RTL · simulation passed (starting point, not finish)",
+   "desc": "Synthesizable RTL written to standard may pass functional simulation, but simulators tolerate many risky constructs. Inferred latches, silent truncation, and missing case branches may never be exercised or may be masked by defaults. Passing simulation proves behavior only under the applied stimulus; it does not prove a clean hardware mapping or target frequency."
+  },
+  {
+   "k": "lint",
+   "name": "Lint gate (five common defect classes)",
+   "desc": "Static rules find structural issues without simulation: ① missing assignment/else in combinational logic → inferred latch; ② incomplete case or sensitivity handling → simulation/synthesis mismatch; ③ width mismatch → implicit truncation or sign extension; ④ multiple drivers or uninitialized X propagation; ⑤ unsynchronized clock-domain crossings. Treat every lint warning as an error and release only at zero warnings."
+  },
+  {
+   "k": "synth",
+   "name": "Synthesizable + timing-clean (acceptance criteria)",
+   "desc": "After lint, the design must map cleanly to a gate-level netlist and meet its clock period. Qualified RTL simultaneously satisfies three conditions: zero lint warnings, no synthesis errors, and trial-synthesis timing at target. Simulation alone is insufficient."
+  },
+  {
+   "k": "chain",
+   "name": "Short critical path: one MAC per cycle",
+   "desc": "Excessive combinational depth is a common frequency limiter. The TPU systolic array partitions work finely: each PE performs one 8-bit multiply plus 32-bit accumulation, then immediately registers the result (acc<=acc+a*b). Registers bound each combinational segment, producing naturally short critical paths compatible with 700 MHz. A long chain of multiply-adds and muxes in one always_comb block is the opposite."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "rtl"
+   ],
+   "cap": "① Complete RTL and pass functional simulation—but remember that this is only the starting point. A permissive simulator may still let latches, truncation, and missing branches appear to pass."
+  },
+  {
+   "keys": [
+    "lint",
+    "latch",
+    "case"
+   ],
+   "cap": "② First lint pass: find inferred latches from incomplete combinational assignments and incomplete case/sensitivity behavior. Both can silently split simulation behavior from synthesized hardware."
+  },
+  {
+   "keys": [
+    "lint",
+    "width",
+    "drive"
+   ],
+   "cap": "③ Second lint pass: detect width mismatch, such as an 8-bit product mishandled in a 32-bit accumulator path, along with multiple drivers and X propagation. Zero warnings is a hard gate."
+  },
+  {
+   "keys": [
+    "lint",
+    "cdc"
+   ],
+   "cap": "④ Third lint pass: CDC analysis. Every crossing from the host/PCIe domain into the array core domain must use a synchronizer; lint/CDC tools verify that no unprotected crossing remains."
+  },
+  {
+   "keys": [
+    "chain",
+    "synth"
+   ],
+   "cap": "⑤ Write for synthesis and run trial synthesis: keep combinational chains short—one MAC per registered stage. Only lint-clean, synthesizable RTL that meets timing, including the 700 MHz target, is qualified."
+  }
+ ],
+ "before": [
+  "<b>Publish a coding-standard document</b>: standardize module/signal/parameter naming; reset style (for this series: synchronous reset, posedge clk, and defined active polarity); always_comb with blocking assignments for combinational logic; and always_ff with nonblocking assignments for sequential logic. Consistency reduces lint noise and review friction.",
+  "<b>Select and configure the lint ruleset</b>: enable synthesizability and RTL-style checks for inferred latches, incomplete case handling, width mismatches, multiple/undriven/uninitialized signals, blocking/nonblocking misuse, and CDC. Integrate lint into CI from the beginning rather than running it just before tapeout.",
+  "<b>Fix widths and default types explicitly</b>: declare PE multiplier inputs as [7:0] and accumulators as [31:0] rather than relying on implicit inference, so lint can determine whether every assignment is width-consistent.",
+  "<b>Set synthesis-oriented targets</b>: constrain 700 MHz and require bounded work per combinational segment with timely register boundaries. Key datapaths, such as array multiply-accumulate, should contain no more than roughly one MAC of combinational depth per stage.",
+  "<b>Define qualification criteria</b>: not “simulation passes,” but all three of “zero lint warnings + clean synthesis + trial-synthesis critical paths at target.” Each condition is objectively tool-checkable."
+ ],
+ "during": [
+  "<b>Rule 1: eliminate inferred latches</b>. In an always_comb block, assign every output on every path—provide default in case, else for if, or initialize outputs at the top of the block. Missing a path makes synthesis infer a latch, compromising control and timing. Every latch warning must be cleared.",
+  "<b>Rule 2: one signal, one always-block driver</b>. Multiple processes writing the same reg create contention or ambiguous synthesis. Treat multiple-driver lint as fatal, and avoid reading uninitialized values that propagate X into the netlist.",
+  "<b>Rule 3: make widths explicit; never rely on implicit truncation</b>. An 8-bit×8-bit product is 16 bits and must be aligned explicitly before 32-bit accumulation. Mismatched assignment widths can silently truncate or sign-extend. Use explicit concatenation/extension such as {{N{sign}}, x} so width-mismatch warnings reach zero.",
+  "<b>Rule 4: complete case logic and sensitivity handling</b>. Include default in case (or use a reviewed full_case policy), and use always_comb to derive sensitivity automatically rather than a hand-written always @(a or b) list that can omit a signal. Incomplete sensitivity is a classic source of simulation/synthesis divergence.",
+  "<b>Write for synthesis: keep combinational chains short</b>. Timing closure depends on bounded critical paths. The TPU array performs one MAC per registered stage—for example, always_ff @(posedge clk) acc <= acc + a*b; (illustrative, not private TPU code). Do not place a long multiply-add or multilevel-mux chain in one combinational block.",
+  "<b>Scope note</b>: reset style, lint rules, and synthesis-oriented coding are standard RTL practices. TPU v1 RTL and private implementation metrics are not public. This section uses documented structures—an 8-bit-multiply/32-bit-accumulate PE, 256×256 array, UB, PCIe-hosted CISC commands, and multiple clock domains—to illustrate the rules."
+ ],
+ "result": [
+  {
+   "label": "Qualification criterion (key)",
+   "value": "Simulation pass ≠ qualified; zero lint warnings + synthesis success + trial-synthesis timing are all required"
+  },
+  {
+   "label": "Five lint categories",
+   "value": "Inferred latch / incomplete case or sensitivity / width mismatch / multiple drivers or X / unsynchronized CDC"
+  },
+  {
+   "label": "Latch prevention (illustrative)",
+   "value": "Initialize outputs at the start of always_comb + include default in every case"
+  },
+  {
+   "label": "Single-driver rule",
+   "value": "Assign each reg in exactly one always block"
+  },
+  {
+   "label": "Synthesis-oriented RTL (illustrative)",
+   "value": "always_ff @(posedge clk) acc <= acc + a*b; one MAC per registered stage"
+  },
+  {
+   "label": "Why timing closes",
+   "value": "Short array critical path (one MAC) + clean lint + no long combinational chain → attainable 700 MHz"
+  }
+ ],
+ "after": [
+  "<b>Clear lint before proceeding</b>: resolve every warning or record a specifically reviewed waiver with rationale; only zero unwaived warnings may advance. Run lint in CI on every change to prevent regressions.",
+  "<b>Re-run functional simulation after lint fixes</b>: changes such as adding default branches or aligning widths must preserve functionality. Regress the design after every structural cleanup.",
+  "<b>Run dedicated CDC analysis</b>: inspect crossings between the host/PCIe and array-core domains, verifying recognized synchronizers and no reconvergent single-bit paths that can propagate metastability.",
+  "<b>Run trial synthesis and inspect timing</b>: ensure the RTL maps to a clean gate-level netlist with no unsupported constructs and that critical paths, such as the array MAC stage, approach the 700 MHz target. If a stage misses timing, add a pipeline boundary or shorten its combinational logic.",
+  "<b>Freeze coding standards and waiver records for verification</b>: deliver the coding rules, lint configuration and waivers, and synthesis constraints to verification and integration teams as the common basis for future reviews and environments."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the paper documents the systolic array, 8-bit-multiply/32-bit-accumulate PEs, UB, and multi-clock architecture; coding standards, lint rules, and synthesis-oriented RTL are standard practices, and diagrams/HDL snippets are illustrative rather than line-level TPU v1 implementation)"
+}

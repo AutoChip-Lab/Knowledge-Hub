@@ -1,0 +1,115 @@
+{
+  "secNum": "3.1",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · Packaging-and-Test Overview: From Fabricated Wafer through CP Wafer Probe, Backgrinding/Dicing, Package Assembly, Final Test, Burn-In/Reliability Screening, and Binning to a Deployable PCIe Accelerator",
+  "oneLine": "This case presents packaging and test as an end-to-end production flow rather than a single operation: CP wafer probe → backgrinding/dicing → package assembly → final test (FT) → optional burn-in/reliability screening → binning and shipment. Its central principle is to reject failures as early as possible while processing is inexpensive, then verify the completed device again after the expensive assembly steps. CP powers and tests each die before dicing or package cost is incurred, marking defective die so that only known-good die proceed. FT retests the packaged device and catches interconnect, bonding, and stress defects introduced by assembly. Burn-in screens infant-mortality failures, and binning classifies qualified devices by speed, power, and functional grade. The known TPU v1 configuration—256×256 systolic array, 24 MiB Unified Buffer, 700 MHz, ≤331 mm² die, and a PCIe 3.0 accelerator-card implementation—is the product moving through this illustrative flow. The specific package, equipment, test program, burn-in conditions, and yield are standard OSAT practices for a large 28 nm PCIe accelerator and are not public TPU v1 data.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 380\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"24\">Packaging and test: wafer → CP early screen → backgrind/dice → package → FT → burn-in → bin and ship</text><g class=\"cs-part\" data-k=\"cp\" data-g=\"cp\"><rect class=\"cs-box\" x=\"24\" y=\"70\" width=\"124\" height=\"92\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"86\" y=\"100\">① CP wafer probe</text><text class=\"cs-sub\" x=\"86\" y=\"120\">Probe and power each die</text><text class=\"cs-sub\" x=\"86\" y=\"138\">Screen before packaging</text><text class=\"cs-sub\" x=\"86\" y=\"156\">Map defective die</text></g><line class=\"cs-arr\" x1=\"148\" y1=\"116\" x2=\"178\" y2=\"116\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"dice\" data-g=\"dice\"><rect class=\"cs-box\" x=\"182\" y=\"70\" width=\"124\" height=\"92\" rx=\"8\" fill=\"#f0f9ff\" stroke=\"#7dd3fc\"/><text class=\"cs-t\" x=\"244\" y=\"100\">② Backgrind / dice</text><text class=\"cs-sub\" x=\"244\" y=\"120\">Thin wafer backside</text><text class=\"cs-sub\" x=\"244\" y=\"138\">Cut along scribe lanes</text><text class=\"cs-sub\" x=\"244\" y=\"156\">→ individual bare die</text></g><line class=\"cs-arr\" x1=\"306\" y1=\"116\" x2=\"336\" y2=\"116\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"pkg\" data-g=\"pkg\"><rect class=\"cs-box\" x=\"340\" y=\"70\" width=\"124\" height=\"92\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"402\" y=\"100\">③ Package assembly</text><text class=\"cs-sub\" x=\"402\" y=\"120\">Mount known-good die</text><text class=\"cs-sub\" x=\"402\" y=\"138\">Bond / bump · encapsulate</text><text class=\"cs-sub\" x=\"402\" y=\"156\">Build PCIe card device</text></g><line class=\"cs-arr\" x1=\"464\" y1=\"116\" x2=\"494\" y2=\"116\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"ft\" data-g=\"ft\"><rect class=\"cs-box\" x=\"498\" y=\"70\" width=\"124\" height=\"92\" rx=\"8\" fill=\"#fef2f2\" stroke=\"#fca5a5\"/><text class=\"cs-t\" x=\"560\" y=\"100\">④ Final test (FT)</text><text class=\"cs-sub\" x=\"560\" y=\"120\">Retest after packaging</text><text class=\"cs-sub\" x=\"560\" y=\"138\">Exercise package links</text><text class=\"cs-sub\" x=\"560\" y=\"156\">Verify assembled device</text></g><line class=\"cs-arr\" x1=\"560\" y1=\"162\" x2=\"560\" y2=\"206\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"burn\" data-g=\"burn\"><rect class=\"cs-box\" x=\"386\" y=\"210\" width=\"174\" height=\"80\" rx=\"8\" fill=\"#fff7ed\" stroke=\"#fdba74\"/><text class=\"cs-t\" x=\"473\" y=\"238\">⑤ Burn-in / reliability</text><text class=\"cs-sub\" x=\"473\" y=\"258\">Powered thermal stress</text><text class=\"cs-sub\" x=\"473\" y=\"276\">Expose infant mortality</text></g><line class=\"cs-arr\" x1=\"386\" y1=\"250\" x2=\"330\" y2=\"250\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"bin\" data-g=\"bin\"><rect class=\"cs-box\" x=\"156\" y=\"210\" width=\"174\" height=\"80\" rx=\"8\" fill=\"#fefce8\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"243\" y=\"238\">⑥ Bin and ship</text><text class=\"cs-sub\" x=\"243\" y=\"258\">Grade by speed / power / function</text><text class=\"cs-sub\" x=\"243\" y=\"276\">Qualified cards → data center</text></g><text class=\"cs-note\" x=\"24\" y=\"320\">Early-screen logic: CP rejects bad die before package cost; FT catches defects introduced by assembly</text><text class=\"cs-note\" x=\"24\" y=\"348\">Note: This standard OSAT flow is illustrative; TPU v1 package, test program, burn-in conditions, and yields are not public</text></svg>",
+  "legend": [
+    {
+      "k": "cp",
+      "name": "① CP Wafer Probe (Pre-Package Early Screen)",
+      "desc": "The first electrical screen is also the key cost-saving step. Before the wafer is diced or any package cost is incurred, a probe card contacts each die, powers it, and runs functional and electrical tests. Failing die are recorded in the wafer map or inked. The purpose is early rejection: packaging a die costs real money, so packaging a die already known to be defective wastes that entire cost. Initial checks of structures such as TPU v1's 256×256 array and 24 MiB Unified Buffer therefore begin at wafer probe. The probe card, test program, and CP yield are standard OSAT implementation details and are not public for TPU v1."
+    },
+    {
+      "k": "dice",
+      "name": "② Backgrinding and Dicing (Wafer to Individual Die)",
+      "desc": "The tested wafer is thinned from the backside to meet package and thermal requirements, then separated along the fabrication scribe lanes with a saw or laser into individual bare die. Only die classified as good at CP proceed; failing die are discarded. At ≤331 mm², a TPU v1 die is a substantial piece of bare silicon. Scribe-lane width, final thickness, and equipment are standard OSAT process choices and are not disclosed for TPU v1."
+    },
+    {
+      "k": "pkg",
+      "name": "③ Package Assembly (Bare Die to Usable Device / PCIe Card)",
+      "desc": "A known-good bare die is attached to a package substrate, and wire bonds or flip-chip bumps connect its I/O to the substrate. Encapsulation or a lid protects the die and external terminals make board assembly possible, ultimately enabling an accelerator card that communicates with the host over PCIe 3.0. Packaging protects fragile silicon, fans dense on-die I/O out to usable connections, and conducts the TPU v1's 28–40 W of heat away. The package type, substrate, interconnect, and cooling solution are standard choices for this class of accelerator and are not public for TPU v1."
+    },
+    {
+      "k": "ft",
+      "name": "④ Final Test (FT, Post-Package Verification)",
+      "desc": "The second electrical test performs comprehensive functional, electrical, and speed checks on the assembled device. Its role relative to CP is to verify the package as well as the die: wafer probe tests the bare die, but attachment and bonding can introduce opens, weak joints, or stress damage that appears only after assembly. FT keeps those new defects from reaching a data center. Product-level targets such as 700 MHz and approximately 92 TOPS must also be confirmed on the completed device. The FT program, ATE platform, and limits are standard OSAT details and are not disclosed for TPU v1."
+    },
+    {
+      "k": "burn",
+      "name": "⑤ Burn-In / Reliability Screening (Expose Early-Life Failures)",
+      "desc": "Packaged devices that pass FT may be operated for a defined time under elevated temperature and electrical stress, often with increased voltage, to accelerate latent weaknesses that would otherwise cause infant-mortality failures soon after shipment. Screening out those weak devices before deployment reduces early field failures in data-center TPUs. Whether burn-in is required and its duration depend on product reliability targets. Temperature, voltage, duration, and observed failure data are standard reliability-engineering choices and are not public for TPU v1."
+    },
+    {
+      "k": "bin",
+      "name": "⑥ Binning and Shipment (Classify Qualified Devices)",
+      "desc": "At the flow exit, devices that have passed all required screens are binned by measured capability—for example achievable frequency, power, and full-functional grade. Qualified devices are labeled, packed, assembled onto PCIe accelerator cards, and deployed in data-center servers; nonconforming units follow the appropriate disposition. Only after CP, dicing, package assembly, FT, optional burn-in, and binning has a wafer die become a product that can be powered up to run TensorFlow workloads. TPU v1's bin definitions, shipment limits, and production volumes are not public."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "cp"
+      ],
+      "cap": "① Perform CP wafer probe first: use a probe card to power and test every die on the intact wafer, then map failures. Rejecting defective die at this inexpensive stage prevents them from consuming package cost."
+    },
+    {
+      "keys": [
+        "dice",
+        "pkg"
+      ],
+      "cap": "② Backgrind, dice, and package: thin the wafer, separate it along scribe lanes, select only die that passed CP, and attach, bond or bump, and encapsulate them. The package protects the die, fans out I/O, removes 28–40 W of heat, and supports a PCIe 3.0 accelerator-card implementation."
+    },
+    {
+      "keys": [
+        "ft",
+        "burn"
+      ],
+      "cap": "③ Use FT as the post-package backstop, followed by optional burn-in: retest the complete device to catch opens, weak bonds, and stress damage introduced by assembly, then apply powered thermal stress to expose infant-mortality failures before shipment."
+    },
+    {
+      "keys": [
+        "bin"
+      ],
+      "cap": "④ Bin and ship: classify devices that pass the full flow by speed, power, and functional grade, then ship qualified devices for PCIe card assembly and data-center deployment. Only here does a bare die become a TensorFlow-ready product."
+    }
+  ],
+  "before": [
+    "<b>Confirm that the wafer from ⑪ fabrication is ready</b>: Packaging and test begins with completed silicon—a fabricated wafer densely populated with TPU die of up to ≤331 mm². This flow does not redesign the circuit; it identifies good die and converts them into usable products. TPU v1's die-per-wafer count and wafer-production details are not public, so its known architecture is used only as the test object.",
+    "<b>Prepare the CP probe card and wafer-level test program</b>: The probe card must match the TPU die pad or bump layout, and the wafer-sort program must define the functions, electrical parameters, and pass/fail limits to measure. These are standard OSAT engineering deliverables; TPU v1's actual probe hardware and test content are not public.",
+    "<b>Define the package and PCIe card-level implementation</b>: Before assembly, select the substrate, wire-bond or flip-chip interconnect, thermal solution, and external pinout, and coordinate them with the eventual PCIe 3.0 accelerator board. Package and board co-design is necessary to fan the die out into a usable card. TPU v1's actual package and board implementation are not disclosed.",
+    "<b>Define FT limits and the burn-in requirement</b>: Specify the post-package functional, frequency, power, and electrical limits, and decide whether burn-in is needed and for how long. Long-running, high-utilization data-center products are particularly sensitive to early-life failures. These limits and stress conditions are standard product-reliability choices and are not public for TPU v1.",
+    "<b>Plan capacity and the compound yield budget</b>: For a yield-sensitive large die, estimate shippable-device yield and unit cost by multiplying CP yield, package-assembly yield, FT pass rate, and burn-in survival rate. This determines how many fabricated wafers and how much OSAT capacity are needed for deployment. TPU v1's actual yields and volumes are not public."
+  ],
+  "during": [
+    "<b>The essential pattern is two electrical screens: CP rejects early; FT verifies after assembly.</b> CP acts while the wafer is still inexpensive to process—before dicing and packaging—so defective die do not consume assembly cost. FT acts after the expensive package steps and catches defects created by attachment, bonding, or package stress. These two screens bracket the assembly flow and protect outgoing yield.",
+    "<b>Earlier CP rejection directly saves package cost</b>. Packaging a die consumes material and capacity; doing so for a die already defective wastes both. The probe card therefore powers each die, records failures immediately, and permits only known-good die to continue. This determines whether downstream cost is spent on die that can plausibly become qualified products.",
+    "<b>Backgrinding and dicing change wafer-parallel production into individual-unit processing</b>. Fabrication processes many die together on one wafer; packaging requires thinning the wafer and separating it along scribe lanes so each bare die can be handled independently. A ≤331 mm² TPU v1 die is physically large and requires careful handling. Final thickness and dicing parameters are standard OSAT details and are not public.",
+    "<b>Packaging performs three jobs: protection, I/O fan-out, and heat removal</b>. The fragile bare die is attached to a substrate; wire bonds or flip-chip bumps fan dense I/O out to board-level connections; and the thermal path removes the TPU v1's 28–40 W. The result is a device that can communicate over PCIe 3.0 in a server accelerator card. TPU v1's precise package is not public.",
+    "<b>FT is the backstop because package assembly can introduce new defects</b>. CP verifies the bare die only. Die attach and interconnect operations can create opens, weak joints, and mechanical stress that appear after assembly. FT repeats comprehensive functional, speed, and electrical testing—including confirmation of product targets such as 700 MHz and approximately 92 TOPS—to prevent these defects from shipping. This is why the flow tests both before and after packaging.",
+    "<b>Process-source disclosure (applies throughout)</b>: CP wafer probe, backgrinding/dicing, wire-bond or flip-chip package assembly, encapsulation and thermal integration, final test, burn-in/reliability screening, binning, and associated probe-card, ATE, and oven equipment are standard OSAT practices for a large 28 nm PCIe accelerator. TPU v1 does not disclose its package, test program, burn-in conditions, CP/FT/burn-in pass rates, or packaging yield. This section uses the known TPU v1 design—256×256 systolic array, 24 MiB Unified Buffer, 700 MHz, ≤331 mm² die, 28–40 W, and PCIe 3.0 card—as the illustrative unit under test; all depicted die, operations, and yields are schematic."
+  ],
+  "result": [
+    {
+      "label": "Packaging-and-Test Flow",
+      "value": "CP wafer probe → backgrind/dice → package assembly → final test → optional burn-in/reliability screen → bin and ship: a production line that turns bare die on a wafer into usable PCIe accelerators"
+    },
+    {
+      "label": "Roles of the Two Electrical Tests",
+      "value": "CP = pre-package early screen that rejects bad die before package cost; FT = post-package backstop that catches assembly-induced defects and verifies the completed device"
+    },
+    {
+      "label": "Dicing and Package Output",
+      "value": "Intact wafer → thinned and diced into individual bare die → known-good die assembled into protected, I/O-fanned-out, thermally managed 28–40 W devices for PCIe cards"
+    },
+    {
+      "label": "Reliability Screen",
+      "value": "Burn-in applies powered high-temperature stress to expose infant-mortality devices before shipment; whether it is used depends on the product's reliability requirements"
+    },
+    {
+      "label": "Shipment Form",
+      "value": "TPUs that pass every required screen are binned by speed, power, and functional grade, then qualified devices are assembled onto PCIe accelerator cards and deployed in data-center servers for TensorFlow/XLA workloads"
+    },
+    {
+      "label": "Disclosure Boundary",
+      "value": "Package type, test program, burn-in conditions, CP/FT/burn-in pass rates, package yield, and volume are standard OSAT examples; TPU v1 does not publish these product-specific details"
+    }
+  ],
+  "after": [
+    "<b>Measure yield at each packaging-and-test stage and identify failure modes</b>: Aggregate CP, FT, and burn-in pass rates and spatial or process failure distributions. Random scatter may match the expected yield model, whereas clustering by wafer region or operation suggests a systematic fabrication or assembly issue that must be corrected. TPU v1's actual yield and failure data are not public.",
+    "<b>Ship qualified devices and disposition nonconforming units</b>: Label and pack binned qualified TPU devices for PCIe card assembly and data-center deployment. Units outside the required grade are downgraded where permitted or scrapped. Final card volume realizes the compound pass rates of early screening, post-package verification, and reliability screening.",
+    "<b>Proceed to system bring-up</b>: Install the packaged and tested TPU card in a server, power it on, enumerate it, run diagnostics, and execute initial workloads. Packaging and test establishes that the individual device is good; bring-up confirms that it also operates correctly with the host, PCIe link, and TensorFlow software stack.",
+    "<b>Feed packaging-and-test data back into fabrication and design</b>: Repeated FT or burn-in failure signatures should drive fabrication process correction or design changes such as improved DFT observability, redundancy, or package co-design. Packaging, fabrication, and design form a continuous improvement loop. TPU v1's actual iterations are not public; this is standard DFM/DFT practice."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the paper discloses TPU v1's 256×256 8-bit MAC systolic array, 24 MiB Unified Buffer, 700 MHz clock, approximately 92 TOPS, ≤331 mm² die, 28–40 W envelope, PCIe 3.0 host interface, accelerator-card use, and TensorFlow/XLA stack, which provide the known product context; CP wafer probe, backgrinding/dicing, package assembly, final test, burn-in/reliability screening, binning, equipment, and yield are standard OSAT and industry practices for a large 28 nm PCIe accelerator, while the depicted die, operations, and yield or volume assumptions are illustrative rather than TPU v1's unpublished package, test program, burn-in conditions, or manufacturing data)"
+}

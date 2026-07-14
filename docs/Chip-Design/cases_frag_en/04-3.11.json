@@ -1,0 +1,122 @@
+{
+ "secNum": "3.11",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Clock-Gating Idle PE Columns: No Work, No Dynamic Power",
+ "oneLine": "Small inference workloads often leave large regions of the 256×256 array idle. Low-power microarchitecture turns off the clocks to unused PE columns so they generate no dynamic switching power, then combines that with operand isolation and reduced memory traffic.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"44\">Systolic array (one clock-gate enable per column)</text><g class=\"cs-part\" data-k=\"ck\" data-g=\"ck\"><rect class=\"cs-box\" x=\"40\" y=\"60\" width=\"92\" height=\"44\" rx=\"8\"/><text class=\"cs-t\" x=\"86\" y=\"80\">Clock root</text><text class=\"cs-sub\" x=\"86\" y=\"96\">clk / en</text></g><g class=\"cs-part\" data-g=\"active\"><line class=\"cs-arr\" x1=\"132\" y1=\"82\" x2=\"180\" y2=\"82\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-k=\"g0\" data-g=\"active\"><rect class=\"cs-cell\" x=\"182\" y=\"64\" width=\"44\" height=\"44\" rx=\"5\"/><text class=\"cs-cellt\" x=\"204\" y=\"90\">PE</text></g><g><rect class=\"cs-cell\" x=\"232\" y=\"64\" width=\"44\" height=\"44\" rx=\"5\"/><text class=\"cs-cellt\" x=\"254\" y=\"90\">PE</text></g><g><rect class=\"cs-cell\" x=\"282\" y=\"64\" width=\"44\" height=\"44\" rx=\"5\"/><text class=\"cs-cellt\" x=\"304\" y=\"90\">PE</text></g><g class=\"cs-part\" data-k=\"d0\" data-g=\"gated\"><rect x=\"332\" y=\"64\" width=\"44\" height=\"44\" rx=\"5\" fill=\"#eef2f7\" stroke=\"#cbd5e1\" stroke-dasharray=\"4 3\"/><text x=\"354\" y=\"86\" text-anchor=\"middle\" font-size=\"12\" fill=\"#94a3b8\">PE</text><text x=\"354\" y=\"100\" text-anchor=\"middle\" font-size=\"9\" fill=\"#94a3b8\">gated</text></g><g><rect x=\"382\" y=\"64\" width=\"44\" height=\"44\" rx=\"5\" fill=\"#eef2f7\" stroke=\"#cbd5e1\" stroke-dasharray=\"4 3\"/><text x=\"404\" y=\"86\" text-anchor=\"middle\" font-size=\"12\" fill=\"#94a3b8\">PE</text><text x=\"404\" y=\"100\" text-anchor=\"middle\" font-size=\"9\" fill=\"#94a3b8\">gated</text></g><g><rect x=\"432\" y=\"64\" width=\"44\" height=\"44\" rx=\"5\" fill=\"#eef2f7\" stroke=\"#cbd5e1\" stroke-dasharray=\"4 3\"/><text x=\"454\" y=\"86\" text-anchor=\"middle\" font-size=\"12\" fill=\"#94a3b8\">PE</text><text x=\"454\" y=\"100\" text-anchor=\"middle\" font-size=\"9\" fill=\"#94a3b8\">gated</text></g><g><rect class=\"cs-cell\" x=\"182\" y=\"114\" width=\"44\" height=\"44\" rx=\"5\"/><text class=\"cs-cellt\" x=\"204\" y=\"140\">PE</text></g><g><rect class=\"cs-cell\" x=\"232\" y=\"114\" width=\"44\" height=\"44\" rx=\"5\"/><text class=\"cs-cellt\" x=\"254\" y=\"140\">PE</text></g><g><rect class=\"cs-cell\" x=\"282\" y=\"114\" width=\"44\" height=\"44\" rx=\"5\"/><text class=\"cs-cellt\" x=\"304\" y=\"140\">PE</text></g><g><rect x=\"332\" y=\"114\" width=\"44\" height=\"44\" rx=\"5\" fill=\"#eef2f7\" stroke=\"#cbd5e1\" stroke-dasharray=\"4 3\"/><text x=\"354\" y=\"136\" text-anchor=\"middle\" font-size=\"12\" fill=\"#94a3b8\">PE</text><text x=\"354\" y=\"150\" text-anchor=\"middle\" font-size=\"9\" fill=\"#94a3b8\">gated</text></g><g><rect x=\"382\" y=\"114\" width=\"44\" height=\"44\" rx=\"5\" fill=\"#eef2f7\" stroke=\"#cbd5e1\" stroke-dasharray=\"4 3\"/><text x=\"404\" y=\"136\" text-anchor=\"middle\" font-size=\"12\" fill=\"#94a3b8\">PE</text><text x=\"404\" y=\"150\" text-anchor=\"middle\" font-size=\"9\" fill=\"#94a3b8\">gated</text></g><g><rect x=\"432\" y=\"114\" width=\"44\" height=\"44\" rx=\"5\" fill=\"#eef2f7\" stroke=\"#cbd5e1\" stroke-dasharray=\"4 3\"/><text x=\"454\" y=\"136\" text-anchor=\"middle\" font-size=\"12\" fill=\"#94a3b8\">PE</text><text x=\"454\" y=\"150\" text-anchor=\"middle\" font-size=\"9\" fill=\"#94a3b8\">gated</text></g><g><rect class=\"cs-cell\" x=\"182\" y=\"164\" width=\"44\" height=\"44\" rx=\"5\"/><text class=\"cs-cellt\" x=\"204\" y=\"190\">PE</text></g><g><rect class=\"cs-cell\" x=\"232\" y=\"164\" width=\"44\" height=\"44\" rx=\"5\"/><text class=\"cs-cellt\" x=\"254\" y=\"190\">PE</text></g><g><rect class=\"cs-cell\" x=\"282\" y=\"164\" width=\"44\" height=\"44\" rx=\"5\"/><text class=\"cs-cellt\" x=\"304\" y=\"190\">PE</text></g><g><rect x=\"332\" y=\"164\" width=\"44\" height=\"44\" rx=\"5\" fill=\"#eef2f7\" stroke=\"#cbd5e1\" stroke-dasharray=\"4 3\"/><text x=\"354\" y=\"186\" text-anchor=\"middle\" font-size=\"12\" fill=\"#94a3b8\">PE</text><text x=\"354\" y=\"200\" text-anchor=\"middle\" font-size=\"9\" fill=\"#94a3b8\">gated</text></g><g><rect x=\"382\" y=\"164\" width=\"44\" height=\"44\" rx=\"5\" fill=\"#eef2f7\" stroke=\"#cbd5e1\" stroke-dasharray=\"4 3\"/><text x=\"404\" y=\"186\" text-anchor=\"middle\" font-size=\"12\" fill=\"#94a3b8\">PE</text><text x=\"404\" y=\"200\" text-anchor=\"middle\" font-size=\"9\" fill=\"#94a3b8\">gated</text></g><g><rect x=\"432\" y=\"164\" width=\"44\" height=\"44\" rx=\"5\" fill=\"#eef2f7\" stroke=\"#cbd5e1\" stroke-dasharray=\"4 3\"/><text x=\"454\" y=\"186\" text-anchor=\"middle\" font-size=\"12\" fill=\"#94a3b8\">PE</text><text x=\"454\" y=\"200\" text-anchor=\"middle\" font-size=\"9\" fill=\"#94a3b8\">gated</text></g><text class=\"cs-note\" x=\"182\" y=\"228\">↑ Active columns: small workloads use only a few</text><text class=\"cs-note\" x=\"332\" y=\"228\">↑ Idle columns: gated, no dynamic switching</text><g class=\"cs-part\" data-k=\"cg\" data-g=\"cg\"><rect class=\"cs-box\" x=\"40\" y=\"262\" width=\"196\" height=\"60\" rx=\"8\"/><text class=\"cs-t\" x=\"138\" y=\"286\">① Fine-grained clock gating</text><text class=\"cs-sub\" x=\"138\" y=\"304\">Stop idle PE columns → zero toggles</text></g><g class=\"cs-part\" data-k=\"oi\" data-g=\"oi\"><rect class=\"cs-box\" x=\"262\" y=\"262\" width=\"196\" height=\"60\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"286\">② Operand isolation</text><text class=\"cs-sub\" x=\"360\" y=\"304\">Clamp invalid inputs; suppress multiplier glitches</text></g><g class=\"cs-part\" data-k=\"mem\" data-g=\"mem\"><rect class=\"cs-box\" x=\"484\" y=\"262\" width=\"196\" height=\"60\" rx=\"8\"/><text class=\"cs-t\" x=\"582\" y=\"286\">③ Reduce memory traffic</text><text class=\"cs-sub\" x=\"582\" y=\"304\">Avoid memory access through on-chip reuse</text></g><text class=\"cs-note\" x=\"40\" y=\"350\">Combined: stop idle logic from toggling and reuse on chip instead of reading DDR3.</text><text class=\"cs-note\" x=\"40\" y=\"372\">Note: gating/isolation are standard practice; v1 gate granularity is not public. Low utilization is measured.</text></svg>",
+ "legend": [
+  {
+   "k": "active",
+   "name": "Active PE columns",
+   "desc": "Columns participating in the current matrix multiply receive the clock, switch every cycle, and perform 8-bit MACs. Most array dynamic power is spent here."
+  },
+  {
+   "k": "gated",
+   "name": "Clock-gated idle PE columns",
+   "desc": "When no data traverses a column—during decode or with small matrices and underfilled batches—its clock is gated and registers stop toggling. Dynamic power ≈0, leaving only leakage."
+  },
+  {
+   "k": "cg",
+   "name": "① Fine-grained clock gating",
+   "desc": "Give each column or small PE group a gating enable and stop its clock while idle. Because dynamic power is proportional to switching activity, stopping sequential activity is the primary way to reduce dynamic power in an inference ASIC."
+  },
+  {
+   "k": "oi",
+   "name": "② Operand isolation",
+   "desc": "When an input is invalid but a block still receives a clock, clamp multiplier operands with enable registers or gates so useless data cannot toggle wide combinational logic and create glitch power. This is standard low-power practice."
+  },
+  {
+   "k": "mem",
+   "name": "③ Reduce memory traffic",
+   "desc": "Each off-chip DDR3 access at ~30 GB/s is energy-expensive. Weight-stationary flow and the 24 MiB Unified Buffer maximize on-chip reuse of weights and activations, saving energy by avoiding DDR3 traffic."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "active",
+    "gated"
+   ],
+   "cap": "① Observe the workload: for a small matrix or underfilled batch, only a few left-side columns of the 256×256 array compute while many PEs idle for full cycles—a low-utilization case measured in the TPU paper."
+  },
+  {
+   "keys": [
+    "ck",
+    "cg",
+    "gated"
+   ],
+   "cap": "② Technique 1—fine-grained clock gating: distribute per-column enables from the clock root. Stop idle columns so their registers do not toggle and their dynamic power approaches zero."
+  },
+  {
+   "keys": [
+    "active",
+    "oi"
+   ],
+   "cap": "③ Technique 2—operand isolation: for PEs that still receive a clock but have invalid inputs this cycle, clamp multiplier operands to prevent useless switching and glitch power."
+  },
+  {
+   "keys": [
+    "mem"
+   ],
+   "cap": "④ Technique 3—reduce memory access: load weights once under weight-stationary flow and reuse activations in the 24 MiB UB. Compute on chip instead of repeatedly reading ~30 GB/s DDR3, because memory access costs much more energy than one MAC."
+  },
+  {
+   "keys": [
+    "ck",
+    "active",
+    "gated",
+    "cg",
+    "mem"
+   ],
+   "cap": "⑤ Combined effect: with all three techniques, the 28~40 W TDP is concentrated on columns doing useful work while idle area consumes almost no dynamic power—the objective of low-power microarchitecture."
+  }
+ ],
+ "before": [
+  "<b>Identify the power component to reduce</b>: Is the target dynamic power, proportional to frequency × switching activity × capacitance × voltage², or static leakage? This section targets dynamic power because low-utilization inference leaves many array cells toggling without useful work. First measure array utilization on representative workloads.",
+  "<b>Decisions to make</b>: Clock-gating granularity (whole array, per column, or per PE), enable sources (control-FSM state, activation-valid, tile boundary), operand-isolation points, on-chip buffer capacity, and reuse policy.",
+  "<b>Required inputs</b>: The architecture power target (TPU v1 TDP 28~40 W), 700 MHz clock, and measured array-utilization distributions for MLP, LSTM, and CNN workloads. These determine achievable savings.",
+  "<b>Evidence boundary</b>: TPU v1 does not publish gate granularity or per-technique savings. Gating and isolation are standard datacenter-inference ASIC methods; published facts include many workloads using far fewer than 65,536 MACs and 28~40 W TDP."
+ ],
+ "during": [
+  "<b>State the correct objective</b>: Do not merely make each PE slightly more efficient; make every PE that should not compute consume no dynamic energy. Since switching dominates dynamic power, eliminate useless toggles first.",
+  "<b>Trade gating granularity</b>: Finer control, down to columns or individual PEs, saves more but adds clock-gate cells, enable logic, timing burden, and verification. Systolic flow is naturally column-oriented, making one shared enable per column a strong cost-benefit compromise.",
+  "<b>Reuse existing enable information</b>: Control-FSM states such as Idle, LoadWeights, and WriteBack, together with activation-valid and tile boundaries, already identify inactive periods. Static systolic scheduling makes these enables deterministic and glitch-free.",
+  "<b>Separate operand isolation from clock gating</b>: Clock gating stops an entire group; operand isolation handles a group that still clocks while its current operands are invalid. Clamping multiplier inputs prevents invalid values from toggling wide combinational logic. The two methods are complementary.",
+  "<b>Save energy by avoiding memory access</b>: Off-chip DDR3 access costs far more energy than an on-chip MAC. Weight-stationary reuse and the 24 MiB Unified Buffer reduce both bandwidth and power at the cost of SRAM area—a classic area-for-energy trade.",
+  "<b>Preserve timing and correctness</b>: Use standard integrated clock-gating cells rather than ad hoc logic gates to prevent clock glitches, and meet wake-up setup time. Power optimization must remain functionally equivalent. This is common practice, not a disclosed v1 implementation detail."
+ ],
+ "result": [
+  {
+   "label": "Primary target",
+   "value": "Dynamic power from idle switching"
+  },
+  {
+   "label": "Gating granularity",
+   "value": "Shared enable per column/group (typical compromise; exact v1 granularity not public)"
+  },
+  {
+   "label": "Enable sources",
+   "value": "Control-FSM state + activation-valid/tile boundary"
+  },
+  {
+   "label": "Three techniques",
+   "value": "Clock gating + operand isolation + reduced memory traffic"
+  },
+  {
+   "label": "Chip TDP",
+   "value": "28~40 W (measured for v1)"
+  },
+  {
+   "label": "Qualitative effect",
+   "value": "Idle-column dynamic power ≈0; power concentrates in active columns (mechanism is common practice)"
+  }
+ ],
+ "after": [
+  "<b>Measure power savings</b>: Feed gate-level VCD/SAIF switching activity from representative low-utilization workloads into a power tool. Confirm gating reduces idle-column dynamic power and compare against the ungated design.",
+  "<b>Check gating timing and equivalence</b>: Run timing checks on gate-enable setup/hold, verify glitch-free behavior, and use logical-equivalence checking (LEC) to prove that inserted gating does not change computation.",
+  "<b>Add low-power verification cases</b>: Cover full-array, half-array, and single-column utilization; wake-up across Idle↔busy transitions; and operand-isolation boundaries. Every activity pattern must switch gates correctly.",
+  "<b>Hand off to RTL (⑤) and physical design</b>: Instantiate standard ICG cells or provide enables for synthesis insertion. Include gate points in clock-tree synthesis and declare them in UPF/power intent when power domains are used.",
+  "<b>Document the evidence boundary</b>: Record gate granularity, enable sources, and that the mechanism follows standard low-power practice rather than published TPU v1 measurements, preventing qualitative behavior from being mistaken for disclosed data."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the paper reports low array utilization and 28~40 W TDP; exact clock-gating/operand-isolation granularity and savings are not public and follow standard datacenter-inference ASIC practice)"
+}

@@ -1,0 +1,117 @@
+{
+  "secNum": "3.8",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · 700 MHz Core-Array Domain and Clock-Domain Architecture",
+  "oneLine": "This clocking case partitions a large-datapath ASIC into a 700 MHz core-array domain, a PCIe domain, and a DDR3 domain, joined by CDC boundaries. The systolic array's regular structure is naturally friendly to balanced clock trees and 700 MHz timing closure.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 380\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"30\" y=\"24\">External reference clock →</text><g class=\"cs-part\" data-k=\"pll\" data-g=\"pll\"><rect class=\"cs-box\" x=\"30\" y=\"150\" width=\"110\" height=\"60\" rx=\"8\"/><text class=\"cs-t\" x=\"85\" y=\"176\">PLL / clock</text><text class=\"cs-t\" x=\"85\" y=\"191\">generation</text><text class=\"cs-sub\" x=\"85\" y=\"206\">Multiply · divide</text></g><line class=\"cs-arr\" x1=\"60\" y1=\"30\" x2=\"85\" y2=\"148\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"180\" y=\"40\">─── Clock domain A: 700 MHz core array ───</text><g class=\"cs-part\" data-k=\"core\" data-g=\"core\"><rect class=\"cs-box\" x=\"180\" y=\"52\" width=\"370\" height=\"92\" rx=\"8\"/><text class=\"cs-t\" x=\"365\" y=\"80\">Core-array domain · 700 MHz</text><text class=\"cs-sub\" x=\"365\" y=\"100\">256×256 MXU · Unified Buffer · accumulators</text><text class=\"cs-sub\" x=\"365\" y=\"118\">Regular layout + short local links → easier clocking at 700 MHz</text></g><line class=\"cs-arr\" x1=\"140\" y1=\"172\" x2=\"365\" y2=\"148\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"pcie\" data-g=\"pcie\"><rect class=\"cs-box\" x=\"180\" y=\"250\" width=\"220\" height=\"80\" rx=\"8\"/><text class=\"cs-t\" x=\"290\" y=\"280\">Clock domain B: PCIe</text><text class=\"cs-sub\" x=\"290\" y=\"300\">PCIe 3.0 link clock</text><text class=\"cs-sub\" x=\"290\" y=\"316\">Carries host CISC commands</text></g><g class=\"cs-part\" data-k=\"ddr\" data-g=\"ddr\"><rect class=\"cs-box\" x=\"440\" y=\"250\" width=\"220\" height=\"80\" rx=\"8\"/><text class=\"cs-t\" x=\"550\" y=\"280\">Clock domain C: DDR3</text><text class=\"cs-sub\" x=\"550\" y=\"300\">Off-chip 8 GiB DDR3</text><text class=\"cs-sub\" x=\"550\" y=\"316\">~30 GB/s weight supply</text></g><polyline class=\"cs-arr\" points=\"120,180 120,290 178,290\" fill=\"none\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"110,210 110,345 450,345 450,332\" fill=\"none\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"150\" y=\"360\">PLL clocks distributed to each domain</text><g class=\"cs-part\" data-k=\"cdc\" data-g=\"cdc\"><rect class=\"cs-box\" x=\"250\" y=\"178\" width=\"240\" height=\"40\" rx=\"8\" stroke-dasharray=\"6 4\"/><text class=\"cs-t\" x=\"370\" y=\"203\">CDC synchronization (async FIFO / handshake)</text></g><polyline class=\"cs-arr\" points=\"290,250 290,220\" fill=\"none\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"550,250 550,220 490,220\" fill=\"none\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"370,178 370,146\" fill=\"none\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"500\" y=\"172\">All inter-domain traffic crosses CDC</text></svg>",
+  "legend": [
+    {
+      "k": "pll",
+      "name": "PLL / clock generation",
+      "desc": "Multiply the external reference into frequencies required by core, PCIe, and DDR3 domains, then distribute them. TPU v1 publishes a 700 MHz core clock, but not PLL count or topology; the diagram uses standard data-center ASIC practice."
+    },
+    {
+      "k": "core",
+      "name": "700 MHz core-array domain",
+      "desc": "The published clock is 700 MHz. The MXU, Unified Buffer, and accumulators operate in this domain. A regular array with short neighboring-PE links simplifies clock-tree balance and timing closure."
+    },
+    {
+      "k": "pcie",
+      "name": "PCIe interface domain",
+      "desc": "PCIe 3.0 carries host-issued CISC commands at its own link cadence, asynchronous to the core. Treating it as a separate domain is standard practice, not a disclosed v1 implementation detail."
+    },
+    {
+      "k": "ddr",
+      "name": "DDR3 interface domain",
+      "desc": "The PHY for 8 GiB of off-chip DDR3 at ~30 GB/s follows DDR protocol timing and therefore forms its own clock domain in this standard partitioning."
+    },
+    {
+      "k": "cdc",
+      "name": "CDC synchronization",
+      "desc": "Every control or data transfer between asynchronous domains must use an asynchronous FIFO or synchronized handshake to contain metastability. This is mandatory multi-clock ASIC practice, not TPU-specific."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "pll"
+      ],
+      "cap": "① Multiply/divide the external reference in a PLL and distribute clocks, targeting 700 MHz for the core domain."
+    },
+    {
+      "keys": [
+        "core"
+      ],
+      "cap": "② Run the regular, short-link core array at 700 MHz; its balanced structure limits skew and eases timing closure."
+    },
+    {
+      "keys": [
+        "pcie",
+        "ddr"
+      ],
+      "cap": "③ Run PCIe and DDR3 interface domains at protocol-defined cadences independent of the core clock."
+    },
+    {
+      "keys": [
+        "cdc"
+      ],
+      "cap": "④ Pass every inter-domain data and control transfer through CDC—an asynchronous FIFO or synchronized handshake—to prevent metastability."
+    },
+    {
+      "keys": [
+        "cdc",
+        "core"
+      ],
+      "cap": "⑤ Synchronize commands and weights into the core so the array can sustain full-rate operation at 700 MHz."
+    }
+  ],
+  "before": [
+    "<b>Define the clocking question</b>: How many domains are required and how fast must the compute core run? TPU v1's published constraint is 700 MHz, which with 65,536 MACs and two operations per MAC yields ~92 TOPS.",
+    "<b>Decisions to make</b>: Main frequency, domain granularity, PCIe and DDR3 interface clocks, PLL count and distribution topology, and CDC strategy.",
+    "<b>Required inputs</b>: Compute target and array size from §3.3, process-library timing and power, and the clock specifications of PCIe and DDR3 interface IP.",
+    "<b>Hard constraints</b>: Dynamic power within a 28–40 W TDP, timing closure including skew and jitter, and fixed protocol clocks for external interfaces.",
+    "<b>Disclosure boundary</b>: Public v1 material gives only the 700 MHz clock. Domain count, PLL scheme, and clock-tree structure are therefore shown as standard inference-ASIC practice, not published TPU details."
+  ],
+  "during": [
+    "<b>Partition domains by function</b>: The core can run at 700 MHz, while PCIe and DDR3 clocks are dictated by their PHYs and are asynchronous. Separate core compute and interface domains instead of forcing an impractical common clock.",
+    "<b>Why the core can reach 700 MHz</b>: The systolic array is a regular 2D grid with short neighbor-to-neighbor links and no random chip-spanning traffic. Uniform loads simplify clock-tree balance, reduce skew, and ease routing.",
+    "<b>Couple frequency to array size</b>: Throughput equals frequency × MAC count. A 256×256 array consumes substantial area; 700 MHz balances the power and timing cost of higher frequency against the ~92 TOPS target.",
+    "<b>Join domains through CDC</b>: Use asynchronous FIFOs for mismatched data rates, such as DDR3 supply versus array demand, and synchronized handshakes for single-bit controls. This is a universal multi-clock design rule.",
+    "<b>Benefit from simple control</b>: A host-driven, small-command-set TPU with a software-managed buffer creates a deterministic, full-rate core flow, reducing control-path timing complexity.",
+    "<b>Preserve power and timing margin</b>: Gate clocks and design robust distribution for the high-frequency domain, leaving process/voltage/temperature margin. Exact v1 implementation parameters were not disclosed."
+  ],
+  "result": [
+    {
+      "label": "Core-array frequency",
+      "value": "700 MHz (published)"
+    },
+    {
+      "label": "Peak compute derived",
+      "value": "~92 INT8 TOPS"
+    },
+    {
+      "label": "Clock domains",
+      "value": "Core array / PCIe / DDR3 (standard practice)"
+    },
+    {
+      "label": "Core clock tree",
+      "value": "Regular array + short links → balanced, low skew"
+    },
+    {
+      "label": "Cross-domain strategy",
+      "value": "CDC: asynchronous FIFOs + synchronized handshakes"
+    },
+    {
+      "label": "Power envelope",
+      "value": "28 nm · 28–40 W chip TDP"
+    }
+  ],
+  "after": [
+    "<b>Verify timing closure</b>: Run static timing analysis for 700 MHz setup/hold, skew, and jitter. Revise the clock tree or frequency if margins fail.",
+    "<b>Verify CDC explicitly</b>: Crossings are a major bug source. Use static CDC analysis plus formal checks and simulation on asynchronous FIFOs and handshakes to catch metastability, loss, or duplication.",
+    "<b>Propagate constraints</b>: Give physical implementation the CTS frequency/skew targets, interface teams their clock specifications, and verification a complete crossing test list.",
+    "<b>Add test and observation hooks</b>: Provide test-mode clock control for DFT scan, controllable clock gating/dividers, and counters that expose stalls in each domain; these are standard practices.",
+    "<b>Document facts versus inference</b>: State clearly that 700 MHz is published for v1, while the depicted domain partition and CDC strategy are reasoned from standard data-center ASIC design."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (only the 700 MHz clock is published; the domain partition and CDC scheme reflect standard data-center inference-ASIC practice.)"
+}

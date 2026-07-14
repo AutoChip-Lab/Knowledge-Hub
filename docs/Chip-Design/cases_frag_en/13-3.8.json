@@ -1,0 +1,134 @@
+{
+ "secNum": "3.8",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Reliability Qualification and Sustained Production (Qualification / HVM): Bring-up proves one TPU card works; a data-center 28 nm PCIe accelerator must operate 24×7 for years. Accelerated aging—HTOL, temperature cycling, damp heat, ESD, and related tests—must establish long-term reliability before HVM and deployment, followed by continuous yield/field monitoring, failure analysis, corrective action, and feedback into the next TPU generation.",
+ "oneLine": "This case supports reliability qualification and sustained high-volume manufacturing. Bring-up proves that one engineering card powers, enumerates through PCIe, and executes inference on its 256×256 array. Data-center and automotive-class use demands that thousands of cards operate 24×7 for years, which present functionality cannot guarantee. ① Reliability qualification uses accelerated stress to expose future failure modes quickly: HTOL applies high temperature and voltage to a qualification sample set to characterize reliability and extrapolate lifetime; per-unit early-life screening, when required, belongs to production burn-in; temperature cycling and damp heat stress packages, solder joints, and interfaces; ESD and latch-up test electrical robustness. ② Only a passing qualification gate releases the product from engineering volume into HVM. ③ Volume cards deploy for long-term 24×7 data-center service. ④ Production and field monitoring track yield, early failures, returns, and field incidents; failure analysis (FA) identifies root cause and feeds corrective action into process, design, or package. ⑤ Reliability and margin experience becomes the next TPU generation's requirements. Qualification is the one-time gate demonstrating that this revision can live long; HVM, monitoring, and iteration sustain and improve that promise. The public TPU v1 256×256 = 65,536 8-bit-MAC array, 24 MiB Unified Buffer, 700 MHz, 28 nm / ≤331 mm² / 28–40 W PCIe 3.0 card, and TensorFlow/XLA stack are only the reliability subject. Test conditions, qualification limits, HVM yield, failures, and field reliability are private.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 420\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"26\">Reliability qualification & sustained production: bring-up proves one card works; data centers need 24×7 operation for years. Accelerated aging proves long-term reliability before qual release, HVM, deployment, monitoring, and next-generation feedback.</text><g class=\"cs-part\" data-k=\"qual\" data-g=\"qual\"><rect class=\"cs-box\" x=\"24\" y=\"58\" width=\"320\" height=\"120\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"184\" y=\"80\">① Reliability qualification (accelerated aging)</text><text class=\"cs-sub\" x=\"184\" y=\"98\">Accelerate failures that would emerge years later</text><g class=\"cs-part\" data-k=\"htol\" data-g=\"htol\"><rect class=\"cs-cell\" x=\"40\" y=\"112\" width=\"92\" height=\"52\" rx=\"6\"/><text class=\"cs-cellt\" x=\"86\" y=\"134\">HTOL</text><text class=\"cs-cellt\" x=\"86\" y=\"152\">High-temperature/high-voltage aging</text></g><g class=\"cs-part\" data-k=\"cycle\" data-g=\"cycle\"><rect class=\"cs-cell\" x=\"146\" y=\"112\" width=\"92\" height=\"52\" rx=\"6\"/><text class=\"cs-cellt\" x=\"192\" y=\"134\">Temp cycle / damp heat</text><text class=\"cs-cellt\" x=\"192\" y=\"152\">Thermal / moisture stress</text></g><g class=\"cs-part\" data-k=\"esd\" data-g=\"esd\"><rect class=\"cs-cell\" x=\"252\" y=\"112\" width=\"80\" height=\"52\" rx=\"6\"/><text class=\"cs-cellt\" x=\"292\" y=\"134\">ESD / latch-up</text><text class=\"cs-cellt\" x=\"292\" y=\"152\">Electrostatic / immunity stress</text></g></g><line class=\"cs-arr\" x1=\"344\" y1=\"118\" x2=\"392\" y2=\"118\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"gate\" data-g=\"gate\"><rect class=\"cs-box\" x=\"396\" y=\"90\" width=\"140\" height=\"56\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"466\" y=\"114\">Qualification gate</text><text class=\"cs-sub\" x=\"466\" y=\"132\">Volume release only after pass</text></g><line class=\"cs-arr\" x1=\"536\" y1=\"118\" x2=\"584\" y2=\"118\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"hvm\" data-g=\"hvm\"><rect class=\"cs-box\" x=\"588\" y=\"90\" width=\"108\" height=\"56\" rx=\"8\" fill=\"#dcfce7\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"642\" y=\"114\">② HVM</text><text class=\"cs-sub\" x=\"642\" y=\"132\">High-volume manufacturing</text></g><polyline class=\"cs-arr\" points=\"642,146 642,196 466,196 466,216\" fill=\"none\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"deploy\" data-g=\"deploy\"><rect class=\"cs-box\" x=\"356\" y=\"220\" width=\"220\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"466\" y=\"244\">③ Data-center deployment 24×7</text><text class=\"cs-sub\" x=\"466\" y=\"262\">Large-scale, long-term operation</text></g><line class=\"cs-arr\" x1=\"356\" y1=\"248\" x2=\"308\" y2=\"248\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"monitor\" data-g=\"monitor\"><rect class=\"cs-box\" x=\"88\" y=\"220\" width=\"260\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"218\" y=\"244\">④ Field monitoring / failure feedback</text><text class=\"cs-sub\" x=\"218\" y=\"262\">Track yield/returns/failures (FA→corrective action)</text></g><polyline class=\"cs-arr\" points=\"88,248 48,248 48,330 184,330 184,350\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"nextgen\" data-g=\"nextgen\"><rect class=\"cs-box\" x=\"84\" y=\"354\" width=\"280\" height=\"52\" rx=\"8\" fill=\"#fde68a\" stroke=\"#f59e0b\"/><text class=\"cs-t\" x=\"224\" y=\"378\">⑤ Feed experience into next TPU generation (loop to ① requirements)</text><text class=\"cs-sub\" x=\"224\" y=\"396\">Generational iteration: feed this generation's failures and margin into next-generation design</text></g><polyline class=\"cs-arr\" points=\"364,380 470,380 470,178\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"396\" y=\"318\">Long-term reliability + generational iteration: qual proves this revision can live long; production monitoring feeds real field failures back to make the next generation more reliable.</text><text class=\"cs-note\" x=\"396\" y=\"408\">Evidence boundary: HTOL, temperature cycling, damp heat, ESD, HVM, FA, and yield monitoring are standard production practices. TPU v1's qualification conditions, yield, and failure data are not public.</text></svg>",
+ "legend": [
+  {
+   "k": "qual",
+   "name": "① Reliability qualification (use acceleration to establish long-term reliability)",
+   "desc": "Bring-up proves that a device works now; data-center delivery requires confidence that it will work for years. Qualification applies harsher-than-normal temperature, voltage, thermal cycling, moisture, and electrical stress for weeks to months to accelerate failure mechanisms that would otherwise take years. Statistical pass criteria bridge present function to expected service life. A device that fails qualification cannot enter volume delivery regardless of functional performance. The same gate applies to a 28 nm TPU v1-class PCIe accelerator; its private stress matrix and results are not public."
+  },
+  {
+   "k": "htol",
+   "name": "HTOL (sampling-based high-temperature operating-life qualification)",
+   "desc": "High-Temperature Operating Life powers a qualification sample set at elevated temperature and voltage for hundreds to thousands of hours to accelerate wear-out mechanisms and characterize lifetime. HTOL is a sampling-based reliability qualification, not a per-unit infant-mortality screen; production burn-in, when specified, performs per-unit early-life-failure screening. Temperature, voltage, duration, sample size, and acceleration model are project-specific; TPU v1's HTOL conditions and lifetime data are not public."
+  },
+  {
+   "k": "cycle",
+   "name": "Temperature cycling / damp heat (thermal and moisture stress on package/interconnect)",
+   "desc": "Temperature cycling repeatedly drives high-to-low temperature, accumulating mechanical stress where package, solder, die, and substrate materials expand differently; it exposes cracking, fatigue, and delamination. Damp heat applies high humidity, often with bias, to probe moisture resistance, corrosion, and interfaces. Long-lived TPU cards experience power-cycle temperature changes and facility environments. Private cycle ranges, counts, and conditions are not public."
+  },
+  {
+   "k": "esd",
+   "name": "ESD / latch-up (electrical transients and immunity)",
+   "desc": "ESD tests emulate high-voltage transients from people, machines, or charged devices and verify I/O protection against manufacturing, handling, and installation damage. Latch-up testing verifies that a transient cannot activate parasitic structures and lock or damage the device. Together they protect the device from fabrication through PCIe-card installation and operation. TPU v1's ESD levels, models, and latch-up limits are not public."
+  },
+  {
+   "k": "gate",
+   "name": "Qualification gate (a hard prerequisite for volume release)",
+   "desc": "HTOL, temperature cycling/damp heat, ESD/latch-up, and all other approved tests must satisfy failure-rate, lifetime-extrapolation, and sample-statistics criteria before the revision is declared reliable and released. Data-center and automotive-class requirements use this gate to stop a design that works now but fails later. A failure requires design, process, or package correction and requalification—not risky volume shipment. TPU v1's pass criteria are private."
+  },
+  {
+   "k": "hvm",
+   "name": "② HVM (high-volume, sustained manufacturing)",
+   "desc": "After qualification, move from engineering lots to repeatable HVM capable of producing thousands of conforming TPU cards. Stable process windows, statistical process control (SPC), outgoing tests, yield control, and consistency ensure that every unit meets release standards. The objective is not one manufacturable device but stable low-variation volume and long-lived products. TPU v1's yield, process window, SPC, and foundry are not public."
+  },
+  {
+   "k": "deploy",
+   "name": "③ Data-center deployment 24×7 (the real long-term environment)",
+   "desc": "Qualified volume cards connect through PCIe and execute real workloads continuously at data-center scale under 24×7 service. Laboratory qualification accelerates and predicts reliability; years of field operation demonstrate it. TPU v1 had already operated in data centers for more than one year before public release, illustrating deployment before broader scale. Field operation can reveal mechanisms not fully represented in qualification. Deployment scale and reliability data are private."
+  },
+  {
+   "k": "monitor",
+   "name": "④ Field monitoring / failure feedback (production begins a continuous loop)",
+   "desc": "After deployment, monitor production yield and consistency, early-life failure rate, returns, and field incidents. Perform failure analysis (FA) on failed samples to determine process drift, package weakness, use-condition degradation, or another root cause; then correct process, design, or package to prevent recurrence. This monitoring → FA → corrective-action loop maintains reliability beyond the single qualification event. TPU v1's field data are not public."
+  },
+  {
+   "k": "nextgen",
+   "name": "⑤ Feed experience into the next TPU generation (generational loop)",
+   "desc": "Systematically summarize failure modes, thin margins, package/process weak points, and real-workload findings from qualification, HVM, and field operation and convert them into next-generation design requirements and reliability targets. Each generation's field evidence makes the next more robust and better margined. This cross-generation feedback is standard reliability engineering; TPU-specific generational data are not public."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "qual",
+    "htol",
+    "cycle",
+    "esd"
+   ],
+   "cap": "① First establish long-term reliability through accelerated stress: run sampling-based HTOL on the 28 nm PCIe TPU for reliability characterization and lifetime extrapolation, temperature cycling/damp heat for package/solder/interface stress, and ESD/latch-up for electrical robustness. Expose years-later failures within weeks to months."
+  },
+  {
+   "keys": [
+    "gate",
+    "hvm"
+   ],
+   "cap": "② Release HVM only after the qualification gate: every test must meet predefined failure-rate, lifetime-extrapolation, and sample-statistics criteria. Then transition into stable, low-variation manufacturing of thousands of conforming TPU cards."
+  },
+  {
+   "keys": [
+    "deploy",
+    "monitor"
+   ],
+   "cap": "③ Deploy 24×7 and keep monitoring: install volume cards through PCIe for real inference—TPU v1 had operated for more than one year before release—while tracking yield, early failures, and returns. Apply FA, then feed root cause into process, design, and package correction."
+  },
+  {
+   "keys": [
+    "nextgen"
+   ],
+   "cap": "④ Close the generational loop: summarize failure modes, margin, and weak points learned in qualification, HVM, and field service and return them to step ① design requirements so the next TPU generation is more reliable."
+  }
+ ],
+ "before": [
+  "<b>Require completed bring-up and a frozen release configuration</b>: qualification applies to the exact design, package, and process intended for production. The card must power, enumerate through PCIe, and execute 256×256-array inference. Qualifying a moving target wastes the result because a relevant change may require requalification.",
+  "<b>Define the required reliability grade</b>: approve target service life, acceptable failure rate, applicable stresses, and pass criteria for data-center or automotive-class use. Qualification can only judge against explicit requirements.",
+  "<b>Prepare statistically adequate samples and test resources</b>: reserve enough units plus HTOL ovens and burn-in boards, thermal-cycling and humidity chambers, ESD equipment, powered workloads, and monitoring. Insufficient samples or equipment undermine the conclusion.",
+  "<b>Define failure criteria and the FA path</b>: specify what constitutes failure, how it is detected during and after stress, how failed units enter failure analysis, and how root cause returns to process/design. Qualification must explain why failures occur and whether production can repeat them.",
+  "<b>Prepare HVM and field-monitoring systems in advance</b>: establish process windows, SPC, outgoing test, yield tracking, return collection, and FA flow so a qualification pass transitions directly into controlled sustained production."
+ ],
+ "during": [
+  "<b>First principle: the data center needs years without failure, not merely function today</b>. Bring-up proves one card works; reliability qualification asks whether thousands of TPU cards can run 24×7 for years at an acceptable failure rate. Waiting years is impractical, so accelerated stresses provide confidence for large-scale long-term delivery.",
+  "<b>Qualification accelerates failures that would otherwise emerge years later</b>. HTOL applies high temperature and elevated voltage to a qualification sample set to characterize accelerated reliability mechanisms and extrapolate wear-out life; per-unit early-life-failure screening, when required, belongs to production burn-in. Temperature cycling and damp heat stress package, solder, and interfaces; ESD/latch-up tests I/O protection and transient immunity. The combined suite addresses different long-term mechanisms in a 28 nm PCIe accelerator.",
+  "<b>The qualification gate requires every item to pass</b>. All predefined failure-rate, lifetime, and statistical criteria must be met before HVM release. A failure sends the revision back for design, process, or package correction and requalification. High-reliability data-center/automotive use does not permit knowingly scaling an unqualified design.",
+  "<b>HVM turns one qualified design into a reliably repeatable population</b>. Stable process control, SPC, and outgoing test must manufacture thousands of low-variation cards whose 256×256 array, 24 MiB UB, 700 MHz clock, and PCIe functions meet the same standard. One good unit is not the objective.",
+  "<b>Deployment and field monitoring turn prediction into evidence</b>. Operate volume cards 24×7 in data centers—TPU v1 had run for more than one year before public release—while tracking manufacturing yield, early failures, returns, and field incidents. Perform FA, identify root cause, and correct process, design, or package. Reliability becomes a continuing field loop, not a one-time certificate.",
+  "<b>Generational iteration converts this revision's evidence into the next revision's requirements</b>. Feed frequent failure modes, thin margins, package/process weak points, and real-workload findings from qualification, HVM, and the field into next-generation TPU design and reliability goals. <b>Methodology</b> versus <b>published evidence</b>: HTOL, temperature cycling/damp heat, ESD/latch-up, qualification gates, HVM yield and SPC, outgoing test, FA/correction, high-reliability criteria, and generational feedback are standard semiconductor-production practices. TPU v1's private qualification conditions, pass criteria, yield, package/field failures, reliability data, and foundry are not public. Its known 256×256 array, 24 MiB UB, 700 MHz, 28 nm / ≤331 mm² / 28–40 W PCIe 3.0 card, TF/XLA stack, and more-than-one-year pre-release operation are only the example; no private process, yield, package, or test figures are inferred."
+ ],
+ "result": [
+  {
+   "label": "Deliverable",
+   "value": "A TPU v1 revision that passes qualification as long-term reliable and releasable, enters sustained HVM and 24×7 data-center deployment, and drives next-generation improvement through field monitoring and feedback."
+  },
+  {
+   "label": "Qualification stress suite",
+   "value": "HTOL (sampling-based high-temperature/high-voltage reliability qualification + lifetime extrapolation; per-unit early-life screening belongs to production burn-in) + temperature cycling/damp heat (thermal/moisture stress on package, solder, interfaces) + ESD/latch-up (transient electrical robustness)."
+  },
+  {
+   "label": "Qualification gate",
+   "value": "All failure-rate, lifetime-extrapolation, and sample-statistics criteria must pass before HVM. A failure requires design/process/package correction and requalification; no knowingly risky volume release."
+  },
+  {
+   "label": "HVM production",
+   "value": "Transition from engineering samples to stable, low-variation production of thousands of conforming TPU cards, using SPC and outgoing test to maintain yield, consistency, and reliability."
+  },
+  {
+   "label": "Deployment + monitoring loop",
+   "value": "Deploy volume cards 24×7—after more than one year of pre-release operation—and continuously track yield, early failures, and returns; FA root cause → process/design/package corrective action."
+  },
+  {
+   "label": "Generational iteration",
+   "value": "Feed qualification/HVM/field failure modes, margin, and weak points into next-generation TPU requirements. Evidence boundary: HTOL/cycling/damp heat/ESD/HVM/SPC/FA/monitoring are standard practices, not public TPU v1 data; private qualification, yield, failures, and foundry remain undisclosed."
+  }
+ ],
+ "after": [
+  "<b>Issue the qualification report and release production</b>: consolidate HTOL, temperature-cycling, damp-heat, ESD, and other results; failure statistics; lifetime extrapolation; and criterion-by-criterion disposition. Release HVM only after every requirement passes; stop, correct, and requalify any failure.",
+  "<b>Hand operating boundaries to production and system teams</b>: communicate qualified conditions, service-life recommendations, margin, and known weak points so data-center deployment remains within the validated envelope.",
+  "<b>Operate the field-monitoring loop continuously</b>: track production yield, early failure rate, returns, and incidents; send failures to FA; and apply root cause to process, design, or package. Monitoring → FA → corrective action is a permanent production mechanism.",
+  "<b>Systematize experience and feed the next generation</b>: convert this generation's failure modes, thin margins, and weak points into the next TPU's design requirements and reliability targets so real field data improves each generation.",
+  "<b>Preserve an auditable record</b>: archive qualification plans/criteria/results, production yield and monitoring, field failures and corrective actions, and generational feedback. These are standard confidential production artifacts, not public TPU v1 qualification, yield, failure, or foundry data."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the paper discloses the 256×256 = 65,536 8-bit-MAC systolic array, 24 MiB Unified Buffer, 4 MiB accumulator, 700 MHz, external 8 GiB DDR3 at ~30 GB/s, weight-stationary dataflow, roughly a dozen CISC instructions over PCIe 3.0, a 28 nm / ≤331 mm² / 28–40 W PCIe accelerator card, TensorFlow/XLA stack, approximately 15 months from program start to deployment, and more than one year of data-center operation before public release. These facts serve only as the system under qualification, sustained manufacturing, field monitoring, and next-generation feedback. HTOL, temperature cycling/damp heat, ESD/latch-up, qualification conditions and gates, HVM and SPC/outgoing test/yield, field monitoring and failure analysis (FA), corrective action, data-center/automotive reliability criteria, and generational reliability feedback are standard semiconductor manufacturing, packaging/test, and production practices. TPU v1's private qualification conditions/results, production yield, package/field failures, reliability data, and foundry are not public; the diagram is conceptual.)"
+}

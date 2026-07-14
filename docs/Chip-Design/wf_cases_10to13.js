@@ -7,7 +7,7 @@ export const meta = {
   ],
 }
 
-const DIR = '/Users/sunking/Desktop/Chip-Design/cases_frag';
+const DIR = '/Users/sunking/Desktop/chip-design-flow/cases_frag';
 const DOCNAME = { "10":"流片(tape-out)", "11":"制造(Fab)", "12":"封装测试", "13":"bring-up / 量产" };
 
 const STYLE = `

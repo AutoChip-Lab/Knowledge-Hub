@@ -1,0 +1,118 @@
+{
+  "secNum": "3.14",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 versus v2+ · When to Move from Monolithic Silicon to 2.5D / Chiplets",
+  "oneLine": "Packaging architecture decides whether to build one die or combine several. TPU v1 is monolithic; v2+ co-packages a logic die and HBM on a 2.5D interposer, while pods connect devices through ICI—an evolution driven by yield, memory bandwidth, and reticle limits.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"30\">Left: monolithic TPU v1</text><text class=\"cs-note\" x=\"400\" y=\"30\">Right: TPU v2+ logic + HBM on a 2.5D interposer</text><g class=\"cs-part\" data-k=\"mono\" data-g=\"mono\"><rect class=\"cs-box\" x=\"40\" y=\"48\" width=\"300\" height=\"150\" rx=\"8\"/><text class=\"cs-t\" x=\"190\" y=\"74\">One v1 die (28 nm, ≤331 mm²)</text><text class=\"cs-sub\" x=\"190\" y=\"92\">MXU + Unified Buffer on one piece of silicon</text></g><g class=\"cs-part\" data-k=\"monomxu\" data-g=\"monomxu\"><rect class=\"cs-cell\" x=\"64\" y=\"108\" width=\"120\" height=\"74\" rx=\"5\"/><text class=\"cs-cellt\" x=\"124\" y=\"142\">MXU 256×256</text><text class=\"cs-cellt\" x=\"124\" y=\"160\">+ accumulators</text></g><g class=\"cs-part\" data-k=\"monoub\" data-g=\"monoub\"><rect class=\"cs-cell\" x=\"196\" y=\"108\" width=\"120\" height=\"74\" rx=\"5\"/><text class=\"cs-cellt\" x=\"256\" y=\"142\">24 MiB</text><text class=\"cs-cellt\" x=\"256\" y=\"160\">Unified Buffer</text></g><g class=\"cs-part\" data-k=\"ddr3\" data-g=\"ddr3\"><rect class=\"cs-box\" x=\"100\" y=\"222\" width=\"180\" height=\"44\" rx=\"8\"/><text class=\"cs-t\" x=\"190\" y=\"244\">Off-chip 8 GiB DDR3</text><text class=\"cs-sub\" x=\"190\" y=\"258\">~30 GB/s · PCB-level wiring</text></g><line class=\"cs-arr\" x1=\"190\" y1=\"198\" x2=\"190\" y2=\"220\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"44\" y=\"290\">Monolithic limits: yield · DDR bandwidth · reticle</text><g class=\"cs-part\" data-k=\"interposer\" data-g=\"interposer\"><rect class=\"cs-box\" x=\"400\" y=\"150\" width=\"290\" height=\"48\" rx=\"8\"/><text class=\"cs-t\" x=\"545\" y=\"172\">Silicon interposer (2.5D)</text><text class=\"cs-sub\" x=\"545\" y=\"188\">Microbumps + dense wiring connect multiple dies</text></g><g class=\"cs-part\" data-k=\"logicdie\" data-g=\"logicdie\"><rect class=\"cs-box\" x=\"406\" y=\"60\" width=\"150\" height=\"80\" rx=\"8\"/><text class=\"cs-t\" x=\"481\" y=\"92\">Logic die</text><text class=\"cs-sub\" x=\"481\" y=\"110\">MXU + on-chip SRAM</text><text class=\"cs-sub\" x=\"481\" y=\"126\">Fabricated separately · process flexibility</text></g><g class=\"cs-part\" data-k=\"hbm\" data-g=\"hbm\"><rect class=\"cs-box\" x=\"566\" y=\"60\" width=\"118\" height=\"80\" rx=\"8\"/><text class=\"cs-t\" x=\"625\" y=\"88\">HBM stack</text><text class=\"cs-sub\" x=\"625\" y=\"106\">3D-stacked DRAM</text><text class=\"cs-sub\" x=\"625\" y=\"122\">Very high bandwidth</text></g><line class=\"cs-arr\" x1=\"481\" y1=\"140\" x2=\"481\" y2=\"148\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"625\" y1=\"140\" x2=\"625\" y2=\"148\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"556,100 566,100\" fill=\"none\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"404\" y=\"232\">2.5D: short, wide HBM links · smaller dies</text><g class=\"cs-part\" data-k=\"ici\" data-g=\"ici\"><rect class=\"cs-box\" x=\"400\" y=\"252\" width=\"290\" height=\"46\" rx=\"8\"/><text class=\"cs-t\" x=\"545\" y=\"274\">Pod: multiple chips + ICI</text><text class=\"cs-sub\" x=\"545\" y=\"290\">Scale beyond one package into a larger cluster</text></g><line class=\"cs-arr\" x1=\"545\" y1=\"198\" x2=\"545\" y2=\"250\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"decide\" data-g=\"decide\"><rect class=\"cs-box\" x=\"40\" y=\"330\" width=\"650\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"365\" y=\"354\">When to leave monolithic silicon</text><text class=\"cs-sub\" x=\"365\" y=\"374\">Triggers: ① yield  ② memory bandwidth  ③ reticle limit</text></g></svg>",
+  "legend": [
+    {
+      "k": "mono",
+      "name": "Monolithic v1 die",
+      "desc": "TPU v1 integrates the MXU, accumulators, and 24 MiB Unified Buffer on one 28 nm die no larger than 331 mm². One die is simple and avoids in-package links, but yield declines as area grows."
+    },
+    {
+      "k": "ddr3",
+      "name": "Off-chip DDR3 in v1",
+      "desc": "v1 uses 8 GiB of board-level DDR3 at only ~30 GB/s. Package and PCB I/O limit bandwidth, motivating later placement of memory beside logic on an interposer."
+    },
+    {
+      "k": "logicdie",
+      "name": "Logic die in v2+",
+      "desc": "Later generations separate compute into its own die, which can be fabricated independently in a suitable process. A smaller die offers better yield and technology flexibility."
+    },
+    {
+      "k": "hbm",
+      "name": "HBM over 2.5D in v2+",
+      "desc": "HBM replaces board-level DDR3 and connects to logic through a very wide, short interposer link. This delivers an order-of-magnitude bandwidth increase and directly addresses v1's feed bottleneck."
+    },
+    {
+      "k": "decide",
+      "name": "Three triggers for multiple dies",
+      "desc": "Consider 2.5D or chiplets when any ceiling is reached: yield becomes unacceptable at large die area, board-level memory cannot feed compute, or the design exceeds reticle size."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "mono",
+        "monomxu",
+        "monoub"
+      ],
+      "cap": "① Starting point—v1: integrate the MXU, accumulators, and 24 MiB Unified Buffer on one monolithic die."
+    },
+    {
+      "keys": [
+        "ddr3"
+      ],
+      "cap": "② Expose the limit: off-chip DDR3 provides only ~30 GB/s over board wiring, so memory bandwidth saturates before growing compute."
+    },
+    {
+      "keys": [
+        "logicdie",
+        "hbm",
+        "interposer"
+      ],
+      "cap": "③ Split in v2+: fabricate logic and HBM separately and co-package them on a silicon interposer, using a short, wide link for order-of-magnitude bandwidth."
+    },
+    {
+      "keys": [
+        "ici"
+      ],
+      "cap": "④ Scale farther: connect multiple packaged devices horizontally with ICI to form a pod beyond one package's limits."
+    },
+    {
+      "keys": [
+        "decide"
+      ],
+      "cap": "⑤ Decision rule: hitting a ceiling in yield, memory bandwidth, or reticle area signals the move to 2.5D or chiplets."
+    }
+  ],
+  "before": [
+    "<b>Make the packaging fork explicit</b>: Build a monolithic die or partition functions across dies and combine them with 2.5D/chiplet packaging? This architecture decision constrains every later physical implementation step.",
+    "<b>Decisions to make</b>: Target die area; partitioning of logic, memory, and I/O; silicon interposer versus lower-cost organic substrate; board DDR versus co-packaged HBM; and provision for ICI-like scale-out.",
+    "<b>Required inputs</b>: Compute scale (§3.3), memory-bandwidth demand (§3.4), process yield curves and reticle area, HBM/interposer cost and supply, and package power and cooling (§3.9).",
+    "<b>Hard constraints</b>: Yield drops rapidly with die area; one exposure cannot exceed the reticle; board-level DDR has bandwidth and pin ceilings; and advanced packaging adds cost and test complexity."
+  ],
+  "during": [
+    "<b>Split only when necessary</b>: v1 chooses one die because it avoids in-package link overhead and simplifies design and test. Monolithic is best while area, yield, and bandwidth remain within budget.",
+    "<b>Let yield constrain area</b>: At fixed defect density, larger dies have a higher probability of fatal defects. When yield becomes unacceptable, divide the design into smaller dies that yield better and can be discarded individually.",
+    "<b>Let bandwidth motivate 2.5D</b>: v1's ~30 GB/s DDR3 cannot feed a larger array. HBM placed beside logic on a silicon interposer uses a very wide, short interface for an order-of-magnitude increase—the key v2+ upgrade.",
+    "<b>Respect the reticle wall</b>: Lithography imposes a maximum exposure area. When more compute no longer fits on one die, partitioning or chiplets are the only ways around the physical limit.",
+    "<b>Account for partitioning cost</b>: Multiple dies improve yield and bandwidth but add interposer/HBM cost, link power and latency, and known-good-die test complexity. Optimize total system cost; do not partition reflexively.",
+    "<b>Scale horizontally beyond a package</b>: When one package also reaches its limit, connect multiple chips with ICI into a pod. Partitioning then moves from within the package to between packages."
+  ],
+  "result": [
+    {
+      "label": "v1 packaging",
+      "value": "Monolithic single die"
+    },
+    {
+      "label": "v1 process / area",
+      "value": "28 nm · die ≤331 mm²"
+    },
+    {
+      "label": "v1 main memory",
+      "value": "Off-chip 8 GiB DDR3 · ~30 GB/s"
+    },
+    {
+      "label": "v2+ memory packaging",
+      "value": "HBM on a 2.5D silicon interposer; much higher bandwidth"
+    },
+    {
+      "label": "Pod scaling",
+      "value": "Multiple chips connected through ICI"
+    },
+    {
+      "label": "Multi-die criteria",
+      "value": "Yield / memory bandwidth / reticle limit"
+    }
+  ],
+  "after": [
+    "<b>Validate packaging feasibility</b>: Model yield and cost, then evaluate signal integrity, link power, and thermals for 2.5D. Finalize only when both bandwidth and yield targets are credible.",
+    "<b>Propagate constraints</b>: Give physical implementation die boundaries, interposer and bump layout, package dimensions, and thermal requirements; reconcile DDR versus co-packaged HBM and feed bandwidth with memory hierarchy (§3.4).",
+    "<b>Define multi-die test strategy</b>: Every die should be known good before assembly or one defect destroys package yield. Hand KGD and post-package test requirements to DFT.",
+    "<b>Reserve scale-out interfaces</b>: If pod deployment is planned, budget ICI pins, protocol, and bandwidth during architecture to avoid late redesign.",
+    "<b>Document scope honestly</b>: The v2+/pod comparison is directional TPU evolution. Interposer bump pitch, HBM generation, and exact bandwidth are generation-specific packaging details not disclosed in the v1 ISCA paper, so they remain qualitative."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (v1 is monolithic; v2+ 2.5D/HBM packaging and pod/ICI scaling reflect later TPU generations and standard 2.5D practice. No undisclosed v1 packaging-process values are asserted.)"
+}

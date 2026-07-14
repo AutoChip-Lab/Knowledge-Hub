@@ -1,0 +1,114 @@
+{
+ "secNum": "3.1",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Choosing an HDL and Defining the Synthesizable Subset: Which Code Becomes 65,536 MACs",
+ "oneLine": "The first RTL decision is the language—Verilog/SystemVerilog or a generator such as Chisel—and the boundary of the synthesizable subset. Only constructs that synthesis can infer as gates and flops belong in the design; simulation constructs such as #delay and $display stay in the testbench. A regular 256 × 256 array is an ideal use case for parameterized generate loops.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><rect x=\"24\" y=\"56\" width=\"320\" height=\"300\" rx=\"10\" fill=\"#f0fdf4\" stroke=\"#86efac\" stroke-dasharray=\"6 4\"/><text class=\"cs-t\" x=\"184\" y=\"44\">Synthesizable subset (hardware → design)</text><rect x=\"376\" y=\"56\" width=\"320\" height=\"300\" rx=\"10\" fill=\"#fef2f2\" stroke=\"#fca5a5\" stroke-dasharray=\"6 4\"/><text class=\"cs-t\" x=\"536\" y=\"44\">Testbench only (simulation, not hardware)</text><g class=\"cs-part\" data-k=\"comb\" data-g=\"synth\"><rect class=\"cs-box\" x=\"48\" y=\"76\" width=\"124\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"110\" y=\"100\">Combinational logic</text><text class=\"cs-sub\" x=\"110\" y=\"118\">always_comb · =</text></g><g class=\"cs-part\" data-k=\"seq\" data-g=\"synth\"><rect class=\"cs-box\" x=\"196\" y=\"76\" width=\"124\" height=\"56\" rx=\"8\"/><path d=\"M196,132 L196,118 L210,132 Z\" fill=\"#8b5cf6\"/><text class=\"cs-t\" x=\"258\" y=\"100\">Sequential registers</text><text class=\"cs-sub\" x=\"258\" y=\"118\">always_ff posedge · &lt;=</text></g><g class=\"cs-part\" data-k=\"gen\" data-g=\"synth\"><rect class=\"cs-box\" x=\"48\" y=\"150\" width=\"272\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"184\" y=\"174\">Parameterized generate / for</text><text class=\"cs-sub\" x=\"184\" y=\"194\">genvar i,j → elaborate 256 × 256 PEs</text></g><g class=\"cs-part\" data-k=\"fsm\" data-g=\"synth\"><rect class=\"cs-box\" x=\"48\" y=\"226\" width=\"124\" height=\"56\" rx=\"8\"/><path d=\"M48,282 L48,268 L62,282 Z\" fill=\"#8b5cf6\"/><text class=\"cs-t\" x=\"110\" y=\"250\">FSM control</text><text class=\"cs-sub\" x=\"110\" y=\"268\">case · explicit reset</text></g><g class=\"cs-part\" data-k=\"param\" data-g=\"synth\"><rect class=\"cs-box\" x=\"196\" y=\"226\" width=\"124\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"258\" y=\"250\">Parameters / widths</text><text class=\"cs-sub\" x=\"258\" y=\"268\">parameter logic[N-1:0]</text></g><text class=\"cs-note\" x=\"48\" y=\"312\">Rule: must infer gates + flops + wires</text><text class=\"cs-note\" x=\"48\" y=\"330\">to belong in the synthesizable subset.</text><text class=\"cs-note\" x=\"48\" y=\"348\">PE = 8-bit multiply + 32-bit accumulate.</text><g class=\"cs-part\" data-k=\"delay\" data-g=\"tb\"><rect class=\"cs-box\" x=\"400\" y=\"76\" width=\"124\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"462\" y=\"100\">#delay</text><text class=\"cs-sub\" x=\"462\" y=\"118\">#5 clk = ~clk;</text></g><g class=\"cs-part\" data-k=\"init\" data-g=\"tb\"><rect class=\"cs-box\" x=\"548\" y=\"76\" width=\"124\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"610\" y=\"100\">initial block</text><text class=\"cs-sub\" x=\"610\" y=\"118\">Stimulus / readmemh</text></g><g class=\"cs-part\" data-k=\"disp\" data-g=\"tb\"><rect class=\"cs-box\" x=\"400\" y=\"150\" width=\"272\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"536\" y=\"174\">$display / $finish / assert</text><text class=\"cs-sub\" x=\"536\" y=\"194\">Print, stop, check—no hardware equivalent</text></g><text class=\"cs-note\" x=\"400\" y=\"232\">These constructs describe simulation</text><text class=\"cs-note\" x=\"400\" y=\"250\">and are rejected or ignored by synthesis.</text><text class=\"cs-note\" x=\"400\" y=\"276\">In design: simulation may pass, silicon cannot.</text><line class=\"cs-arr\" x1=\"184\" y1=\"356\" x2=\"184\" y2=\"384\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"syn\" data-g=\"tool\"><rect class=\"cs-box\" x=\"232\" y=\"360\" width=\"256\" height=\"34\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"360\" y=\"382\">Synthesis → gate-level netlist (left only)</text></g></svg>",
+ "legend": [
+  {
+   "k": "synth",
+   "name": "Synthesizable subset (design RTL)",
+   "desc": "Combinational logic (always_comb with blocking =), sequential registers (always_ff with nonblocking <=), FSMs, explicit parameters and widths, and generate expansion all infer gates, flops, and interconnect. TPU processing elements (8-bit multiply plus 32-bit accumulation), the Unified Buffer, and control FSMs belong in this domain."
+  },
+  {
+   "k": "gen",
+   "name": "Parameterized generate expansion",
+   "desc": "A genvar/for loop instantiates one PE template across rows and columns; setting N=256 elaborates a 256 × 256 array. Regularity, homogeneity, and parameterization make the TPU systolic array a natural fit for SystemVerilog generate or a generator language such as Chisel."
+  },
+  {
+   "k": "tb",
+   "name": "Testbench only (not synthesized)",
+   "desc": "#delay, initial stimulus, and system tasks such as $display, $finish, and assertions describe simulation time or checking behavior and have no intended hardware implementation here. They support verification and must not leak into synthesizable design RTL."
+  },
+  {
+   "k": "tool",
+   "name": "Synthesis accepts only hardware intent",
+   "desc": "RTL passes through synthesis to become a gate-level netlist. The boundary is physical: constructs on the design side implement circuitry; testbench constructs can execute in simulation but cannot become production silicon."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "comb",
+    "seq"
+   ],
+   "cap": "① Establish the two basic forms: always_comb with blocking = for combinational logic, and always_ff @(posedge clk) with nonblocking <= for sequential state. Fix width and reset conventions here."
+  },
+  {
+   "keys": [
+    "gen",
+    "param"
+   ],
+   "cap": "② Parameterize the PE template with parameter and generate. The regular 256 × 256 TPU array can be elaborated without hand-writing 65,536 instances."
+  },
+  {
+   "keys": [
+    "fsm"
+   ],
+   "cap": "③ Express the control path as an explicit FSM (case plus explicit reset), translating the host's compact CISC command set into cycle-level control of the array and Unified Buffer."
+  },
+  {
+   "keys": [
+    "delay",
+    "init",
+    "disp"
+   ],
+   "cap": "④ Keep #delay, initial, $display, and assertions in the testbench. They are verification constructs, not implementation RTL."
+  },
+  {
+   "keys": [
+    "synth",
+    "tool"
+   ],
+   "cap": "⑤ Enforce the boundary: only the synthesizable subset can become a gate-level netlist. Mixing in testbench constructs may simulate but cannot produce valid silicon."
+  }
+ ],
+ "before": [
+  "<b>Select the language</b>: Verilog and SystemVerilog are mainstream choices. For a highly regular, parameterized array, SystemVerilog generate or Chisel (Scala that emits Verilog) can reduce repetitive work. The choice is an engineering convention, but the entire team must use one controlled flow.",
+  "<b>Freeze coding conventions</b>: decide reset style (synchronous/asynchronous and active-high/low), combinational versus sequential assignment rules (= versus <=), naming, and explicit width types such as logic [N-1:0] before implementation begins.",
+  "<b>Define the synthesizable subset</b>: state which constructs are allowed in design RTL and which are testbench-only. Encode these rules in lint so accidental #delay or $display usage is blocked automatically.",
+  "<b>Align with the upstream design</b>: obtain the structures from microarchitecture—a PE with an 8-bit multiply and 32-bit accumulation, a 256 × 256 array, a 24 MiB software-managed Unified Buffer, 4 MiB of accumulators, and a host-controlled compact CISC command set. These facts drive module boundaries and parameters."
+ ],
+ "during": [
+  "<b>Rule 1: only synthesizable constructs enter design RTL</b>. Code must infer gates, flops, and interconnect. #delay, initial, $display, $finish, and force-style simulation behavior stay in the testbench because they do not represent the intended hardware.",
+  "<b>Rule 2: use = for combinational logic and <= for sequential state</b>. Blocking assignments inside always_comb describe multiplication and selection; nonblocking assignments inside always_ff @(posedge clk) update registers—for example, always_ff @(posedge clk) acc <= acc + a*b; (illustrative, not proprietary TPU code).",
+  "<b>Use generate for regular structures</b>. Define one PE and elaborate ROWS × COLS instances with genvar i,j and generate-for loops. Changing N from 16 to 256 should require a parameter change, not copied source.",
+  "<b>Declare widths explicitly</b>. Specify the PE inputs as 8-bit and the accumulator as 32-bit ([7:0] and [31:0]) so synthesis creates the intended arithmetic and lint can catch truncation or sign-extension errors.",
+  "<b>Make control an explicit FSM</b>. Represent instruction decode, array fill/drain, and Unified Buffer read/write sequencing with named states, explicit transitions, and a known reset state.",
+  "<b>State the evidence boundary</b>: language choice, reset style, and synthesizable-subset rules are standard RTL practice. TPU v1 source RTL is not public; this example uses its disclosed architecture without inventing proprietary implementation details."
+ ],
+ "result": [
+  {
+   "label": "Design language",
+   "value": "SystemVerilog (or Chisel-generated Verilog)"
+  },
+  {
+   "label": "Combinational form (example)",
+   "value": "always_comb prod = a * b;"
+  },
+  {
+   "label": "Sequential form (example)",
+   "value": "always_ff @(posedge clk) acc <= acc + prod;"
+  },
+  {
+   "label": "Array elaboration (example)",
+   "value": "generate for(i;j) pe u(...); → 256 × 256"
+  },
+  {
+   "label": "Widths",
+   "value": "Multiply inputs [7:0]; accumulator [31:0]"
+  },
+  {
+   "label": "Testbench-only constructs",
+   "value": "#delay / initial / $display / assert"
+  }
+ ],
+ "after": [
+  "<b>Run lint</b>: apply synthesizability rules and confirm that design RTL contains no #delay or $display, no unintended latches, and no width mismatches.",
+  "<b>Simulate the RTL</b>: use a testbench—where initial, $display, and assertions are appropriate—to validate the PE, generated array hierarchy, and control FSM.",
+  "<b>Run trial synthesis</b>: confirm clean mapping to a gate-level netlist, no unsupported constructs, and an initial path toward the 700 MHz target. Revise coding or pipeline boundaries if needed.",
+  "<b>Check multiple clock domains</b>: run CDC analysis on signals between the host/PCIe domain and the array core, confirming that synchronizers or handshakes are present.",
+  "<b>Hand off to verification</b>: provide the module list, parameters, synthesizable-subset rules, and known boundary conditions as inputs to the verification environment."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (RTL coding and synthesizable-subset guidance reflects standard industry practice)"
+}

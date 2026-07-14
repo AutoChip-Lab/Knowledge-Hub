@@ -1,0 +1,115 @@
+{
+ "secNum": "3.12",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Scan Through the Array, MBIST Around UB, and Performance Counters for Test and Debug",
+ "oneLine": "A 65,536-MAC systolic array plus 28 MiB of on-chip SRAM must reveal manufacturing defects after tapeout and expose performance behavior in operation. Scan chains shift array state for production test, MBIST exercises Unified Buffer and accumulator memories, and performance counters report utilization and stalls—DFT and debug hooks that must be designed into the microarchitecture.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 410\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"30\" y=\"26\">Microarchitecture DFT/debug hooks for large arrays and SRAM (common practice)</text><g class=\"cs-part\" data-k=\"mbist\" data-g=\"mbist\"><rect class=\"cs-box\" x=\"30\" y=\"44\" width=\"200\" height=\"150\" rx=\"8\" fill=\"#fff7ed\" stroke=\"#fdba74\"/><text class=\"cs-t\" x=\"130\" y=\"64\">MBIST controller</text><text class=\"cs-sub\" x=\"130\" y=\"80\">Automatic write/readback · detect SRAM faults</text><g class=\"cs-part\" data-k=\"ub\" data-g=\"ub\"><rect class=\"cs-cell\" x=\"50\" y=\"96\" width=\"160\" height=\"36\" rx=\"4\"/><text class=\"cs-cellt\" x=\"130\" y=\"118\">Unified Buffer 24 MiB</text></g><g class=\"cs-part\" data-k=\"acc\" data-g=\"acc\"><rect class=\"cs-cell\" x=\"50\" y=\"142\" width=\"160\" height=\"36\" rx=\"4\"/><text class=\"cs-cellt\" x=\"130\" y=\"164\">4 MiB accumulator</text></g></g><g class=\"cs-part\" data-k=\"mxu\" data-g=\"mxu\"><rect class=\"cs-box\" x=\"300\" y=\"44\" width=\"190\" height=\"190\" rx=\"8\"/><text class=\"cs-t\" x=\"395\" y=\"64\">256×256 MXU array</text><rect class=\"cs-cell\" x=\"320\" y=\"80\" width=\"34\" height=\"30\" rx=\"3\"/><rect class=\"cs-cell\" x=\"360\" y=\"80\" width=\"34\" height=\"30\" rx=\"3\"/><rect class=\"cs-cell\" x=\"400\" y=\"80\" width=\"34\" height=\"30\" rx=\"3\"/><rect class=\"cs-cell\" x=\"440\" y=\"80\" width=\"34\" height=\"30\" rx=\"3\"/><rect class=\"cs-cell\" x=\"320\" y=\"116\" width=\"34\" height=\"30\" rx=\"3\"/><rect class=\"cs-cell\" x=\"360\" y=\"116\" width=\"34\" height=\"30\" rx=\"3\"/><rect class=\"cs-cell\" x=\"400\" y=\"116\" width=\"34\" height=\"30\" rx=\"3\"/><rect class=\"cs-cell\" x=\"440\" y=\"116\" width=\"34\" height=\"30\" rx=\"3\"/><rect class=\"cs-cell\" x=\"320\" y=\"152\" width=\"34\" height=\"30\" rx=\"3\"/><rect class=\"cs-cell\" x=\"360\" y=\"152\" width=\"34\" height=\"30\" rx=\"3\"/><rect class=\"cs-cell\" x=\"400\" y=\"152\" width=\"34\" height=\"30\" rx=\"3\"/><rect class=\"cs-cell\" x=\"440\" y=\"152\" width=\"34\" height=\"30\" rx=\"3\"/><text class=\"cs-sub\" x=\"395\" y=\"206\">PE flops connected into scan chains</text><text class=\"cs-sub\" x=\"395\" y=\"222\">↘ Shift full-array state in and out</text></g><g class=\"cs-part\" data-k=\"scan\" data-g=\"scan\"><polyline class=\"cs-arr\" points=\"306,95 337,95 337,131 377,131 377,95 417,95 417,131 457,131 457,167 337,167 337,167\" fill=\"none\" stroke=\"#c026d3\" stroke-dasharray=\"5 4\"/><text class=\"cs-note\" x=\"300\" y=\"252\" fill=\"#a21caf\">scan-in →</text><text class=\"cs-note\" x=\"430\" y=\"252\" fill=\"#a21caf\">→ scan-out</text></g><g class=\"cs-part\" data-k=\"perf\" data-g=\"perf\"><rect class=\"cs-box\" x=\"560\" y=\"44\" width=\"140\" height=\"190\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#c7d2fe\"/><text class=\"cs-t\" x=\"630\" y=\"64\">Performance counters</text><rect class=\"cs-cell\" x=\"574\" y=\"80\" width=\"112\" height=\"26\" rx=\"4\"/><text class=\"cs-cellt\" x=\"630\" y=\"98\">Array utilization</text><rect class=\"cs-cell\" x=\"574\" y=\"112\" width=\"112\" height=\"26\" rx=\"4\"/><text class=\"cs-cellt\" x=\"630\" y=\"130\">stall / idle cycles</text><rect class=\"cs-cell\" x=\"574\" y=\"144\" width=\"112\" height=\"26\" rx=\"4\"/><text class=\"cs-cellt\" x=\"630\" y=\"162\">UB reads/writes</text><rect class=\"cs-cell\" x=\"574\" y=\"176\" width=\"112\" height=\"26\" rx=\"4\"/><text class=\"cs-cellt\" x=\"630\" y=\"194\">Command/DMA count</text></g><line class=\"cs-arr\" x1=\"490\" y1=\"120\" x2=\"558\" y2=\"120\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"496\" y=\"112\">Event sampling →</text><g class=\"cs-part\" data-k=\"host\" data-g=\"host\"><rect class=\"cs-box\" x=\"240\" y=\"300\" width=\"240\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"326\">Host / debug port</text><text class=\"cs-sub\" x=\"360\" y=\"344\">JTAG · PCIe readout → bring-up / tuning</text></g><line class=\"cs-arr\" x1=\"130\" y1=\"194\" x2=\"280\" y2=\"305\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><line class=\"cs-arr\" x1=\"395\" y1=\"234\" x2=\"380\" y2=\"298\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><line class=\"cs-arr\" x1=\"630\" y1=\"234\" x2=\"450\" y2=\"305\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><text class=\"cs-note\" x=\"30\" y=\"392\">Note: scan, MBIST, and counters are standard practice; v1 chain topology and counter list are not public.</text></svg>",
+ "legend": [
+  {
+   "k": "scan",
+   "name": "Scan chains through the PE array",
+   "desc": "In test mode, thousands of PE flops are connected into one or more shift chains. A known pattern enters at scan-in, the circuit captures for one cycle, and the result exits at scan-out to localize a defective MAC or flop. This is a standard ATPG hook; v1 chain count and stitching order are not public."
+  },
+  {
+   "k": "mbist",
+   "name": "MBIST around large SRAMs",
+   "desc": "An on-chip built-in self-test controller runs March-style patterns—all-0, all-1, checkerboards, and readback—over the 24 MiB Unified Buffer and 4 MiB accumulator. Large SRAMs rely on MBIST to detect stuck-at and coupling faults without externally loading every byte."
+  },
+  {
+   "k": "perf",
+   "name": "Performance counters",
+   "desc": "Hardware counters accumulate observable events such as MAC-array utilization, stall/idle cycles, UB accesses, and command or DMA counts. They are for tuning rather than manufacturing test: during bring-up they expose the active bottleneck and distance from peak compute."
+  },
+  {
+   "k": "host",
+   "name": "Host / debug readout",
+   "desc": "JTAG/TAP controls scan and MBIST and reads manufacturing-test outcomes. Performance counters are exposed through PCIe or mapped registers so host software, XLA, and performance engineers can analyze and iterate."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "scan",
+    "mxu"
+   ],
+   "cap": "① Manufacturing test—array: connect PE flops into scan chains, shift a pattern through scan-in, capture for one cycle, then compare scan-out. This enables ATPG coverage and localization of a faulty MAC."
+  },
+  {
+   "keys": [
+    "mbist",
+    "ub",
+    "acc"
+   ],
+   "cap": "② Manufacturing test—SRAM: MBIST automatically runs March read/write patterns over the 24 MiB Unified Buffer and 4 MiB accumulator to find stuck-at and coupling faults without external byte-by-byte vectors."
+  },
+  {
+   "keys": [
+    "perf"
+   ],
+   "cap": "③ Power-on debug—observe behavior: performance counters accumulate utilization, stall/idle cycles, UB accesses, and command counts. During bring-up they show whether the chip is alive and where it is blocked."
+  },
+  {
+   "keys": [
+    "perf",
+    "host"
+   ],
+   "cap": "④ Read and tune: the host reads counters over PCIe, measures the gap to ~92 TOPS, distinguishes data-supply from command bottlenecks, and feeds results to XLA and performance engineering."
+  },
+  {
+   "keys": [
+    "scan",
+    "mbist",
+    "host"
+   ],
+   "cap": "⑤ Close the readout path: JTAG/TAP reports scan and MBIST outcomes for yield and binning, while PCIe reports performance for tuning. Manufacturing test and optimization converge at the host side."
+  }
+ ],
+ "before": [
+  "<b>Separate two hook classes with different goals</b>: DFT hooks such as scan and MBIST answer whether post-silicon manufacturing defects can be detected and localized; observability hooks such as performance counters answer whether bring-up and tuning can see utilization and stalls. Both must be reserved during microarchitecture design.",
+  "<b>Decisions to make</b>: Number and stitching of scan chains, which affect test time and routing; SRAMs covered by MBIST and their March algorithms; performance-counter events and widths; sampling strategy; and JTAG versus PCIe/register readout.",
+  "<b>Required inputs</b>: Array size (256×256 = 65,536 PEs), on-chip SRAM list and capacities (24 MiB UB + 4 MiB accumulator), 700 MHz target, area/power budget (28 nm, die ≤331 mm², 28–40 W), and existing PCIe/JTAG paths.",
+  "<b>Balance the trade-off</b>: DFT and debug add area, timing, and power overhead but improve test coverage and silicon visibility. Without them, bad dies escape and performance problems become blind debugging. Set mandatory yield and bring-up coverage first, then fit the hooks into the area budget."
+ ],
+ "during": [
+  "<b>Use the array’s regularity for scan</b>: Identical, regularly placed PEs are well suited to uniform scan stitching and ATPG. Multiple chains shorten test shift time but add routing, and scan enable must coordinate with clock gating so shifting neither computes accidentally nor breaks a chain.",
+  "<b>Use MBIST rather than external vectors for large SRAM</b>: Testing 24 MiB + 4 MiB byte by byte from outside is slow and incomplete. An on-chip controller running March patterns with write-0, write-1, checkerboard, and readback phases trades small controller area for high coverage of stuck-at, decoder, and neighboring-bit coupling faults.",
+  "<b>Count the events that answer real performance questions</b>: For a weight-stationary array, the primary question is whether data supply keeps MACs busy. Utilization and stall/idle cycles come first; UB accesses and command/DMA counts then separate memory-supply, host-command, and array bottlenecks.",
+  "<b>Keep counters light enough to remain enabled</b>: Excessively wide counters or intrusive readout are disabled in real workloads. Use compact counters with periodic snapshotting, and read through sideband registers without interrupting the datapath, enabling continuous observation.",
+  "<b>Reuse existing readout paths</b>: Standard JTAG/TAP controls scan and MBIST. Map performance counters to registers read through host PCIe 3.0. Because TPU v1 is host-driven and already exposes PCIe command paths, reuse avoids a dedicated high-speed debug bus.",
+  "<b>Evidence boundary: use mechanisms, not invented numbers</b>: Public v1 material does not enumerate scan chains, MBIST algorithm selection, or counter widths and lists. These are standard DFT/debug techniques for large-array, large-SRAM inference ASICs; disclosed array size, SRAM capacity, frequency, PCIe, and host-driven operation provide the factual background."
+ ],
+ "result": [
+  {
+   "label": "Array test hook",
+   "value": "Scan through all 65,536 PEs; ATPG localizes bad MACs (common practice)"
+  },
+  {
+   "label": "SRAM test hook",
+   "value": "MBIST for 24 MiB UB + 4 MiB accumulator using March algorithms"
+  },
+  {
+   "label": "Observability hook",
+   "value": "Counters: utilization / stall / UB access / command count"
+  },
+  {
+   "label": "Tuning objective",
+   "value": "Measure gap to ~92 TOPS and separate data-supply vs. command bottlenecks"
+  },
+  {
+   "label": "Readout",
+   "value": "JTAG/TAP for test + PCIe registers for performance, reusing host paths"
+  },
+  {
+   "label": "Evidence note",
+   "value": "Chain count, algorithm, and counter list are not itemized for v1; mechanisms are standard practice"
+  }
+ ],
+ "after": [
+  "<b>Validate DFT coverage</b>: Measure scan + ATPG coverage of stuck-at and transition faults in logic. Confirm MBIST March patterns cover target SRAM fault models, and reserve a decision path for repair with redundant rows or columns.",
+  "<b>Use counters to establish first-silicon life</b>: During initial power-on, confirm clocks, commands, DMA, and array-utilization counters advance, then use the first stalled counter to localize the bring-up bottleneck.",
+  "<b>Close the measurement-to-tuning loop</b>: Read utilization and stalls under steady workloads and feed them to XLA and performance engineers to refine tiling, scheduling, and data supply until delivered performance approaches peak.",
+  "<b>Deliver test and debug documentation</b>: Hand scan stitching, MBIST invocation, and counter address maps and meanings to ATE, bring-up, and software teams. A hook without a usable interface contract provides little value.",
+  "<b>Preserve the evidence boundary</b>: Label undisclosed chain lengths, algorithms, and counter identifiers as common practice or conceptual examples. Cite only published array size, SRAM capacity, frequency, PCIe, and host-driven facts as TPU v1 specifics."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (array size, UB/accumulator capacity, frequency, and host-driven PCIe operation are disclosed; scan topology, MBIST algorithms, and the specific performance-counter list are not itemized and follow common large-array, large-SRAM datacenter-inference ASIC practice)"
+}

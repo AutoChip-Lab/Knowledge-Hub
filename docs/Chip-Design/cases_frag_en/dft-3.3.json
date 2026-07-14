@@ -1,0 +1,121 @@
+{
+ "secNum": "3.3",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 Public-Structure Example · Scan, Compression, and MBIST: Making the Large Array and On-Chip Memories Production-Testable",
+ "oneLine": "This case supports the “scan, test compression, and test-structure insertion” section. Using TPU v1's public 256×256 array and large on-chip memories as test targets, it explains the standard DFT flow: map ordinary flip-flops in the synthesized netlist to scan FFs, stitch them into scan chains, insert test compression, and place SRAMs under MBIST. The flow then uses automatic test pattern generation (ATPG) to create patterns and close fault coverage. TPU v1's actual chain count, compression architecture, MBIST implementation, and fault-coverage results are not public; the diagram and quantities are methodological examples only.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"26\">DFT insertion: replace ordinary FFs in the synthesized netlist with scan FFs, stitch scan chains, and insert test compression so thousands of MAC registers are production-testable.</text><g class=\"cs-part\" data-k=\"ff\" data-g=\"ff\"><rect class=\"cs-box\" x=\"24\" y=\"56\" width=\"150\" height=\"86\" rx=\"8\"/><text class=\"cs-t\" x=\"99\" y=\"84\">Ordinary D flip-flop</text><text class=\"cs-sub\" x=\"99\" y=\"104\">Thousands across the array</text><text class=\"cs-sub\" x=\"99\" y=\"122\">D→Q; neither controllable nor observable</text></g><line class=\"cs-arr\" x1=\"174\" y1=\"99\" x2=\"232\" y2=\"99\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"182\" y=\"92\">Scan replacement</text><g class=\"cs-part\" data-k=\"sff\" data-g=\"sff\"><rect class=\"cs-box\" x=\"236\" y=\"48\" width=\"170\" height=\"102\" rx=\"8\"/><text class=\"cs-t\" x=\"321\" y=\"74\">Scan FF (with MUX)</text><g class=\"cs-part\" data-k=\"mux\" data-g=\"mux\"><rect class=\"cs-cell\" x=\"252\" y=\"86\" width=\"138\" height=\"26\"/><text class=\"cs-cellt\" x=\"321\" y=\"104\">Select D or SI ← SE</text></g><text class=\"cs-sub\" x=\"321\" y=\"132\">SE=0: functional; SE=1: shift</text></g><line class=\"cs-arr\" x1=\"406\" y1=\"99\" x2=\"464\" y2=\"99\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"chain\" data-g=\"chain\"><rect class=\"cs-box\" x=\"468\" y=\"48\" width=\"228\" height=\"102\" rx=\"8\"/><text class=\"cs-t\" x=\"582\" y=\"72\">Stitch a scan chain</text><g class=\"cs-part\" data-k=\"link\" data-g=\"link\"><rect class=\"cs-cell\" x=\"486\" y=\"86\" width=\"40\" height=\"26\"/><text class=\"cs-cellt\" x=\"506\" y=\"104\">SFF</text><line class=\"cs-arr\" x1=\"526\" y1=\"99\" x2=\"540\" y2=\"99\" marker-end=\"url(#csar)\"/><rect class=\"cs-cell\" x=\"542\" y=\"86\" width=\"40\" height=\"26\"/><text class=\"cs-cellt\" x=\"562\" y=\"104\">SFF</text><line class=\"cs-arr\" x1=\"582\" y1=\"99\" x2=\"596\" y2=\"99\" marker-end=\"url(#csar)\"/><rect class=\"cs-cell\" x=\"598\" y=\"86\" width=\"40\" height=\"26\"/><text class=\"cs-cellt\" x=\"618\" y=\"104\">SFF</text><line class=\"cs-arr\" x1=\"638\" y1=\"99\" x2=\"652\" y2=\"99\" marker-end=\"url(#csar)\"/><rect class=\"cs-cell\" x=\"654\" y=\"86\" width=\"34\" height=\"26\"/><text class=\"cs-cellt\" x=\"671\" y=\"104\">SO</text></g><text class=\"cs-sub\" x=\"582\" y=\"134\">SI→SFF→SFF→…→SO shift chain</text></g><g class=\"cs-part\" data-k=\"comp\" data-g=\"comp\"><rect class=\"cs-box\" x=\"200\" y=\"186\" width=\"320\" height=\"76\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"212\">Test Compression (decompress/compact)</text><text class=\"cs-sub\" x=\"360\" y=\"234\">Decompressor drives short chains; compactor collects</text><text class=\"cs-sub\" x=\"360\" y=\"252\">Few scan pins drive hundreds of internal chains, reducing test time/pins</text></g><line class=\"cs-arr\" x1=\"582\" y1=\"150\" x2=\"450\" y2=\"184\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><g class=\"cs-part\" data-k=\"mbist\" data-g=\"mbist\"><rect class=\"cs-box\" x=\"24\" y=\"186\" width=\"150\" height=\"76\" rx=\"8\"/><text class=\"cs-t\" x=\"99\" y=\"212\">SRAM → MBIST</text><text class=\"cs-sub\" x=\"99\" y=\"234\">24 MiB UB / 4 MiB</text><text class=\"cs-sub\" x=\"99\" y=\"252\">Accumulator self-test engine</text></g><g class=\"cs-part\" data-k=\"atpg\" data-g=\"atpg\"><rect class=\"cs-box\" x=\"540\" y=\"186\" width=\"156\" height=\"76\" rx=\"8\"/><text class=\"cs-t\" x=\"618\" y=\"212\">ATPG</text><text class=\"cs-sub\" x=\"618\" y=\"234\">stuck-at / transition</text><text class=\"cs-sub\" x=\"618\" y=\"252\">Fault coverage closed</text></g><line class=\"cs-arr\" x1=\"520\" y1=\"224\" x2=\"538\" y2=\"224\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"net\" data-g=\"net\"><rect class=\"cs-box\" x=\"160\" y=\"300\" width=\"400\" height=\"74\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"328\">Post-DFT gate-level netlist</text><text class=\"cs-sub\" x=\"360\" y=\"350\">scan FFs replaced + chains stitched + compression/MBIST inserted</text><text class=\"cs-sub\" x=\"360\" y=\"368\">Production-testable with measurable yield</text></g><line class=\"cs-arr\" x1=\"360\" y1=\"262\" x2=\"360\" y2=\"298\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"24\" y=\"396\">Note: scan replacement/stitching, compression, MBIST, and ATPG are standard EDA/DFT practices. TPU v1's DFT scripts and coverage are not public; the known structure is used only as a test target.</text></svg>",
+ "legend": [
+  {
+   "k": "ff",
+   "name": "Ordinary D flip-flop (the untestable starting point)",
+   "desc": "Registers in synthesized RTL initially map to ordinary D flip-flops with only a functional D→Q path. The TPU's 256×256 = 65,536 MACs and pipeline-control logic contain thousands of such state elements. Buried inside the die, they cannot be directly forced to known values or observed at external pins. Without additional structure, manufacturing defects in that internal logic cannot be screened effectively."
+  },
+  {
+   "k": "sff",
+   "name": "Scan FF (the replacement scan flip-flop)",
+   "desc": "The first structural insertion step replaces each ordinary FF one-for-one with a scan FF. A 2:1 MUX at the D input adds scan input SI and scan enable SE. With SE=0, the functional D path operates normally; with SE=1, SI is selected and the FF becomes part of a shift register. The small MUX makes each state element controllable and observable, providing the physical basis of scan test."
+  },
+  {
+   "k": "chain",
+   "name": "Scan chain (stitching scan FFs into a shift path)",
+   "desc": "The tool connects the SI/SO ports of replacement scan FFs into one or more chains: SI→SFF→SFF→…→SO. During test, SE=1 shifts a known pattern into all FFs, one functional clock pulse captures the combinational response, and SE=1 shifts the result out for comparison. Thousands of array registers thereby become individually accessible through serial test paths."
+  },
+  {
+   "k": "comp",
+   "name": "Test Compression (decompression and compaction)",
+   "desc": "A few long chains across thousands of FFs would require excessive shift cycles and costly ATE time. On-chip compression inserts a decompressor and compactor: a small number of scan input pins fan out through the decompressor to hundreds of short internal chains, while the compactor reduces their responses to a few outputs. Shorter chains reduce shift cycles and external pin demand, which is essential for economical production test of a large array."
+  },
+  {
+   "k": "mbist",
+   "name": "SRAM → MBIST (memory self-test)",
+   "desc": "Scan chains are effective for logic, but large SRAMs such as the 24 MiB Unified Buffer and 4 MiB accumulator are not tested by shifting every memory bit through scan. MBIST adds an on-chip controller that executes March-class algorithms, writes and reads the arrays, and evaluates results locally. Logic scan plus ATPG and memory MBIST are parallel DFT paths needed for comprehensive manufacturing test."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "ff",
+    "sff"
+   ],
+   "cap": "① Scan replacement: synthesis/DFT tools replace every ordinary D flip-flop one-for-one with a MUX-based scan FF that adds SI and SE. SE=0 preserves functional operation; SE=1 enables shifting, making each array register controllable and observable."
+  },
+  {
+   "keys": [
+    "sff",
+    "chain",
+    "link"
+   ],
+   "cap": "② Chain stitching: connect each scan FF's SO to the next FF's SI to create scan chains (SI→SFF→…→SO). Thousands of TPU array FFs become accessible as test patterns shift in and captured responses shift out."
+  },
+  {
+   "keys": [
+    "chain",
+    "comp"
+   ],
+   "cap": "③ Insert compression: long chains shift too slowly, so test compression uses a decompressor to drive hundreds of short internal chains from a few pins and a compactor to collect their responses, sharply reducing shift cycles and scan-pin demand."
+  },
+  {
+   "keys": [
+    "mbist"
+   ],
+   "cap": "④ Use MBIST for memories: the 24 MiB UB, 4 MiB accumulator, and other SRAMs do not join logic scan. MBIST engines execute March algorithms to write, read, and judge memories locally while logic scan proceeds in parallel."
+  },
+  {
+   "keys": [
+    "comp",
+    "atpg",
+    "net"
+   ],
+   "cap": "⑤ ATPG and netlist release: generate stuck-at and transition patterns for the scan-inserted netlist, iterate until ATPG fault coverage meets the approved target, and release a post-DFT gate-level netlist with scan, compression, and MBIST in place for production test and yield measurement."
+  }
+ ],
+ "before": [
+  "<b>Approve the testability targets in the DFT specification</b>: define the stuck-at and transition-delay fault-coverage targets, scan-chain count and maximum chain length, compression ratio, and which SRAMs use MBIST. These targets govern closure and must not be invented after insertion.",
+  "<b>Provide process libraries and scan cells to the DFT tools</b>: structural insertion needs the scan-flop variants and timing/area models in the 28 nm Liberty (.lib) standard-cell library so the tools can map scan and quantify its timing and area cost. This is standard EDA/DFT practice; TPU v1's actual library is not public.",
+  "<b>Encode DFT constraints in SDC and the test protocol</b>: declare scan clocks, SE/SI/SO test ports, scan-shift frequency (normally far below the 700 MHz functional frequency), and clock-gating bypasses in test mode. Shift and capture are different operating modes and require distinct constraints.",
+  "<b>Require testable RTL</b>: robust scan insertion depends on disciplined RTL—controlled clocks, supported reset structures, no uncontrolled gated-clock constructs or combinational loops, and no inaccessible islands in uncontrollable clock domains. Poor testability in RTL blocks insertion or depresses ATPG fault coverage.",
+  "<b>State the evidence boundary</b>: scan insertion, test compression, MBIST, ATPG, and ATPG fault-coverage closure are standard EDA/DFT methods. TPU v1's scripts, libraries, and coverage numbers are not public. This case uses only the known 256×256 systolic array, 24 MiB UB, 4 MiB accumulator, 700 MHz clock, and 28 nm process as test targets; chain counts, compression, SDC, and patterns are illustrative."
+ ],
+ "during": [
+  "<b>Keep scan mapping aligned with the synthesis baseline</b>: the DFT tool maps ordinary FFs to scan FFs from the same 28 nm library used by synthesis, and the implementation flow must account for the functional timing and area cost. Organizations may use scan-ready synthesis or post-synthesis insertion, but libraries, netlists, constraints, and the LEC baseline must remain version-consistent.",
+  "<b>Balance chains while respecting timing</b> (illustrative standard practice): chain stitching should balance lengths because the longest chain determines shift cycles, while avoiding scan connectivity that harms functional timing. A regular, FF-dense array is well suited to multiple roughly equal chains operating in parallel.",
+  "<b>Shift slowly; capture at functional speed—constrain the modes separately</b> (illustrative):<br><code>create_clock -name clk -period 1.43 [get_ports clk]   # functional ~700 MHz, illustrative<br>create_clock -name sclk -period 20.0 [get_ports sclk] # slow scan shift, illustrative<br>set_dft_signal -view spec -type ScanEnable -port se</code><br>Slow sclk shifting limits power and IR drop; the capture pulse uses clk to exercise at-speed paths.",
+  "<b>Compression trades test time against implementation and diagnosis</b>: more compression can reduce scan pins and shifting time, but decompression/compaction logic consumes area and may reduce diagnostic resolution. Large TPU-class arrays often warrant substantial compression, with the ratio set by the DFT specification and ATE capabilities.",
+  "<b>Use MBIST for large SRAMs instead of forcing them into scan</b>: shifting every bit of the 24 MiB UB and 4 MiB accumulator would be impractical and would poorly model memory-specific defects. Integrate suitable MBIST controllers and algorithms, close logic scan and memory DFT in parallel, and combine them in the same release netlist.",
+  "<b>Evidence boundary</b>: the SDC fragment—including create_clock at 1.43 ns and set_dft_signal—and the chain/compression choices are standard industrial examples. The values only illustrate that 700 MHz ≈ 1.43 ns. TPU v1's actual constraints, chain structure, and ATPG fault coverage are not public; no private figures are inferred."
+ ],
+ "result": [
+  {
+   "label": "DFT insertion deliverable",
+   "value": "Post-DFT gate-level netlist: ordinary FFs replaced by scan FFs, scan chains stitched, test compression inserted, and SRAMs connected to MBIST."
+  },
+  {
+   "label": "Scan cell (library)",
+   "value": "Map to 28 nm-library scan FFs whose MUX selects D or SI under SE. Exact insertion ordering is tool-flow dependent, but the result must remain aligned with the synthesis and LEC baseline."
+  },
+  {
+   "label": "Scan constraints (illustrative SDC)",
+   "value": "create_clock -period 1.43 [get_ports clk] (functional, illustrative) / set_dft_signal ScanEnable/ScanIn/ScanOut (illustrative)."
+  },
+  {
+   "label": "Compression / chains (illustrative)",
+   "value": "A few scan pins → decompressor → hundreds of short internal chains → compactor; shift with slow sclk and capture at functional frequency."
+  },
+  {
+   "label": "Memory test",
+   "value": "The 24 MiB UB, 4 MiB accumulator, and other SRAMs use MBIST engines with March algorithms in parallel with logic scan."
+  },
+  {
+   "label": "Test patterns / ATPG fault coverage",
+   "value": "Run ATPG on the scan-inserted netlist to generate stuck-at and transition patterns and iterate until fault coverage meets the target; values are standard targets, not published TPU data."
+  }
+ ],
+ "after": [
+  "<b>Review DFT reports for coverage and chain integrity</b>: verify stuck-at and transition ATPG fault coverage against the DFT specification, confirm balanced chain counts and lengths, and identify unstitched FFs or broken-chain locations. Repair testability issues and regenerate and revalidate patterns until all release criteria pass.",
+  "<b>Run functional-mode equivalence checking</b>: use LEC to prove that the scan-inserted netlist remains logically equivalent to the RTL or pre-DFT netlist when SE=0. Scan is a test structure and must never alter functional behavior.",
+  "<b>Check DFT timing and area cost</b>: scan FFs are larger than ordinary FFs, compression consumes area, and the chip-wide SE network has high fanout. Verify that these changes do not consume unacceptable timing margin or area; shift paths must close at sclk and capture paths at functional frequency.",
+  "<b>Iterate to DFT closure</b>: if ATPG fault coverage, chain balance, timing, or area fails, adjust chain lengths, compression, constraints, or RTL testability, then rerun insertion, ATPG, and verification. DFT closes only when coverage meets target, LEC passes, and timing and area are acceptable.",
+  "<b>Hand scan structures to physical implementation</b>: deliver the post-DFT netlist, chain definitions, and STIL/SDC test protocol. Physical design performs scan-chain reordering based on placement to shorten wiring and improve shift timing, then carries the validated test structures into GDSII so ATE can test production silicon."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the 256×256 systolic array, 24 MiB Unified Buffer, 4 MiB accumulator, 700 MHz clock, and 28 nm process are disclosed structures. Scan, test compression, MBIST, ATPG, ATPG fault-coverage closure, and LEC are standard DFT practices. The diagram, chain relationships, and SDC fragment are illustrative and are not published TPU v1 DFT scripts, libraries, or coverage data.)"
+}

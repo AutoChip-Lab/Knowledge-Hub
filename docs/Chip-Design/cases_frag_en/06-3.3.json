@@ -1,0 +1,113 @@
+{
+ "secNum": "3.3",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Generating stimulus: directed zero/overflow/saturation attacks plus constrained-random legal matrix streams",
+ "oneLine": "This case contrasts directed and constrained-random stimulus. Directed tests manually target known TPU hazards—zero matrices, full ±127 arrays, 32-bit accumulator saturation, and array fill/drain corners. Constrained-random generation produces large numbers of matrices with varied dimensions, values, and layouts inside legal constraints, exposing combinations engineers did not anticipate. Both streams drive the same DUT, and an independent model checks every result.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 380\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"32\">Two stimulus sources, one DUT: targeted hazards + high-volume constrained random</text><rect x=\"24\" y=\"50\" width=\"316\" height=\"150\" rx=\"10\" fill=\"#eff6ff\" stroke=\"#93c5fd\" stroke-dasharray=\"6 4\"/><text class=\"cs-t\" x=\"182\" y=\"44\">Directed (hand-written critical tests)</text><rect x=\"24\" y=\"214\" width=\"316\" height=\"150\" rx=\"10\" fill=\"#f0fdf4\" stroke=\"#86efac\" stroke-dasharray=\"6 4\"/><text class=\"cs-t\" x=\"182\" y=\"208\">Constrained random (high volume)</text><g class=\"cs-part\" data-k=\"dzero\" data-g=\"dir\"><rect class=\"cs-box\" x=\"44\" y=\"68\" width=\"132\" height=\"50\" rx=\"8\"/><text class=\"cs-t\" x=\"110\" y=\"89\">All-zero matrix</text><text class=\"cs-sub\" x=\"110\" y=\"106\">a=0 / w=0 → acc must =0</text></g><g class=\"cs-part\" data-k=\"dmax\" data-g=\"dir\"><rect class=\"cs-box\" x=\"188\" y=\"68\" width=\"132\" height=\"50\" rx=\"8\"/><text class=\"cs-t\" x=\"254\" y=\"89\">All maximum values</text><text class=\"cs-sub\" x=\"254\" y=\"106\">Full ±127 array → test overflow</text></g><g class=\"cs-part\" data-k=\"dsat\" data-g=\"dir\"><rect class=\"cs-box\" x=\"44\" y=\"130\" width=\"132\" height=\"50\" rx=\"8\"/><text class=\"cs-t\" x=\"110\" y=\"151\">Accumulation saturation/carry</text><text class=\"cs-sub\" x=\"110\" y=\"168\">Approach 32-bit acc boundary</text></g><g class=\"cs-part\" data-k=\"dctrl\" data-g=\"dir\"><rect class=\"cs-box\" x=\"188\" y=\"130\" width=\"132\" height=\"50\" rx=\"8\"/><text class=\"cs-t\" x=\"254\" y=\"151\">Fill/drain corners</text><text class=\"cs-sub\" x=\"254\" y=\"168\">Full 256-stage pipeline + reset</text></g><g class=\"cs-part\" data-k=\"crgen\" data-g=\"cr\"><rect class=\"cs-box\" x=\"44\" y=\"232\" width=\"160\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"124\" y=\"255\">Constrained-random generator</text><text class=\"cs-sub\" x=\"124\" y=\"273\">randomize() with {…}</text></g><g class=\"cs-part\" data-k=\"crcons\" data-g=\"cr\"><rect class=\"cs-box\" x=\"220\" y=\"232\" width=\"100\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"270\" y=\"255\">Legal constraints</text><text class=\"cs-sub\" x=\"270\" y=\"273\">Dimensions / values / alignment</text></g><line class=\"cs-arr\" x1=\"204\" y1=\"260\" x2=\"216\" y2=\"260\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"crpool\" data-g=\"cr\"><rect class=\"cs-box\" x=\"44\" y=\"300\" width=\"276\" height=\"48\" rx=\"8\"/><text class=\"cs-t\" x=\"182\" y=\"321\">Large random matrix stream (dimensions×values×layout)</text><text class=\"cs-sub\" x=\"182\" y=\"338\">Expose unforeseen combinations</text></g><line class=\"cs-arr\" x1=\"124\" y1=\"288\" x2=\"124\" y2=\"298\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"340\" y1=\"124\" x2=\"436\" y2=\"178\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"340\" y1=\"324\" x2=\"436\" y2=\"216\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"dut\" data-g=\"dut\"><rect class=\"cs-box\" x=\"440\" y=\"150\" width=\"160\" height=\"96\" rx=\"8\"/><text class=\"cs-t\" x=\"520\" y=\"186\">DUT</text><text class=\"cs-sub\" x=\"520\" y=\"206\">Systolic array + UB</text><text class=\"cs-sub\" x=\"520\" y=\"224\">256×256 MACs</text></g><line class=\"cs-arr\" x1=\"600\" y1=\"198\" x2=\"656\" y2=\"198\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"sb\" data-g=\"sb\"><rect class=\"cs-box\" x=\"618\" y=\"158\" width=\"86\" height=\"80\" rx=\"8\"/><text class=\"cs-t\" x=\"661\" y=\"194\">Reference Model</text><text class=\"cs-sub\" x=\"661\" y=\"212\">Check every cycle</text></g></svg>",
+ "legend": [
+  {
+   "k": "dir",
+   "name": "Directed stimulus (hand-written critical tests)",
+   "desc": "A small set of precise cases selected from known risks. For TPU's structure, they directly exercise corners unlikely to occur randomly: all-zero matrices, where multiply-accumulate remains 0; full arrays of ±127, stressing worst-case 8-bit product/accumulation and overflow; 32-bit accumulator carry/saturation boundaries; and full pipeline fill, drain, and reset control corners. They are clear, readable, and stable in regression, but cover only anticipated risks."
+  },
+  {
+   "k": "cr",
+   "name": "Constrained-random stimulus (high volume inside constraints)",
+   "desc": "The main modern verification engine. randomize() with {…} creates large numbers of legal tests while constraining matrix dimensions, INT8 distributions, row/column layout and alignment, and instruction sequences to values the DUT accepts. Constraints avoid wasting cycles on invalid inputs; randomness explores combinations the team did not enumerate."
+  },
+  {
+   "k": "dut",
+   "name": "DUT (systolic array + UB)",
+   "desc": "Both stimulus sources drive the same DUT: the 256×256 8-bit-MAC systolic array, 24 MiB software-managed Unified Buffer, 32-bit accumulators, and CISC instruction interface. Directed and random testing complement each other by covering both known hazards and unforeseen combinations."
+  },
+  {
+   "k": "sb",
+   "name": "Reference Model / checker",
+   "desc": "Regardless of stimulus source, compare DUT output cycle by cycle or result by result against an independent golden model implementing INT8 matrix multiply and accumulation semantics in software. Automatic prediction makes high-volume random stimulus practical; no human could manually inspect its outputs."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "dzero",
+    "dmax"
+   ],
+   "cap": "① First directed wave: hand-code critical boundaries. Verify acc remains 0 for all-zero matrices; drive a full ±127 array to worst-case 8-bit products and accumulation, explicitly testing overflow behavior that random stimulus is unlikely to hit."
+  },
+  {
+   "keys": [
+    "dsat",
+    "dctrl"
+   ],
+   "cap": "② Second directed wave: force the 32-bit accumulator to carry/saturation thresholds, then test full array fill, drain + reset, and back-to-back instruction control corners. Keep these readable tests in regression."
+  },
+  {
+   "keys": [
+    "crcons",
+    "crgen"
+   ],
+   "cap": "③ Constrained random: define legal matrix-dimension, INT8-value, alignment, and instruction-sequence constraints, then use randomize() with {…}. Generate only inputs accepted by the DUT rather than spending cycles on invalid traffic."
+  },
+  {
+   "keys": [
+    "crgen",
+    "crpool"
+   ],
+   "cap": "④ Run many seeds to create streams spanning dimensions × values × layouts. Sample volume and seed variation expose interactions humans cannot enumerate, such as a particular unaligned dimension combined with a rare value distribution."
+  },
+  {
+   "keys": [
+    "dut",
+    "sb"
+   ],
+   "cap": "⑤ Both sources drive the same DUT and every output goes through the Reference Model. Directed tests guarantee known hazards pass; random tests discover unknown interactions. They are complementary, not alternatives."
+  }
+ ],
+ "before": [
+  "<b>List critical hazards for directed tests</b>: convert documented TPU risks into cases—zero input (MAC remains 0), full ±127 array (worst-case 8-bit overflow), 32-bit accumulator carry/saturation, 256×256 array full-fill and drain + reset, and back-to-back/illegal CISC timing. Hand-write every corner that is both costly and unlikely to occur randomly.",
+  "<b>Define the legal random domain</b>: specify accepted matrix dimensions, INT8 ranges/distributions, Unified Buffer address/alignment rules, and legal instruction sequences. Constraints keep random generation in the valuable legal space rather than inputs the DUT explicitly rejects.",
+  "<b>Define the Reference Model and completion gate</b>: an independent golden model for INT8 matrix multiply plus accumulation/overflow semantics must exist before random testing is meaningful. Require all directed tests to pass + N constrained-random seeds + converged functional coverage.",
+  "<b>Choose the directed/random mix and seed policy</b>: run directed smoke tests first, then use constrained random as the broad exploration engine. Record every seed so a random failure can be reproduced and replayed."
+ ],
+ "during": [
+  "<b>Use directed tests to strike known hazards, not luck</b>: hand-code zero, full ±127, accumulator thresholds, and fill/drain cases; document intent and attach assertions such as all-zero input → assert(acc==0). These short, stable, readable tests form the regression foundation.",
+  "<b>Use constrained random as the coverage workhorse</b>: randomize() with {…} (illustrative) samples the legal domain at scale, potentially producing hundreds of thousands of stimuli overnight. Random does not mean arbitrary—it systematically explores legal combinations that engineers did not anticipate.",
+  "<b>Make constraints tight enough for legality and loose enough for surprise</b>: overly loose constraints flood simulation with invalid inputs; overly tight constraints become disguised directed tests. Constrain legality and distribution weights only, leaving values and dimensional combinations free to vary.",
+  "<b>Use both; never choose only one</b>: directed tests cover known risks while random tests expose unknown interactions. Overflow/saturation may never occur randomly across a full TPU array, while a subtle fill-order defect may emerge only under an unexpected random sequence. Drive both streams into one DUT.",
+  "<b>Every failure must be reproducible</b>: replay a mismatch from its recorded seed, narrow constraints to minimize the stimulus, and convert the minimal reproducer into a directed regression test. Random discovers; directed preserves.",
+  "<b>Scope note</b>: randomize(), constraint blocks, and assertions shown here are standard verification examples, not private TPU v1 disclosure. The documented 256×256 array, 24 MiB UB, 32-bit accumulators, and CISC interface provide the DUT context; private verification metrics are not asserted."
+ ],
+ "result": [
+  {
+   "label": "Directed tests (illustrative)",
+   "value": "All zero / full ±127 array / accumulator carry boundary / fill + drain + reset"
+  },
+  {
+   "label": "Directed assertion (illustrative)",
+   "value": "// all-zero input\\nassert(acc == 0);  // for full array, check overflow flag"
+  },
+  {
+   "label": "Constrained-random generation (illustrative)",
+   "value": "stim.randomize() with { rows inside {1:256}; w inside {-128:127}; addr % 8 == 0; };"
+  },
+  {
+   "label": "Purpose of constraints",
+   "value": "Generate only legal DUT inputs; keep randomness inside the valuable test space"
+  },
+  {
+   "label": "Division of labor",
+   "value": "Directed = known hazards; constrained random = unforeseen combinations"
+  },
+  {
+   "label": "Correctness decision",
+   "value": "Compare both streams against the golden INT8 matrix-multiply Reference Model"
+  }
+ ],
+ "after": [
+  "<b>Review functional coverage convergence</b>: after a random campaign, inspect whether overflow, saturation, fill, and drain bins were hit. If a critical bin remains uncovered, add a directed test rather than blindly increasing seed count.",
+  "<b>Minimize and preserve failures</b>: replay random mismatches by seed, narrow constraints to the smallest reproducer, diagnose the root cause, and retain the case as a directed regression test—random discovery, directed preservation.",
+  "<b>Add both streams to regression</b>: run every directed test plus a fixed set of constrained-random seeds nightly and after RTL changes, protecting critical cases and previously fixed bugs.",
+  "<b>Tune the stimulus mix</b>: adjust weights from coverage and bug trends—more random exploration early, more directed hole-filling late. When both coverage and bugs converge, submit the coverage report as evidence for module-level functional-verification signoff."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (directed and constrained-random stimulus methodology is standard verification practice; examples do not disclose TPU v1's verification environment)"
+}

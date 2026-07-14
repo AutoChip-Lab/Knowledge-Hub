@@ -1,0 +1,120 @@
+{
+ "secNum": "3.12",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Coverage convergence and verification closure: three criteria answer “done and ready for tapeout?”",
+ "oneLine": "Verification does not stop after enough runtime; it must produce a signable answer on whether the TPU design may proceed to synthesis and tapeout. Three conditions must all hold: functional/code coverage reaches target, every row of the 3.1 verification plan closes, and bugs converge with near-zero discovery and no unresolved severe defects. Only three green criteria pass the formal sign-off gate and release synthesis ⑦; any failure returns for hole filling.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">“Done and ready for tapeout?” = three converged criteria before formal release</text><g class=\"cs-part\" data-k=\"cov\" data-g=\"crit\"><rect class=\"cs-box\" x=\"40\" y=\"58\" width=\"244\" height=\"64\" rx=\"8\" fill=\"#fefce8\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"162\" y=\"84\">① Coverage at target ✓</text><text class=\"cs-sub\" x=\"162\" y=\"104\">Functional + code closure; every unhit bin waived</text></g><g class=\"cs-part\" data-k=\"plan\" data-g=\"crit\"><rect class=\"cs-box\" x=\"40\" y=\"138\" width=\"244\" height=\"64\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"162\" y=\"164\">② Verification plan closed ✓</text><text class=\"cs-sub\" x=\"162\" y=\"184\">Every 3.1 feature row is verified · evidenced</text></g><g class=\"cs-part\" data-k=\"bug\" data-g=\"crit\"><rect class=\"cs-box\" x=\"40\" y=\"218\" width=\"244\" height=\"64\" rx=\"8\" fill=\"#fef2f2\" stroke=\"#fca5a5\"/><text class=\"cs-t\" x=\"162\" y=\"244\">③ Bugs converged ✓</text><text class=\"cs-sub\" x=\"162\" y=\"264\">New-bug rate → zero · no open severe defects</text></g><line class=\"cs-arr\" x1=\"284\" y1=\"90\" x2=\"368\" y2=\"178\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"284\" y1=\"170\" x2=\"368\" y2=\"186\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"284\" y1=\"250\" x2=\"368\" y2=\"194\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"gate\" data-g=\"gate\"><rect class=\"cs-box\" x=\"372\" y=\"148\" width=\"176\" height=\"92\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"460\" y=\"180\">Sign-off gate</text><text class=\"cs-sub\" x=\"460\" y=\"202\">All three green to pass</text><text class=\"cs-sub\" x=\"460\" y=\"220\">Any failure → return</text></g><line class=\"cs-arr\" x1=\"548\" y1=\"194\" x2=\"624\" y2=\"194\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"pass\" data-g=\"pass\"><rect class=\"cs-box\" x=\"628\" y=\"158\" width=\"76\" height=\"72\" rx=\"8\"/><text class=\"cs-t\" x=\"666\" y=\"188\">Release</text><text class=\"cs-sub\" x=\"666\" y=\"208\">⑦ Synthesis</text></g><line class=\"cs-arr\" x1=\"460\" y1=\"240\" x2=\"460\" y2=\"306\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"back\" data-g=\"back\"><rect class=\"cs-box\" x=\"300\" y=\"312\" width=\"320\" height=\"60\" rx=\"8\"/><text class=\"cs-t\" x=\"460\" y=\"336\">Return: add stimulus / waiver / fix bug + regression</text><text class=\"cs-sub\" x=\"460\" y=\"356\">No release with an open criterion; never stop at “close enough”</text></g><line class=\"cs-arr\" x1=\"300\" y1=\"342\" x2=\"232\" y2=\"282\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"40\" y=\"304\">Note: coverage/plan/bug closure is standard practice, not TPU's published metrics</text></svg>",
+ "legend": [
+  {
+   "k": "cov",
+   "name": "Criterion ① Coverage target reached (coverage closure)",
+   "desc": "Both functional coverage—covergroup hits for K∈{1,64,128,256}, full/partial arrays, accumulator overflow/saturation, legal/illegal/back-to-back dozen-plus CISC sequences, and CDC phases—and code coverage—line, branch, condition, toggle, and FSM states/transitions—must close. Every unhit bin receives stimulus or a documented waiver. Coverage answers whether a scenario was exercised, not how many vectors ran."
+  },
+  {
+   "k": "plan",
+   "name": "Criterion ② Verification-plan closure",
+   "desc": "Return to the 3.1 feature → stimulus/coverage/criteria table and audit every row: matrix-multiply correctness, precisions/dimensions, overflow/saturation, deadlock-free handshakes, instruction sequences, and CDC. Each must be marked verified with coverage/assertion/formal evidence and satisfied acceptance criteria. A beautiful percentage cannot compensate for an open plan row."
+  },
+  {
+   "k": "bug",
+   "name": "Criterion ③ Bug convergence",
+   "desc": "Evaluate the trend, not a snapshot: new-defect discovery rate must clearly approach zero and the database must contain no open severe or blocking bugs. Lower-severity issues are either fixed and regressed or have explicit disposition. Continued frequent discoveries show that design and verification have not stabilized."
+  },
+  {
+   "k": "gate",
+   "name": "Formal sign-off gate",
+   "desc": "Sign-off is a review gate with explicit entry conditions, not an individual judgment. Coverage closure ✓, plan closure ✓, and bug convergence ✓ must all hold, plus an all-green regression on frozen RTL. The criteria are ANDed; any failure keeps the gate closed."
+  },
+  {
+   "k": "back",
+   "name": "Not met → return for closure work",
+   "desc": "If coverage has holes, a plan row is open, or a serious bug remains, do not release. Add directed/random stimulus, document truly unreachable waivers, fix bugs, and rerun regression. Closure discipline rejects “close enough.”"
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "cov"
+   ],
+   "cap": "① Audit coverage: are functional covergroups for sizes/corners/instructions/CDC and code coverage for line/branch/FSM transitions both closed? Hit every bin or document an approved waiver."
+  },
+  {
+   "keys": [
+    "plan"
+   ],
+   "cap": "② Audit the plan: inspect every row in the 3.1 feature table. Each must be verified, evidenced, and at its completion criterion. Any open row is an unowned blind spot regardless of aggregate coverage."
+  },
+  {
+   "keys": [
+    "bug"
+   ],
+   "cap": "③ Audit bugs: does discovery rate approach zero, with no open severe/blocking bugs? Frequent new defects mean the design is not stable enough for signoff."
+  },
+  {
+   "keys": [
+    "cov",
+    "plan",
+    "bug",
+    "gate"
+   ],
+   "cap": "④ Three green criteria + an all-green regression on frozen RTL → pass the formal sign-off gate. The criteria are ANDed; none is optional."
+  },
+  {
+   "keys": [
+    "gate",
+    "pass",
+    "back"
+   ],
+   "cap": "⑤ Pass → release to logic synthesis ⑦ with coverage/signoff reports. Failure → add stimulus/waivers or fix bugs, then regress again. Never stop at “close enough.”"
+  }
+ ],
+ "before": [
+  "<b>Translate “done” into hard signoff criteria</b>: define exact functional/code coverage targets—often 100% with a waiver for every unhit bin—full closure of the 3.1 plan, converged discovery rate, and zero open severe bugs. Setting them before closure prevents subjective interpretation.",
+  "<b>Define coverage targets and waiver rules</b>: establish functional and code thresholds, which bins can be waived, and who approves a written waiver, such as a physically unreachable array-size combination. Never invent exceptions during signoff.",
+  "<b>Define bug severity and convergence</b>: agree on blocking/severe/normal/minor categories, allowed open counts at signoff—usually zero severe—and a quantitative convergence rule such as zero new severe bugs across N consecutive regressions.",
+  "<b>Define the regression baseline and RTL freeze point</b>: all signoff evidence must come from one frozen RTL revision with specified seeds and an all-green final regression. Do not qualify an old version and then silently modify it.",
+  "<b>Assign signoff review and ownership</b>: specify the architecture, design, verification, and project participants and the accountable owner for each criterion. Closure is a formal, owned gate."
+ ],
+ "during": [
+  "<b>Rule: the three criteria are AND, not OR</b>. Coverage closure, plan closure, and bug convergence must all hold. Passing coverage while one plan row or severe bug remains is false signoff; any failed criterion keeps the gate closed.",
+  "<b>For coverage holes, add stimulus before granting waivers</b>. Treat an unhit bin as missing stimulus by default. Add directed or constrained-random tests; waive only after proving the combination physically unreachable and documenting approval. Waivers are not a universal escape hatch.",
+  "<b>Coverage target ≠ correctness; cross-check with the plan and assertions</b>. 100% code coverage shows execution, not correct behavior. Functional closure must be paired with Scoreboard/Reference Model checks and SVA/formal properties that are all PROVEN. Closure requires coverage plus correctness evidence.",
+  "<b>Judge bug convergence from a trend, not one quiet day</b>. One or two days without discoveries may reflect missed logic. Require a stable decline versus accumulated runtime/vectors and zero open severe defects; new serious bugs mean no steady state.",
+  "<b>Regress every change and base signoff on frozen RTL</b>. Any RTL or stimulus change made for a bug or coverage hole triggers the relevant regression. Final evidence must come from one frozen revision, not a patchwork of results from different versions.",
+  "<b>Scope note</b>: coverage/plan/bug closure, all-green regression, and formal sign-off gates are standard large-ASIC practices. TPU v1's array, Unified Buffer, CISC interface, and multiple domains are public, but its private coverage targets, forms, and regression volume are not."
+ ],
+ "result": [
+  {
+   "label": "Three signoff criteria",
+   "value": "Coverage at target ✓ · verification plan fully closed ✓ · bugs converged ✓"
+  },
+  {
+   "label": "Logical relationship",
+   "value": "All three AND all-green regression; any missing item blocks release"
+  },
+  {
+   "label": "Coverage closure",
+   "value": "Functional + code coverage at target; every unhit bin exercised or waived in writing"
+  },
+  {
+   "label": "Bug convergence",
+   "value": "New-defect rate approaches zero · no open severe/blocking bugs"
+  },
+  {
+   "label": "Gate output",
+   "value": "Functional-verification signoff + coverage/regression reports on frozen RTL"
+  },
+  {
+   "label": "Release / return",
+   "value": "Three green → synthesis ⑦; any failure → return for closure and regression"
+  }
+ ],
+ "after": [
+  "<b>Archive the signoff evidence package</b>: retain functional/code coverage reports and waivers, the plan-closure checklist, bug-convergence curves and open-defect list, and final all-green logs as traceable proof of verification.",
+  "<b>Hand off to synthesis with constraints</b>: deliver frozen, functionally correct RTL and coverage/signoff reports to logic synthesis ⑦. Include CDC and timing intent so downstream operates on the same signed-off version.",
+  "<b>Enforce the freeze; changes repeat the gate</b>: any post-signoff RTL edit invalidates affected evidence. Reassess coverage, plan rows, and regression on the new revision before updating signoff.",
+  "<b>Reuse waiver and convergence lessons</b>: feed waiver decisions, bug-convergence cadence, and late defect types back into future plans and coverage models to strengthen closure quality.",
+  "<b>Document the evidence boundary</b>: distinguish public TPU v1 structures—array, UB, CISC interface, and clock domains—from standard signoff methodology such as the three criteria, waiver workflow, and gate."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the systolic array, Unified Buffer, CISC interface, and multiple clock domains are public structural facts; coverage convergence, waiver processes, and sign-off gates are standard verification practices, while TPU's exact coverage targets and environment are not public)"
+}

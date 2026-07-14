@@ -1,0 +1,119 @@
+{
+  "secNum": "3.3",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · MMMC and On-Chip Variation: Close Every Mode and PVT Corner",
+  "oneLine": "Timing signoff cannot validate 700 MHz only at nominal conditions. Silicon spans SS-to-FF process variation, voltage fluctuates, temperature rises, modes change, and devices vary within one die. MMMC builds every mode × PVT/RC view, while OCV/AOCV/POCV derates paths. Setup is stressed at slow/low-voltage/hot conditions; hold at fast/high-voltage/cold. Every view must pass.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-t\" x=\"360\" y=\"26\">MMMC signoff: all modes × all PVT corners, including the worst combination</text><g class=\"cs-part\" data-k=\"mode\" data-g=\"mode\"><rect class=\"cs-box\" x=\"20\" y=\"50\" width=\"180\" height=\"150\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"110\" y=\"76\">Multiple modes</text><text class=\"cs-sub\" x=\"110\" y=\"100\">Functional</text><text class=\"cs-sub\" x=\"110\" y=\"120\">Scan / test</text><text class=\"cs-sub\" x=\"110\" y=\"140\">Low power</text><text class=\"cs-sub\" x=\"110\" y=\"166\">Each mode has distinct clocks /</text><text class=\"cs-sub\" x=\"110\" y=\"184\">constraints / active paths</text></g><line class=\"cs-arr\" x1=\"200\" y1=\"125\" x2=\"244\" y2=\"125\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"matrix\" data-g=\"matrix\"><rect class=\"cs-box\" x=\"246\" y=\"50\" width=\"262\" height=\"150\" rx=\"8\" fill=\"#fefce8\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"377\" y=\"74\">PVT matrix (process × voltage × temperature)</text><g class=\"cs-part\" data-k=\"ss\" data-g=\"ss\"><rect class=\"cs-box\" x=\"266\" y=\"92\" width=\"74\" height=\"44\" rx=\"6\" fill=\"#fee2e2\" stroke=\"#fca5a5\"/><text class=\"cs-t\" x=\"303\" y=\"112\">SS</text><text class=\"cs-sub\" x=\"303\" y=\"128\">Slow · low V · hot</text></g><g class=\"cs-part\" data-k=\"tt\" data-g=\"tt\"><rect class=\"cs-box\" x=\"344\" y=\"92\" width=\"74\" height=\"44\" rx=\"6\"/><text class=\"cs-t\" x=\"381\" y=\"112\">TT</text><text class=\"cs-sub\" x=\"381\" y=\"128\">Nominal</text></g><g class=\"cs-part\" data-k=\"ff\" data-g=\"ff\"><rect class=\"cs-box\" x=\"422\" y=\"92\" width=\"74\" height=\"44\" rx=\"6\" fill=\"#dbeafe\" stroke=\"#93c5fd\"/><text class=\"cs-t\" x=\"459\" y=\"112\">FF</text><text class=\"cs-sub\" x=\"459\" y=\"128\">Fast · high V · cold</text></g><text class=\"cs-sub\" x=\"303\" y=\"158\">Setup worst case</text><text class=\"cs-sub\" x=\"459\" y=\"158\">Hold worst case</text><text class=\"cs-sub\" x=\"377\" y=\"182\">Cover V± and multiple temperatures</text></g><line class=\"cs-arr\" x1=\"508\" y1=\"125\" x2=\"552\" y2=\"125\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"ocv\" data-g=\"ocv\"><rect class=\"cs-box\" x=\"554\" y=\"74\" width=\"150\" height=\"102\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"629\" y=\"100\">On-chip variation</text><text class=\"cs-t\" x=\"629\" y=\"120\">OCV / AOCV / POCV</text><text class=\"cs-sub\" x=\"629\" y=\"144\">Devices vary within one die</text><text class=\"cs-sub\" x=\"629\" y=\"162\">→ apply path derates</text></g><g class=\"cs-part\" data-k=\"worst\" data-g=\"worst\"><rect class=\"cs-box\" x=\"180\" y=\"244\" width=\"360\" height=\"58\" rx=\"8\" fill=\"#fff7ed\" stroke=\"#fdba74\"/><text class=\"cs-t\" x=\"360\" y=\"270\">Worst combination: mode × corner × derate</text><text class=\"cs-sub\" x=\"360\" y=\"290\">Setup: SS/low-V/hot + derate · hold: FF/high-V/cold</text></g><line class=\"cs-arr\" x1=\"377\" y1=\"200\" x2=\"360\" y2=\"240\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"110\" y1=\"200\" x2=\"240\" y2=\"252\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><line class=\"cs-arr\" x1=\"629\" y1=\"176\" x2=\"500\" y2=\"252\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><g class=\"cs-part\" data-k=\"gate\" data-g=\"gate\"><rect class=\"cs-box\" x=\"220\" y=\"332\" width=\"280\" height=\"56\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"360\" y=\"358\">All views green → timing signoff passes</text><text class=\"cs-sub\" x=\"360\" y=\"378\">Missing one corner/mode risks silicon failure</text></g><line class=\"cs-arr\" x1=\"360\" y1=\"302\" x2=\"360\" y2=\"330\" marker-end=\"url(#csar)\"/></svg>",
+  "legend": [
+    {
+      "k": "mode",
+      "name": "Multiple modes",
+      "desc": "Functional, scan/test, and low-power modes activate different paths, clocks, and SDC constraints. Signing only functional operation leaves scan and low-power timing unverified."
+    },
+    {
+      "k": "matrix",
+      "name": "PVT corner matrix (P × V × T)",
+      "desc": "Process corners such as SS/TT/FF combine with voltage droop/overshoot and the expected temperature range. Each combination uses a matching characterized .lib. This matrix protects 700 MHz across real data-center conditions rather than nominal operation alone."
+    },
+    {
+      "k": "ss",
+      "name": "Slow SS for setup / fast FF for hold",
+      "desc": "Slow process, low voltage, and high temperature maximize delay and setup risk. Fast process, high voltage, and low temperature minimize delay and expose hold failures. Both directions must pass; hold cannot be repaired by lowering frequency."
+    },
+    {
+      "k": "ocv",
+      "name": "On-chip variation (OCV/AOCV/POCV)",
+      "desc": "Local process variation, IR drop, and temperature gradients make cells on one die differ. OCV applies pessimistic launch/capture derates; AOCV uses stage count/distance and POCV uses statistical σ data to reduce excess pessimism while preserving margin, especially on long array paths."
+    },
+    {
+      "k": "worst",
+      "name": "Joint worst-case signoff",
+      "desc": "MMMC evaluates mode × PVT/RC corner × variation together. PrimeTime-class scenarios require setup slack ≥0 under slow conditions and hold slack ≥0 under fast conditions. A single failing view fails overall timing signoff."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "mode"
+      ],
+      "cap": "① Enumerate functional, scan, and low-power modes with separate clocks, constraints, and active paths."
+    },
+    {
+      "keys": [
+        "matrix",
+        "ss",
+        "ff"
+      ],
+      "cap": "② Build the PVT matrix: SS/TT/FF process × nominal±X% voltage × low-to-high temperature, with a matching .lib for every corner."
+    },
+    {
+      "keys": [
+        "ocv"
+      ],
+      "cap": "③ Apply OCV/AOCV/POCV derates within each corner to cover same-die variation, with adequate margin on long array and accumulation paths."
+    },
+    {
+      "keys": [
+        "worst",
+        "matrix",
+        "mode"
+      ],
+      "cap": "④ Analyze joint mode × corner × derate views in PrimeTime-class MMMC; setup stresses SS/low-V/hot and hold stresses FF/high-V/cold."
+    },
+    {
+      "keys": [
+        "gate"
+      ],
+      "cap": "⑤ Release only when setup and hold slack are nonnegative in every view; an omitted mode or corner remains an untested silicon condition."
+    }
+  ],
+  "before": [
+    "<b>List every mode and write its SDC</b>: Include 700 MHz functional operation, scan shift/capture, and any low-power modes. Each mode needs its own clocks, I/O delays, exceptions, and case analysis.",
+    "<b>Define PVT corners and libraries</b>: Align with the foundry, package, and application environment on SS/TT/FF, nominal and ±X% voltage, and low-to-high junction temperature. Each view requires a corresponding characterized .lib.",
+    "<b>Select the OCV method and data source</b>: Choose OCV, AOCV, or POCV and document whether derates, tables, or statistical σ data come from foundry characterization or silicon calibration.",
+    "<b>Prepare post-route SPEF for RC corners</b>: Use real extracted parasitics for worst and best RC rather than wire estimates. Pair slow RC with setup analysis and fast RC with hold analysis.",
+    "<b>Set criteria and waiver rules</b>: Require illustrative setup/hold slack ≥0 with appropriate margin, and document every legitimate false, multicycle, or CDC exception by mode and corner."
+  ],
+  "during": [
+    "<b>Core rule: setup uses slow corners; hold uses fast corners</b>. SS/low-V/hot exposes late arrival, while FF/high-V/cold exposes too-early arrival. Checking one direction cannot cover the other.",
+    "<b>Analyze mode × corner views in parallel</b>. PrimeTime-class tools combine mode, PVT, and RC into scenarios, reporting cross-combination violations that manual serial analysis can miss.",
+    "<b>Apply variation margin without excessive pessimism</b>. Flat OCV can overstate risk, especially on long array paths. AOCV by depth/distance or POCV by statistical data preserves safety while recovering justified margin.",
+    "<b>Never treat frequency as a hold fix</b>. Setup can improve with a longer period, but hold is period-independent and needs delay-buffer ECO at the fast corner.",
+    "<b>Pair parasitics with the correct PVT corner</b>. Slow process with worst RC supports setup; fast process with best RC supports hold. Incorrect pairing makes the matrix optimistic or meaningless.",
+    "<b>State methodology provenance</b>: MMMC, PVT corners, OCV/AOCV/POCV, PrimeTime scenarios, and corner-specific SPEF are standard signoff practices. TPU's corners, derates, mode constraints, and QoR are unpublished; ±X% and all criteria shown are illustrative."
+  ],
+  "result": [
+    {
+      "label": "Modes (example)",
+      "value": "functional (700 MHz) / scan-shift / scan-capture / low-power, each with its own SDC"
+    },
+    {
+      "label": "Process corners",
+      "value": "SS (slow; setup) / TT (nominal) / FF (fast; hold)"
+    },
+    {
+      "label": "Voltage × temperature (example)",
+      "value": "V = nominal ±X%; T = multiple low-to-high junction temperatures, each with .lib"
+    },
+    {
+      "label": "On-chip variation",
+      "value": "OCV/AOCV/POCV launch/capture derates; sufficient margin on long array links"
+    },
+    {
+      "label": "Setup criterion (example)",
+      "value": "All paths at SS/low-V/hot + derate have setup slack ≥0"
+    },
+    {
+      "label": "Hold criterion (example)",
+      "value": "All paths at FF/high-V/cold have hold slack ≥0; frequency cannot fix hold"
+    }
+  ],
+  "after": [
+    "<b>Review WNS/TNS in every view</b>: Confirm no mode×corner scenario retains negative slack, especially violations visible only in cross-combinations such as hot SS scan mode.",
+    "<b>Return violations to ⑧ ECO and re-sign</b>: Repair setup with faster cells, buffering, or clock adjustment; repair hold with delay cells. Rerun the same MMMC views and verify no other scenario regresses.",
+    "<b>Reassess OCV/derates before chasing false failures</b>: A cluster of tiny violations on long paths may indicate excessive flat-OCV pessimism. Move to AOCV/POCV only with characterized statistical support, never simply to force a pass.",
+    "<b>Feed timing into the overall signoff gate</b>: All-view MMMC/OCV timing is one dimension alongside EM/IR, DRC/LVS, LEC, and power. Tapeout requires every dimension green.",
+    "<b>Archive the mode/corner manifest</b>: Preserve modes, PVT/RC corners, OCV method and source, and per-view results so any field failure can be traced to whether that condition was signed."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (published TPU v1 array, 700 MHz/~92 TOPS, 24 MiB Unified Buffer, weight-stationary dataflow, 28 nm/≤331 mm²/28–40 W, and data-center deployment provide context. MMMC, PVT corners, OCV/AOCV/POCV, PrimeTime views, corner-specific SPEF, ±X%, and all criteria/margins are standard illustrative signoff practice, not private TPU reports, corners, or QoR.)"
+}

@@ -1,0 +1,112 @@
+{
+ "secNum": "3.3",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Two Register Classes, Two Reset Strategies: Reset Control, Initialize the Datapath by Protocol",
+ "oneLine": "Within one TPU, control registers such as FSM state and counters must reset to known values, while 65k+ MAC elements and the 4 MiB accumulator storage can rely on an explicit clear-before-accumulate sequence. The distinction shows which state requires hardware reset and which reset wiring can be safely avoided.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"34\">Two register classes, two reset strategies</text><line class=\"cs-arr\" x1=\"60\" y1=\"120\" x2=\"150\" y2=\"120\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"46\" y=\"104\">clk</text><line class=\"cs-arr\" x1=\"60\" y1=\"150\" x2=\"150\" y2=\"150\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"40\" y=\"170\">rst_n</text><g class=\"cs-part\" data-k=\"ctrl\" data-g=\"ctrl\"><rect class=\"cs-box\" x=\"154\" y=\"78\" width=\"210\" height=\"116\" rx=\"8\"/><path d=\"M154 178 L168 178 L154 194 Z\" fill=\"#8b5cf6\"/><text class=\"cs-t\" x=\"259\" y=\"108\">Control registers · reset</text><text class=\"cs-sub\" x=\"259\" y=\"130\">FSM state / counters / configuration</text><text class=\"cs-sub\" x=\"259\" y=\"150\">if(!rst_n) st&lt;=IDLE;</text><text class=\"cs-note\" x=\"259\" y=\"170\">Must enter a known state</text></g><line class=\"cs-arr\" x1=\"60\" y1=\"300\" x2=\"150\" y2=\"300\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"46\" y=\"284\">clk</text><text class=\"cs-note\" x=\"40\" y=\"332\">(no rst)</text><g class=\"cs-part\" data-k=\"acc\" data-g=\"acc\"><rect class=\"cs-box\" x=\"154\" y=\"258\" width=\"210\" height=\"116\" rx=\"8\"/><path d=\"M154 358 L168 358 L154 374 Z\" fill=\"#8b5cf6\"/><text class=\"cs-t\" x=\"259\" y=\"288\">Accumulator state · no reset</text><text class=\"cs-sub\" x=\"259\" y=\"310\">4 MiB / 32-bit accumulators</text><text class=\"cs-sub\" x=\"259\" y=\"330\">acc&lt;=acc+a*b;</text><text class=\"cs-note\" x=\"259\" y=\"350\">Clear before accumulation</text></g><line class=\"cs-arr\" x1=\"364\" y1=\"120\" x2=\"430\" y2=\"120\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"364\" y1=\"300\" x2=\"430\" y2=\"300\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"net\" data-g=\"net\"><rect class=\"cs-box\" x=\"434\" y=\"98\" width=\"240\" height=\"80\" rx=\"8\"/><text class=\"cs-t\" x=\"554\" y=\"126\">Reset network (physical)</text><text class=\"cs-sub\" x=\"554\" y=\"148\">Essential control state</text><text class=\"cs-note\" x=\"554\" y=\"166\">Small tree · easier routing</text></g><g class=\"cs-part\" data-k=\"save\" data-g=\"save\"><rect class=\"cs-box\" x=\"434\" y=\"278\" width=\"240\" height=\"80\" rx=\"8\"/><text class=\"cs-t\" x=\"554\" y=\"306\">Reset network avoided</text><text class=\"cs-sub\" x=\"554\" y=\"328\">No reset to 65k+ MAC / accumulators</text><text class=\"cs-note\" x=\"554\" y=\"346\">Less area · routing · timing load</text></g><line class=\"cs-arr\" x1=\"554\" y1=\"178\" x2=\"554\" y2=\"206\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><g class=\"cs-part\" data-k=\"rel\" data-g=\"rel\"><rect class=\"cs-box\" x=\"434\" y=\"210\" width=\"240\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"554\" y=\"234\">Reset release (synchronized)</text><text class=\"cs-note\" x=\"554\" y=\"252\">Async assert · sync release; avoid metastability</text></g></svg>",
+ "legend": [
+  {
+   "k": "ctrl",
+   "name": "Control registers (reset)",
+   "desc": "FSM state, counters, and configuration state must enter known values such as IDLE or zero after reset. Otherwise simulation propagates X and silicon bring-up may fail. Their count is small enough that reset is justified."
+  },
+  {
+   "k": "acc",
+   "name": "Accumulator state (no reset)",
+   "desc": "The systolic array contains 65k+ MAC elements and 4 MiB of 32-bit accumulator storage. When the computation protocol explicitly clears this state before every use, direct reset wiring is often unnecessary and a very large reset network can be avoided."
+  },
+  {
+   "k": "net",
+   "name": "Physical reset network",
+   "desc": "Reset must be distributed with controlled skew and fanout to every resettable flop, much like a high-fanout tree. Limiting reset to essential control state reduces routing, load, area, and timing impact."
+  },
+  {
+   "k": "rel",
+   "name": "Reset release (synchronized)",
+   "desc": "A common scheme is asynchronous assertion with synchronous deassertion: reset takes effect immediately, but release passes through a two-flop synchronizer in each clock domain to reduce metastability risk."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "ctrl"
+   ],
+   "cap": "① Identify state that must be known: control FSMs, counters, and configuration registers must settle at IDLE or zero so bring-up can begin deterministically."
+  },
+  {
+   "keys": [
+    "acc"
+   ],
+   "cap": "② Identify datapath state that need not be directly reset: the MAC and accumulator array is explicitly cleared before accumulation, so reset wiring would add cost without changing the protocol."
+  },
+  {
+   "keys": [
+    "net",
+    "save"
+   ],
+   "cap": "③ The benefit is physical: the reset network reaches only essential control state, not 65k+ MAC elements—saving area and routing and reducing high-fanout timing burden."
+  },
+  {
+   "keys": [
+    "rel"
+   ],
+   "cap": "④ Define release for the state that is reset: asynchronously assert and synchronously deassert in each clock domain to avoid unsafe release near a clock edge."
+  },
+  {
+   "keys": [
+    "ctrl",
+    "acc"
+   ],
+   "cap": "⑤ Apply a documented reset policy across the design. Polarity, assertion style, release synchronization, and exceptions must be deliberate and consistently verified."
+  }
+ ],
+ "before": [
+  "<b>Define a project reset policy</b>: specify synchronous or asynchronous assertion where appropriate, active-high or active-low polarity, and synchronized release. Uncontrolled variation complicates CDC/RDC, synthesis, and formal verification.",
+  "<b>Partition reset state</b>: identify registers that must enter a known value (FSMs, counters, configuration) and datapath state that is initialized by protocol (large accumulator arrays). This choice determines reset-network scale.",
+  "<b>Fix clock and width conventions</b>: define the active clock edge, 8-bit PE multiplication, 32-bit accumulation, and instruction/configuration widths in the coding standard.",
+  "<b>Define reset deassertion</b>: provide a reviewed reset synchronizer for asynchronous assertion and synchronous release, instantiated independently in each clock domain.",
+  "<b>Constrain synthesizable reset logic</b>: reset arrives through approved reset ports and structures, not arbitrary data logic. Sequential state uses always_ff; unintended latches are prohibited."
+ ],
+ "during": [
+  "<b>Use reset for control state</b>. Example: <code>always_ff @(posedge clk or negedge rst_n) if(!rst_n) st&lt;=IDLE; else st&lt;=nxt;</code>. FSM state and counters need a reset branch that establishes deterministic behavior. This is standard illustrative RTL, not proprietary TPU source.",
+  "<b>Omit direct reset from protocol-initialized datapath state</b>. Example: <code>always_ff @(posedge clk) acc&lt;=acc+a*b;</code>. The clear-before-compute operation establishes validity, allowing tens of thousands of accumulator registers to avoid reset wiring.",
+  "<b>Keep reset conventions controlled</b>: do not mix polarity and release behavior without an explicit architecture reason. Every exception must be documented and covered by RDC and verification.",
+  "<b>Synchronize asynchronous reset release</b>: pass deassertion through two flops clocked by the destination domain. Releasing near a clock edge without synchronization can metastably split FSM state.",
+  "<b>Understand the cost of missing essential reset</b>: a control register without initialization remains X in RTL simulation and powers up unpredictably in silicon, which can block boot and bring-up.",
+  "<b>Do not reset the entire datapath merely for reassurance</b>: resetting state that the protocol already overwrites creates a large high-fanout network, increases area and routing, and may reduce frequency. Omitting it is an engineered trade-off, not a shortcut."
+ ],
+ "result": [
+  {
+   "label": "Reset control register (example)",
+   "value": "always_ff @(posedge clk or negedge rst_n) if(!rst_n) st<=IDLE;"
+  },
+  {
+   "label": "Accumulator without direct reset (example)",
+   "value": "always_ff @(posedge clk) acc<=acc+a*b;  // clear by protocol first"
+  },
+  {
+   "label": "Reset policy",
+   "value": "One documented policy for polarity, assertion, and release"
+  },
+  {
+   "label": "Reset release",
+   "value": "Asynchronous assertion + two-flop synchronous deassertion"
+  },
+  {
+   "label": "Reset-network scale",
+   "value": "Control state only; no direct reset to 65k+ MAC / 4 MiB accumulator state"
+  },
+  {
+   "label": "Datapath convention",
+   "value": "8-bit multiply, 32-bit accumulate; sequential state in always_ff"
+  }
+ ],
+ "after": [
+  "<b>Run lint and reset rules</b>: check policy consistency, missing reset on essential control state, unintended latches, and reset signals driven by data logic.",
+  "<b>Simulate X and initialization behavior</b>: apply reset and confirm that all control FSMs and counters become known. Release reset and prove that the clear sequence initializes accumulator state before any value is consumed.",
+  "<b>Run CDC/RDC analysis</b>: verify a complete reset synchronizer in every clock domain and ensure that no unsynchronized deassertion crosses domain boundaries.",
+  "<b>Run trial synthesis</b>: confirm that reset fanout does not dominate timing and that the expected area/routing benefit from unreset datapath state is realized while meeting 700 MHz.",
+  "<b>Hand reset requirements to verification</b>: cover known control state after reset, safe deassertion, clear-before-use, and X detection in the Stage ⑥ plan."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (reset and RTL coding examples reflect standard practice, not proprietary TPU source)"
+}

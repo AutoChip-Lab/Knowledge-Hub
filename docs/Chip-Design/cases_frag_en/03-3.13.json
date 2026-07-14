@@ -1,0 +1,118 @@
+{
+  "secNum": "3.13",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · Design for Test: Scan for Logic, MBIST for 24 MiB SRAM, JTAG as the Entry Point",
+  "oneLine": "A 331 mm² ASIC contains 65,536 MACs and nearly 30 MiB of on-chip SRAM. Without scan, MBIST, and JTAG planned during design, manufacturing yield cannot be measured and defective parts can escape into service. DFT makes the chip manufacturable and screenable.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 410\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"24\">DFT toolkit (standard practice): JTAG entry · logic scan · SRAM MBIST</text><g class=\"cs-part\" data-k=\"jtag\" data-g=\"jtag\"><rect class=\"cs-box\" x=\"40\" y=\"44\" width=\"150\" height=\"62\" rx=\"8\"/><text class=\"cs-t\" x=\"115\" y=\"68\">JTAG / TAP</text><text class=\"cs-sub\" x=\"115\" y=\"86\">IEEE 1149.1 test access</text><text class=\"cs-sub\" x=\"115\" y=\"100\">Boundary scan · engine control</text></g><line class=\"cs-arr\" x1=\"115\" y1=\"106\" x2=\"115\" y2=\"150\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"124\" y=\"132\">Test patterns / control</text><rect x=\"40\" y=\"150\" width=\"640\" height=\"158\" rx=\"10\" fill=\"none\" stroke=\"#cbd5e1\" stroke-dasharray=\"2 4\"/><text class=\"cs-note\" x=\"50\" y=\"168\">TPU v1 device under test</text><g class=\"cs-part\" data-k=\"mxu\" data-g=\"scan\"><rect class=\"cs-box\" x=\"64\" y=\"182\" width=\"300\" height=\"110\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#818cf8\"/><text class=\"cs-t\" x=\"214\" y=\"204\">MXU 256×256 systolic array</text><rect class=\"cs-cell\" x=\"84\" y=\"220\" width=\"22\" height=\"22\"/><rect class=\"cs-cell\" x=\"110\" y=\"220\" width=\"22\" height=\"22\"/><rect class=\"cs-cell\" x=\"136\" y=\"220\" width=\"22\" height=\"22\"/><rect class=\"cs-cell\" x=\"162\" y=\"220\" width=\"22\" height=\"22\"/><rect class=\"cs-cell\" x=\"84\" y=\"246\" width=\"22\" height=\"22\"/><rect class=\"cs-cell\" x=\"110\" y=\"246\" width=\"22\" height=\"22\"/><rect class=\"cs-cell\" x=\"136\" y=\"246\" width=\"22\" height=\"22\"/><rect class=\"cs-cell\" x=\"162\" y=\"246\" width=\"22\" height=\"22\"/><polyline class=\"cs-arr\" points=\"84,231 200,231 200,257 340,257\" fill=\"none\" stroke=\"#f97316\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"200\" y=\"284\">Scan chain crosses every PE register →</text></g><g class=\"cs-part\" data-k=\"ub\" data-g=\"mbist\"><rect class=\"cs-box\" x=\"384\" y=\"182\" width=\"174\" height=\"110\" rx=\"8\" stroke=\"#10b981\" stroke-dasharray=\"6 4\"/><text class=\"cs-t\" x=\"471\" y=\"222\">Unified Buffer</text><text class=\"cs-sub\" x=\"471\" y=\"240\">24 MiB SRAM</text><text class=\"cs-sub\" x=\"471\" y=\"258\">Covered by MBIST</text></g><g class=\"cs-part\" data-k=\"mbist\" data-g=\"mbist\"><rect class=\"cs-box\" x=\"384\" y=\"182\" width=\"50\" height=\"26\" rx=\"6\" fill=\"#ecfdf5\" stroke=\"#10b981\"/><text class=\"cs-sub\" x=\"409\" y=\"199\">MBIST</text></g><g class=\"cs-part\" data-k=\"acc\" data-g=\"mbist2\"><rect class=\"cs-box\" x=\"576\" y=\"182\" width=\"88\" height=\"110\" rx=\"8\" stroke=\"#10b981\" stroke-dasharray=\"6 4\"/><text class=\"cs-t\" x=\"620\" y=\"222\">Accumulators</text><text class=\"cs-sub\" x=\"620\" y=\"240\">4 MiB SRAM</text><text class=\"cs-sub\" x=\"620\" y=\"258\">MBIST self-test</text></g><line class=\"cs-arr\" x1=\"364\" y1=\"237\" x2=\"382\" y2=\"237\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"558\" y1=\"237\" x2=\"574\" y2=\"237\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"cov\" data-g=\"cov\"><rect class=\"cs-box\" x=\"40\" y=\"330\" width=\"640\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"354\">Release criterion: coverage target met</text><text class=\"cs-sub\" x=\"360\" y=\"374\">Logic stuck-at/transition coverage · full-cell SRAM march test</text></g><line class=\"cs-arr\" x1=\"214\" y1=\"292\" x2=\"300\" y2=\"328\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"471\" y1=\"292\" x2=\"420\" y2=\"328\" marker-end=\"url(#csar)\"/></svg>",
+  "legend": [
+    {
+      "k": "jtag",
+      "name": "JTAG / TAP (test entry)",
+      "desc": "The IEEE 1149.1 access port lets ATE deliver patterns, launch scan and MBIST, and use boundary scan to test pins and package connections. It is a unified external test gate—standard large-ASIC practice, not a published v1 feature."
+    },
+    {
+      "k": "scan",
+      "name": "Scan chains (logic test)",
+      "desc": "Connect registers in each array PE into shift chains. Test mode shifts in known patterns, captures responses, and shifts them out for comparison, covering stuck-at and transition faults across regular MXU logic."
+    },
+    {
+      "k": "mbist",
+      "name": "MBIST (SRAM test)",
+      "desc": "Small built-in test engines beside the 24 MiB Unified Buffer and 4 MiB accumulators execute march read/write sequences across every cell to detect bit-cell and coupling faults. SRAM arrays require MBIST rather than scan."
+    },
+    {
+      "k": "ub",
+      "name": "Large memories under test",
+      "desc": "Nearly 30 MiB of on-chip SRAM has many cells and occupies substantial area, making it defect-sensitive. Every macro needs MBIST coverage or bad cells remain invisible."
+    },
+    {
+      "k": "cov",
+      "name": "Coverage criterion",
+      "desc": "DFT quality is measured by fault coverage: logic must reach defined stuck-at and transition targets, and every SRAM cell must pass the march algorithm. Insufficient coverage permits escapes and prevents credible yield estimates."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "mxu",
+        "scan"
+      ],
+      "cap": "① Test large logic: chain registers in every MXU PE, shift in patterns, capture responses, and cover stuck-at and transition faults."
+    },
+    {
+      "keys": [
+        "ub",
+        "mbist",
+        "acc"
+      ],
+      "cap": "② Test large SRAM: give the 24 MiB Unified Buffer and 4 MiB accumulators MBIST engines that run march algorithms across every cell."
+    },
+    {
+      "keys": [
+        "jtag"
+      ],
+      "cap": "③ Unify access: ATE uses JTAG/TAP to control scan and MBIST and performs boundary scan on package and pin connections."
+    },
+    {
+      "keys": [
+        "cov"
+      ],
+      "cap": "④ Measure coverage: release only when logic targets and full-cell SRAM tests pass, enabling effective screening and yield accounting."
+    },
+    {
+      "keys": [
+        "cov",
+        "mxu",
+        "ub"
+      ],
+      "cap": "⑤ Close gaps: add scan points or improve MBIST whenever coverage misses target; otherwise defective parts escape to the field."
+    }
+  ],
+  "before": [
+    "<b>Understand the cost of omitting DFT</b>: Defects are inevitable in a 331 mm² ASIC with nearly 30 MiB of SRAM. Without dedicated test logic, yield is unknowable and bad parts reach the data center. DFT starts at architecture, not after design.",
+    "<b>Decisions to make</b>: Fault-coverage targets, scan-chain partitioning and count, MBIST coverage, JTAG/TAP features, isolation between test and functional modes, test-pin budget, and maximum ATE time.",
+    "<b>Required inputs</b>: Process-library DFT cells such as scan flops, MBIST controllers, and TAP logic; defect models and fault types; block areas and SRAM inventories; and production ATE capabilities and throughput.",
+    "<b>Hard constraints</b>: DFT consumes area, adds scan-mux timing load, and uses pins, competing with compute (§3.3) and power (§3.9). TPU v1 publishes no exact scan/MBIST counts or coverage, so no proprietary figures are invented."
+  ],
+  "during": [
+    "<b>Divide methods by circuit type</b>: Use scan for the MXU's vast regular logic by chaining registers and injecting patterns; use MBIST march algorithms for each SRAM, whose cells cannot be tested individually through scan.",
+    "<b>Prioritize large SRAMs</b>: The 24 MiB Unified Buffer and 4 MiB accumulators are defect-sensitive. Wrap every macro with MBIST that exercises reads, writes, bit flips, and coupling behavior to eliminate blind spots.",
+    "<b>Provide one standard access path</b>: Connect scan chains and MBIST engines to JTAG/TAP so ATE can deliver patterns, launch tests, collect responses, and inspect package connections through boundary scan.",
+    "<b>Set coverage against cost</b>: Higher coverage screens more faults but adds scan points, vector volume, and ATE time. Balance escape risk against test, area, and timing cost; require logic stuck-at/transition targets and full-cell SRAM march tests.",
+    "<b>Isolate test and functional modes</b>: Scan activity disturbs state. Ensure test mode cannot be triggered during functional operation and that inserted DFT logic does not unduly degrade functional timing.",
+    "<b>State the disclosure boundary</b>: Scan, MBIST, JTAG, and coverage criteria here are standard large data-center ASIC practices. Public TPU v1 material contains no proprietary chain counts, coverage values, or MBIST configuration."
+  ],
+  "result": [
+    {
+      "label": "Logic test",
+      "value": "Scan chains through MXU registers (standard practice)"
+    },
+    {
+      "label": "Memory test",
+      "value": "MBIST for 24 MiB UB + 4 MiB accumulators"
+    },
+    {
+      "label": "Test access",
+      "value": "JTAG/TAP + boundary scan"
+    },
+    {
+      "label": "Coverage criterion",
+      "value": "Logic stuck-at/transition targets + full-cell SRAM march"
+    },
+    {
+      "label": "Cost",
+      "value": "Area / timing / pins compete with compute and power"
+    },
+    {
+      "label": "TPU v1-specific figures",
+      "value": "Not public; intentionally not invented"
+    }
+  ],
+  "after": [
+    "<b>Verify DFT itself</b>: Run fault simulation to confirm achieved coverage and inject memory faults to validate MBIST. Add scan points or revise the march algorithm and iterate when targets are missed.",
+    "<b>Create production tests for ATE</b>: Package scan vectors and MBIST sequences into an ATE program, defining test cadence and time budgets so per-device screening cost remains controlled.",
+    "<b>Propagate constraints</b>: Give physical implementation scan routing, TAP placement, DFT-cell area, and timing constraints; give package and board teams boundary-scan connection requirements.",
+    "<b>Support yield and failure analysis</b>: Feed test outcomes into yield statistics and root-cause analysis to identify defective logic or SRAM macros and inform process and design improvements. These are standard practices where v1 is unpublished."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (scan, MBIST, JTAG, and coverage details are standard large-ASIC practice, not published TPU v1 mechanisms; the case labels this distinction.)"
+}

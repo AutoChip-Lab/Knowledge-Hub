@@ -1,0 +1,117 @@
+{
+ "secNum": "3.5",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · BEOL (Back-End-of-Line): stacking a dozen-plus layers of copper metal, interlayer dielectrics, and vias above completed transistors to “wire” the 256×256 array, 24 MiB UB, and control logic into the complete circuit defined in ⑧",
+ "oneLine": "This case focuses on “BEOL: building interconnects.” FEOL has already fabricated the transistors—the device bodies for MACs, SRAM, and control logic—in the substrate, but at this point they remain electrically isolated islands. BEOL “adds floors and wiring” above them: copper metal is formed layer by layer (M1..Mx), low-k interlayer dielectric (ILD) laterally insulates each level, and vias provide vertical connections between levels; passivation and external bond pads complete the stack. Every wire planned in the physical layout during ⑧ becomes an actual copper conductor on the wafer here. Modern large chips commonly use a dozen-plus metal layers. On TPU v1’s 28 nm, ≤331 mm² die, this copper interconnect network links the 256×256 systolic array, 24 MiB Unified Buffer, accumulators, and control logic into a complete circuit, then exposes I/O pads for packaging in ⑫.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 410\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">BEOL = “add floors and wiring” above transistors: multilayer copper metal (M1..Mx) + interlayer dielectric + vias turn the routes from ⑧ physical design into real metal and connect the complete TPU</text><g class=\"cs-part\" data-k=\"feol\" data-g=\"feol\"><rect class=\"cs-box\" x=\"34\" y=\"320\" width=\"652\" height=\"56\" rx=\"8\" fill=\"#fee2e2\" stroke=\"#fca5a5\"/><text class=\"cs-t\" x=\"360\" y=\"344\">FEOL: substrate + transistor layer (the device bodies of the 256×256 MAC array, SRAM, and control logic)</text><text class=\"cs-sub\" x=\"360\" y=\"364\">The “ground-floor foundation” completed before BEOL—transistors exist but are not yet connected</text></g><polyline class=\"cs-arr\" points=\"360,320 360,306\" fill=\"none\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"468\" y=\"306\">↑ BEOL handoff: route above this layer</text><g class=\"cs-part\" data-k=\"m1\" data-g=\"m1\"><rect class=\"cs-box\" x=\"34\" y=\"278\" width=\"652\" height=\"26\" rx=\"4\" fill=\"#dbeafe\" stroke=\"#93c5fd\"/><text class=\"cs-cellt\" x=\"360\" y=\"296\">M1 local interconnect (finest and densest; lands directly on transistor source/drain/gate contacts)</text></g><g class=\"cs-part\" data-k=\"via\" data-g=\"via\"><rect class=\"cs-cell\" x=\"150\" y=\"266\" width=\"12\" height=\"12\"/><rect class=\"cs-cell\" x=\"358\" y=\"266\" width=\"12\" height=\"12\"/><rect class=\"cs-cell\" x=\"560\" y=\"266\" width=\"12\" height=\"12\"/></g><g class=\"cs-part\" data-k=\"mid\" data-g=\"mid\"><rect class=\"cs-box\" x=\"34\" y=\"232\" width=\"652\" height=\"26\" rx=\"4\" fill=\"#bfdbfe\" stroke=\"#60a5fa\"/><text class=\"cs-cellt\" x=\"360\" y=\"250\">M2..M5 intermediate layers (progressively wider; carry signals and short power routes among array/SRAM/control blocks)</text></g><g class=\"cs-part\" data-k=\"via2\" data-g=\"via\"><rect class=\"cs-cell\" x=\"240\" y=\"220\" width=\"12\" height=\"12\"/><rect class=\"cs-cell\" x=\"460\" y=\"220\" width=\"12\" height=\"12\"/></g><g class=\"cs-part\" data-k=\"top\" data-g=\"top\"><rect class=\"cs-box\" x=\"34\" y=\"186\" width=\"652\" height=\"26\" rx=\"4\" fill=\"#93c5fd\" stroke=\"#3b82f6\"/><text class=\"cs-cellt\" x=\"360\" y=\"204\">Top metal (widest; die-wide clock distribution, power/ground grids, and long buses)</text></g><g class=\"cs-part\" data-k=\"ild\" data-g=\"ild\"><rect class=\"cs-box\" x=\"34\" y=\"150\" width=\"652\" height=\"26\" rx=\"4\" fill=\"#f1f5f9\" stroke=\"#cbd5e1\"/><text class=\"cs-cellt\" x=\"360\" y=\"168\">Interlayer dielectric ILD (low-k insulator: separates metal levels and conducts only at vias)</text></g><g class=\"cs-part\" data-k=\"pad\" data-g=\"pad\"><rect class=\"cs-box\" x=\"34\" y=\"104\" width=\"652\" height=\"34\" rx=\"6\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"360\" y=\"126\">Passivation + I/O pads: top of BEOL, exposing external interfaces → packaging in ⑫</text></g><polyline class=\"cs-arr\" points=\"360,150 360,138\" fill=\"none\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"40\" y=\"64\">Bottom-up cross-section: FEOL transistors → M1 (fine) → intermediate layers → top metal (wide) → pads; vias conduct vertically between layers, while ILD provides lateral isolation</text><text class=\"cs-note\" x=\"40\" y=\"84\">Modern large chips commonly use a dozen-plus metal layers; TPU v1’s 28 nm, ≤331 mm² 256×256 array, 24 MiB UB, and control logic rely on this copper network to realize the complete circuit designed in ⑧</text><text class=\"cs-note\" x=\"40\" y=\"396\">Disclosure boundary: copper damascene, low-k ILD, a dozen-plus metal layers, and CMP planarization are common BEOL practice for this class of 28 nm large chip; TPU v1 does not disclose its proprietary layer count, dielectric recipe, or foundry. This diagram uses known structures only as the objects being wired.</text></svg>",
+ "legend": [
+  {
+   "k": "feol",
+   "name": "FEOL (device layer/foundation)",
+   "desc": "The handoff point to BEOL. Earlier front-end steps have already formed the transistor bodies in the silicon substrate—the devices for TPU’s 65,536 8-bit MACs, SRAM (Unified Buffer/accumulators), and control logic—but they remain electrically isolated islands. BEOL no longer modifies the transistors; it stacks metal and routes wires above this “ground-floor foundation” to connect those islands into circuits. FEOL determines which devices exist; BEOL determines how they are connected."
+  },
+  {
+   "k": "m1",
+   "name": "M1 local interconnect (finest and densest)",
+   "desc": "The first metal layer nearest the transistors is also the finest and densest. It lands directly on transistor source/drain/gate contacts and provides the “last-mile” local wiring that connects neighboring devices into cells. For TPU’s systolic array, assembled from a vast number of regular MAC cells, M1 density and uniformity directly determine whether each MAC is wired correctly. An open or short on this layer can render the affected die unusable."
+  },
+  {
+   "k": "mid",
+   "name": "Intermediate metal layers (M2..Mx, progressively wider)",
+   "desc": "Several metal layers above M1 gradually increase in width. They carry signals and shorter power routes among the array, SRAM, and control blocks—the corridors connecting rooms in a building. Physical routing in ⑧ distributes most connections across these intermediate layers. Higher layers use wider wires, travel farther, and have lower resistance; this layered routing is how design tools fit a chip’s dense connectivity into a finite metal stack."
+  },
+  {
+   "k": "top",
+   "name": "Top metal (widest: clock/power/long buses)",
+   "desc": "The uppermost, thickest, and widest metal layers handle global functions: distributing the clock across the die, forming power/ground grids, and carrying long chip-level buses. Wider wires mean lower resistance, greater current capacity, and reduced supply-voltage drop and clock skew. For a large TPU chip that synchronously drives a 256×256 array, the strength of the top-level power grid and clock tree directly affects stable power delivery and synchronization at 700 MHz."
+  },
+  {
+   "k": "via",
+   "name": "Vias (vertical interlayer connections)",
+   "desc": "Metal layers are normally separated by dielectrics; current can move between adjacent layers only at vias, analogous to elevators or shafts between floors. A connection from a transistor to the top-level power network often traverses several metal layers through a chain of vias. Vias are among the BEOL features most susceptible to reliability problems such as electromigration and voids, so critical connections commonly use multiple parallel vias for redundancy."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "feol"
+   ],
+   "cap": "① Receive the FEOL handoff: FEOL has built the transistors for MACs, SRAM, and control logic, but they remain isolated islands. BEOL begins stacking metal and routing above this “foundation” without altering the devices themselves."
+  },
+  {
+   "keys": [
+    "m1",
+    "via"
+   ],
+   "cap": "② Form M1 + vias: create the finest, densest first copper layer, landing directly on transistor contacts to connect neighboring devices into cells; define vias for vertical connections between layers."
+  },
+  {
+   "keys": [
+    "mid",
+    "ild"
+   ],
+   "cap": "③ Stack intermediate layers + dielectric: progressively form wider intermediate metal layers to carry signals among the array, SRAM, and control blocks. Fill the spaces between layers with low-k interlayer dielectric (ILD), which insulates laterally and conducts vertically only at vias."
+  },
+  {
+   "keys": [
+    "top"
+   ],
+   "cap": "④ Use top metal for global networks: route clock distribution, power/ground grids, and long buses on the widest top layers, ensuring stable power delivery and synchronization while the entire 256×256 array operates at 700 MHz."
+  },
+  {
+   "keys": [
+    "pad"
+   ],
+   "cap": "⑤ Finish with passivation + pads: form the top passivation layer and open I/O pads, leaving external interfaces for the fully connected circuit before handoff to packaging in ⑫."
+  }
+ ],
+ "before": [
+  "<b>FEOL must be complete and verified</b>: Before BEOL, the substrate transistors—including TPU’s 65,536 MACs, SRAM, and control logic—must be fully fabricated and electrically within specification. BEOL only “wires” devices; it does not “build” them, so additional metal cannot rescue a defective FEOL device layer.",
+  "<b>Import the metal plan from ⑧ physical routing</b>: Which routes use each metal layer, which layers carry signals, power, or clocks, and where vias are placed are all fixed by the place-and-route (P&R) layout in ⑧. BEOL converts those “drawn wires” into physical copper layer by layer, so fabrication must begin from the correct routing revision.",
+  "<b>Define the metal/dielectric process stack</b>: Select the conductor (copper damascene), interlayer dielectric (low-k insulator), thickness and minimum width/spacing for every layer, and total metal-layer count. This “metal stack” must exactly match the process rules assumed during routing in ⑧, or the interconnect cannot be fabricated as designed.",
+  "<b>Maintain the alignment reference</b>: Every metal layer must align precisely with the layer beneath it, and each via must land exactly where the upper and lower metals overlap. Before fabrication, verify that alignment marks and overlay budgets extend through the entire stack; interlayer misalignment can disconnect a via and open an entire route.",
+  "<b>Prepare a planarization strategy</b>: Each added metal and dielectric layer introduces topography. BEOL uses chemical-mechanical polishing (CMP) to flatten every level before stacking the next; otherwise, upper-layer lithography cannot focus correctly. A layer-specific CMP plan is therefore essential to stacking a dozen-plus levels reliably."
+ ],
+ "during": [
+  "<b>“Build floors and route wires” from the bottom upward</b>: Starting with M1 nearest the transistors, form metal, fill interlayer dielectric, and create vias one level at a time until reaching the widest top metal. M1 provides fine, dense local wiring; intermediate layers carry signals; top layers handle clocks, power, and long buses. Every level repeats the cycle of trench lithography → etch → copper fill → CMP planarization; a dozen-plus layers require a dozen-plus cycles.",
+  "<b>Copper damascene: etch first, then fill with copper</b>: Modern BEOL does not deposit copper and then pattern it. In damascene processing, trenches and via holes are first etched into the dielectric, copper is electroplated to fill them, and CMP removes the excess, leaving metal only in the recessed features. Vias and wires are often filled together using dual damascene, forming the vertical connection and route in one sequence.",
+  "<b>ILD insulates laterally; vias conduct vertically</b>: Low-k interlayer dielectric (ILD) separates metal levels to prevent crosstalk and shorts; only vias connect them vertically. The complete interconnect is a three-dimensional network in which metal routes horizontally, vias change layers vertically, and ILD insulates everywhere else. Every connection designed in ⑧ becomes a physical three-dimensional copper path here.",
+  "<b>Top layers carry global power and clock networks</b>: Metal becomes wider toward the top because global power delivery and clock distribution require high current, long reach, and tight tolerances. Wider wire → lower resistance → less IR drop and clock skew. For a large TPU chip whose array operates synchronously at 700 MHz, the quality of top-level power and clock networks directly determines whether the entire array runs reliably.",
+  "<b>Per-layer CMP planarization is the quiet enabler</b>: Every completed metal/dielectric level creates surface topography and must be planarized by CMP before the next one is added. Without it, upper-layer lithography loses focus and linewidths drift. Accurate stacking of a dozen-plus metal layers depends on flattening the surface after every level; CMP is a critical supporting operation in multilayer BEOL.",
+  "<b>Disclosure boundary</b>: Copper dual damascene, low-k ILD, a dozen-plus metal layers, per-layer CMP planarization, and redundant dual vias are common BEOL practices for this class of 28 nm large chip/PCIe accelerator. TPU v1 does not disclose its proprietary metal-layer count, dielectric recipe, routing stack, or foundry. This section uses its known 256×256 array, 24 MiB UB, control logic, ≤331 mm² die, and 28 nm process only as the object being “wired” to explain BEOL concepts; it does not invent proprietary TPU back-end process values."
+ ],
+ "result": [
+  {
+   "label": "Output of this step",
+   "value": "A dozen-plus layers of copper interconnect, interlayer dielectric, and vias stacked above the transistors, with the complete circuit now electrically connected"
+  },
+  {
+   "label": "Interconnect hierarchy",
+   "value": "M1 (fine, local) → intermediate layers (progressively wider, signals) → top layers (widest, clock/power/buses)"
+  },
+  {
+   "label": "Three-way division of roles",
+   "value": "Metal routes horizontally, vias move vertically between layers, and low-k ILD provides insulating separation"
+  },
+  {
+   "label": "Fabrication method",
+   "value": "Copper dual damascene (etch trenches → fill copper → CMP), stacked level by level with CMP planarization after each"
+  },
+  {
+   "label": "Design realized",
+   "value": "Every connection planned during ⑧ physical routing becomes a physical copper conductor on the wafer"
+  },
+  {
+   "label": "External interface",
+   "value": "Top passivation + exposed I/O pads provide the interface handed to packaging in ⑫"
+  }
+ ],
+ "after": [
+  "<b>Inspect interconnect integrity</b>: Measure critical-layer linewidth/spacing, via-chain resistance, and interlayer overlay to detect opens, bridging shorts, or poor via contacts. BEOL defects usually mean “the wiring is wrong” rather than a failed device, so they must be isolated layer by layer here.",
+  "<b>Perform wafer-level electrical test (WAT/CP)</b>: Probe the wafer to check continuity and whether each die’s circuit functions as designed in ⑧. After BEOL completes the wiring, this is the first opportunity to power and exercise the circuit, providing an initial screen of good dies.",
+  "<b>Hand passivation and pads to packaging</b>: Confirm that the top passivation is intact and I/O pads are opened correctly, then send the fully connected wafer with exposed interfaces to packaging in ⑫ for dicing, die attach, wire bonding/bumps, and eventual integration into TPU’s PCIe accelerator card.",
+  "<b>Feed results back into the BEOL process</b>: Return die-wide interconnect resistance, via yield, and CMP planarity data to process engineering; tune plating, etch, and CMP parameters to improve interconnect yield. Persistent shifts may require reviewing the routing in ⑧ or assumptions behind the metal stack.",
+  "<b>Preserve an auditable record</b>: Archive the lot’s BEOL metal stack, interconnect electrical-test results, and defect data in the manufacturing process history as traceable evidence of each die’s interconnect quality for later packaging/test and yield-analysis review."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (multilevel copper interconnect, copper dual damascene, low-k ILD, via-based interlayer connections, CMP planarization, passivation, and pads are standard manufacturing practices, not proprietary disclosures for TPU v1)"
+}

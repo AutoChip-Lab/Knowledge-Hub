@@ -1,0 +1,117 @@
+{
+  "secNum": "3.1",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · Profiling Data-Center Inference with a Roofline Model",
+  "oneLine": "Before architecture work begins, profile Google's data-center inference workloads: reduce MLPs, CNNs, and LSTMs to matrix multiplication, then use a roofline model to distinguish compute-bound layers from bandwidth-bound ones—the core deliverable of workload analysis.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 380\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><line class=\"cs-arr\" x1=\"90\" y1=\"320\" x2=\"660\" y2=\"320\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"90\" y1=\"320\" x2=\"90\" y2=\"50\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"430\" y=\"345\">Arithmetic intensity = operations / memory traffic (FLOP/Byte) →</text><text class=\"cs-note\" x=\"20\" y=\"60\">Performance</text><text class=\"cs-note\" x=\"20\" y=\"74\">(TOPS)</text><g class=\"cs-part\" data-k=\"roof-mem\" data-g=\"roof-mem\"><line class=\"cs-arr\" x1=\"90\" y1=\"320\" x2=\"340\" y2=\"95\" marker-end=\"url(#csar)\"/></g><g class=\"cs-part\" data-k=\"roof-comp\" data-g=\"roof-comp\"><line class=\"cs-arr\" x1=\"340\" y1=\"95\" x2=\"640\" y2=\"95\"/></g><line x1=\"340\" y1=\"95\" x2=\"340\" y2=\"320\" stroke=\"#cbd5e1\" stroke-width=\"1\" stroke-dasharray=\"4 4\"/><line x1=\"90\" y1=\"95\" x2=\"340\" y2=\"95\" stroke=\"#cbd5e1\" stroke-width=\"1\" stroke-dasharray=\"4 4\"/><text class=\"cs-note\" x=\"105\" y=\"285\">Sloped roof = bandwidth bound</text><text class=\"cs-note\" x=\"105\" y=\"299\">~30 GB/s · DDR3 cannot keep up</text><text class=\"cs-sub\" x=\"450\" y=\"84\">Flat roof = compute bound · ~92 TOPS</text><text class=\"cs-note\" x=\"296\" y=\"312\">Ridge point</text><g class=\"cs-part\" data-k=\"ridge\" data-g=\"ridge\"><circle cx=\"340\" cy=\"95\" r=\"6\" fill=\"#fff\" stroke=\"#7c5cce\" stroke-width=\"2.4\"/></g><g class=\"cs-part\" data-k=\"p-small\" data-g=\"p-small\"><circle cx=\"180\" cy=\"239\" r=\"7\" fill=\"#faf7ff\" stroke=\"#c4b5fd\" stroke-width=\"1.6\"/><text class=\"cs-cellt\" x=\"180\" y=\"243\">A</text></g><text class=\"cs-note\" x=\"200\" y=\"232\">Small batch / large weights</text><text class=\"cs-note\" x=\"200\" y=\"246\">LSTM · fully connected → memory bound</text><g class=\"cs-part\" data-k=\"p-mid\" data-g=\"p-mid\"><circle cx=\"290\" cy=\"140\" r=\"7\" fill=\"#faf7ff\" stroke=\"#c4b5fd\" stroke-width=\"1.6\"/><text class=\"cs-cellt\" x=\"290\" y=\"144\">B</text></g><text class=\"cs-note\" x=\"308\" y=\"138\">Medium-batch convolution (partly bound)</text><g class=\"cs-part\" data-k=\"p-big\" data-g=\"p-big\"><circle cx=\"520\" cy=\"110\" r=\"7\" fill=\"#faf7ff\" stroke=\"#c4b5fd\" stroke-width=\"1.6\"/><text class=\"cs-cellt\" x=\"520\" y=\"114\">C</text></g><text class=\"cs-note\" x=\"455\" y=\"135\">Large matrix / large batch → near compute roof</text><text class=\"cs-note\" x=\"100\" y=\"40\">Peak: 92 TOPS; many real layers remain on the slope</text></svg>",
+  "legend": [
+    {
+      "k": "roof-comp",
+      "name": "Flat roof = compute bound",
+      "desc": "The horizontal ceiling is set by peak compute: TPU v1's 256×256 array contains 65,536 MACs at 700 MHz, yielding about 92 INT8 TOPS. Layers with sufficient arithmetic intensity approach this ceiling."
+    },
+    {
+      "k": "roof-mem",
+      "name": "Sloped roof = bandwidth bound",
+      "desc": "The slope is set by off-chip memory bandwidth: TPU v1's 8 GiB DDR3 delivers about 30 GB/s. Low-intensity layers cannot fetch operands fast enough, leaving compute idle on this slope."
+    },
+    {
+      "k": "ridge",
+      "name": "Ridge point",
+      "desc": "The intersection of the bandwidth and compute roofs equals peak compute divided by bandwidth. It is the minimum work per byte required to sustain peak compute."
+    },
+    {
+      "k": "p-small",
+      "name": "Memory-bound layer (A)",
+      "desc": "Small-batch layers with large weights—typically LSTMs and fully connected layers—reuse each fetched weight only once or twice. Their low arithmetic intensity places them left of the ridge, a common measured TPU bottleneck."
+    },
+    {
+      "k": "p-big",
+      "name": "Compute-bound layer (C)",
+      "desc": "Large matrices and large batches reuse weights many times. Their high arithmetic intensity places them right of the ridge, where they can exploit the systolic array's peak throughput."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "roof-comp",
+        "roof-mem"
+      ],
+      "cap": "① Draw the roofs: peak compute caps the flat segment and off-chip bandwidth caps the slope; no workload can exceed either limit."
+    },
+    {
+      "keys": [
+        "ridge"
+      ],
+      "cap": "② Locate the ridge: compute ÷ bandwidth marks the arithmetic intensity needed to keep the array fully fed."
+    },
+    {
+      "keys": [
+        "p-big"
+      ],
+      "cap": "③ Plot workloads: large matrices and large batches (C) sit right of the ridge and approach the compute roof—the ideal case."
+    },
+    {
+      "keys": [
+        "p-mid",
+        "p-small"
+      ],
+      "cap": "④ Key finding: many real layers (A: small batch/large weights; B: medium convolution) sit left of the ridge, bandwidth-bound and far below 92 TOPS."
+    },
+    {
+      "keys": [
+        "roof-mem",
+        "p-small"
+      ],
+      "cap": "⑤ Conclusion: inference is often memory-bound. The architecture needs both abundant compute and higher effective bandwidth through a large on-chip buffer and weight-stationary reuse."
+    }
+  ],
+  "before": [
+    "<b>Define the question first</b>: What workloads must this chip serve? TPU targets Google's highest-volume data-center inference—MLPs, CNNs, and LSTMs—not training or one specific model.",
+    "<b>Profile inputs to collect</b>: Operator mix, matrix dimensions and batch sizes, operations versus memory traffic (arithmetic intensity), weight/activation working-set sizes, numerical-precision tolerance, and latency SLA.",
+    "<b>Required evidence</b>: Production traces or a representative model suite, compute density and off-chip bandwidth available in the candidate process, and numerical-format support in the TensorFlow/XLA ecosystem.",
+    "<b>Hard constraints</b>: Data-center power and latency limits, especially tail latency for online inference; the PCIe accelerator-card form factor; and continuing workload evolution. The profile cannot overfit one model."
+  ],
+  "during": [
+    "<b>Choose a common abstraction</b>: MLPs, CNNs, and LSTMs can all be lowered to matrix multiplication (GEMM), so characterize the portfolio by matrix-multiply share and arithmetic intensity instead of optimizing model by model.",
+    "<b>Measure precision tolerance</b>: Inference tolerates low precision in practice, motivating INT8 multiplication with INT32 accumulation. Versus floating point, this cuts storage and bandwidth by about 4× while making each MAC smaller and more efficient.",
+    "<b>Use a roofline to expose bottlenecks</b>: Plot each layer by arithmetic intensity. Despite a high peak, many small-batch or weight-heavy layers lie on the bandwidth slope and are memory-bound—the same pattern shown in the TPU paper.",
+    "<b>Balance compute and bandwidth</b>: Adding MACs alone creates paper performance when layers are bandwidth-bound. Raise effective bandwidth as well: buffer activations in a large Unified Buffer, maximize weight reuse with a weight-stationary dataflow, and move the ridge left.",
+    "<b>Balance breadth and specialization</b>: Fully utilize compute on common large-matrix, large-batch work while supporting small-batch, low-latency cases. TPU favors throughput inference, dedicates most area to matrix multiplication, and accepts lower small-batch utilization.",
+    "<b>Leave room for evolution</b>: Workloads change with new models and longer contexts. Record trends in arithmetic intensity and bandwidth shortfall to guide later designs; this is sound engineering practice, not a disclosed TPU v1 roadmap."
+  ],
+  "result": [
+    {
+      "label": "Target workloads",
+      "value": "MLP / CNN / LSTM inference"
+    },
+    {
+      "label": "Common abstraction",
+      "value": "Lower all workloads to matrix multiplication (GEMM)"
+    },
+    {
+      "label": "Precision decision",
+      "value": "INT8 multiply / INT32 accumulate is sufficient"
+    },
+    {
+      "label": "Key finding",
+      "value": "Many layers are memory-bound, not compute-bound"
+    },
+    {
+      "label": "Peak vs. measured",
+      "value": "~92 TOPS on paper; small-batch layers fall far short"
+    },
+    {
+      "label": "Architecture implication",
+      "value": "Pair abundant compute with effective bandwidth (large buffer / weight reuse)"
+    }
+  ],
+  "after": [
+    "<b>Feed the profile into the compute core (§3.3)</b>: Matrix multiplication dominates, so implement a systolic array; INT8 tolerance fixes 8-bit MACs with 32-bit accumulation.",
+    "<b>Feed the bandwidth gap into memory hierarchy (§3.4)</b>: The roofline exposes bandwidth as a bottleneck, requiring a large 24 MiB on-chip Unified Buffer for activations and weight-stationary reuse to raise arithmetic intensity and move the ridge left.",
+    "<b>Define validation benchmarks</b>: Use this representative workload suite plus roofline and cycle-level models as the scorecard for every later tradeoff, checking array utilization and end-to-end latency.",
+    "<b>State uncertainty honestly</b>: Refresh the profile as models evolve. TPU v1 uses off-chip DDR3; later designs would need more off-chip bandwidth to ease memory-bound behavior. That is a general inference-ASIC direction, not a disclosed v1 detail.",
+    "<b>Close the loop with product definition (①/②)</b>: Confirm that throughput inference—with lower utilization at small batch sizes—matches the intended product position."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017. Facts disclosed in the paper are distinguished from illustrative examples and standard industry practice; the latter are not presented as disclosed TPU v1 implementation details."
+}

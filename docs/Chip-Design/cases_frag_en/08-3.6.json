@@ -1,0 +1,119 @@
+{
+ "secNum": "3.6",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Routing: Real Metal Connects the Placed 256×256 Array and 24 MiB UB—Global Corridors, Detailed Tracks, DRC, Congestion, and Crosstalk",
+ "oneLine": "Routing turns logical nets into physical metal. Global routing first assigns approximate GCell corridors and layer resources while predicting congestion; detailed routing then places each wire on an exact layer and track with vias, obeying every metal DRC rule. In TPU, the 256×256 array contains massive but regular short PE-to-PE links suited to lower layers and reusable patterns, whereas UB↔array↔accumulator buses are long, wide upper-layer routes prone to congestion at convergence points and crosstalk along parallel runs. Only after routing and RC extraction do timing and power become fully credible.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 408\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"24\">Routing: connect placed cells in metal—global corridors, then exact layers/tracks; meet DRC and control congestion/SI</text><g class=\"cs-part\" data-k=\"netlist\" data-g=\"netlist\"><rect class=\"cs-box\" x=\"30\" y=\"44\" width=\"150\" height=\"74\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"105\" y=\"72\">Placed netlist</text><text class=\"cs-sub\" x=\"105\" y=\"92\">Cell locations fixed</text><text class=\"cs-sub\" x=\"105\" y=\"110\">Connections still logical</text></g><line class=\"cs-arr\" x1=\"180\" y1=\"81\" x2=\"232\" y2=\"81\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"global\" data-g=\"global\"><rect class=\"cs-box\" x=\"236\" y=\"44\" width=\"150\" height=\"74\" rx=\"8\" fill=\"#fefce8\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"311\" y=\"72\">① Global routing</text><text class=\"cs-sub\" x=\"311\" y=\"92\">Partition GCell grid</text><text class=\"cs-sub\" x=\"311\" y=\"110\">Assign corridors to nets</text></g><line class=\"cs-arr\" x1=\"386\" y1=\"81\" x2=\"438\" y2=\"81\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"detail\" data-g=\"detail\"><rect class=\"cs-box\" x=\"442\" y=\"44\" width=\"150\" height=\"74\" rx=\"8\" fill=\"#ecfeff\" stroke=\"#67e8f9\"/><text class=\"cs-t\" x=\"517\" y=\"72\">② Detailed routing</text><text class=\"cs-sub\" x=\"517\" y=\"92\">Exact layer / direction</text><text class=\"cs-sub\" x=\"517\" y=\"110\">Real metal + vias</text></g><line class=\"cs-arr\" x1=\"592\" y1=\"81\" x2=\"644\" y2=\"81\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"signoff\" data-g=\"signoff\"><rect class=\"cs-box\" x=\"648\" y=\"44\" width=\"62\" height=\"74\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"679\" y=\"72\">Physical</text><text class=\"cs-t\" x=\"679\" y=\"92\">interconnect</text><text class=\"cs-sub\" x=\"679\" y=\"110\">RC extractable</text></g><g class=\"cs-part\" data-k=\"stack\" data-g=\"stack\"><rect class=\"cs-box\" x=\"30\" y=\"150\" width=\"200\" height=\"234\" rx=\"8\"/><text class=\"cs-t\" x=\"130\" y=\"174\">Metal stack (illustrative)</text><line class=\"cs-arr\" x1=\"50\" y1=\"196\" x2=\"210\" y2=\"196\"/><text class=\"cs-sub\" x=\"130\" y=\"210\">M9–Mx upper: global power/buses</text><line class=\"cs-arr\" x1=\"50\" y1=\"226\" x2=\"210\" y2=\"226\" stroke-dasharray=\"5 4\"/><text class=\"cs-sub\" x=\"130\" y=\"240\">M5–M8 middle: long cross-block nets</text><line class=\"cs-arr\" x1=\"50\" y1=\"256\" x2=\"210\" y2=\"256\"/><text class=\"cs-sub\" x=\"130\" y=\"270\">M2–M4 lower: short local nets</text><line class=\"cs-arr\" x1=\"50\" y1=\"286\" x2=\"210\" y2=\"286\" stroke-dasharray=\"5 4\"/><text class=\"cs-sub\" x=\"130\" y=\"300\">M1 at cells: pin access</text><text class=\"cs-note\" x=\"130\" y=\"334\">Alternate horizontal/vertical layers</text><text class=\"cs-note\" x=\"130\" y=\"356\">Vias connect layers</text><text class=\"cs-note\" x=\"130\" y=\"376\">Upper wires wider / lower resistance</text></g><g class=\"cs-part\" data-k=\"array\" data-g=\"array\"><rect class=\"cs-box\" x=\"260\" y=\"150\" width=\"220\" height=\"234\" rx=\"8\" fill=\"#f8fafc\"/><text class=\"cs-t\" x=\"370\" y=\"174\">Inside 256×256 array: regular short nets</text><rect class=\"cs-box\" x=\"284\" y=\"190\" width=\"36\" height=\"36\" rx=\"3\"/><rect class=\"cs-box\" x=\"332\" y=\"190\" width=\"36\" height=\"36\" rx=\"3\"/><rect class=\"cs-box\" x=\"380\" y=\"190\" width=\"36\" height=\"36\" rx=\"3\"/><rect class=\"cs-box\" x=\"284\" y=\"238\" width=\"36\" height=\"36\" rx=\"3\"/><rect class=\"cs-box\" x=\"332\" y=\"238\" width=\"36\" height=\"36\" rx=\"3\"/><rect class=\"cs-box\" x=\"380\" y=\"238\" width=\"36\" height=\"36\" rx=\"3\"/><line class=\"cs-arr\" x1=\"320\" y1=\"208\" x2=\"332\" y2=\"208\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"368\" y1=\"208\" x2=\"380\" y2=\"208\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"302\" y1=\"226\" x2=\"302\" y2=\"238\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"350\" y1=\"226\" x2=\"350\" y2=\"238\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"320\" y1=\"256\" x2=\"332\" y2=\"256\" marker-end=\"url(#csar)\"/><text class=\"cs-sub\" x=\"370\" y=\"300\">PE→PE neighbor links, highly regular</text><text class=\"cs-note\" x=\"370\" y=\"322\">Weights/data/partial sums flow each cycle</text><text class=\"cs-note\" x=\"370\" y=\"342\">Uniformity → reusable route patterns</text><text class=\"cs-note\" x=\"370\" y=\"362\">Dense local routing on lower metal</text></g><g class=\"cs-part\" data-k=\"bus\" data-g=\"bus\"><rect class=\"cs-box\" x=\"500\" y=\"150\" width=\"200\" height=\"234\" rx=\"8\" fill=\"#fef2f2\" stroke=\"#fca5a5\"/><text class=\"cs-t\" x=\"600\" y=\"174\">Global buses/control: long routes</text><text class=\"cs-sub\" x=\"600\" y=\"198\">UB↔array↔accumulator</text><line class=\"cs-arr\" x1=\"524\" y1=\"214\" x2=\"676\" y2=\"214\"/><line class=\"cs-arr\" x1=\"524\" y1=\"226\" x2=\"676\" y2=\"226\"/><line class=\"cs-arr\" x1=\"524\" y1=\"238\" x2=\"676\" y2=\"238\"/><text class=\"cs-sub\" x=\"600\" y=\"266\">Wide buses on upper metal</text><text class=\"cs-note\" x=\"600\" y=\"290\">⚠ Congestion: bus convergence</text><text class=\"cs-note\" x=\"600\" y=\"310\">⚠ Crosstalk: long parallel coupling</text><text class=\"cs-note\" x=\"600\" y=\"330\">→ spacing / shielding / layer change</text><text class=\"cs-note\" x=\"600\" y=\"356\">Control has broad fanout and detours</text></g></svg>",
+ "legend": [
+  {
+   "k": "global",
+   "name": "① Global routing (assign corridors before exact wires)",
+   "desc": "Global routing divides the layout into a coarse GCell grid and plans an approximate path and layer allocation for every net. It balances demand against track capacity and redirects overflow. For wide TPU buses between UB, array, and accumulator, it identifies likely traffic bottlenecks before detailed routing."
+  },
+  {
+   "k": "detail",
+   "name": "② Detailed routing (exact layer, track, direction, and vias)",
+   "desc": "Within global corridors, detailed routing realizes each net as metal on specific layers and tracks, with exact bends and vias. It follows preferred layer directions, width/spacing rules, and connects every pin. Only then does a logical connection acquire real geometry and length."
+  },
+  {
+   "k": "stack",
+   "name": "Multilayer stack (short nets low, long nets/buses high)",
+   "desc": "Lower layers such as M1–M4 use finer, higher-resistance wires for pin access and short local connections; middle layers carry cross-block routes; thick, low-resistance upper layers such as M9–Mx carry global PDN and wide buses. Adjacent directions alternate and vias move between layers. Names and counts are illustrative."
+  },
+  {
+   "k": "array",
+   "name": "Inside the array: regular short neighbor nets",
+   "desc": "The 256×256 = 65,536 uniform PEs exchange weights, data, and partial sums with neighbors under weight-stationary flow. These short, directionally consistent lower-metal routes can reuse patterns across rows and columns, easing closure despite high local density."
+  },
+  {
+   "k": "bus",
+   "name": "Global buses/control: long routes with congestion and crosstalk",
+   "desc": "Wide data and control buses between the 24 MiB UB, array, and 4 MiB accumulator cross blocks on upper metal. Bus convergence consumes corridor capacity, and long parallel segments couple capacitively. Mitigate with spacing, ground shields, layer staggering, and corridor changes."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "netlist",
+    "global"
+   ],
+   "cap": "① Start with the placed netlist, whose cell locations and pins are fixed but connections remain logical. Global routing assigns each net an approximate GCell corridor and layer resources, balancing overflow."
+  },
+  {
+   "keys": [
+    "global",
+    "detail"
+   ],
+   "cap": "② Detailed routing realizes each net on an exact metal layer, track, and direction, uses vias to cross layers, and physically connects every pin."
+  },
+  {
+   "keys": [
+    "stack"
+   ],
+   "cap": "③ Apply layer specialization: short local nets use fine lower metal; long cross-block and wide buses use wider, lower-resistance upper metal; adjacent layers alternate direction. Layer names/counts are illustrative."
+  },
+  {
+   "keys": [
+    "array",
+    "bus"
+   ],
+   "cap": "④ Treat two net classes differently: regular PE→PE neighbor links use reusable lower-layer patterns, while UB↔array↔accumulator buses use upper layers and require focused congestion and crosstalk control."
+  },
+  {
+   "keys": [
+    "bus",
+    "signoff"
+   ],
+   "cap": "⑤ Meet metal DRC throughout—width, spacing, via, and minimum-area rules—and manage SI with spacing, shielding, or layer changes. After RC extraction, timing and power become physically credible."
+  }
+ ],
+ "before": [
+  "<b>Start from a placed netlist and physical views</b>: Routing receives fixed cell/pin locations plus LEF for standard cells and SRAM macros, including pin shapes, layers, internal obstructions, and routing blockages. These define legal access points and paths.",
+  "<b>Define the routing stack and per-layer rules</b>: Technology LEF and DRC provide available metals, preferred horizontal/vertical direction, minimum width/spacing, via rules, and density requirements. M1–Mx names here are illustrative for a 28 nm-class process.",
+  "<b>Coordinate signal resources with PDN</b>: Top metal may be heavily occupied by rings and straps. Partition layers and regions so wide data buses and PDN do not compete for the same tracks and create avoidable congestion.",
+  "<b>Bring timing constraints and critical-net rules</b>: Use SDC and mark accumulation chains, 700 MHz-related high-speed nets, and wide buses for priority or NDR treatment such as wider lines, spacing, and shielding.",
+  "<b>Estimate congestion with placement</b>: Trial route before detailed routing. If bus convergence at the UB/array edge is severely congested, revise macro placement or pin orientation because routability is fundamentally set by the floorplan."
+ ],
+ "during": [
+  "<b>First principle: global corridors first, exact geometry second</b>. Global routing balances resources and reduces GCell overflow; detailed routing then realizes wires inside those corridors. Skipping global planning causes long detours and deadlock at bus convergence.",
+  "<b>Use real metal and layer specialization</b>: Every connection becomes metal segments plus vias. PE→PE local links occupy lower layers, while wide UB↔array↔accumulator buses move to upper layers for lower resistance and delay. Alternating layer direction and via transitions balance congestion.",
+  "<b>Every wire and spacing must satisfy metal DRC</b>: Minimum width, spacing, via, area, and density rules apply continuously. The router checks and reroutes violations; final Calibre-class verification will reject every remaining geometry error.",
+  "<b>Manage congestion and crosstalk proactively</b>: Congestion arises where demand exceeds corridor tracks, especially bus convergence and array edges. Crosstalk arises from capacitively coupled parallel buses. Redistribute global routes, change layers, increase spacing, insert ground shields, and limit parallel length.",
+  "<b>Exploit array regularity</b>: Uniform 256×256 PE neighbor links have similar direction and length, so regular routing patterns can repeat across the array. Automate the regular region and spend detailed effort on irregular global buses and control detours.",
+  "<b>Evidence boundary</b>: Global/detailed routing, multilayer specialization, vias, DRC, congestion, SI, Innovus/ICC2, and LEF/DEF are standard ASIC back-end practice. TPU v1’s metal count, corridors, layer names, congestion, crosstalk handling, and layout are not public. The disclosed 256×256 array, 24 MiB UB, weight-stationary flow, 700 MHz, 28 nm, and ≤331 mm² serve only as the routing target; M1–Mx is illustrative."
+ ],
+ "result": [
+  {
+   "label": "Two-stage flow",
+   "value": "Global routing (GCell corridors/congestion balance) → detailed routing (exact layer/track/direction + vias)"
+  },
+  {
+   "label": "Metal-layer roles (illustrative)",
+   "value": "M1–M4: pin access/local nets; M5–M8: long cross-block nets; M9–Mx: global PDN + wide buses"
+  },
+  {
+   "label": "Array interconnect",
+   "value": "256×256 PE→PE neighbor links: regular, reusable patterns, mainly lower metal; watch local density"
+  },
+  {
+   "label": "Global buses/control",
+   "value": "UB↔array↔accumulator wide long buses on upper metal; congestion at convergence, crosstalk on parallel runs"
+  },
+  {
+   "label": "Primary product: routed layout",
+   "value": "DEF with layer/coordinate/via geometry for every net, satisfying metal DRC"
+  },
+  {
+   "label": "Next extractable data",
+   "value": "Post-route SPEF with real RC for sign-off STA / crosstalk / IR-drop analysis"
+  }
+ ],
+ "after": [
+  "<b>Run DRC on every wire, spacing, and via</b>: Use Calibre-class geometry checking for width, spacing, via, minimum area, and density. Reroute, move, or change layers until all violations are clean.",
+  "<b>Extract SPEF and run parasitic-aware sign-off STA</b>: Real wire length, layer, and vias now exist. Extract RC and verify whether 700 MHz, illustratively 1.43 ns, still closes and whether long-bus delay consumes margin.",
+  "<b>Review congestion and crosstalk reports</b>: Target any remaining GCell overflow at bus convergence/array edges and any SI failures on parallel buses with spacing, shielding, layer changes, or floorplan adjustment.",
+  "<b>Run IR-drop and EM analysis</b>: With power and signals implemented, verify voltage drop in the active array and current capacity of metal/vias. Real supply loss can reopen timing violations.",
+  "<b>Hand off for LVS and final DRC</b>: After timing, congestion, SI, and power integrity pass, perform full-chip DRC and LVS. Only a physically clean result becomes manufacturable GDS; routing determines the chip’s final electrical interconnect behavior."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the 256×256 systolic array, 24 MiB Unified Buffer, 4 MiB accumulator, weight-stationary flow, 700 MHz, 28 nm, and die ≤331 mm² are disclosed for v1; two-stage routing, multilayer allocation, vias, metal DRC, congestion/SI management, Innovus/ICC2, LEF/DEF, SPEF, and Calibre are standard back-end EDA practice, while layer naming, utilization, floorplan, metal count, layout, and QoR are illustrative or private)"
+}

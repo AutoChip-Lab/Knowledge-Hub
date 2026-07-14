@@ -1,0 +1,118 @@
+{
+ "secNum": "3.11",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Regression, debug, and bug management: nightly automation, failure triage, tracked closure, and tapeout convergence",
+ "oneLine": "Verification is not complete after one green run; it is a continuously operating closed loop. Every night, large directed and constrained-random suites exercise TPU's 256×256 array, Unified Buffer, handshakes, and dozen-plus CISC instructions. Failures are triaged into design versus environment/stimulus bugs, assigned by owner and severity, and tracked to closure. Every fix returns to regression. Daily cumulative-found versus cumulative-closed curves must converge before tapeout is credible.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 410\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"32\" y=\"24\">Regression loop: nightly tests → automatic triage → bug tracking to closure → rerun after every fix</text><g class=\"cs-part\" data-k=\"reg\" data-g=\"reg\"><rect class=\"cs-box\" x=\"32\" y=\"44\" width=\"190\" height=\"74\" rx=\"8\"/><text class=\"cs-t\" x=\"127\" y=\"72\">Nightly regression</text><text class=\"cs-sub\" x=\"127\" y=\"91\">High-volume constrained-random matrices</text><text class=\"cs-sub\" x=\"127\" y=\"107\">+ directed corners · fixed seeds</text></g><line class=\"cs-arr\" x1=\"222\" y1=\"81\" x2=\"286\" y2=\"81\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"pf\" data-g=\"pf\"><rect class=\"cs-box\" x=\"290\" y=\"44\" width=\"150\" height=\"74\" rx=\"8\"/><text class=\"cs-t\" x=\"365\" y=\"72\">Pass / Fail</text><text class=\"cs-sub\" x=\"365\" y=\"91\">Scoreboard vs. reference</text><text class=\"cs-sub\" x=\"365\" y=\"107\">Judge every test</text></g><line class=\"cs-arr\" x1=\"440\" y1=\"81\" x2=\"504\" y2=\"81\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"tri\" data-g=\"tri\"><rect class=\"cs-box\" x=\"508\" y=\"44\" width=\"180\" height=\"74\" rx=\"8\"/><text class=\"cs-t\" x=\"598\" y=\"72\">Automated triage</text><text class=\"cs-sub\" x=\"598\" y=\"91\">Design bug? or</text><text class=\"cs-sub\" x=\"598\" y=\"107\">environment/stimulus bug?</text></g><line class=\"cs-arr\" x1=\"598\" y1=\"118\" x2=\"598\" y2=\"158\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"db\" data-g=\"db\"><rect class=\"cs-box\" x=\"508\" y=\"162\" width=\"180\" height=\"74\" rx=\"8\" fill=\"#fef2f2\" stroke=\"#fca5a5\"/><text class=\"cs-t\" x=\"598\" y=\"190\">Bug database</text><text class=\"cs-sub\" x=\"598\" y=\"209\">Ownership / severity / owner</text><text class=\"cs-sub\" x=\"598\" y=\"225\">State: new→fix→verify→close</text></g><line class=\"cs-arr\" x1=\"508\" y1=\"199\" x2=\"444\" y2=\"199\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"fix\" data-g=\"fix\"><rect class=\"cs-box\" x=\"290\" y=\"162\" width=\"150\" height=\"74\" rx=\"8\"/><text class=\"cs-t\" x=\"365\" y=\"190\">Diagnose / fix</text><text class=\"cs-sub\" x=\"365\" y=\"209\">Minimal failing waveform</text><text class=\"cs-sub\" x=\"365\" y=\"225\">Change RTL or environment</text></g><polyline class=\"cs-arr\" points=\"290,199 250,199 250,81 222,81\" fill=\"none\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"232\" y=\"150\">Return fix to regression (loop)</text><g class=\"cs-part\" data-k=\"curve\" data-g=\"curve\"><rect class=\"cs-box\" x=\"32\" y=\"252\" width=\"656\" height=\"138\" rx=\"8\" fill=\"#f8fafc\" stroke=\"#cbd5e1\"/><text class=\"cs-t\" x=\"360\" y=\"276\">Bug discovery/closure convergence (illustrative)—tapeout health</text><polyline points=\"70,300 130,300 190,304 250,312 310,322 370,334 430,346 490,354 550,360 610,364 650,366\" fill=\"none\" stroke=\"#ef4444\" stroke-width=\"2\"/><polyline points=\"70,372 130,360 190,348 250,338 310,330 370,326 430,324 490,323 550,322 610,322 650,322\" fill=\"none\" stroke=\"#22c55e\" stroke-width=\"2\" stroke-dasharray=\"5 4\"/><text class=\"cs-sub\" x=\"92\" y=\"316\">Cumulative found (red, slowing)</text><text class=\"cs-sub\" x=\"560\" y=\"384\">Cumulative closed (green, catching up)</text><text class=\"cs-note\" x=\"540\" y=\"338\">Curves meet → approaching signoff</text></g></svg>",
+ "legend": [
+  {
+   "k": "reg",
+   "name": "Nightly regression (high-volume automation)",
+   "desc": "Rerun the accumulated suite on the latest RTL every night: constrained-random matrices across precisions/dimensions, full 256 and partial tiles; directed 32-bit accumulator overflow/saturation corners; legal, illegal, and back-to-back CISC sequences; handshakes and CDC. Fixed seeds reproduce every failure exactly. Regression is verification's heartbeat—one green run is insufficient; every night must remain green."
+  },
+  {
+   "k": "pf",
+   "name": "Pass / Fail decision (Scoreboard)",
+   "desc": "A bit-exact Reference Model and Scoreboard automatically judge each DUT result element/transaction, with SVA violations also counted as failures. Thousands of tests produce one report of passes, failures, and newly failing regressions. A test that passed yesterday and fails today often exposes a newly introduced defect."
+  },
+  {
+   "k": "tri",
+   "name": "Automated triage (failure classification)",
+   "desc": "Not every failure is a design defect. Triage classifies RTL behavior errors versus verification-environment defects such as a wrong model, protocol-violating stimulus, Scoreboard error, or missing constraint. Clustering by assertion, signal, and call-stack signature collapses hundreds of symptoms into a few root causes and assigns the right owner."
+  },
+  {
+   "k": "db",
+   "name": "Bug database (tracked to closure)",
+   "desc": "Each confirmed root cause becomes a tracked record with design/environment ownership, severity, owner, reproducer and seed, and lifecycle: new → diagnosis → fix → verification → closed. It is the single source of truth. A defect outside the database lacks ownership; a record not closed is not fixed."
+  },
+  {
+   "k": "curve",
+   "name": "Bug-convergence curves (tapeout criterion)",
+   "desc": "Plot cumulative discovered and cumulative closed bugs each day. In a healthy project, the discovery slope falls, closure catches discovery, the curves meet, and new-defect rate approaches zero. These curves are the clearest tapeout health indicator; a steep discovery curve means unknown silicon risk remains."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "reg",
+    "pf"
+   ],
+   "cap": "① Every night, automatically rerun constrained-random matrices + directed corners + instruction/handshake sequences on current RTL. The Scoreboard compares each test with the Reference Model and produces a report including newly failing regressions."
+  },
+  {
+   "keys": [
+    "pf",
+    "tri"
+   ],
+   "cap": "② Automatically triage every failure: cluster duplicate signatures and classify design bugs versus environment/stimulus defects, reducing hundreds of failures to a few root causes."
+  },
+  {
+   "keys": [
+    "tri",
+    "db"
+   ],
+   "cap": "③ Enter each root cause into the bug database with ownership, severity, owner, and reproduction seed; track new → diagnosis → fix → verification → closed until genuine closure."
+  },
+  {
+   "keys": [
+    "fix",
+    "reg"
+   ],
+   "cap": "④ After diagnosis and correction, replay the minimal failing trace and the full relevant regression. Confirm the fix and absence of new regressions, returning to the Nightly loop."
+  },
+  {
+   "keys": [
+    "curve"
+   ],
+   "cap": "⑤ Inspect convergence daily: slower discovery, closure catching discovery, curves meeting, and new defects approaching zero are hard evidence that the design is ready for tapeout."
+  }
+ ],
+ "before": [
+  "<b>Define regression scope and cadence</b>: choose full versus smoke suites, nightly RTL freeze point, compute budget, and reproducible seed policy. Regression must be scheduled, automatic, and traceable—not an occasional manual run—so it provides a stable health signal.",
+  "<b>Define failure-triage rules</b>: specify design versus environment classification, signature keys such as assertion/signal/seed, deduplication, and a triage owner for each block. Ambiguous rules turn high-volume failures into unowned repeated work.",
+  "<b>Define bug fields and lifecycle</b>: require ownership, severity, owner, reproducer + seed, and linked regression batch. Establish new → diagnosis → fix → verification → closed and the exact evidence required for closure.",
+  "<b>Define convergence criteria</b>: quantify closure—for example N consecutive green nights, new-bug rate below threshold, no unresolved high-severity defects, and simultaneous coverage closure. Predefined criteria prevent subjective tapeout decisions."
+ ],
+ "during": [
+  "<b>Rule: every random test must be reproducible</b>. Record and fix each Nightly constrained-random seed so every failure replays identically. A one-time disappearing failure cannot be debugged; reproducibility is the foundation of the regression loop.",
+  "<b>Rule: triage and deduplicate before filing bugs</b>. Hundreds of failures often represent only a few root causes. Cluster by signature, assign ownership, and file only distinct causes; otherwise owners drown in duplicate records.",
+  "<b>Distinguish design bugs from environment bugs carefully</b>. Mislabeling a wrong model, missing constraint, or Scoreboard defect as RTL can corrupt a correct design. Conversely, constraining away a genuine RTL defect hides silicon risk. Incorrect triage can be worse than an uninvestigated failure.",
+  "<b>Regress every fix to prevent regression</b>. Rerun the reproducer and the relevant/full suite. The most dangerous report entry is “passed yesterday, fails today,” usually a direct side effect of the current change.",
+  "<b>Track the shape of discovery and closure curves daily</b>. Healthy: discovery slope slows, closure catches up, and curves meet. Dangerous: discovery remains steep or closure persistently lags. Curve shape is more informative than today's raw fix count.",
+  "<b>Scope note</b>: Nightly regression, automated triage, bug lifecycles, and convergence curves are standard verification-engineering practice for large accelerator ASICs. TPU v1's array, Unified Buffer, handshakes, and CISC interfaces are public verification targets; its regression framework, compute budget, and bug counts are not disclosed."
+ ],
+ "result": [
+  {
+   "label": "Regression model",
+   "value": "Automated Nightly full suite · reproducible fixed seeds · regression report"
+  },
+  {
+   "label": "Decision method",
+   "value": "Scoreboard checks each test against reference · report includes new failures"
+  },
+  {
+   "label": "Triage output",
+   "value": "Cluster duplicate signatures → classify design bug / environment bug"
+  },
+  {
+   "label": "Bug fields (illustrative)",
+   "value": "Ownership · severity · owner · reproduction seed · state (new→fix→verify→close)"
+  },
+  {
+   "label": "Convergence curve",
+   "value": "Cumulative found vs. cumulative closed meet · new rate approaches zero"
+  },
+  {
+   "label": "Tapeout gate",
+   "value": "N consecutive green nights · no open critical bugs · coverage closes simultaneously"
+  }
+ ],
+ "after": [
+  "<b>Require stable, all-green regression</b>: run the complete suite on frozen RTL for multiple consecutive nights without new or intermittent failures, proving stable convergence rather than one lucky pass.",
+  "<b>Confirm the bug database has no unresolved items</b>: verify every record reached closed with regression evidence. Every high-severity open bug needs an explicit disposition before silicon.",
+  "<b>Include convergence curves in signoff evidence</b>: submit the meeting discovery/closure curves and near-zero new rate together with coverage reports as quantitative tapeout evidence.",
+  "<b>Combine bug and coverage closure</b>: functional verification passes only when bug curves converge and functional + code coverage targets close. Then the design may proceed to synthesis (⑦).",
+  "<b>Preserve regression assets and evidence boundaries</b>: permanently retain every defect-revealing test/seed. Distinguish public TPU structures from standard regression and bug-management methodology rather than presenting the latter as private TPU disclosure."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (TPU v1's systolic array, Unified Buffer, handshakes, and CISC interface are public architectural facts; Nightly regression, failure triage, bug databases, and convergence curves are standard verification practices, while TPU's regression and bug-management details are not public)"
+}

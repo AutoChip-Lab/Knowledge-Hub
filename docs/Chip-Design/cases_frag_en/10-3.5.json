@@ -1,0 +1,129 @@
+{
+ "secNum": "3.5",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Tapeout NRE and cost: include 28 nm masks (the dominant item), engineering, IP, and services in the business model, and protect the ~15-month deployment schedule through first-silicon success (industry-scale figures are illustrative)",
+ "oneLine": "Tapeout does more than send GDSII; it commits the project's largest non-recurring engineering (NRE) spend. At advanced nodes, the mask set dominates—an illustrative full 28 nm mask set can be on the order of $10 million—followed by design/verification/signoff labor, PCIe/DDR3 IP licensing, EDA, MPW or full-mask services, and test-program development. NRE is independent of volume: whether producing 1 unit or one million units, it is paid upfront and must be amortized across shipments. TPU's schedule—about 15 months from project start to deployment and more than a year in data centers before announcement—could not tolerate repeated re-spins. Each re-spin repays masks, reruns backend work, and loses millions plus months. Tapeout therefore purchases first-silicon success: one NRE cycle instead of two or three and a preserved market window. All amounts are illustrative industry scale for a 28 nm large PCIe accelerator; TPU v1's private costs are not public.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"30\" y=\"24\">Tapeout NRE: masks dominate for a 28 nm large chip, plus engineering + IP + services; one re-spin repeats mask cost and loses months (illustrative industry scale)</text><g class=\"cs-part\" data-k=\"mask\" data-g=\"mask\"><rect class=\"cs-box\" x=\"60\" y=\"120\" width=\"96\" height=\"232\" rx=\"6\" fill=\"#fca5a5\"/><text class=\"cs-t\" x=\"108\" y=\"248\" fill=\"#7f1d1d\">Masks</text><text class=\"cs-sub\" x=\"108\" y=\"268\" fill=\"#7f1d1d\">mask set</text><text class=\"cs-sub\" x=\"108\" y=\"372\">Full 28 nm mask set</text><text class=\"cs-note\" x=\"108\" y=\"112\">Largest item (on the order of $10 million)</text></g><g class=\"cs-part\" data-k=\"eng\" data-g=\"eng\"><rect class=\"cs-box\" x=\"170\" y=\"232\" width=\"96\" height=\"120\" rx=\"6\" fill=\"#fde68a\"/><text class=\"cs-t\" x=\"218\" y=\"290\" fill=\"#713f12\">Engineering</text><text class=\"cs-sub\" x=\"218\" y=\"372\">Design + verification + signoff labor</text></g><g class=\"cs-part\" data-k=\"ip\" data-g=\"ip\"><rect class=\"cs-box\" x=\"280\" y=\"262\" width=\"96\" height=\"90\" rx=\"6\" fill=\"#bfdbfe\"/><text class=\"cs-t\" x=\"328\" y=\"312\" fill=\"#1e3a8a\">IP</text><text class=\"cs-sub\" x=\"328\" y=\"372\">PCIe/DDR3 licenses</text></g><g class=\"cs-part\" data-k=\"svc\" data-g=\"svc\"><rect class=\"cs-box\" x=\"390\" y=\"288\" width=\"96\" height=\"64\" rx=\"6\" fill=\"#bbf7d0\"/><text class=\"cs-t\" x=\"438\" y=\"322\" fill=\"#14532d\">Tapeout services</text><text class=\"cs-sub\" x=\"438\" y=\"372\">EDA + foundry + test programs</text></g><line class=\"cs-arr\" x1=\"60\" y1=\"352\" x2=\"510\" y2=\"352\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"500\" y=\"372\">→ Total NRE per silicon revision</text><line class=\"cs-arr\" x1=\"500\" y1=\"120\" x2=\"500\" y2=\"352\"/><text class=\"cs-note\" x=\"492\" y=\"112\" text-anchor=\"end\">Cost ↑</text><g class=\"cs-part\" data-k=\"first\" data-g=\"first\"><rect class=\"cs-box\" x=\"528\" y=\"120\" width=\"170\" height=\"96\" rx=\"8\"/><text class=\"cs-t\" x=\"613\" y=\"150\">first silicon success</text><text class=\"cs-sub\" x=\"613\" y=\"172\">First-pass bring-up</text><text class=\"cs-sub\" x=\"613\" y=\"192\">Saves a mask cycle + months</text><text class=\"cs-sub\" x=\"613\" y=\"208\">Protects ~15-month deployment</text></g><g class=\"cs-part\" data-k=\"respin\" data-g=\"respin\"><rect class=\"cs-box\" x=\"528\" y=\"232\" width=\"170\" height=\"120\" rx=\"8\" fill=\"#fee2e2\" stroke=\"#dc2626\"/><text class=\"cs-t\" x=\"613\" y=\"260\" fill=\"#7f1d1d\">Re-spin cost</text><text class=\"cs-sub\" x=\"613\" y=\"282\" fill=\"#7f1d1d\">RTL change → backend rerun</text><text class=\"cs-sub\" x=\"613\" y=\"302\" fill=\"#7f1d1d\">Pay another full/partial mask set</text><text class=\"cs-sub\" x=\"613\" y=\"322\" fill=\"#7f1d1d\">+ millions + several months</text><text class=\"cs-sub\" x=\"613\" y=\"342\" fill=\"#7f1d1d\">Repeated cycles destroy the launch window</text></g><line class=\"cs-arr\" x1=\"528\" y1=\"180\" x2=\"490\" y2=\"180\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"430\" y=\"176\">First-pass = save full column</text><polyline class=\"cs-arr\" points=\"528,292 500,292 500,140 158,140\" fill=\"none\" stroke=\"#dc2626\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"300\" y=\"134\" fill=\"#b91c1c\">Re-spin = repeat the dominant mask column</text></svg>",
+ "legend": [
+  {
+   "k": "mask",
+   "name": "Mask-set cost (largest NRE component)",
+   "desc": "A photomask set is the physical template that transfers GDSII to wafers, with precision masks for metal, diffusion, polysilicon, and other layers. Advanced nodes, more layers, and multiple patterning increase cost. An illustrative full 28 nm set can be on the order of $10 million, dominating Tapeout NRE. It is paid once regardless of volume and is the most painful re-spin cost. Amounts are industry scale, not TPU disclosure."
+  },
+  {
+   "k": "eng",
+   "name": "Engineering cost (design/verification/signoff labor)",
+   "desc": "Engineer-months across architecture, RTL, verification, synthesis, place-and-route, and signoff, plus servers/licenses. For a TPU-class project delivered in about 15 months, labor accumulates into another major NRE block. Like masks, it must be spent before production volume exists."
+  },
+  {
+   "k": "ip",
+   "name": "IP license fees (interfaces/peripherals)",
+   "desc": "TPU v1 was a PCIe 3.0 accelerator with 8 GiB external DDR3. Mature PCIe PHY/controller and DDR3 PHY IP is commonly licensed rather than developed from scratch, reducing schedule and silicon risk while adding one-time NRE."
+  },
+  {
+   "k": "svc",
+   "name": "Tapeout service fees (EDA/foundry/test programs)",
+   "desc": "External services required to enter the fab: EDA licenses, foundry full-mask or MPW Tapeout fees, PDK/characterization, and ATE test-program development. Each may be smaller than masks, but all are mandatory fixed NRE items."
+  },
+  {
+   "k": "first",
+   "name": "First-silicon success",
+   "desc": "The first silicon passes bring-up, meets function/performance, and advances without a redesign. It spends only one mask NRE and preserves the deployment window—especially valuable for TPU's roughly 15-month project and more than a year of pre-announcement operation."
+  },
+  {
+   "k": "respin",
+   "name": "Re-spin cost",
+   "desc": "A functional bug forces RTL changes → synthesis/place-and-route/signoff reruns → another full or partial mask payment, commonly costing millions and several months. Repeating the largest cost column can destroy the launch window, which is why first-pass success matters."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "mask",
+    "eng",
+    "ip",
+    "svc"
+   ],
+   "cap": "① Decompose NRE into four quoted blocks: 28 nm masks (dominant) + engineering labor + PCIe/DDR3 IP licenses + EDA/Tapeout/test-program services, yielding the upfront cost of one silicon revision."
+  },
+  {
+   "keys": [
+    "mask"
+   ],
+   "cap": "② Focus on the mask column: an advanced-node full set can be on the order of $10 million and dominates NRE and re-spin pain. Every first-pass-quality investment protects paying it only once."
+  },
+  {
+   "keys": [
+    "mask",
+    "eng",
+    "ip",
+    "svc",
+    "first"
+   ],
+   "cap": "③ Put NRE into the business model: volume does not change NRE, so enough shipments must amortize it into per-unit cost. First-silicon success makes one NRE cycle real and keeps a data-center TPU economical."
+  },
+  {
+   "keys": [
+    "respin",
+    "mask"
+   ],
+   "cap": "④ Quantify re-spin cost for decisions: one revision means another full/partial mask set + entire backend rerun + millions + several calendar months. This justifies more pre-Tapeout verification/signoff investment."
+  },
+  {
+   "keys": [
+    "first",
+    "respin"
+   ],
+   "cap": "⑤ Protect the deployment schedule: TPU moved from project start to deployment in about 15 months and ran for more than a year before announcement. First-silicon success determines whether NRE is paid once or two/three times and whether the window holds."
+  }
+ ],
+ "before": [
+  "<b>Build and quote the complete NRE list</b>: masks by node/layer/multiple patterning; engineer-months for design + verification + signoff; licensed PCIe 3.0 PHY/controller and DDR3 PHY; and EDA licenses, foundry services, PDK, and ATE programs. Missing one item invalidates the business model.",
+  "<b>Select the Tapeout route and mask strategy</b>: decide between a full-mask run—high mask cost, lower unit cost, production-suitable—and MPW sharing for validation/small volume. This choice determines the dominant cost column before Tapeout.",
+  "<b>Put NRE amortization assumptions into the business model</b>: NRE is fixed and independent of volume. Estimate shipments and break-even volume before committing silicon; only sufficient volume makes per-unit data-center economics attractive.",
+  "<b>Set first-silicon success as a hard goal and budget re-spin</b>: make one-pass bring-up the top pre-Tapeout acceptance objective. Estimate the cost and calendar of a re-spin—masks + backend rerun + months—to decide whether another verification round is warranted.",
+  "<b>Scope note</b>: exact mask/NRE/re-spin prices, foundry quotes, and test-program costs are illustrative industry scales for a 28 nm large PCIe accelerator. TPU v1's private data and foundry are not public. Its 256×256 array, 24 MiB UB, 700 MHz, 28 nm, ≤331 mm², PCIe card, 8 GiB DDR3, and TF/XLA stack provide the Tapeout context."
+ ],
+ "during": [
+  "<b>Masks dominate, so quote them accurately first</b>: a full 28 nm set can be on the order of $10 million, far exceeding many engineering/IP/service items. Price layer count, multiple-patterned critical layers, and correction/replacement options because this column largely fixes total NRE.",
+  "<b>Accumulate engineering from actual labor, including late signoff</b>: count architecture through place-and-route and timing/power/DRC/LVS signoff. Iteration accelerates near Tapeout, consuming substantial labor. For an approximately 15-month TPU-class project, engineering is another major NRE block.",
+  "<b>Licensed IP trades money for schedule and risk</b>: buying PCIe 3.0 and DDR3 interface IP can avoid high-risk in-house development and verification, but license fees belong in NRE. Compare them against internal labor and silicon-risk cost.",
+  "<b>Every Tapeout service item is required</b>: EDA licenses, foundry run, PDK/characterization, and ATE program development may be individually smaller than masks but cannot be omitted. Include all of them for a complete model.",
+  "<b>Treat first-pass success as an economic control, not luck</b>: its value equals a saved mask cycle + backend engineering + several months. Additional pre-Tapeout verification/signoff is a bounded investment against a large uncertain re-spin loss and is usually economically favorable.",
+  "<b>Use re-spin cost to set objective release thresholds</b>: one functional re-spin approximates another full/partial mask payment + synthesis/PnR/signoff rerun + millions + several calendar months. This makes decisions such as waiting for a corner test or funding more verification evidence-based."
+ ],
+ "result": [
+  {
+   "label": "Four NRE components",
+   "value": "Masks (dominant) + engineering labor + interface IP licenses + Tapeout services"
+  },
+  {
+   "label": "Mask scale (illustrative)",
+   "value": "Full 28 nm mask set: on the order of $10 million; dominant NRE item"
+  },
+  {
+   "label": "NRE property",
+   "value": "One-time and volume-independent → shipments must amortize it into unit cost"
+  },
+  {
+   "label": "Value of first-silicon success",
+   "value": "Pay one NRE cycle + preserve the ~15-month deployment schedule"
+  },
+  {
+   "label": "Re-spin cost (illustrative)",
+   "value": "Another full/partial mask set + backend rerun + millions + several months"
+  },
+  {
+   "label": "Business-model formula",
+   "value": "Break-even volume = NRE ÷ (unit price − unit variable cost)"
+  }
+ ],
+ "after": [
+  "<b>Freeze the NRE budget and approve the silicon commitment</b>: formally authorize Tapeout only after all four cost blocks are quoted, the amortization curve is understood, and first-silicon/re-spin plans are set. Once mask writing begins, the spend is largely irreversible.",
+  "<b>Back the first-pass wager with signoff evidence</b>: review timing, power, DRC, LVS, and power-integrity results and confirm all critical corners completed. First-silicon success comes from closed signoff; delay Tapeout rather than gamble on an avoidable re-spin.",
+  "<b>Maintain a re-spin contingency and budget</b>: plan likely fix locations, backend reruns, and whether a metal-only ECO could avoid remaking non-metal masks. Include worst-case money and schedule before a failure occurs.",
+  "<b>Reconcile NRE amortization against actual shipments</b>: during production ramp, compare real volume with the original break-even assumptions. Under-shipment leaves NRE unamortized and raises unit cost, directly affecting data-center economics.",
+  "<b>Hand off to manufacturing and packaging/test</b>: after Tapeout/NRE approval, masks enter the fab and the project waits for first silicon. Deliver test programs, bring-up plans, and first-silicon criteria to manufacturing ⑪ and packaging/test ⑫ for one-pass evaluation."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the 256×256 8-bit-MAC array, 24 MiB Unified Buffer, 700 MHz / ~92 TOPS, 28 nm / die ≤331 mm², PCIe 3.0 accelerator card, 8 GiB external DDR3, TensorFlow/XLA, roughly 15 months from project start to deployment, and more than a year of operation before announcement are documented TPU v1 context. Specific mask/NRE/IP/service/re-spin costs and foundry are illustrative industry-scale practices for a 28 nm large PCIe accelerator, not private TPU v1 disclosure)"
+}

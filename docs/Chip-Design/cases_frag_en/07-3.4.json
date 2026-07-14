@@ -1,0 +1,114 @@
+{
+  "secNum": "3.4",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · Timing-Driven Synthesis and Slack: Turning 700 MHz into Slack ≥ 0 on Every Path",
+  "oneLine": "Timing-driven synthesis computes slack = required time − arrival time for every path under a 700 MHz (1.43 ns) constraint. Positive slack is margin; negative slack is a violation. It optimizes the tightest paths first. TPU's short 8-bit MAC stages are often comfortable, while long global-control and I/O paths are harder. Pre-layout wire delay remains estimated; signoff STA after routing is final.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 360\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">Timing path: launch FF → logic → capture FF · optimize slack</text><text class=\"cs-note\" x=\"40\" y=\"46\">Rule: every path needs slack ≥ 0; negative slack is a timing violation</text><g class=\"cs-part\" data-k=\"launch\" data-g=\"launch\"><rect class=\"cs-box\" x=\"36\" y=\"120\" width=\"118\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"95\" y=\"146\">Launch FF</text><text class=\"cs-sub\" x=\"95\" y=\"164\">launch (clk↑)</text></g><line class=\"cs-arr\" x1=\"154\" y1=\"152\" x2=\"226\" y2=\"152\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"comb\" data-g=\"comb\"><rect class=\"cs-box\" x=\"230\" y=\"108\" width=\"180\" height=\"88\" rx=\"8\"/><text class=\"cs-t\" x=\"320\" y=\"134\">Combinational chain</text><text class=\"cs-sub\" x=\"320\" y=\"154\">Gates + wires (estimated wire delay)</text><text class=\"cs-sub\" x=\"320\" y=\"172\">Array: one short MAC stage</text><text class=\"cs-sub\" x=\"320\" y=\"188\">Global control / I/O: long</text></g><line class=\"cs-arr\" x1=\"410\" y1=\"152\" x2=\"486\" y2=\"152\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"capture\" data-g=\"capture\"><rect class=\"cs-box\" x=\"490\" y=\"120\" width=\"118\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"549\" y=\"146\">Capture FF</text><text class=\"cs-sub\" x=\"549\" y=\"164\">capture (next clk↑)</text></g><g class=\"cs-part\" data-k=\"clk\" data-g=\"clk\"><rect class=\"cs-box\" x=\"36\" y=\"240\" width=\"572\" height=\"44\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#c7d2fe\"/><text class=\"cs-t\" x=\"322\" y=\"262\">700 MHz → 1.43 ns period (required ≈ period − setup − uncertainty)</text><text class=\"cs-sub\" x=\"322\" y=\"278\">create_clock -period 1.43 [get_ports clk]  (illustrative SDC)</text></g><line class=\"cs-arr\" x1=\"95\" y1=\"240\" x2=\"95\" y2=\"186\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"549\" y1=\"240\" x2=\"549\" y2=\"186\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"pos\" data-g=\"pos\"><rect class=\"cs-box\" x=\"36\" y=\"300\" width=\"280\" height=\"44\" rx=\"8\" fill=\"#dcfce7\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"176\" y=\"322\">Positive slack ✓ margin remains</text><text class=\"cs-sub\" x=\"176\" y=\"338\">arrival &lt; required (e.g., one MAC)</text></g><g class=\"cs-part\" data-k=\"neg\" data-g=\"neg\"><rect class=\"cs-box\" x=\"328\" y=\"300\" width=\"280\" height=\"44\" rx=\"8\" fill=\"#fee2e2\" stroke=\"#fca5a5\"/><text class=\"cs-t\" x=\"468\" y=\"322\">Negative slack ✗ violation</text><text class=\"cs-sub\" x=\"468\" y=\"338\">arrival &gt; required (e.g., long control/I/O path)</text></g></svg>",
+  "legend": [
+    {
+      "k": "comb",
+      "name": "Combinational chain (object of slack analysis)",
+      "desc": "The gates and wires between launch and capture flops determine arrival time. Synthesis shortens the chain with faster cells or logic restructuring, or confirms it already meets budget. TPU paths range from one short MAC stage to long chip-spanning control decode."
+    },
+    {
+      "k": "clk",
+      "name": "Clock period defines required time",
+      "desc": "700 MHz corresponds to a 1.43 ns period expressed by create_clock. Required time is approximately one period minus setup and clock uncertainty. A tighter period leaves less combinational budget and makes negative slack more likely."
+    },
+    {
+      "k": "pos",
+      "name": "Positive slack ✓: margin",
+      "desc": "slack = required − arrival > 0 means data arrives early enough. A short MAC stage in the systolic array can have generous margin, allowing slower, smaller, lower-power cells without violating timing."
+    },
+    {
+      "k": "neg",
+      "name": "Negative slack ✗: timing violation",
+      "desc": "slack < 0 means data arrives too late for the capture flop and can fail at the target frequency. In TPU-like designs, long global control, inter-block handshake, and I/O paths are more likely critical than the dense but shallow MAC array."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "clk"
+      ],
+      "cap": "① Convert target frequency into a clock constraint: an illustrative 700 MHz → 1.43 ns create_clock defines required time at each capture flop."
+    },
+    {
+      "keys": [
+        "launch",
+        "comb",
+        "capture"
+      ],
+      "cap": "② Sum gate delay and estimated wire delay from launch FF through combinational logic to capture FF to obtain arrival time."
+    },
+    {
+      "keys": [
+        "pos",
+        "neg"
+      ],
+      "cap": "③ Compute slack = required − arrival for every path: positive is margin, negative is a violation. The first goal is slack ≥ 0 everywhere."
+    },
+    {
+      "keys": [
+        "comb",
+        "neg"
+      ],
+      "cap": "④ Optimize the most negative paths with faster cells, shallower logic, or structural changes; short, comfortable MAC stages are not the priority."
+    },
+    {
+      "keys": [
+        "comb",
+        "clk"
+      ],
+      "cap": "⑤ Remember that wire delay is estimated before layout. Signoff STA after routing recomputes arrival and slack with real parasitics."
+    }
+  ],
+  "before": [
+    "<b>Define clocks—the root of required time</b>: Use create_clock for TPU v1's 700 MHz core, illustratively 1.43 ns, and reserve jitter/skew with clock uncertainty. These values directly set required time.",
+    "<b>Define I/O timing</b>: set_input_delay and set_output_delay describe relationships with off-chip DDR3 and PCIe-side logic. I/O often contains real critical paths; without boundary constraints synthesis cannot see their true required times.",
+    "<b>Select timing libraries—the basis of arrival time</b>: Link 28 nm Liberty timing models so the tool knows gate delay and flop setup/hold. Wrong libraries or incomplete corners invalidate every arrival and slack value.",
+    "<b>Set QoR priority and exceptions</b>: Require all slack ≥ 0 before area and power optimization. Mark genuine asynchronous or multicycle paths correctly so the tool does not waste effort on false violations or ignore real ones."
+  ],
+  "during": [
+    "<b>Core rule: timing first; slack ≥ 0 is mandatory</b>. Timing-driven synthesis keeps optimizing while any path is negative. For a 700 MHz, ~92 TOPS design, failed timing means the advertised throughput is unattainable.",
+    "<b>Focus on the critical path</b>. Sort paths by slack and repair the worst using larger-drive or lower-Vt cells, reduced logic depth, or structural changes. As one path is fixed, another becomes critical; iterate until WNS ≥ 0.",
+    "<b>Recognize that long paths—not array count—often dominate</b>. A 256×256 array contains 65,536 MACs, but each 8b×8b stage is shallow. Chip-spanning decode, handshakes, and Unified Buffer/I/O routes are often tighter.",
+    "<b>Trade positive slack for area and power</b>. On comfortable paths such as the MAC sea, use smaller, slower, lower-power cells as long as slack stays nonnegative. Recovering excess margin is vital to a dense 28 nm, 28–40 W design.",
+    "<b>Pre-layout wire delay is estimated</b>. Without placement and routing, synthesis relies on wire-load models or physical estimates. Its slack is provisional and may be optimistic or pessimistic.",
+    "<b>State the boundary honestly</b>: Timing-driven synthesis, slack equations, SDC, Liberty, and critical-path repair are standard EDA methods. TPU publishes the array, 700 MHz, and 28 nm, but not scripts or QoR; 1.43 ns snippets are illustrative."
+  ],
+  "result": [
+    {
+      "label": "Clock constraint (example)",
+      "value": "create_clock -period 1.43 [get_ports clk]  # 700 MHz"
+    },
+    {
+      "label": "Slack definition",
+      "value": "slack = required − arrival; ≥0 passes, <0 violates"
+    },
+    {
+      "label": "Required-time source",
+      "value": "≈ 1.43 ns period − setup − clock uncertainty"
+    },
+    {
+      "label": "Critical-path tendency",
+      "value": "Often long global control/I/O, not shallow MAC stages"
+    },
+    {
+      "label": "Timing metrics",
+      "value": "WNS, TNS, and violating-path count"
+    },
+    {
+      "label": "Wire-delay status",
+      "value": "Estimated in synthesis; recomputed in signoff STA after routing"
+    }
+  ],
+  "after": [
+    "<b>Read report_timing</b>: Check WNS/TNS and the violating-path count, then inspect startpoints, endpoints, and delay breakdown for the worst paths. Confirm bottlenecks are genuine control/I/O paths rather than unexpected logic depth.",
+    "<b>Iterate remaining violations</b>: Change cells, logic depth, or RTL pipelining and resynthesize until every path is nonnegative. Never fake convergence by loosening a valid requirement.",
+    "<b>Audit timing exceptions</b>: Ensure false and multicycle paths are justified. Mislabeling a real path inflates slack and creates a later signoff failure.",
+    "<b>Do not treat synthesis slack as final</b>: Positive slack uses estimated wire delay and can become negative after routing. Hand off SDC, the critical-path list, and remaining margin so backend can protect these paths.",
+    "<b>Close the loop after backend</b>: Deliver the netlist, SDC, and timing reports, then run signoff STA with extracted parasitics after place-and-route. That is the final verdict on stable 700 MHz operation."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the 256×256 array, 700 MHz, ~92 INT8 TOPS, 28 nm/331 mm²/28–40 W, and weight-stationary dataflow are published. Timing-driven synthesis, slack, SDC/Liberty, and WNS/TNS are standard EDA practice; 1.43 ns snippets are illustrative.)"
+}

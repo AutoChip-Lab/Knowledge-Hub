@@ -1,0 +1,119 @@
+{
+  "secNum": "3.1",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · Signoff Flow and Golden Tools: Five Independent Checks before Tapeout",
+  "oneLine": "Signoff does not redesign the chip; it rechecks the converged layout with independent, authoritative, reproducible metrics. Align GDSII, extracted SPEF, post-route netlist/SDC, and signoff libraries; then run timing, EM/IR, DRC/LVS/DFM, logical equivalence, and power in parallel with golden signoff tools. Only an all-green tapeout gate releases GDSII; any failure returns to backend ECO and re-signoff.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 420\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"26\">Signoff: coherent layout/SPEF/netlist/libraries → independent golden checks → all-green tapeout gate</text><g class=\"cs-part\" data-k=\"input\" data-g=\"input\"><rect class=\"cs-box\" x=\"24\" y=\"56\" width=\"158\" height=\"300\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"103\" y=\"82\">Signoff inputs (from ⑧)</text><text class=\"cs-sub\" x=\"103\" y=\"106\">Converged GDSII</text><text class=\"cs-sub\" x=\"103\" y=\"126\">Extracted SPEF parasitics</text><text class=\"cs-sub\" x=\"103\" y=\"146\">Post-route netlist + SDC</text><text class=\"cs-sub\" x=\"103\" y=\"170\">All-corner signoff .lib</text><text class=\"cs-sub\" x=\"103\" y=\"190\">(P/V/T combinations)</text><text class=\"cs-sub\" x=\"103\" y=\"222\">Design under signoff:</text><text class=\"cs-sub\" x=\"103\" y=\"242\">256×256 systolic array</text><text class=\"cs-sub\" x=\"103\" y=\"262\">24 MiB UB / 700 MHz</text><text class=\"cs-sub\" x=\"103\" y=\"282\">28 nm / ≤331 mm²</text><text class=\"cs-sub\" x=\"103\" y=\"302\">28–40 W / weight-stationary</text></g><line class=\"cs-arr\" x1=\"182\" y1=\"96\" x2=\"236\" y2=\"96\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"182\" y1=\"168\" x2=\"236\" y2=\"168\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"182\" y1=\"240\" x2=\"236\" y2=\"240\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"182\" y1=\"312\" x2=\"236\" y2=\"312\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"parallel\" data-g=\"parallel\"><rect class=\"cs-box\" x=\"240\" y=\"56\" width=\"252\" height=\"300\" rx=\"8\" fill=\"none\" stroke=\"#cbd5e1\" stroke-dasharray=\"5 4\"/><text class=\"cs-t\" x=\"366\" y=\"78\">Parallel multidomain signoff with golden tools</text><g class=\"cs-part\" data-k=\"sta\" data-g=\"sta\"><rect class=\"cs-cell\" x=\"252\" y=\"92\" width=\"228\" height=\"44\"/><text class=\"cs-cellt\" x=\"366\" y=\"110\">Timing STA · PrimeTime</text><text class=\"cs-cellt\" x=\"366\" y=\"128\">MMMC + OCV/AOCV</text></g><g class=\"cs-part\" data-k=\"ir\" data-g=\"ir\"><rect class=\"cs-cell\" x=\"252\" y=\"142\" width=\"228\" height=\"44\"/><text class=\"cs-cellt\" x=\"366\" y=\"160\">Power integrity · RedHawk/Voltus</text><text class=\"cs-cellt\" x=\"366\" y=\"178\">Static/dynamic IR drop + EM</text></g><g class=\"cs-part\" data-k=\"phys\" data-g=\"phys\"><rect class=\"cs-cell\" x=\"252\" y=\"192\" width=\"228\" height=\"44\"/><text class=\"cs-cellt\" x=\"366\" y=\"210\">Physical verification · Calibre</text><text class=\"cs-cellt\" x=\"366\" y=\"228\">DRC/LVS/DFM</text></g><g class=\"cs-part\" data-k=\"lec\" data-g=\"lec\"><rect class=\"cs-cell\" x=\"252\" y=\"242\" width=\"228\" height=\"44\"/><text class=\"cs-cellt\" x=\"366\" y=\"260\">Equivalence · Formality LEC</text><text class=\"cs-cellt\" x=\"366\" y=\"278\">Netlist ↔ RTL equivalence</text></g><g class=\"cs-part\" data-k=\"pwr\" data-g=\"pwr\"><rect class=\"cs-cell\" x=\"252\" y=\"292\" width=\"228\" height=\"44\"/><text class=\"cs-cellt\" x=\"366\" y=\"310\">Power signoff · PrimePower-class</text><text class=\"cs-cellt\" x=\"366\" y=\"328\">Dynamic/leakage vs 28–40 W</text></g></g><line class=\"cs-arr\" x1=\"480\" y1=\"114\" x2=\"548\" y2=\"150\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"480\" y1=\"164\" x2=\"548\" y2=\"172\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"480\" y1=\"214\" x2=\"548\" y2=\"194\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"480\" y1=\"264\" x2=\"548\" y2=\"216\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"480\" y1=\"314\" x2=\"548\" y2=\"238\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"gate\" data-g=\"gate\"><rect class=\"cs-box\" x=\"552\" y=\"140\" width=\"146\" height=\"120\" rx=\"8\" fill=\"#fefce8\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"625\" y=\"170\">Tapeout gate</text><text class=\"cs-sub\" x=\"625\" y=\"196\">Aggregate five reports</text><text class=\"cs-sub\" x=\"625\" y=\"216\">Every criterion passes</text><text class=\"cs-sub\" x=\"625\" y=\"236\">= all green to release</text></g><line class=\"cs-arr\" x1=\"625\" y1=\"260\" x2=\"625\" y2=\"306\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"tapeout\" data-g=\"tapeout\"><rect class=\"cs-box\" x=\"552\" y=\"310\" width=\"146\" height=\"46\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"625\" y=\"334\">⑩ Tapeout</text><text class=\"cs-sub\" x=\"625\" y=\"350\">Send GDSII for masks</text></g><polyline class=\"cs-arr\" points=\"552,250 516,250 516,372 103,372 103,358\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"118\" y=\"368\">Any failure → ⑧ ECO → re-extract/repackage → re-sign until green</text><text class=\"cs-note\" x=\"24\" y=\"398\">Tools and thresholds shown are standard signoff examples, not published TPU data</text></svg>",
+  "legend": [
+    {
+      "k": "input",
+      "name": "Signoff inputs (handoff from backend ⑧)",
+      "desc": "Start from one coherent revision: converged GDSII; SPEF extracted from that layout; final post-route netlist plus SDC; and signoff timing/power libraries across required PVT corners. These artifacts must agree. TPU's array, 24 MiB UB, 700 MHz, 28 nm, ≤331 mm², and 28–40 W provide context; its actual handoff package is unpublished."
+    },
+    {
+      "k": "sta",
+      "name": "Timing signoff · PrimeTime + MMMC/OCV",
+      "desc": "Use signoff STA across multiple modes and PVT corners with OCV/AOCV to check setup and hold on the 700 MHz core and critical accumulation paths. Illustrative criterion: setup/hold slack ≥0 in every corner. TPU's exact corners and margins are private."
+    },
+    {
+      "k": "ir",
+      "name": "Power-integrity signoff · RedHawk/Voltus",
+      "desc": "Analyze static and dynamic IR drop plus electromigration. Under full 256×256-array activity, verify supply drop remains within its limit and current density satisfies EM rules. Thresholds such as a few percent IR drop are illustrative; TPU's PDN data is not public."
+    },
+    {
+      "k": "phys",
+      "name": "Physical verification · Calibre DRC/LVS/DFM",
+      "desc": "Run the foundry's 28 nm rule deck for design-rule checks, layout-versus-schematic consistency, and manufacturability. DRC/LVS is a hard gate: zero violations except formally approved waivers, or the layout cannot be released."
+    },
+    {
+      "k": "gate",
+      "name": "Tapeout gate (aggregate five dimensions)",
+      "desc": "Collect timing, EM/IR, DRC/LVS, Formality LEC, and power reports against predefined criteria. Only an all-green result releases GDSII to ⑩; any red dimension returns to backend ECO. This independent multi-domain gate is standard signoff governance."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "input"
+      ],
+      "cap": "① Align signoff inputs from ⑧: converged GDSII, extracted SPEF, post-route netlist/SDC, and all-corner libraries must describe the same TPU layout revision."
+    },
+    {
+      "keys": [
+        "parallel",
+        "sta"
+      ],
+      "cap": "② Run golden timing STA in PrimeTime-class tools across MMMC and OCV/AOCV, checking illustrative setup/hold slack ≥0 at 700 MHz in every required corner."
+    },
+    {
+      "keys": [
+        "ir",
+        "phys"
+      ],
+      "cap": "③ Run RedHawk/Voltus-class EM/IR checks and Calibre-class DRC/LVS/DFM; physical verification must be clean except approved waivers."
+    },
+    {
+      "keys": [
+        "lec",
+        "pwr"
+      ],
+      "cap": "④ In parallel, use Formality-class LEC to prove netlist↔RTL equivalence and PrimePower-class analysis to check dynamic/leakage power against the 28–40 W context."
+    },
+    {
+      "keys": [
+        "gate",
+        "tapeout"
+      ],
+      "cap": "⑤ Aggregate five reports at the tapeout gate. All green releases GDSII; any failure returns to ⑧ ECO, re-extraction, repackaging, and re-signoff."
+    }
+  ],
+  "before": [
+    "<b>Freeze the SPEF and library baseline</b>: Select the layout revision that produced SPEF with real R, C, and coupling, plus the matching all-corner signoff libraries. GDSII, netlist, SPEF, and SDC must be version-consistent; signoff uses extracted parasitics, not synthesis estimates.",
+    "<b>Define the MMMC matrix</b>: Enumerate process/voltage/temperature corners and functional/test modes, and specify OCV/AOCV treatment. The actual TPU corner set is unpublished; the matrix here represents standard signoff practice.",
+    "<b>Define release criteria first</b>: Illustratively require setup/hold slack ≥0 across corners, bounded IR drop and positive EM margin, zero DRC/LVS except approved waivers, full formal equivalence, and dynamic plus leakage power within budget.",
+    "<b>Fix golden tools and versions</b>: Agree on signoff tool revisions—PrimeTime for timing, RedHawk or Voltus for EM/IR, Calibre for DRC/LVS/DFM, Formality for equivalence, and PrimePower-class power analysis. These examples reflect industry practice, not TPU's private flow.",
+    "<b>Define waiver governance</b>: Specify which known issues may be waived, who reviews and approves them, and how every waiver is recorded. Unreviewed violations cannot be used either to block indefinitely or to slip through release."
+  ],
+  "during": [
+    "<b>Core rule: signoff independently changes the ruler</b>. Implementation-tool claims are insufficient. Recheck with independent signoff engines, libraries, and extracted parasitics; those results govern release.",
+    "<b>Run dimensions in parallel; none substitutes for another</b>. Clean timing does not imply clean IR drop, and clean DRC does not prove logical equivalence. Every independent dimension must pass.",
+    "<b>Use extracted SPEF, not estimates</b>. Signoff STA, power, and EM/IR depend on real routed parasitics. Designs that appear converged under wire estimates can fail once actual RC and coupling are included.",
+    "<b>Treat DRC/LVS as non-negotiable</b>. Physical-rule failure means the layout is not manufacturable; LVS mismatch means layout and netlist disagree, invalidating other analysis. Clean to zero except formally approved waivers.",
+    "<b>Use LEC to preserve function</b>. Synthesis, CTS, routing, and ECO all transform the implementation. Formality-class proof must show the final netlist remains equivalent to RTL without relying on finite test vectors.",
+    "<b>State methodology provenance</b>: PrimeTime/MMMC/OCV, RedHawk/Voltus EM/IR, Calibre DRC/LVS/DFM, Formality LEC, PrimePower-class power, and the tapeout gate are standard signoff practices. TPU's reports, corners, libraries, QoR, and tools are not public; all thresholds here are illustrative."
+  ],
+  "result": [
+    {
+      "label": "Three-stage organization",
+      "value": "Align layout/SPEF/netlist/libraries → parallel golden signoff → all-green tapeout gate"
+    },
+    {
+      "label": "Timing signoff",
+      "value": "PrimeTime + MMMC + OCV/AOCV; example: setup/hold slack ≥0 in every corner at 700 MHz"
+    },
+    {
+      "label": "Power-integrity signoff",
+      "value": "RedHawk / Voltus static/dynamic IR drop + EM; example: bounded drop and positive EM margin"
+    },
+    {
+      "label": "Physical verification",
+      "value": "Calibre DRC / LVS / DFM with 28 nm runset; zero violations except approved waivers"
+    },
+    {
+      "label": "Equivalence + power",
+      "value": "Formality LEC proves netlist↔RTL; PrimePower-class analysis checks dynamic/leakage vs 28–40 W"
+    },
+    {
+      "label": "Release / reject",
+      "value": "Five dimensions green → tapeout; any red → ⑧ ECO, re-extract, repackage, and re-sign"
+    }
+  ],
+  "after": [
+    "<b>Apply the tapeout gate</b>: Aggregate timing, EM/IR, DRC/LVS, equivalence, and power reports against the predefined criteria. Release only when every dimension is green and every waiver approved.",
+    "<b>Return violations to ⑧ for ECO</b>: Signoff identifies and judges problems; backend implements targeted engineering changes for negative timing, excessive IR drop, or physical-rule errors.",
+    "<b>Re-extract, repackage, and re-sign after every ECO</b>: Any netlist or layout change requires updated SPEF, GDSII, netlist, and SDC plus reanalysis of affected—and often all—dimensions. Never mix revisions.",
+    "<b>Iterate backend and signoff until fully green</b>: Multiple ECO cycles are normal. Independent rechecks continue until every criterion passes in every required corner.",
+    "<b>Release ⑩ Tapeout only after full approval</b>: Once all five dimensions pass, the independently verified GDSII proceeds to mask generation and fabrication."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (published TPU v1 array, 24 MiB Unified Buffer, 700 MHz, 28 nm, ≤331 mm², 28–40 W, and weight-stationary dataflow provide design context. PrimeTime/MMMC/OCV STA, RedHawk/Voltus EM/IR, Calibre DRC/LVS/DFM, Formality LEC, PrimePower-class power, and tapeout governance are standard illustrative signoff practices, not published TPU reports, corners, libraries, or QoR.)"
+}

@@ -1,0 +1,117 @@
+{
+ "secNum": "3.4",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Placement: Timing- and Congestion-Driven Standard-Cell Placement, Followed by Legalization",
+ "oneLine": "Placement maps the synthesized gate-level netlist into the regions defined by the floorplan using tools such as Innovus/ICC2. Timing-driven placement pulls cells on critical paths together to shorten wires and preserve 700 MHz; congestion-driven placement spreads dense regions so routing capacity is not exceeded. Global placement provides approximate, potentially overlapping locations, then legalization snaps cells to legal rows and removes overlap without sacrificing timing or congestion. TPU’s regular 256×256 PE array is naturally orderly; irregular control logic is often the true congestion hotspot. Tools and flow are standard back-end practice, while utilization and regions are illustrative because TPU’s private layout is not public.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">Placement: put synthesized cells into floorplan regions—timing + congestion driven, then legalize</text><text class=\"cs-note\" x=\"40\" y=\"46\">Array regularity helps: aligned PE rows, clear dataflow, controlled congestion</text><g class=\"cs-part\" data-k=\"netlist\" data-g=\"netlist\"><rect class=\"cs-box\" x=\"36\" y=\"86\" width=\"120\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"96\" y=\"110\">Gate-level netlist</text><text class=\"cs-sub\" x=\"96\" y=\"128\">+ SDC + LEF</text></g><line class=\"cs-arr\" x1=\"156\" y1=\"115\" x2=\"214\" y2=\"115\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"td\" data-g=\"td\"><rect class=\"cs-box\" x=\"218\" y=\"86\" width=\"150\" height=\"58\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#c7d2fe\"/><text class=\"cs-t\" x=\"293\" y=\"110\">Timing-driven placement</text><text class=\"cs-sub\" x=\"293\" y=\"128\">Pull critical-path cells closer</text></g><line class=\"cs-arr\" x1=\"368\" y1=\"115\" x2=\"424\" y2=\"115\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"cong\" data-g=\"cong\"><rect class=\"cs-box\" x=\"428\" y=\"86\" width=\"150\" height=\"58\" rx=\"8\" fill=\"#fff7ed\" stroke=\"#fed7aa\"/><text class=\"cs-t\" x=\"503\" y=\"110\">Congestion-driven placement</text><text class=\"cs-sub\" x=\"503\" y=\"128\">Too dense → unroutable</text></g><line class=\"cs-arr\" x1=\"503\" y1=\"144\" x2=\"503\" y2=\"186\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"293\" y1=\"144\" x2=\"293\" y2=\"186\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"die\" data-g=\"die\"><rect class=\"cs-box\" x=\"40\" y=\"190\" width=\"500\" height=\"190\" rx=\"8\" fill=\"#f8fafc\" stroke=\"#cbd5e1\"/><text class=\"cs-sub\" x=\"290\" y=\"208\">Core cell placement (illustrative die)</text><g class=\"cs-part\" data-k=\"array\" data-g=\"array\"><rect class=\"cs-box\" x=\"64\" y=\"222\" width=\"300\" height=\"138\" rx=\"6\" fill=\"#dcfce7\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"214\" y=\"246\">Regular array: 256×256 PEs</text><text class=\"cs-sub\" x=\"214\" y=\"264\">Aligned rows / weight-stationary</text><line class=\"cs-arr\" x1=\"84\" y1=\"288\" x2=\"344\" y2=\"288\"/><line class=\"cs-arr\" x1=\"84\" y1=\"308\" x2=\"344\" y2=\"308\"/><line class=\"cs-arr\" x1=\"84\" y1=\"328\" x2=\"344\" y2=\"328\"/><text class=\"cs-sub\" x=\"214\" y=\"350\">Clear flow → manageable congestion</text></g><g class=\"cs-part\" data-k=\"ctrl\" data-g=\"ctrl\"><rect class=\"cs-box\" x=\"378\" y=\"222\" width=\"146\" height=\"138\" rx=\"6\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"451\" y=\"252\">Control-logic region</text><text class=\"cs-sub\" x=\"451\" y=\"274\">Decode / scheduling</text><text class=\"cs-sub\" x=\"451\" y=\"292\">Irregular, tangled nets</text><text class=\"cs-sub\" x=\"451\" y=\"316\">Typical congestion hotspot</text><text class=\"cs-sub\" x=\"451\" y=\"338\">Needs extra margin</text></g></g><g class=\"cs-part\" data-k=\"legalize\" data-g=\"legalize\"><rect class=\"cs-box\" x=\"560\" y=\"190\" width=\"140\" height=\"190\" rx=\"8\" fill=\"#ede9fe\" stroke=\"#c4b5fd\"/><text class=\"cs-t\" x=\"630\" y=\"222\">Legalization</text><text class=\"cs-sub\" x=\"630\" y=\"244\">legalize</text><text class=\"cs-sub\" x=\"630\" y=\"270\">Snap to rows/sites</text><text class=\"cs-sub\" x=\"630\" y=\"290\">Remove overlap</text><text class=\"cs-sub\" x=\"630\" y=\"316\">Preserve</text><text class=\"cs-sub\" x=\"630\" y=\"334\">timing/congestion</text></g><line class=\"cs-arr\" x1=\"540\" y1=\"285\" x2=\"560\" y2=\"285\" marker-end=\"url(#csar)\"/></svg>",
+ "legend": [
+  {
+   "k": "td",
+   "name": "Timing-driven placement",
+   "desc": "The first objective. Using synthesis SDC, the tool places cells on low-slack paths close together to reduce wire delay and preserve 700 MHz. Greater separation creates larger post-route delay and can turn slack negative, so placement carries an explicit timing cost rather than merely filling area."
+  },
+  {
+   "k": "cong",
+   "name": "Congestion-driven placement",
+   "desc": "The second objective often conflicts with timing. Excessive local utilization creates more demand than metal tracks can carry, leading to routing congestion or DRC shorts. The tool estimates demand versus capacity and spreads cells in hotspots. In a TPU-like design, irregular control logic is often harder than the regular array."
+  },
+  {
+   "k": "array",
+   "name": "Regular array region: a back-end advantage",
+   "desc": "The 256×256 = 65,536 identical PEs follow weight-stationary flow with activations moving horizontally and partial sums vertically. Rows of adjacent PEs create short, consistent wiring directions, naturally controlling congestion and permitting high utilization despite the array’s scale."
+  },
+  {
+   "k": "ctrl",
+   "name": "Control region: the true congestion hotspot",
+   "desc": "Instruction decode, address generation, scheduling, and handshake logic around the array have irregular fanout and multidirectional nets. The host’s roughly dozen PCIe CISC operations expand here into array controls. Reserve routing margin and monitor this region closely."
+  },
+  {
+   "k": "legalize",
+   "name": "Legalization",
+   "desc": "Global placement provides approximate positions that may overlap or miss standard-cell rows. Legalization snaps every cell to a legal row site and removes overlap while preserving timing and congestion as much as possible, converting an approximate solution into a physically routable placement."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "netlist",
+    "td"
+   ],
+   "cap": "① Import the gate-level netlist + SDC + standard-cell LEF, then begin timing-driven placement by pulling cells on the same critical path together to shorten interconnect and protect 700 MHz."
+  },
+  {
+   "keys": [
+    "cong"
+   ],
+   "cap": "② Add congestion-driven placement: estimate routing demand versus capacity and spread regions with excessive local utilization before routing ⑤ becomes blocked."
+  },
+  {
+   "keys": [
+    "die",
+    "array"
+   ],
+   "cap": "③ Map the regular 256×256 PE array into aligned rows with clear dataflow and short neighbor links, making congestion naturally manageable."
+  },
+  {
+   "keys": [
+    "ctrl"
+   ],
+   "cap": "④ Give the irregular control region extra routing margin because tangled nets and long paths make it a frequent hotspot; monitor its congestion map closely."
+  },
+  {
+   "keys": [
+    "legalize"
+   ],
+   "cap": "⑤ Legalize: snap overlapping or misaligned cells from global placement onto legal standard-cell row sites, remove overlap, and preserve timing/congestion for routing ⑤."
+  }
+ ],
+ "before": [
+  "<b>Define floorplan and regional constraints</b>: The floorplan (3.x) already fixes the die outline and hard macros such as the 24 MiB Unified Buffer SRAM, about 29% of die area, and accumulator SRAM, with reserved channels. Placement can only use the remaining array and control regions, so their quality determines whether cells fit.",
+  "<b>Provide standard-cell and technology LEF</b>: Placement needs physical dimensions, pin locations, blockages, the illustrative 28 nm M1–Mx stack, routing pitch, row height, and legal sites in addition to timing libraries. Without LEF, the tool cannot determine cell footprint or row fit.",
+  "<b>Set utilization and congestion budgets</b>: Choose an illustrative 70% standard-cell utilization. Too low wastes area; too high becomes unroutable. The regular array can sustain higher utilization, while irregular control logic needs greater margin.",
+  "<b>Inherit timing constraints and exceptions</b>: Bring forward SDC with create_clock at 700 MHz, IO delay, false paths, multicycle paths, and other exceptions so placement knows which cells are critical and which paths need no optimization.",
+  "<b>Align power pins and row orientation</b>: Ensure standard-cell row directions and VDD/VSS rails match the floorplan PDN. Legalized cells must land on valid sites and connect correctly to power rails for later IR-drop analysis."
+ ],
+ "during": [
+  "<b>First principle: placement continuously trades timing against congestion</b>. Timing pulls critical cells together; congestion spreads them apart. Iterate until critical wires remain short enough for 700 MHz and regional routing demand remains below capacity. Success means both metrics pass, not maximum density.",
+  "<b>Run global placement, legalization, then detailed placement</b>: Global placement establishes approximate locations and may allow overlap. Legalization snaps cells to sites and removes overlap; detailed placement makes local timing and congestion improvements. An unlegalized result cannot be routed.",
+  "<b>Exploit the array’s regularity</b>: Identical 256×256 PEs with fixed horizontal activation and vertical partial-sum flow can be aligned in rows with short neighbor wires and consistent routing directions. The largest region can therefore be the most predictable; do not treat it like irregular logic.",
+  "<b>Watch congestion in control logic</b>: Decode, address generation, scheduling, and handshakes create irregular fanout and crossing directions. Lower local utilization, reserve routing capacity, and use regional constraints here so this area does not prevent routing ⑤ from closing.",
+  "<b>Inspect congestion maps before routing</b>: Placement tools estimate routing demand. When a region turns red, spread cells, reduce utilization, or revise the region immediately rather than passing a known blockage downstream.",
+  "<b>Evidence boundary</b>: Timing/congestion-driven placement, global→legalize→detailed flow, utilization targets, congestion maps, LEF, and SDC are standard Innovus/ICC2 practice. The disclosed 256×256 array, 24 MiB UB, 700 MHz, 28 nm, ≤331 mm², and weight-stationary flow are the placement target; TPU’s private floorplan and placement are not public, and 70%, M1–Mx, and region directions are illustrative."
+ ],
+ "result": [
+  {
+   "label": "Inputs",
+   "value": "Gate-level netlist + synthesis SDC + standard-cell/technology LEF"
+  },
+  {
+   "label": "Two objectives",
+   "value": "Timing-driven (pull critical paths closer) + congestion-driven (avoid excessive density)"
+  },
+  {
+   "label": "Flow",
+   "value": "global placement → legalize (align rows/remove overlap) → detailed placement"
+  },
+  {
+   "label": "Utilization target (illustrative)",
+   "value": "Approximately 70% standard-cell utilization; array may be denser, control region keeps margin"
+  },
+  {
+   "label": "Array placement",
+   "value": "256×256 PEs in regular rows with clear dataflow and manageable congestion"
+  },
+  {
+   "label": "Congestion hotspot",
+   "value": "Irregular control-logic region, not the regular array"
+  }
+ ],
+ "after": [
+  "<b>Review congestion and utilization</b>: Inspect full-chip heatmaps and capacity overflow. The array is usually regular; focus on any control-logic hotspot and spread or replace cells until it clears.",
+  "<b>Run post-placement pre-CTS STA</b>: Recalculate slack using estimated placed-wire lengths. If spreading made a critical path too long, adjust placement or feed the issue back to synthesis before routing.",
+  "<b>Iterate timing and congestion together</b>: Pull cells closer for timing and spread them for routability, region by region, until both pass. Do not solve timing by creating an impossible routing burden.",
+  "<b>Verify complete legalization</b>: Confirm no overlaps remain, every cell occupies a legal site, and every row connects to the correct power rails. One illegal cell can break routing, PDN, or DRC.",
+  "<b>Hand off placement with hotspot guidance</b>: Deliver DEF, inherited SDC, congestion hotspots, and critical-path lists to routing ⑤ so global routing protects both control-region capacity and key path length."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the 256×256 systolic array, 24 MiB Unified Buffer, 700 MHz, 28 nm/die ≤331 mm², and weight-stationary flow are disclosed for v1; timing/congestion-driven placement, global→legalize→detailed flow, utilization/congestion maps, and LEF/SDC/DEF are standard back-end EDA practice, while 70%, M1–Mx, and floorplan/placement direction are illustrative rather than v1 disclosure)"
+}

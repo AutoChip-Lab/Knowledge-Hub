@@ -1,0 +1,110 @@
+{
+  "secNum": "3.4",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · Package Assembly Process: Die Attach → Interconnect → Molding / Lid → BGA Balls, Balancing Electrical, Thermal, and Mechanical Requirements",
+  "oneLine": "This case follows a diced bare die through package assembly. Die attach places and secures the die on the package substrate. Bonding connects hundreds or thousands of die terminals to substrate routing through flip-chip bumps or wire bonds. Molding protects the assembly, while a high-power device may instead or additionally use a metal lid and thermal interface material. Finally, a bottom BGA ball array creates the external terminals for reflow onto a PCB. A successful package must satisfy three coupled disciplines: electrical—deliver high current and clean high-speed signals while preserving power and signal integrity; thermal—conduct the TPU v1's 28–40 W from die through lid into the card and server cooling path; and mechanical—hold the assembly reliably through thermal-expansion cycles without cracks or solder-joint failure. The resulting qualified device can be mounted on a PCIe accelerator card. The known TPU v1 configuration—256×256 array, 24 MiB Unified Buffer, 28–40 W, and PCIe card use—is the illustrative die being packaged. Attach material, bump or wire-bond choice, underfill, mold and lid materials, ball pitch and count, reflow profile, and reliability limits are standard OSAT implementation details and are not public TPU v1 data.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 420\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"26\">Package assembly turns bare die into a board-mount device: attach → interconnect → protect / lid → BGA</text><g class=\"cs-part\" data-k=\"attach\" data-g=\"attach\"><rect class=\"cs-box\" x=\"24\" y=\"52\" width=\"158\" height=\"56\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"103\" y=\"76\">① Die attach</text><text class=\"cs-sub\" x=\"103\" y=\"96\">Place die on substrate</text></g><line class=\"cs-arr\" x1=\"182\" y1=\"80\" x2=\"214\" y2=\"80\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"bond\" data-g=\"bond\"><rect class=\"cs-box\" x=\"218\" y=\"52\" width=\"158\" height=\"56\" rx=\"8\" fill=\"#f0f9ff\" stroke=\"#7dd3fc\"/><text class=\"cs-t\" x=\"297\" y=\"76\">② Interconnect</text><text class=\"cs-sub\" x=\"297\" y=\"96\">Bumps / wires connect die</text></g><line class=\"cs-arr\" x1=\"376\" y1=\"80\" x2=\"408\" y2=\"80\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"mold\" data-g=\"mold\"><rect class=\"cs-box\" x=\"412\" y=\"52\" width=\"158\" height=\"56\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"491\" y=\"76\">③ Mold / lid</text><text class=\"cs-sub\" x=\"491\" y=\"96\">Encapsulate or add heat spreader</text></g><line class=\"cs-arr\" x1=\"570\" y1=\"80\" x2=\"602\" y2=\"80\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"balls\" data-g=\"balls\"><rect class=\"cs-box\" x=\"606\" y=\"52\" width=\"92\" height=\"56\" rx=\"8\" fill=\"#dcfce7\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"652\" y=\"76\">④ Ball attach</text><text class=\"cs-sub\" x=\"652\" y=\"96\">Bottom BGA</text></g><text class=\"cs-note\" x=\"24\" y=\"150\">Completed package cross-section, bottom to top:</text><g class=\"cs-part\" data-k=\"lid\" data-g=\"lid\"><rect class=\"cs-cell\" x=\"150\" y=\"172\" width=\"420\" height=\"34\" fill=\"#fca5a5\"/><text class=\"cs-cellt\" x=\"360\" y=\"194\">Lid / IHS + TIM conducts heat from die</text></g><g class=\"cs-part\" data-k=\"mold\" data-g=\"mold\"><rect class=\"cs-cell\" x=\"150\" y=\"206\" width=\"36\" height=\"40\" fill=\"#fde047\"/><rect class=\"cs-cell\" x=\"534\" y=\"206\" width=\"36\" height=\"40\" fill=\"#fde047\"/><text class=\"cs-cellt\" x=\"168\" y=\"231\">Mold compound</text><text class=\"cs-cellt\" x=\"552\" y=\"231\">Mold compound</text></g><g class=\"cs-part\" data-k=\"die\" data-g=\"die\"><rect class=\"cs-cell\" x=\"280\" y=\"208\" width=\"160\" height=\"38\" fill=\"#bfdbfe\"/><text class=\"cs-cellt\" x=\"360\" y=\"232\">Bare die (256×256 array)</text></g><g class=\"cs-part\" data-k=\"bond\" data-g=\"bond\"><rect class=\"cs-cell\" x=\"290\" y=\"246\" width=\"10\" height=\"10\" fill=\"#0ea5e9\"/><rect class=\"cs-cell\" x=\"320\" y=\"246\" width=\"10\" height=\"10\" fill=\"#0ea5e9\"/><rect class=\"cs-cell\" x=\"350\" y=\"246\" width=\"10\" height=\"10\" fill=\"#0ea5e9\"/><rect class=\"cs-cell\" x=\"380\" y=\"246\" width=\"10\" height=\"10\" fill=\"#0ea5e9\"/><rect class=\"cs-cell\" x=\"410\" y=\"246\" width=\"10\" height=\"10\" fill=\"#0ea5e9\"/><text class=\"cs-cellt\" x=\"470\" y=\"256\">↑ Flip-chip bumps</text></g><g class=\"cs-part\" data-k=\"attach\" data-g=\"attach\"><rect class=\"cs-cell\" x=\"150\" y=\"256\" width=\"420\" height=\"40\" fill=\"#e2e8f0\"/><text class=\"cs-cellt\" x=\"360\" y=\"281\">Package substrate: signal and power routing fan-out</text></g><g class=\"cs-part\" data-k=\"balls\" data-g=\"balls\"><rect class=\"cs-cell\" x=\"180\" y=\"296\" width=\"16\" height=\"16\" rx=\"8\" fill=\"#22c55e\"/><rect class=\"cs-cell\" x=\"250\" y=\"296\" width=\"16\" height=\"16\" rx=\"8\" fill=\"#22c55e\"/><rect class=\"cs-cell\" x=\"320\" y=\"296\" width=\"16\" height=\"16\" rx=\"8\" fill=\"#22c55e\"/><rect class=\"cs-cell\" x=\"390\" y=\"296\" width=\"16\" height=\"16\" rx=\"8\" fill=\"#22c55e\"/><rect class=\"cs-cell\" x=\"460\" y=\"296\" width=\"16\" height=\"16\" rx=\"8\" fill=\"#22c55e\"/><rect class=\"cs-cell\" x=\"530\" y=\"296\" width=\"16\" height=\"16\" rx=\"8\" fill=\"#22c55e\"/><text class=\"cs-cellt\" x=\"360\" y=\"332\">Bottom BGA balls connect package to PCIe-card PCB</text></g><text class=\"cs-note\" x=\"24\" y=\"362\">Three coupled requirements: electrical integrity · 28–40 W thermal path · mechanical reliability through thermal cycling</text><text class=\"cs-note\" x=\"24\" y=\"396\">Disclosure: materials, interconnects, BGA geometry, reflow, and reliability limits are standard OSAT examples, not public TPU v1 data</text></svg>",
+  "legend": [
+    {
+      "k": "attach",
+      "name": "① Die Attach (Secure Bare Die to the Substrate)",
+      "desc": "The first assembly step precisely places and secures the diced bare die on a package substrate. Multilayer routing and power planes in the substrate fan dense die terminals out to the package's bottom array. Placement controls die position and coplanarity, the backside thermal path, and alignment to the electrical interconnect. The substrate must deliver substantial current to the die while mechanically supporting it. TPU v1's die containing the 256×256 array and 24 MiB Unified Buffer is the illustrative object; the attach material and process are standard OSAT choices and are not public."
+    },
+    {
+      "k": "bond",
+      "name": "② Die-to-Substrate Interconnect (Bumps or Bond Wires)",
+      "desc": "Hundreds or thousands of I/O and power terminals are connected to substrate routing. Flip-chip assembly places the die face-down on a bump array and usually adds underfill; wire bonding connects perimeter pads with fine metal wires. A large TPU-class device with many terminals, significant current, and PCIe high-speed signals benefits from the shorter, more numerous paths of flip-chip bumps, which improve power and signal integrity. Bumps carry electrical current and also share mechanical stress. TPU v1's actual interconnect is not publicly specified here; these are standard OSAT practices."
+    },
+    {
+      "k": "mold",
+      "name": "③ Molding or Metal Lid (Protection and Heat Removal)",
+      "desc": "The attached and interconnected die must be protected. Many products use molding compound around the assembly; a high-power large die commonly uses a metal lid or integrated heat spreader with thermal interface material between the die backside and lid. That path conducts the TPU v1's 28–40 W into the card heat sink and server airflow. It is the package's principal thermal function: excessive thermal resistance forces throttling or risks damage. Mold compound and lids also provide mechanical and moisture protection. TPU v1's exact materials and lid architecture are not public."
+    },
+    {
+      "k": "balls",
+      "name": "④ Ball Attach (Bottom BGA for PCB Mounting)",
+      "desc": "An array of BGA solder balls is attached to the substrate underside. These balls are the package's external power, ground, and signal terminals and are reflowed onto the accelerator-card PCB. Ball count and pitch determine fan-out and current capacity, while the joints also provide the mechanical connection between package and board and must survive thermal cycling. The qualified packaged device can then be mounted on a PCIe card. Ball geometry, solder alloy, and reflow profile are standard OSAT choices and are not disclosed for TPU v1."
+    },
+    {
+      "k": "lid",
+      "name": "Cross-Section: Lid and TIM Form the Thermal Path",
+      "desc": "The top metal lid or integrated heat spreader contacts the die backside through a thermal interface material. It extracts the die's concentrated 28–40 W and spreads it across a larger area for transfer to the card heat sink. For an INT8 compute engine occupying much of a die in a dense data-center chassis, a poor die→TIM→lid→heat-sink path quickly reaches the thermal limit and causes throttling. Lid material, TIM selection, and attachment are standard package and thermal-design choices and are not public TPU v1 data."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "attach",
+        "die"
+      ],
+      "cap": "① Die attach: precisely place and secure the diced bare die on the package substrate. The substrate fans terminals out to the bottom, supplies high current, supports the die mechanically, and establishes the thermal geometry for the TPU's 256×256 array."
+    },
+    {
+      "keys": [
+        "bond"
+      ],
+      "cap": "② Interconnect: use flip-chip bumps and underfill or wire bonds to connect hundreds or thousands of die terminals to substrate routing. A high-terminal-count, high-current PCIe accelerator benefits from short, numerous bump paths that preserve power and signal integrity."
+    },
+    {
+      "keys": [
+        "mold",
+        "lid"
+      ],
+      "cap": "③ Mold or add a lid: encapsulate the die for protection, or use a metal lid and thermal interface material on a high-power device to conduct 28–40 W into the external cooling system. This is the package's principal thermal-design step."
+    },
+    {
+      "keys": [
+        "balls"
+      ],
+      "cap": "④ Attach BGA balls: create the package's bottom terminal array for PCB reflow. Ball count and pitch set power and signal fan-out, and the joints must survive thermal cycling. The resulting qualified device can be assembled onto the PCIe accelerator card."
+    }
+  ],
+  "before": [
+    "<b>Set electrical, thermal, and mechanical targets before defining the process</b>: Establish required current delivery, the 28–40 W heat-removal path in data-center airflow, PCIe 3.0 and other I/O fan-out, and vibration and thermal-cycle reliability. These coupled budgets must be resolved before choosing the package architecture.",
+    "<b>Select the package form and die interconnect</b>: Determine the BGA and lid concept for the PCIe card, choose flip-chip bumps or wire bonds, decide whether a heat spreader is required, and define the substrate stack-up. High-terminal-count, high-current, high-speed devices generally favor flip chip. TPU v1's private package construction is not public; the flow illustrates standard practice.",
+    "<b>Qualify materials and reliability windows</b>: Characterize die-attach material, underfill, mold compound or lid, thermal interface material, BGA alloy and geometry, reflow profile, warpage, thermal resistance, and temperature-cycle limits. Coefficient-of-thermal-expansion mismatch can fatigue bumps and solder joints over repeated heating and cooling.",
+    "<b>Coordinate the pre-package KGD input and the downstream card</b>: The input is a known-good die (KGD) that passed wafer probe and post-dice inspection; only a KGD should consume package cost. The output must align with the PCIe card's BGA land pattern, power planes, and heat-sink mechanical interface. Coordinate both boundaries before assembly starts."
+  ],
+  "during": [
+    "<b>The package mission is to make bare silicon board-mountable, electrically robust, thermally viable, and mechanically reliable</b>. A diced die cannot be handled or mounted directly. Die attach, interconnect, molding or lid integration, and BGA ball attach create a protected device that can be reflowed onto a PCIe card. TPU v1's 256×256-array die is the illustrative object moving through these steps.",
+    "<b>The four operations are coupled and ordered: attach → interconnect → protect or lid → ball attach</b>. First secure the die to the routed substrate; then connect die terminals through bumps or wires; next encapsulate the assembly or integrate a lid and TIM; finally attach bottom BGA balls. Each operation contributes both electrical connection and mechanical support.",
+    "<b>Electrical: deliver high current and preserve PCIe signal integrity</b>. The substrate power planes and large population of bumps and BGA balls distribute current into the 28–40 W die with low resistance and inductance. PCIe 3.0 signals traverse package routing that must control impedance and crosstalk. Substrate routes and connection placement determine whether supply voltage remains stable and signals remain clean.",
+    "<b>Thermal: conduct 28–40 W from the die into the data-center cooling path</b>. Concentrated compute activity generates heat across the die. A die→TIM→metal lid→card heat-sink path must keep thermal resistance low; otherwise full-load operation reaches a temperature limit, throttles, or becomes unsafe. Thermal viability is a hard constraint for an accelerator in a dense server chassis.",
+    "<b>Mechanical: secure the die and survive repeated thermal expansion</b>. Silicon, substrate, lid, PCB, bumps, and solder balls have different coefficients of thermal expansion. Repeated heating and cooling imposes cyclic stress on the joints. Underfill, mold compound, lid attachment, and ball-array design distribute that stress so the package does not crack or delaminate and solder connections do not fatigue.",
+    "<b>Disclosure boundary (applies throughout)</b>: Die-attach processes and materials, flip-chip bumps and underfill or wire bonds, mold and lid or TIM materials, BGA geometry and alloy, reflow profile, thermal resistance, and thermal-cycle reliability are standard OSAT and industry practices for a large 28 nm PCIe accelerator. TPU v1 does not disclose its package construction, materials, thermal design, or reliability limits. The known 256×256 array, 24 MiB Unified Buffer, 28–40 W, and PCIe card provide only the illustrative context; the cross-section is schematic."
+  ],
+  "result": [
+    {
+      "label": "Package Output",
+      "value": "A qualified packaged device containing the attached and interconnected 256×256-array die, with a thermal lid and bottom BGA terminals, ready for PCB reflow onto a data-center PCIe accelerator card"
+    },
+    {
+      "label": "Four-Step Sequence",
+      "value": "Die attach to substrate → die-to-substrate interconnect by bumps or wires → molding or lid and TIM for protection and heat spreading → bottom BGA ball attach for external terminals"
+    },
+    {
+      "label": "Electrical Path",
+      "value": "Substrate power planes plus many bumps and BGA balls deliver high current to the 28–40 W die, while controlled package routing preserves PCIe 3.0 signal integrity, impedance, and crosstalk margins"
+    },
+    {
+      "label": "Thermal Path",
+      "value": "Die → TIM → metal lid / IHS → card heat sink conducts the concentrated 28–40 W outward; excessive thermal resistance causes throttling or damage in the server chassis"
+    },
+    {
+      "label": "Mechanical Path",
+      "value": "Underfill, mold or lid attachment, and the BGA array secure the die and absorb coefficient-of-thermal-expansion mismatch through thermal cycling without cracking, delamination, or solder fatigue"
+    },
+    {
+      "label": "Disclosure Boundary",
+      "value": "TPU v1 does not publish its die attach, interconnect, underfill, mold, lid, TIM, BGA geometry, reflow profile, or reliability limits; these are standard OSAT examples, not TPU-specific data"
+    }
+  ],
+  "after": [
+    "<b>Verify electrical, thermal, and mechanical package performance</b>: Test continuity, opens and shorts, impedance, and signal integrity; measure package thermal resistance and full-load temperature rise; inspect appearance and warpage and run prescribed reliability stresses such as temperature cycling. Any failure must be traced to die attach, interconnect, protection or lid integration, or ball attach.",
+    "<b>Mount only qualified devices onto PCIe cards</b>: After post-package qualification, reflow the device onto the PCB, install the heat sink, and integrate power and PCIe connectivity. The resulting card then proceeds to board-level final test and bring-up. A defective package cannot be rescued by a correct board.",
+    "<b>Feed thermal and reliability data back into package and system cooling</b>: Excess thermal resistance may require a different lid, TIM, interface process, card heat sink, or chassis airflow. Thermal-cycle solder failures may require underfill, mold, or ball-array changes. This closes the package-yield and reliability improvement loop.",
+    "<b>Monitor large-die and high-power weak points explicitly</b>: A ≤331 mm² die under sustained load is especially sensitive to warpage, lid coplanarity, TIM coverage, underfill voids, and BGA corner-joint stress. Track and correct these failure modes separately because they dominate this product class.",
+    "<b>Preserve traceability</b>: Archive post-package electrical, thermal, mechanical, and reliability qualification data for production and failure analysis. These OSAT records establish why a packaged unit was accepted; their values are private implementation data rather than public TPU v1 specifications."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the paper discloses TPU v1's 256×256 8-bit MAC systolic array with 65,536 MACs, 24 MiB Unified Buffer, 700 MHz and approximately 92 TOPS, 28 nm process, ≤331 mm² die, 28–40 W envelope, and PCIe 3.0 accelerator-card use, which provide the known product context; die attach, flip-chip bumps and underfill or wire bonding, molding or metal lid plus TIM, BGA ball attach, and simultaneous electrical, thermal, and mechanical design are standard OSAT and industry practices for a large 28 nm PCIe accelerator, while the cross-section and materials are illustrative rather than TPU v1's unpublished package construction, thermal design, or reliability data)"
+}

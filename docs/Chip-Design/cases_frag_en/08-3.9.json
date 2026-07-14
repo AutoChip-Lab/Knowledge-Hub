@@ -1,0 +1,120 @@
+{
+ "secNum": "3.9",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Physical Verification: The 256×256 Array Layout Must Pass DRC, LVS, and Antenna Checks Before Tapeout",
+ "oneLine": "Physical verification is the final hard gate before layout delivery. DRC checks geometry against foundry width, spacing, and density rules; LVS proves the extracted layout circuit matches the gate-level netlist; antenna checks protect gate oxide from plasma charging on long metal segments. Foundry acceptance requires all three to be 100% clean with zero violations. Here, TPU’s regular 65,536-MAC array and 24 MiB UB SRAM are the illustrative layout under test.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">Physical verification: DRC + LVS + antenna must be 100% clean before foundry tapeout</text><g class=\"cs-part\" data-k=\"gds\" data-g=\"gds\"><rect class=\"cs-box\" x=\"24\" y=\"120\" width=\"150\" height=\"150\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"99\" y=\"150\">Completed routed layout</text><text class=\"cs-sub\" x=\"99\" y=\"172\">GDSII / OASIS</text><text class=\"cs-sub\" x=\"99\" y=\"192\">256×256 array</text><text class=\"cs-sub\" x=\"99\" y=\"210\">+ 24 MiB UB SRAM</text><text class=\"cs-sub\" x=\"99\" y=\"230\">Geometric polygons +</text><text class=\"cs-sub\" x=\"99\" y=\"248\">metal-layer routing</text></g><g class=\"cs-part\" data-k=\"drc\" data-g=\"drc\"><rect class=\"cs-box\" x=\"250\" y=\"56\" width=\"210\" height=\"92\" rx=\"8\" fill=\"#fff7ed\" stroke=\"#fdba74\"/><text class=\"cs-t\" x=\"355\" y=\"82\">① DRC</text><text class=\"cs-sub\" x=\"355\" y=\"104\">Width / spacing / density / enclosure</text><text class=\"cs-sub\" x=\"355\" y=\"124\">Geometry meets process rules</text><text class=\"cs-sub\" x=\"355\" y=\"142\">Violation ✗ → repair each</text></g><g class=\"cs-part\" data-k=\"lvs\" data-g=\"lvs\"><rect class=\"cs-box\" x=\"250\" y=\"160\" width=\"210\" height=\"92\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"355\" y=\"186\">② LVS: layout ≡ netlist</text><text class=\"cs-sub\" x=\"355\" y=\"208\">Extract devices/connections</text><text class=\"cs-sub\" x=\"355\" y=\"228\">Compare with gate netlist</text><text class=\"cs-sub\" x=\"355\" y=\"246\">Short/open/miswire ✗</text></g><g class=\"cs-part\" data-k=\"ant\" data-g=\"ant\"><rect class=\"cs-box\" x=\"250\" y=\"264\" width=\"210\" height=\"84\" rx=\"8\" fill=\"#fef2f2\" stroke=\"#fca5a5\"/><text class=\"cs-t\" x=\"355\" y=\"290\">③ Antenna rules</text><text class=\"cs-sub\" x=\"355\" y=\"312\">Long metal charge harms gate oxide</text><text class=\"cs-sub\" x=\"355\" y=\"330\">Excess ratio ✗ → diode / layer jump</text></g><line class=\"cs-arr\" x1=\"174\" y1=\"160\" x2=\"246\" y2=\"102\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"174\" y1=\"195\" x2=\"246\" y2=\"206\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"174\" y1=\"232\" x2=\"246\" y2=\"300\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"gate\" data-g=\"gate\"><rect class=\"cs-box\" x=\"528\" y=\"120\" width=\"168\" height=\"150\" rx=\"8\" fill=\"#ecfeff\" stroke=\"#67e8f9\"/><text class=\"cs-t\" x=\"612\" y=\"150\">Tapeout gate</text><text class=\"cs-sub\" x=\"612\" y=\"176\">All three ✓ clean</text><text class=\"cs-sub\" x=\"612\" y=\"198\">→ sign-off layout</text><text class=\"cs-sub\" x=\"612\" y=\"222\">Any item ✗</text><text class=\"cs-sub\" x=\"612\" y=\"244\">→ not clean</text><text class=\"cs-sub\" x=\"612\" y=\"262\">→ no tapeout</text></g><line class=\"cs-arr\" x1=\"460\" y1=\"102\" x2=\"524\" y2=\"150\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"460\" y1=\"206\" x2=\"524\" y2=\"195\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"460\" y1=\"306\" x2=\"524\" y2=\"240\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"612\" y1=\"270\" x2=\"612\" y2=\"340\"/><line class=\"cs-arr\" x1=\"612\" y1=\"340\" x2=\"180\" y2=\"340\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><text class=\"cs-note\" x=\"300\" y=\"334\">Repair every layout violation and rerun until zero (sign-off iteration)</text></svg>",
+ "legend": [
+  {
+   "k": "gds",
+   "name": "Completed routed layout (GDSII/OASIS)—the object under test",
+   "desc": "After floorplan, PDN, placement, CTS, routing, and closure, the 256×256 array, 24 MiB Unified Buffer SRAM, accumulator, and all metal become geometric polygons. Physical verification performs the final examination of this tapeout-ready representation and exposes any illegal geometry or incorrect connection."
+  },
+  {
+   "k": "drc",
+   "name": "① DRC—does geometry obey process rules?",
+   "desc": "Design Rule Check runs the foundry rule deck against minimum width, spacing, area, density, via enclosure, antenna, fill, and thousands of other constraints. Every violation is marked. At 28 nm, geometry that fails DRC is not manufacturable, so the error count must reach zero."
+  },
+  {
+   "k": "lvs",
+   "name": "② LVS—does layout equal the netlist?",
+   "desc": "Layout Versus Schematic extracts devices and connectivity from geometry and compares the resulting layout circuit against the gate-level reference. It finds shorts, opens, miswires, or missing power/ground. DRC-clean geometry can still implement the wrong circuit; LVS proves the drawn circuit is the intended netlist."
+  },
+  {
+   "k": "ant",
+   "name": "③ Antenna rules—protect gate oxide from charging",
+   "desc": "During layer-by-layer plasma etch, a long unconnected metal segment can collect charge and stress transistor gate oxide. Antenna checks limit metal-to-gate area ratio. Insert an antenna diode to discharge current or jump layers to break a long segment when a ratio exceeds the process rule."
+  },
+  {
+   "k": "gate",
+   "name": "Tapeout gate—all three must be clean",
+   "desc": "Foundry acceptance requires DRC, LVS, and antenna checks to be 100% clean with zero violations. One remaining spacing error, short, or antenna failure blocks tapeout regardless of timing or power quality, because a physically invalid layout cannot be manufactured correctly."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "gds"
+   ],
+   "cap": "① Start with the routed, converged layout in which the 256×256 array, 24 MiB UB SRAM, and all other blocks are represented as metal-layer geometry ready for tapeout inspection."
+  },
+  {
+   "keys": [
+    "gds",
+    "drc"
+   ],
+   "cap": "② Run DRC with the foundry rule deck across thousands of width, spacing, area, density, and enclosure constraints. Mark and repair every violation until zero."
+  },
+  {
+   "keys": [
+    "gds",
+    "lvs"
+   ],
+   "cap": "③ Run LVS: extract devices and connections from layout and compare point by point with the gate-level netlist, finding shorts, opens, miswires, and missing power/ground. Require layout circuit ≡ netlist."
+  },
+  {
+   "keys": [
+    "gds",
+    "ant"
+   ],
+   "cap": "④ Run antenna checks on metal-to-gate ratios. Insert antenna diodes or jump layers on violations to protect gate oxide from plasma charging."
+  },
+  {
+   "keys": [
+    "drc",
+    "lvs",
+    "ant",
+    "gate"
+   ],
+   "cap": "⑤ All three clean → release for sign-off/tapeout. Any violation → repair the layout and rerun until DRC/LVS/antenna all converge to zero. Never tape out a dirty layout."
+  }
+ ],
+ "before": [
+  "<b>Collect foundry validation decks</b>: Obtain the exact 28 nm DRC deck, LVS device-recognition/comparison deck, antenna rules, and qualified Calibre nmDRC/nmLVS-class tool versions from the PDK. The rule version must match the process used for tapeout.",
+  "<b>Prepare the golden netlist and macro models</b>: LVS needs the final implementation gate-level netlist plus device-level or abstract CDL/SPICE models for standard cells, 24 MiB UB SRAM, accumulator, PLL, and other IP. Ensure every black-box view is present and version-aligned.",
+  "<b>Confirm a near-sign-off layout</b>: Formal verification follows completed routing, timing/congestion/IR closure, metal fill/dummy insertion, and IO/seal ring completion because these geometries affect density and other DRC rules.",
+  "<b>Evidence boundary</b>: DRC, LVS, antenna, Calibre/ICV/Pegasus, rule decks/runsets, antenna diodes, and metal fill are standard back-end EDA practice. TPU v1 does not publish layout or verification reports. The disclosed 256×256 array, 24 MiB UB, 700 MHz, 28 nm, ≤331 mm², and weight-stationary flow merely define the illustrative object being verified."
+ ],
+ "during": [
+  "<b>First principle: all three checks require 100% clean, zero violations</b>. They are not optimization metrics. One DRC error, LVS short, or antenna excess means the foundry cannot accept the layout. The only completion count is zero.",
+  "<b>DRC catches geometry that cannot be manufactured</b>: It evaluates polygons for width, spacing, area, density, via enclosure, layer interaction, and more. Thousands of 28 nm rules interact, so repairing one can expose another; fix by layer and category and rerun until clean.",
+  "<b>LVS catches the wrong circuit</b>: Legal geometry can still short nets, leave opens, or connect power incorrectly. LVS graph-matches extracted devices/nets against the reference and reports unmatched components and connections. Failure means the manufactured circuit would not implement the design.",
+  "<b>Antenna failures originate in routing and require routing or diode repair</b>: Plasma charging is controlled by inserting a diode near the gate or breaking the long segment with a layer jump. Either changes layout and therefore requires DRC rerun.",
+  "<b>Verification is a convergence loop</b>: Run → inspect reports → repair → rerun. A DRC move can create an antenna issue, while an antenna layer jump can create congestion or DRC. Large layouts may begin with thousands of markers and clear them systematically by region and class.",
+  "<b>Regular structures help, but macro boundaries need focus</b>: Once one repeated PE is clean, much of the 256×256 array can pass uniformly. Interfaces around 24 MiB UB SRAM, accumulator, IO/seal ring, PDN overlaps, and fill are more error-prone and deserve concentrated review."
+ ],
+ "result": [
+  {
+   "label": "Three gates and target",
+   "value": "DRC (legal geometry) / LVS (layout≡netlist) / antenna (protect gate oxide)—all zero violations"
+  },
+  {
+   "label": "DRC scope (illustrative)",
+   "value": "Thousands of width / spacing / minimum area / density / via enclosure / antenna / fill rules, all cleared"
+  },
+  {
+   "label": "LVS method",
+   "value": "Extract devices + connectivity from layout → graph-match gate netlist; find shorts/opens/miswires/missing power"
+  },
+  {
+   "label": "Antenna repairs",
+   "value": "For excessive metal-to-gate ratio: insert antenna diode or jump the long route to another layer"
+  },
+  {
+   "label": "Tools/data (standard practice)",
+   "value": "Calibre / ICV / Pegasus-class tools + foundry rule deck; GDSII/OASIS layout + golden netlist"
+  },
+  {
+   "label": "Sign-off criterion",
+   "value": "DRC=0, LVS clean (fully matched), antenna=0; any nonzero item = dirty = no tapeout"
+  }
+ ],
+ "after": [
+  "<b>Iterate all three violation counts to zero</b>: Locate every DRC/LVS/antenna marker, repair layout, and rerun. Fixes may rebound into another class, so converge jointly; there is no waiver by convenience.",
+  "<b>Use a clean LVS basis for extraction and sign-off STA</b>: Parasitic extraction is meaningful only when layout connectivity matches the intended circuit. Running SPEF or timing on an LVS-dirty layout calculates the wrong design.",
+  "<b>Regress DRC and timing after antenna repair</b>: Diodes consume area and layer jumps alter length/layer, potentially affecting DRC, congestion, or 700 MHz margin. Recheck geometry and key timing after every antenna fix.",
+  "<b>All three clean earns tapeout eligibility</b>: With DRC/LVS/antenna at zero, deliver GDSII, SPEF, and netlist for STA, power, EM/IR, equivalence, and final tapeout. This is the milestone that makes the layout deliverable to manufacturing.",
+  "<b>Verify version identity before release</b>: Ensure the rule deck, golden netlist, GDSII, and process versions used for validation exactly match the frozen tapeout package. Archive the clean layout and reports together."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the disclosed 256×256 8-bit MAC array, 700 MHz/~92 TOPS, 24 MiB Unified Buffer, weight-stationary flow, and 28 nm/≤331 mm² define the v1 layout under test; DRC/LVS/antenna verification, Calibre/ICV/Pegasus, foundry rule decks, antenna diodes, metal fill, GDSII/OASIS, thousands of rules, and zero-violation criteria are standard back-end EDA practice rather than private TPU v1 layout or reports)"
+}

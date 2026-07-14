@@ -1,0 +1,118 @@
+{
+ "secNum": "3.3",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Laboratory Debug: When first silicon on a PCIe card will not activate or intermittently computes the wrong result, engineers use oscilloscopes, logic analyzers, JTAG, on-chip scan, performance counters, and trace as their eyes—working backward from an incorrect result to the exact internal module, path, and cycle. Whether they can see inside depends on observability designed into the silicon during architecture and implementation.",
+ "oneLine": "This case supports the laboratory-debug section. First TPU silicon assembled on a PCIe accelerator card will almost inevitably expose a post-silicon bug: failure to activate, intermittent corruption, a crash under a real workload, or instability at one frequency or voltage. Silicon bugs are hard because they can be difficult to reproduce and their symptoms are indirect. A host may return bad data while providing no visibility into which step failed among 65,536 MACs, the 24 MiB Unified Buffer, and the external DDR3 path. Debug therefore depends on observability—external instruments and on-chip probes that give the silicon eyes. An oscilloscope measures analog behavior at pins, including clocks, rails, and eye diagrams; a logic analyzer records digital bus timing. JTAG and scan chains stop the device and read or write internal state, while architecture-time performance counters such as array utilization and stall cycles plus on-chip trace reveal dynamic events. Aligning external waveforms with internal state narrows an incorrect result to one module, path, or cycle, enabling a configuration change, software workaround, or patch before validation under a real workload. The known TPU v1 256×256 systolic array, 24 MiB UB, 700 MHz clock, external DDR3, and PCIe 3.0 host interface are only the debug target. These instruments and methods are standard for 28 nm-class PCIe accelerators; TPU v1's private debug ports, scan architecture, counter inventory, and bring-up defects are not public.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 420\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"24\">Laboratory debug: silicon bugs are indirect and hard to reproduce. External instruments observe pins; on-chip eyes—JTAG/scan, counters, and trace—observe internal state. Correlate both to isolate the defect.</text><g class=\"cs-part\" data-k=\"board\" data-g=\"board\"><rect class=\"cs-box\" x=\"24\" y=\"58\" width=\"180\" height=\"118\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"114\" y=\"86\">TPU card under bring-up</text><text class=\"cs-sub\" x=\"114\" y=\"108\">Silicon on a PCIe accelerator</text><rect class=\"cs-cell\" x=\"58\" y=\"120\" width=\"112\" height=\"40\"/><text class=\"cs-cellt\" x=\"114\" y=\"144\">256×256 array + UB</text></g><g class=\"cs-part\" data-k=\"scope\" data-g=\"scope\"><rect class=\"cs-box\" x=\"248\" y=\"46\" width=\"200\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"348\" y=\"72\">① Oscilloscope</text><text class=\"cs-sub\" x=\"348\" y=\"90\">Analog pin waveforms: clocks / rails / eye</text></g><g class=\"cs-part\" data-k=\"la\" data-g=\"la\"><rect class=\"cs-box\" x=\"248\" y=\"112\" width=\"200\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"348\" y=\"138\">② Logic analyzer</text><text class=\"cs-sub\" x=\"348\" y=\"156\">Bus timing: ordering across digital signals</text></g><g class=\"cs-part\" data-k=\"jtag\" data-g=\"jtag\"><rect class=\"cs-box\" x=\"248\" y=\"178\" width=\"200\" height=\"58\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"348\" y=\"204\">③ JTAG / scan</text><text class=\"cs-sub\" x=\"348\" y=\"222\">Halt and read/write internal registers/state</text></g><line class=\"cs-arr\" x1=\"204\" y1=\"100\" x2=\"244\" y2=\"75\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"204\" y1=\"118\" x2=\"244\" y2=\"141\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"204\" y1=\"140\" x2=\"244\" y2=\"207\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"obs\" data-g=\"obs\"><rect class=\"cs-box\" x=\"248\" y=\"252\" width=\"200\" height=\"74\" rx=\"8\" fill=\"#dcfce7\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"348\" y=\"278\">④ On-chip observation (designed in)</text><text class=\"cs-sub\" x=\"348\" y=\"298\">Performance counters: array utilization / stall cycles</text><text class=\"cs-sub\" x=\"348\" y=\"314\">On-chip trace: record/replay internal events</text></g><line class=\"cs-arr\" x1=\"114\" y1=\"176\" x2=\"300\" y2=\"250\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><g class=\"cs-part\" data-k=\"locate\" data-g=\"locate\"><rect class=\"cs-box\" x=\"492\" y=\"100\" width=\"204\" height=\"120\" rx=\"8\" fill=\"#e0f2fe\" stroke=\"#7dd3fc\"/><text class=\"cs-t\" x=\"594\" y=\"128\">⑤ Isolate the bug</text><text class=\"cs-sub\" x=\"594\" y=\"150\">Align external waveforms + internal state</text><text class=\"cs-sub\" x=\"594\" y=\"168\">Silicon bugs are often indirect and intermittent</text><text class=\"cs-sub\" x=\"594\" y=\"186\">→ Narrow to module / timing / path</text><text class=\"cs-sub\" x=\"594\" y=\"204\">Stabilize under real workloads</text></g><line class=\"cs-arr\" x1=\"448\" y1=\"75\" x2=\"490\" y2=\"120\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"448\" y1=\"141\" x2=\"490\" y2=\"150\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"448\" y1=\"207\" x2=\"490\" y2=\"170\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"448\" y1=\"289\" x2=\"490\" y2=\"195\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"blind\" data-g=\"blind\"><rect class=\"cs-box\" x=\"492\" y=\"252\" width=\"204\" height=\"74\" rx=\"8\" fill=\"#fef2f2\" stroke=\"#fca5a5\"/><text class=\"cs-t\" x=\"594\" y=\"278\">⚠ No observability = blind debug</text><text class=\"cs-sub\" x=\"594\" y=\"298\">No JTAG/scan/counters/trace</text><text class=\"cs-sub\" x=\"594\" y=\"314\">Only the wrong result is visible → guesswork</text></g><text class=\"cs-note\" x=\"24\" y=\"356\">Key point: JTAG, scan chains, performance counters, and trace are not added during debug. They are eyes embedded during architecture/design; after tapeout they cannot be changed, and too little observability makes bring-up blind.</text><text class=\"cs-note\" x=\"24\" y=\"378\">Flow: coarse check (oscilloscope/logic analyzer for clocks, rails, and bus activity) → internal inspection (JTAG state, utilization/stall counters, event trace) → correlate and isolate path/module → configure or patch/work around → verify with a real workload.</text><text class=\"cs-note\" x=\"24\" y=\"402\">Evidence boundary: these instruments and methods are standard for 28 nm-class PCIe accelerators. TPU v1's private ports, scan architecture, counters, and defects are not public; the 256×256 array, 24 MiB UB, and PCIe card are only the debug target.</text></svg>",
+ "legend": [
+  {
+   "k": "scope",
+   "name": "① Oscilloscope (observe analog waveforms at pins)",
+   "desc": "The first debug eye observes continuous analog behavior. Probe critical PCIe-card nodes—clocks, power rails, reset, and PCIe differential pairs—to check whether clocks start at the right frequency and jitter, rails avoid overshoot, droop, and ripple, and high-speed eye diagrams remain open. It answers the most fundamental questions: is the silicon alive, and is its electrical environment healthy? A card that does not activate or fails intermittently is usually screened for clock and power integrity before higher-level logic is investigated. This is standard 28 nm PCIe-accelerator practice; TPU v1's electrical details are private."
+  },
+  {
+   "k": "la",
+   "name": "② Logic analyzer (capture timing across digital signals)",
+   "desc": "Where an oscilloscope emphasizes analog quality on a few nodes, a logic analyzer samples tens or hundreds of digital signals and displays their 0/1 timing together. It reveals ordering, handshakes, enable timing, and state-machine stalls—a signal one cycle early, a missed handshake, or a state that never exits. Recorded bus activity can be replayed against the expected protocol. The tools therefore complement each other: analog waveform integrity versus multi-signal digital timing. TPU v1's private bus and debug implementation are not public."
+  },
+  {
+   "k": "jtag",
+   "name": "③ JTAG / scan chain (read and write internal state)",
+   "desc": "External instruments still observe pins; JTAG and scan expose state inside the die. A standard JTAG path working with scan chains designed into the device can halt operation, serially shift out internal register and state-machine values, and sometimes shift in a forced state. This direct view bridges an incorrect output to the exact internal cycle that diverged. Scan must be planned progressively through DFT architecture, RTL, and implementation; it cannot be added after fabrication. JTAG/scan is standard DFT and bring-up practice, but TPU v1's private scan structure and debug interface are not public."
+  },
+  {
+   "k": "obs",
+   "name": "④ Performance counters + on-chip trace (internal eyes designed at architecture time)",
+   "desc": "Functional observability complements static scan snapshots. Preplanned performance counters track utilization of the 256×256 array, pipeline stall cycles, queue depth, DDR3 access wait/hit behavior, and PCIe command-fetch activity; an on-chip trace buffer records internal events for replay. These mechanisms answer where the device is busy, stalled, slow, or wrong. Abnormally low utilization or excessive stalls under a real workload often point directly toward a datapath or scheduling defect. Counters and trace describe a running system and must be designed before tapeout. TPU v1's actual counter list is not public."
+  },
+  {
+   "k": "blind",
+   "name": "⚠ No observability means blind debug (why it must be designed early)",
+   "desc": "Without JTAG/scan, performance counters, or trace, bring-up can observe only whether the host received the right final result, not what happened inside. An intermittent, indirect silicon failure then becomes guesswork. Debug access, scan chains, counters, trace storage, pins, and resources are architectural requirements because fabricated silicon cannot be edited. Adequate observability can make a defect diagnosable and work-aroundable; inadequate observability can strand otherwise recoverable silicon. This is a core DFT and design-for-debug rule."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "board",
+    "scope",
+    "la"
+   ],
+   "cap": "① Start outside with a coarse health check: use an oscilloscope to inspect clocks, rails, and signal eyes on the TPU card and a logic analyzer to capture digital bus timing. Confirm clock start-up, clean power, and bus activity before investigating deeper logic."
+  },
+  {
+   "keys": [
+    "jtag",
+    "obs"
+   ],
+   "cap": "② Then use the silicon's internal eyes: halt and shift out register/state data through JTAG/scan; read 256×256-array utilization and stall counters; replay internal events from on-chip trace. These observation points were embedded during architecture and cannot be added after fabrication."
+  },
+  {
+   "keys": [
+    "obs",
+    "locate"
+   ],
+   "cap": "③ Correlate external waveforms with internal state: because silicon failures can be intermittent and indirect, align both evidence streams to work backward from a bad host result to one module, datapath, or cycle."
+  },
+  {
+   "keys": [
+    "locate"
+   ],
+   "cap": "④ Once isolated, stabilize and verify: change configuration, reduce frequency, adjust timing, apply a firmware/software workaround, or patch around the faulty path, then run real TensorFlow inference and confirm the symptom no longer occurs under production conditions."
+  },
+  {
+   "keys": [
+    "blind"
+   ],
+   "cap": "⑤ Apply the negative rule throughout: observability must be embedded during architecture/design. Without JTAG, scan, performance counters, and trace, only the bad result is visible and an intermittent silicon defect becomes blind guesswork."
+  }
+ ],
+ "before": [
+  "<b>Equip the laboratory with ways to see and control the card</b>: prepare an oscilloscope, logic analyzer, JTAG debugger/probe, controllable power and clock sources, and a bring-up host that can power the TPU PCIe card, load firmware, and apply deterministic stimulus.",
+  "<b>Inventory the observability actually present in silicon</b>: diagnosis depends on the JTAG/scan chains, utilization and stall counters, on-chip trace, and debug pins reserved during architecture and design. They cannot be added after tapeout; establish exactly which internal observation paths the returned device provides.",
+  "<b>Define the healthy baseline before comparing evidence</b>: collect expected clock frequency such as the 700 MHz target, rail voltages, PCIe link behavior, key-bus timing, and expected counter values. Debug finds deviations between actual and expected behavior; without a baseline there is no defensible anomaly.",
+  "<b>Construct a minimal reproducible stimulus</b>: silicon failures are often intermittent, so begin with power-on self-test, ID reads, and one short datapath, then add complexity until the 256×256 array is fully loaded. Isolation is possible only when the symptom can be reproduced reliably."
+ ],
+ "during": [
+  "<b>Silicon bugs share two difficulties: weak reproducibility and indirect symptoms</b>. Temperature, voltage, data, and timing windows may make a failure intermittent, while the direct observation is merely a bad final result or system hang. The defect itself can sit inside one module or one cycle. Laboratory debug therefore adds eyes and works backward from the symptom rather than simply reading a software log.",
+  "<b>Proceed from outside to inside and from coarse to fine</b>. First use the oscilloscope to verify clock start-up, frequency, jitter, power-rail stability, ripple/droop, and PCIe eye opening. Then use the logic analyzer to capture handshakes, enables, and state-machine timing. Together these checks separate electrical-layer problems from logical ones.",
+  "<b>Use JTAG/scan to freeze and inspect internal state</b>. When the external evidence is insufficient, halt the device and serially shift out thousands of internal flip-flop states through scan; inspect state machines and control registers at the failure cycle, or force a state experimentally when supported. This is the transition from black-box output diagnosis to white-box state inspection, and it depends on scan inserted before fabrication.",
+  "<b>Use performance counters and trace for the running system's dynamic profile</b>. Intermittent and performance-related failures may disappear when the device halts. Read preplanned counters for 256×256-array utilization, pipeline stall cycles, external DDR3 waits, and PCIe command fetch, then replay an interval of internal events from on-chip trace. Utilization or stall anomalies often identify the affected datapath or scheduler.",
+  "<b>Correlate → isolate → stabilize → verify</b>. Align the time of the external waveform failure with internal state, counters, and trace to narrow a card-level error to one module, path, or cycle. Bring-up may first stabilize the system by configuration changes, lower frequency, timing adjustment, firmware/software workaround, or a patch. Close the issue only after long execution on a real TensorFlow inference workload without recurrence.",
+  "<b>Evidence boundary</b>: oscilloscopes, logic analyzers, JTAG/scan chains, performance counters, on-chip trace, outside-in correlation, workarounds, and real-workload verification are standard practices for 28 nm-class PCIe 3.0 accelerators. TPU v1's private ports, chain structure, counter inventory, trace mechanism, and specific defects/fixes are not public. The 256×256 array, 24 MiB UB, 700 MHz, external DDR3, and PCIe card serve only as the observed system."
+ ],
+ "result": [
+  {
+   "label": "Deliverable",
+   "value": "A closed symptom → internal root cause → disposition record that isolates an intermittent, indirect silicon bug to a module, path, or cycle, applies a stable remedy or workaround, and passes a real workload."
+  },
+  {
+   "label": "External observation",
+   "value": "Oscilloscope for analog pin behavior—clocks, rails, and eye diagrams—and logic analyzer for multi-signal digital bus timing, handshakes, and state-machine order."
+  },
+  {
+   "label": "Internal observation (designed in)",
+   "value": "JTAG/scan for halted internal register state + performance counters for 256×256-array utilization and stall cycles + on-chip trace for event replay."
+  },
+  {
+   "label": "Isolation method",
+   "value": "Move outside-in and coarse-to-fine; align the external failure time with internal state/counters and narrow the symptom to one module, path, or cycle."
+  },
+  {
+   "label": "Disposition and verification",
+   "value": "Configuration / lower frequency / timing adjustment / firmware-software workaround / patch → sustained real TensorFlow inference without recurrence."
+  },
+  {
+   "label": "Negative rule",
+   "value": "No JTAG/scan/counters/trace means blind debug: only the wrong result is visible. Bring-up observability must be embedded during architecture/design because it cannot be added after fabrication."
+  }
+ ],
+ "after": [
+  "<b>Record root cause and disposition as an erratum and workaround</b>: document each symptom, reproduction condition, internal cause, and temporary remedy such as reduced frequency, workaround, or patch. Publish the relevant entry to firmware, driver, and software teams so deployment remains inside known limits.",
+  "<b>Decide silicon fix versus software workaround</b>: retain a sustainable firmware/software/configuration workaround when adequate; place defects that compromise function or reliability and require silicon changes on the next re-spin or metal-fix list. Bring-up must make this cost and risk decision explicit.",
+  "<b>Run real workloads and long regressions</b>: after a local fix, execute sustained TensorFlow/XLA inference across temperature and voltage corners to catch non-reproducible failures and verify that the remedy introduced no regression.",
+  "<b>Improve observability in the next design</b>: feed every moment when the team needed an unavailable internal signal into the next generation's DFT and design-for-debug plan. Add counters, scan coverage, or trace depth before tapeout so the next bring-up has better visibility.",
+  "<b>Preserve the evidence boundary</b>: archive interfaces, counters, methods, and dispositions while distinguishing public TPU structure plus standard bring-up practice from unpublished TPU debug ports, scan architecture, counter lists, and defects. Do not fabricate the latter."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the paper discloses the 256×256 8-bit-MAC systolic array, 24 MiB Unified Buffer, 700 MHz clock, external 8 GiB DDR3, and PCIe 3.0 accelerator-card interface, which serve only as the observed system. Oscilloscopes, logic analyzers, JTAG, on-chip scan chains, performance counters for utilization/stalls, on-chip trace, outside-in diagnosis, software workarounds, real-workload verification, and architecture-time observability are standard manufacturing, package/test, production, and bring-up practices for 28 nm-class PCIe accelerators. TPU v1's private debug ports, chain structure, counter inventory, trace mechanism, and specific bring-up defects and fixes are not public; this case does not invent private figures.)"
+}

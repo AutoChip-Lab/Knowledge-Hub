@@ -1,0 +1,118 @@
+{
+ "secNum": "3.6",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Software, Firmware, and Driver Bring-up: Activate the ecosystem on real silicon—firmware → kernel driver → XLA compiler → TensorFlow framework → application—until a TF graph compiles into roughly a dozen CISC instructions and runs correctly on the 256×256 systolic array. Without a working software stack, even powerful silicon remains stranded and undeployable.",
+ "oneLine": "This case supports software/firmware/driver bring-up. After successful tapeout and power-on bring-up, usability depends on bringing the entire stack up layer by layer on real silicon. ① Firmware/board initialization sequences power, clocks, and resets, establishes the PCIe 3.0 link, trains the external 8 GiB DDR3 (~30 GB/s), and lets the host enumerate the card. ② The kernel driver configures PCIe BARs and interrupts, establishes DMA, and implements the host-driven control plane for roughly a dozen CISC instructions. ③ Runtime/operator libraries load compiled work, manage the Unified Buffer, queues, and synchronization. ④ XLA transforms a TensorFlow graph through fusion, tensor layout, and 24 MiB-UB residency into roughly a dozen CISC operations such as Read_Weights, MatrixMultiply, and Activate. ⑤ TensorFlow and applications close TF → XLA → 256×256-array execution on real silicon with correct results and adequate utilization. The central lesson, echoing ③ §3.15, is that successful silicon is not yet a usable AI product: operator coverage, compiler quality, and driver/runtime stability often govern production readiness. One demo is far from stable support for thousands of graphs. The known TPU v1 256×256 8-bit-MAC array, 24 MiB UB, 700 MHz / ~92 TOPS, PCIe 3.0, DDR3, and TF/XLA stack are only the system being activated. Firmware, DMA, runtime scheduling, compiler, and operator bring-up are standard 28 nm-class accelerator-delivery practices; TPU v1's private implementation, process, and data are not public.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 415\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"26\">Software/firmware/driver bring-up: make the ecosystem run on real silicon—firmware → driver → XLA compiler → TensorFlow → application—one layer at a time until a model executes.</text><g class=\"cs-part\" data-k=\"fw\" data-g=\"fw\"><rect class=\"cs-box\" x=\"24\" y=\"56\" width=\"200\" height=\"84\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"124\" y=\"84\">① Firmware / board initialization</text><text class=\"cs-sub\" x=\"124\" y=\"104\">Power, clocks/reset, PCIe link</text><text class=\"cs-sub\" x=\"124\" y=\"122\">DDR3 training; host enumerates card</text></g><line class=\"cs-arr\" x1=\"224\" y1=\"98\" x2=\"262\" y2=\"98\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"drv\" data-g=\"drv\"><rect class=\"cs-box\" x=\"266\" y=\"56\" width=\"200\" height=\"84\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"366\" y=\"84\">② Kernel driver</text><text class=\"cs-sub\" x=\"366\" y=\"104\">Recognize card; configure PCIe and DMA</text><text class=\"cs-sub\" x=\"366\" y=\"122\">Path for roughly a dozen CISC instructions</text></g><line class=\"cs-arr\" x1=\"466\" y1=\"98\" x2=\"504\" y2=\"98\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"rt\" data-g=\"rt\"><rect class=\"cs-box\" x=\"508\" y=\"56\" width=\"188\" height=\"84\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"602\" y=\"84\">③ Runtime / operator library</text><text class=\"cs-sub\" x=\"602\" y=\"104\">Feed compiled work to hardware</text><text class=\"cs-sub\" x=\"602\" y=\"122\">Manage UB loading, queues, synchronization</text></g><line class=\"cs-arr\" x1=\"124\" y1=\"140\" x2=\"124\" y2=\"170\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"366\" y1=\"140\" x2=\"366\" y2=\"170\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"602\" y1=\"140\" x2=\"602\" y2=\"170\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"xla\" data-g=\"xla\"><rect class=\"cs-box\" x=\"24\" y=\"174\" width=\"672\" height=\"62\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"360\" y=\"198\">④ XLA compiler: TensorFlow graph → fusion/layout/UB residency → roughly a dozen CISC instructions</text><text class=\"cs-sub\" x=\"360\" y=\"220\">Stack core: compile real models into a correct, high-utilization instruction stream</text></g><line class=\"cs-arr\" x1=\"360\" y1=\"236\" x2=\"360\" y2=\"262\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"tf\" data-g=\"tf\"><rect class=\"cs-box\" x=\"24\" y=\"266\" width=\"672\" height=\"58\" rx=\"8\" fill=\"#dcfce7\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"360\" y=\"290\">⑤ TensorFlow + application: TF→XLA→256×256-array execution on real silicon</text><text class=\"cs-sub\" x=\"360\" y=\"312\">Correct end-to-end result + target utilization → deployable model</text></g><g class=\"cs-part\" data-k=\"bottleneck\" data-g=\"bottleneck\"><rect class=\"cs-box\" x=\"24\" y=\"338\" width=\"672\" height=\"44\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"360\">Core lesson: without working software, powerful silicon remains stranded and undeployable; AI-stack maturity often limits production readiness</text><text class=\"cs-sub\" x=\"360\" y=\"376\">Successful tapeout ≠ usable product. Activate each layer and complete operator coverage before delivery.</text></g><text class=\"cs-note\" x=\"24\" y=\"402\">Evidence boundary: TPU v1's private firmware/driver/runtime and bring-up flow are not public. Firmware initialization, driver DMA, and runtime scheduling are standard for 28 nm PCIe accelerators; known PCIe/CISC/24 MiB-UB/TF-XLA structure is only the example.</text></svg>",
+ "legend": [
+  {
+   "k": "fw",
+   "name": "① Firmware / board initialization (make the card visible to the host)",
+   "desc": "The lowest software layer bridges silicon bring-up and host usability. On the returned PCIe accelerator, firmware and board initialization sequence power, clocks, and resets, train the PCIe 3.0 physical link, and initialize the external 8 GiB DDR3 (~30 GB/s) until the host can enumerate the TPU and read its device ID. If this layer fails, no driver, runtime, or compiler can proceed. TPU v1's firmware is private; these power/link/memory steps are standard PCIe-accelerator practice."
+  },
+  {
+   "k": "drv",
+   "name": "② Kernel driver (recognize the card and open the command path)",
+   "desc": "The host OS driver converts PCIe enumeration into a usable device. It maps BAR address space, registers interrupts, creates DMA between host memory and the card's UB/DDR3, and exposes kernel interfaces to the runtime. This implements the host control plane that sends roughly a dozen CISC instructions through PCIe 3.0. Stability—no crashes, leaks, or DMA corruption—directly determines card usability. TPU v1's driver is private; PCIe, DMA, and interrupt management are standard."
+  },
+  {
+   "k": "rt",
+   "name": "③ Runtime / operator library (turn compiler output into hardware execution)",
+   "desc": "Between compiler and driver, the runtime loads XLA-generated CISC streams, schedules them by dependency, manages weights and activations in the 24 MiB Unified Buffer, synchronizes host and card, and retrieves results. Operator libraries provide correct and optimized paths for framework operations. This is where a compiler plan becomes real array execution. Runtime scheduling and operator coverage determine which models execute and how fully the hardware is used. TPU v1's implementation is private."
+  },
+  {
+   "k": "xla",
+   "name": "④ XLA compiler (translate a TF graph into roughly a dozen CISC instructions)",
+   "desc": "XLA, also central to ③ §3.15, receives the TensorFlow graph, performs operator fusion and tensor layout, chooses 24 MiB-UB residency, and emits a compact sequence such as Read_Weights / MatrixMultiply / Activate for PCIe delivery. On real silicon, bring-up must prove not only that code is emitted, but that results are correct and the 256×256 array reaches target utilization. Compiler quality directly changes measured throughput on identical silicon. TPU's public TF/XLA stack illustrates the concept; its backend is private."
+  },
+  {
+   "k": "tf",
+   "name": "⑤ TensorFlow + application (end-to-end execution and deployability)",
+   "desc": "At the acceptance surface, execute TensorFlow → XLA → 256×256-array operation on real TPU silicon using representative models. Confirm correctness, utilization, performance, and the 28–40 W power expectation. Only then does manufactured hardware become a deployable data-center model platform. The team took approximately 15 months from program start to deployment, and TPU v1 had operated in data centers for more than one year before publication, underscoring the work needed to stabilize the ecosystem. Internal deployment details are not public."
+  },
+  {
+   "k": "bottleneck",
+   "name": "Core lesson: without working software, silicon remains stranded and undeployable (the production bottleneck)",
+   "desc": "Successful tapeout does not make an AI accelerator usable. If firmware, driver, runtime, compiler, or operator libraries remain incomplete, a 256×256 array and ~92 TOPS sit idle. Moving from one or two demos to stable production support for thousands of graphs requires extensive operator completion, compiler optimization, and reliability work. Software-stack maturity often determines the production schedule and is the ecosystem moat highlighted in ③ §3.15. TPU's private effort and schedule breakdown are not public."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "fw",
+    "drv"
+   ],
+   "cap": "① Activate bottom-up: firmware sequences power/clocks/reset and trains PCIe and DDR3 so the host enumerates the card; the kernel driver then configures PCIe and DMA and opens the control path for roughly a dozen CISC instructions. This bridges alive silicon to usable software."
+  },
+  {
+   "keys": [
+    "rt",
+    "xla"
+   ],
+   "cap": "② Connect the middle layers: XLA fuses and lays out TensorFlow graphs, chooses UB residency, and emits roughly a dozen CISC instructions; the runtime/operator library loads and schedules them, manages the 24 MiB UB, and synchronizes reliable hardware execution."
+  },
+  {
+   "keys": [
+    "tf"
+   ],
+   "cap": "③ Close end-to-end at the top: execute TensorFlow → XLA → 256×256 array on real silicon, with correct results, target utilization, and expected performance/power. Only then can the model deploy in a data center."
+  },
+  {
+   "keys": [
+    "bottleneck",
+    "xla",
+    "rt"
+   ],
+   "cap": "④ Recognize the bottleneck: successful tapeout ≠ usable product. Without a working software stack, even powerful silicon remains stranded and undeployable; operator coverage, compiler optimization, and driver/runtime stability often determine AI-chip production readiness and require continuous iteration."
+  }
+ ],
+ "before": [
+  "<b>Begin with activated real silicon</b>: the hardware must have returned, been assembled as a PCIe accelerator, and passed power-on/silicon bring-up with stable power and clocks. Software engineers need a controllable physical card, not only a model.",
+  "<b>Prepare a version-consistent stack</b>: align firmware image, kernel driver, runtime/operator library, XLA backend, and TensorFlow. Prevalidate them in simulation, FPGA, or a predecessor when possible so software defects can be separated from silicon defects.",
+  "<b>Define layer-by-layer order and acceptance</b>: activate firmware → driver → runtime → compiler → framework, with explicit gates such as enumeration, DMA, one correct MatrixMultiply, a correct small model, and target array utilization. Stabilize each layer before adding the next.",
+  "<b>Prepare observability and diagnostic tests</b>: expose PCIe state, register access, DMA, command queues, counters, and golden-result microtests so each layer can be verified and failures assigned. Bring-up is as much diagnosis as coding.",
+  "<b>Plan for software-maturity risk</b>: incomplete operators, poorly optimized graphs, and intermittent driver failures can delay shipment. Reserve substantial iteration time for coverage, compiler optimization, and stability because software is often the production bottleneck."
+ ],
+ "during": [
+  "<b>Activate firmware and board functions first so the host can see the card</b>. Sequence power, clocks, and resets; train PCIe 3.0; initialize and train the external 8 GiB DDR3 (~30 GB/s); and reach reliable enumeration with the correct device ID. Nothing above this gate can operate until it passes.",
+  "<b>Use the kernel driver to recognize the device and open the command path</b>. Configure PCIe BARs and interrupts, establish DMA between host memory and card UB/DDR3, and expose kernel interfaces. This is where the host-driven path for roughly a dozen CISC instructions becomes real. Crashes, leaks, or DMA errors directly compromise the product.",
+  "<b>Use runtime and operator libraries to feed compiler output reliably</b>. Load the XLA CISC stream, schedule dependency-ordered queues, manage weight/activation movement through the 24 MiB UB, synchronize host and card, and collect results. Operator implementations must be both correct and efficient.",
+  "<b>Tune XLA for both correctness and utilization</b>. On real silicon, fuse TensorFlow operators, choose tensor layouts and 24 MiB-UB residency, emit roughly a dozen CISC instructions, and verify both correct output and high utilization of the 256×256 array. Compiler quality directly controls throughput and often limits production.",
+  "<b>Accept the complete framework/application path</b>. Execute a real TensorFlow model through TF → XLA → the 256×256 array, verify output, utilization, and throughput, and keep power within 28–40 W. Only this end-to-end result makes the card deployable.",
+  "<b>Treat software maturity as an ongoing bottleneck</b>. One or two demos are far from supporting thousands of production graphs. Complete operators, improve compiler optimization, and harden stability continuously. Approximately 15 months from program start to deployment and more than one year of pre-publication data-center operation include this ecosystem stabilization effort."
+ ],
+ "result": [
+  {
+   "label": "Deliverable",
+   "value": "Firmware → kernel driver → runtime/operator library → XLA compiler → TensorFlow/application activated on real silicon, turning a powered PCIe card into a model-execution device."
+  },
+  {
+   "label": "Activation order",
+   "value": "① Firmware (PCIe link / DDR3 training and enumeration) ② driver (device + DMA) ③ runtime/operator library ④ XLA compilation ⑤ TF/application end to end."
+  },
+  {
+   "label": "End-to-end acceptance",
+   "value": "Real model follows TF → XLA → roughly a dozen CISC instructions → 256×256 array, with correct result, target utilization, and 28–40 W power."
+  },
+  {
+   "label": "Core lesson",
+   "value": "Without a working software stack, even powerful silicon remains stranded and undeployable. Successful tapeout ≠ usable product; each layer and operator family must be brought up before delivery."
+  },
+  {
+   "label": "Production bottleneck",
+   "value": "AI-stack maturity—operator coverage, compiler optimization, and driver/runtime stability—often governs production readiness and delivery schedule."
+  },
+  {
+   "label": "Evidence boundary",
+   "value": "Layered firmware/driver/runtime/compiler bring-up is standard PCIe-accelerator delivery practice, not published TPU v1 implementation data; known hardware and TF/XLA structure are only the activation target."
+  }
+ ],
+ "after": [
+  "<b>Regress each activated layer and preserve its baseline</b>: retain small tests for enumeration, DMA, one correct MatrixMultiply, small-model correctness, and utilization. Run them after every change so upper-layer work cannot silently regress lower layers. TPU's tests are private; layered regression is standard.",
+  "<b>Separate silicon defects from software defects</b>: fix firmware, driver, runtime, or compiler issues in software. When evidence identifies silicon, return it to hardware for a metal fix, revision, or software workaround. This hardware/software loop is normal bring-up; TPU-specific defects are not public.",
+  "<b>Complete operators and improve compiler quality</b>: prioritize unsupported or slow operations and graphs from production models for operator-library and XLA optimization. Moving from a demo to thousands of stable graph forms is a major share of AI-software maturation.",
+  "<b>Harden driver and runtime for deployment</b>: stress long-duration, multi-workload operation and eliminate intermittent crashes, memory leaks, DMA faults, and synchronization races before shipping the stack with the card. Private stability measurements are not public.",
+  "<b>Preserve software assets and invest continuously</b>: maintain firmware, driver, runtime, XLA backend, operator libraries, and documentation so more TF models run unchanged or with minimal modification. Ship the qualified card and stack together, then keep improving the ecosystem moat from ③ §3.15. The approximately 15-month deployment and more-than-one-year pre-publication operation are public context."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the paper discloses the 256×256 8-bit-MAC systolic array, 24 MiB Unified Buffer, 4 MiB 32-bit accumulator, 700 MHz / ~92 TOPS, external 8 GiB DDR3 (~30 GB/s), weight-stationary dataflow, roughly a dozen CISC instructions over PCIe 3.0, PCIe accelerator-card form, TensorFlow/XLA stack, 28 nm / die ≤331 mm² / 28–40 W, approximately 15 months from program start to deployment, and more than one year of data-center operation before public release. These are the system being activated. Firmware power/clock/reset, PCIe and DDR training, kernel PCIe/DMA/interrupt management, runtime queue and UB management, XLA compilation for correctness and utilization, real-silicon end-to-end framework acceptance, and software-stack maturity as an AI-production bottleneck are standard 28 nm-class accelerator software-delivery practices. TPU v1's private firmware, driver, runtime/operator code, bring-up flow, defects, labor, stability, and operator coverage are not public; layers and criteria are illustrative.)"
+}

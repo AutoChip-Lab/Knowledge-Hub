@@ -1,0 +1,123 @@
+{
+  "secNum": "3.1",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · Synthesis Overview: Translating and Optimizing a 256×256 Array into a 28 nm Gate Netlist",
+  "oneLine": "Logic synthesis is not a one-click RTL-to-gates conversion. It reads and elaborates RTL, maps generic logic to a 28 nm library, optimizes timing/area/power, and emits a gate netlist plus reports. SDC constraints drive the entire convergence loop for TPU's regular 65,536-MAC array.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-t\" x=\"360\" y=\"30\">Logic synthesis: translate + optimize RTL into a gate-level netlist</text><g class=\"cs-part\" data-k=\"rtl\" data-g=\"rtl\"><rect class=\"cs-box\" x=\"24\" y=\"70\" width=\"150\" height=\"120\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"99\" y=\"100\">① Read RTL</text><text class=\"cs-sub\" x=\"99\" y=\"120\">read_verilog</text><text class=\"cs-sub\" x=\"99\" y=\"138\">Synthesizable TPU RTL</text><text class=\"cs-sub\" x=\"99\" y=\"156\">256×256 array · UB</text><text class=\"cs-sub\" x=\"99\" y=\"174\">· control FSM</text></g><line class=\"cs-arr\" x1=\"174\" y1=\"130\" x2=\"214\" y2=\"130\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"elab\" data-g=\"elab\"><rect class=\"cs-box\" x=\"216\" y=\"70\" width=\"150\" height=\"120\" rx=\"8\"/><text class=\"cs-t\" x=\"291\" y=\"100\">② Elaborate</text><text class=\"cs-sub\" x=\"291\" y=\"120\">Expand parameters / generate</text><text class=\"cs-sub\" x=\"291\" y=\"138\">Infer generic logic:</text><text class=\"cs-sub\" x=\"291\" y=\"156\">adders · multipliers ·</text><text class=\"cs-sub\" x=\"291\" y=\"174\">registers · MUXes (GTECH)</text></g><line class=\"cs-arr\" x1=\"366\" y1=\"130\" x2=\"406\" y2=\"130\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"map\" data-g=\"map\"><rect class=\"cs-box\" x=\"408\" y=\"70\" width=\"150\" height=\"120\" rx=\"8\"/><text class=\"cs-t\" x=\"483\" y=\"100\">③ Technology mapping</text><text class=\"cs-sub\" x=\"483\" y=\"120\">Bind 28 nm standard-cell library</text><text class=\"cs-sub\" x=\"483\" y=\"138\">Generic gates → real cells</text><text class=\"cs-sub\" x=\"483\" y=\"156\">NAND / DFF / full adder…</text><text class=\"cs-sub\" x=\"483\" y=\"174\">.lib (Liberty)</text></g><line class=\"cs-arr\" x1=\"558\" y1=\"130\" x2=\"598\" y2=\"130\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"opt\" data-g=\"opt\"><rect class=\"cs-box\" x=\"600\" y=\"70\" width=\"96\" height=\"120\" rx=\"8\" fill=\"#fefce8\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"648\" y=\"100\">④ Optimize</text><text class=\"cs-sub\" x=\"648\" y=\"120\">Timing / area</text><text class=\"cs-sub\" x=\"648\" y=\"138\">/ power</text><text class=\"cs-sub\" x=\"648\" y=\"156\">Multi-Vt cell choice</text><text class=\"cs-sub\" x=\"648\" y=\"174\">· buffering · retiming</text></g><g class=\"cs-part\" data-k=\"sdc\" data-g=\"sdc\"><rect class=\"cs-box\" x=\"216\" y=\"220\" width=\"342\" height=\"60\" rx=\"8\" fill=\"#fef2f2\" stroke=\"#fca5a5\"/><text class=\"cs-t\" x=\"387\" y=\"244\">SDC constraints drive ②③④</text><text class=\"cs-note\" x=\"232\" y=\"266\">create_clock -period 1.43 [get_ports clk]  // example: 700 MHz</text></g><line class=\"cs-arr\" x1=\"291\" y1=\"220\" x2=\"291\" y2=\"192\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><line class=\"cs-arr\" x1=\"483\" y1=\"220\" x2=\"483\" y2=\"192\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><line class=\"cs-arr\" x1=\"500\" y1=\"250\" x2=\"648\" y2=\"192\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><line class=\"cs-arr\" x1=\"648\" y1=\"190\" x2=\"648\" y2=\"312\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"net\" data-g=\"net\"><rect class=\"cs-box\" x=\"408\" y=\"316\" width=\"288\" height=\"58\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"552\" y=\"340\">⑤ Gate netlist + reports</text><text class=\"cs-sub\" x=\"552\" y=\"358\">netlist.v · timing/area/power QoR · SDF/SDC</text></g><g class=\"cs-part\" data-k=\"iter\" data-g=\"iter\"><rect class=\"cs-box\" x=\"24\" y=\"316\" width=\"360\" height=\"58\" rx=\"8\" fill=\"#fff7ed\" stroke=\"#fdba74\"/><text class=\"cs-t\" x=\"204\" y=\"340\">Iterate: inspect reports → tune constraints/RTL/library → resynthesize</text><text class=\"cs-sub\" x=\"204\" y=\"358\">If violations remain, iterate until QoR meets target</text></g><line class=\"cs-arr\" x1=\"408\" y1=\"345\" x2=\"388\" y2=\"345\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"204\" y1=\"316\" x2=\"204\" y2=\"284\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/></svg>",
+  "legend": [
+    {
+      "k": "rtl",
+      "name": "① Read RTL",
+      "desc": "The synthesizer reads signed-off synthesizable RTL: TPU PEs with 8-bit multiply and 32-bit accumulation, the 256×256 array, Unified Buffer control, and CISC decode FSM. This stage parses syntax and hierarchy; no gates exist yet."
+    },
+    {
+      "k": "elab",
+      "name": "② Elaborate (infer generic logic)",
+      "desc": "Expand parameters and generate constructs—N=256 instantiates the full array—and infer technology-independent adders, multipliers, registers, and multiplexers such as GTECH primitives. Structure is now defined but not tied to a real library."
+    },
+    {
+      "k": "map",
+      "name": "③ Technology mapping",
+      "desc": "Bind a 28 nm Liberty standard-cell library and replace generic operators with available NANDs, DFFs, full adders, buffers, and other physical cells. Cell selection directly determines area, delay, and power."
+    },
+    {
+      "k": "opt",
+      "name": "④ Optimize timing / area / power",
+      "desc": "Restructure under SDC constraints: choose faster or lower-power multi-Vt cells, insert buffers, repair setup/hold, retime logic, and share resources. This is where synthesis balances a 700 MHz target against area and power."
+    },
+    {
+      "k": "sdc",
+      "name": "SDC constraints drive ②③④",
+      "desc": "Synthesis is goal-driven. Clock period—illustratively 1.43 ns for ~700 MHz—input/output delay, drive, load, false paths, and multicycle paths determine whether the tool prioritizes timing or efficiency."
+    },
+    {
+      "k": "net",
+      "name": "⑤ Gate netlist + reports",
+      "desc": "Outputs include a gate-level netlist of real cells and connectivity, QoR reports for slack, area, and power, plus SDC/SDF for backend work. Reports determine whether the iteration has converged."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "rtl",
+        "elab"
+      ],
+      "cap": "① Read signed-off TPU RTL and elaborate parameters/generate constructs into technology-independent adders, multipliers, registers, and MUXes."
+    },
+    {
+      "keys": [
+        "map",
+        "sdc"
+      ],
+      "cap": "② Bind a 28 nm standard-cell library and, under SDC constraints such as an illustrative 1.43 ns clock, map generic logic to real NAND, DFF, and arithmetic cells."
+    },
+    {
+      "keys": [
+        "opt"
+      ],
+      "cap": "③ Optimize for 700 MHz timing, area, and power using multi-Vt cell selection, buffering, retiming, and resource sharing."
+    },
+    {
+      "keys": [
+        "net"
+      ],
+      "cap": "④ Emit the gate-level netlist, timing/area/power QoR reports, and SDC/SDF for backend implementation."
+    },
+    {
+      "keys": [
+        "iter",
+        "sdc",
+        "rtl"
+      ],
+      "cap": "⑤ If timing, area, or power misses target, revise constraints, RTL, or library strategy and resynthesize until QoR converges."
+    }
+  ],
+  "before": [
+    "<b>Prepare three input classes</b>: Signed-off synthesizable RTL, the target 28 nm Liberty standard-cell libraries—often with multiple threshold voltages—and SDC constraints. Synthesis cannot proceed credibly without all three.",
+    "<b>Write timing constraints</b>: Define the main clock, illustratively create_clock -period 1.43 [get_ports clk] for ~700 MHz, plus I/O delays, drive strength, load, false paths, and multicycle paths. Incorrect constraints optimize the wrong problem.",
+    "<b>Declare power intent and DFT requirements</b>: Express multi-voltage or clock-gating intent in UPF/CPF where applicable, and decide whether scan insertion and compression occur during synthesis or later because they alter netlist structure.",
+    "<b>Set QoR and library policy</b>: Quantify timing closure at 700 MHz and area/power budgets. Define a multi-Vt policy, typically high-Vt cells for low leakage and low-Vt only on critical paths.",
+    "<b>Align process and upstream architecture</b>: Confirm PVT corners and the design parameters being synthesized: 256×256 array, 24 MiB UB, 4 MiB accumulators, and weight-stationary dataflow."
+  ],
+  "during": [
+    "<b>Core rule: synthesis is constraint-driven</b>. Tightening the same RTL's clock pushes the tool toward buffers and low-Vt cells at higher area; relaxed constraints favor area and power. Bad SDC produces a bad netlist and meaningless QoR.",
+    "<b>Separate translation from optimization</b>. Read, elaborate, and map preserve RTL semantics while progressively selecting concrete cells; optimize changes structure under constraints. Mapping alone is not final quality.",
+    "<b>Preserve consistency across the regular array</b>. Elaborating TPU's 256×256 grid creates roughly 65K similar MAC units, which synthesis maps consistently. Critical paths often appear in accumulation chains and inter-PE links.",
+    "<b>Use multi-Vt libraries to trade timing for leakage</b>. A common strategy uses high-Vt cells broadly and replaces only failing critical-path cells with faster, leakier low-Vt variants, balancing 700 MHz timing against total power.",
+    "<b>Select arithmetic structures carefully</b>. For 8-bit multiply and 32-bit accumulate paths, the tool may choose ripple, carry-lookahead, or tree structures. Tight timing selects faster, larger implementations—a direct area/delay tradeoff.",
+    "<b>State methodology provenance</b>: Read→elaborate→map→optimize→netlist, SDC, Liberty, multi-Vt, and QoR are standard EDA synthesis practices used by tools such as Design Compiler, Genus, and Yosys. TPU private scripts, libraries, and QoR are not public; values shown are illustrative."
+  ],
+  "result": [
+    {
+      "label": "Five synthesis stages",
+      "value": "read → elaborate → tech-map → optimize → netlist"
+    },
+    {
+      "label": "Clock constraint (example)",
+      "value": "create_clock -period 1.43 [get_ports clk]  // ~700 MHz"
+    },
+    {
+      "label": "Library strategy (example)",
+      "value": "28 nm multi-Vt .lib: high-Vt baseline / low-Vt critical paths"
+    },
+    {
+      "label": "Primary output · netlist",
+      "value": "Gate-level netlist.v with real cells and connectivity"
+    },
+    {
+      "label": "Primary output · reports",
+      "value": "Timing slack / area / power QoR reports"
+    },
+    {
+      "label": "Backend handoff",
+      "value": "SDC + SDF for place-and-route and subsequent STA"
+    }
+  ],
+  "after": [
+    "<b>Judge convergence from QoR</b>: Check setup/hold slack at 700 MHz, total area, dynamic power, and leakage against budget. These reports decide whether the synthesis iteration succeeds.",
+    "<b>Run logical equivalence checking (LEC)</b>: Formally compare RTL with the gate netlist to ensure retiming and optimization preserved function. LEC is a mandatory release gate.",
+    "<b>Iterate</b>: Repair violations by refining SDC, changing RTL pipelines, or adjusting library strategy, then resynthesize. QoR often needs many convergence loops.",
+    "<b>Hand off to backend</b>: Deliver the LEC-clean netlist with SDC/SDF, libraries, and power intent. After routing, signoff STA with extracted parasitics must reconfirm 700 MHz on real interconnect."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the synthesis flow, constraints, libraries, and QoR methodology are standard EDA practice; tool commands and cycle values are illustrative, not published TPU synthesis data.)"
+}

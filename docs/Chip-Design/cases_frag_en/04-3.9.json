@@ -1,0 +1,120 @@
+{
+ "secNum": "3.9",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Cycle-by-Cycle Shifting Inside the Array vs. valid/ready Handshakes Between Blocks",
+ "oneLine": "Adjacent PEs in the systolic array exchange data through regular local registers on one aligned clock, so no handshake is needed. valid/ready becomes necessary only across functional-block boundaries such as UB↔MXU↔accumulator, where rates or clocks may differ. Interface protocol depends on whether both sides share a deterministic cadence.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"30\">Left: PE↔PE = registered shift, no handshake</text><text class=\"cs-note\" x=\"430\" y=\"30\">Right: block↔block = valid/ready handshake</text><g class=\"cs-part\" data-k=\"pe0\" data-g=\"pe\"><rect class=\"cs-box\" x=\"50\" y=\"70\" width=\"90\" height=\"70\" rx=\"8\"/><text class=\"cs-t\" x=\"95\" y=\"100\">PE(i,j)</text><text class=\"cs-sub\" x=\"95\" y=\"118\">MAC</text></g><g class=\"cs-part\" data-k=\"pe1\" data-g=\"pe\"><rect class=\"cs-box\" x=\"220\" y=\"70\" width=\"90\" height=\"70\" rx=\"8\"/><text class=\"cs-t\" x=\"265\" y=\"100\">PE(i,j+1)</text><text class=\"cs-sub\" x=\"265\" y=\"118\">MAC</text></g><g class=\"cs-part\" data-k=\"rega\" data-g=\"rega\"><rect x=\"150\" y=\"92\" width=\"58\" height=\"26\" rx=\"4\" fill=\"#e9e3fb\" stroke=\"#c4b5fd\"/><text class=\"cs-cellt\" x=\"179\" y=\"109\">a register</text></g><g class=\"cs-part\" data-g=\"aflow\"><line class=\"cs-arr\" x1=\"140\" y1=\"105\" x2=\"148\" y2=\"105\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"208\" y1=\"105\" x2=\"216\" y2=\"105\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"150\" y=\"86\">a shifts right each cycle →</text><g class=\"cs-part\" data-k=\"regp\" data-g=\"regp\"><rect x=\"66\" y=\"150\" width=\"58\" height=\"24\" rx=\"4\" fill=\"#dcf0e4\" stroke=\"#86d3a3\"/><text class=\"cs-cellt\" x=\"95\" y=\"167\">psum register</text></g><g class=\"cs-part\" data-g=\"pflow\"><line class=\"cs-arr\" x1=\"95\" y1=\"140\" x2=\"95\" y2=\"148\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"95\" y1=\"174\" x2=\"95\" y2=\"195\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"130\" y=\"170\">partial sum shifts down each cycle ↓</text><g class=\"cs-part\" data-k=\"clk\" data-g=\"clk\"><rect class=\"cs-box\" x=\"50\" y=\"210\" width=\"260\" height=\"44\" rx=\"8\"/><text class=\"cs-t\" x=\"180\" y=\"231\">Same clock · lockstep each cycle</text><text class=\"cs-sub\" x=\"180\" y=\"247\">No valid / ready / backpressure</text></g><text class=\"cs-note\" x=\"50\" y=\"284\">Data follows a fixed schedule; arrival is determined at design time.</text><line class=\"cs-arr\" x1=\"365\" y1=\"180\" x2=\"365\" y2=\"60\" stroke-dasharray=\"5 4\"/><line class=\"cs-arr\" x1=\"365\" y1=\"180\" x2=\"365\" y2=\"300\" stroke-dasharray=\"5 4\"/><g class=\"cs-part\" data-k=\"ub\" data-g=\"ub\"><rect class=\"cs-box\" x=\"420\" y=\"70\" width=\"120\" height=\"62\" rx=\"8\"/><text class=\"cs-t\" x=\"480\" y=\"97\">Producer</text><text class=\"cs-sub\" x=\"480\" y=\"115\">e.g., Unified Buffer</text></g><g class=\"cs-part\" data-k=\"mxu\" data-g=\"mxu\"><rect class=\"cs-box\" x=\"600\" y=\"70\" width=\"100\" height=\"62\" rx=\"8\"/><text class=\"cs-t\" x=\"650\" y=\"97\">Consumer</text><text class=\"cs-sub\" x=\"650\" y=\"115\">e.g., MXU</text></g><g class=\"cs-part\" data-k=\"vld\" data-g=\"vld\"><line class=\"cs-arr\" x1=\"540\" y1=\"88\" x2=\"596\" y2=\"88\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"544\" y=\"82\">data + valid →</text></g><g class=\"cs-part\" data-k=\"rdy\" data-g=\"rdy\"><polyline class=\"cs-arr\" points=\"596,118 568,135 540,118\" fill=\"none\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"544\" y=\"152\">← ready (backpressure)</text></g><g class=\"cs-part\" data-k=\"hs\" data-g=\"hs\"><rect class=\"cs-box\" x=\"420\" y=\"190\" width=\"280\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"560\" y=\"214\">Transfer = valid &amp; ready high together</text><text class=\"cs-sub\" x=\"560\" y=\"232\">Different clocks/rates → negotiate transfer</text></g><text class=\"cs-note\" x=\"420\" y=\"276\">Specify width / ordering / timing / backpressure / CDC</text></svg>",
+ "legend": [
+  {
+   "k": "rega",
+   "name": "Inter-PE activation register a",
+   "desc": "A staging register between adjacent PEs captures activation a one position to the right each cycle. It is a registered hard wire with no valid/ready sideband; arrival time is known from the cycle schedule."
+  },
+  {
+   "k": "regp",
+   "name": "Inter-PE psum register",
+   "desc": "The partial sum moves down a column and is captured one position per cycle. Together with the rightward activation movement, it forms a two-dimensional synchronous flow."
+  },
+  {
+   "k": "clk",
+   "name": "Synchronous cadence domain",
+   "desc": "The full array advances in lockstep on one clock, with no valid, ready, or backpressure. Regular synchrony yields an extremely simple interface and is a key source of systolic efficiency."
+  },
+  {
+   "k": "vld",
+   "name": "valid path between blocks",
+   "desc": "Across a functional boundary such as UB→MXU, the producer sends data plus valid to state that the current-cycle payload is meaningful."
+  },
+  {
+   "k": "rdy",
+   "name": "ready backpressure between blocks",
+   "desc": "The consumer asserts ready when it can accept data. A transfer occurs only when valid and ready are both high in the same cycle. This negotiated complexity is unnecessary inside the array but useful between blocks."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "rega",
+    "regp"
+   ],
+   "cap": "① Inside the array, activation a shifts right and partial sum psum shifts down through one staging register per hop. The interface contains only data and clock."
+  },
+  {
+   "keys": [
+    "clk",
+    "pe"
+   ],
+   "cap": "② The entire array advances in lockstep: every PE receives from its neighbor, computes once, and forwards to the next neighbor each cycle. No receiver acknowledgment is needed because arrival is scheduled."
+  },
+  {
+   "keys": [
+    "ub",
+    "vld",
+    "mxu"
+   ],
+   "cap": "③ At a block boundary such as UB→MXU, the producer sends data+valid. Rates or clocks may differ, so deterministic per-cycle arrival can no longer be assumed."
+  },
+  {
+   "keys": [
+    "rdy",
+    "hs"
+   ],
+   "cap": "④ The consumer returns ready. Transfer occurs only when valid&ready are high together; deasserting ready applies backpressure and prevents upstream overflow."
+  },
+  {
+   "keys": [
+    "clk",
+    "hs"
+   ],
+   "cap": "⑤ The design rule: use handshake-free regular synchrony inside the array and negotiated valid/ready across rate-mismatched block boundaries. Choose based on whether both sides share the same cadence."
+  }
+ ],
+ "before": [
+  "<b>Classify two kinds of boundary</b>: A tightly coupled, same-clock boundary with statically known cadence, such as PE↔PE, can use synchronous shifting without handshakes. A loosely coupled boundary whose rate or clock may differ, such as UB↔MXU↔accumulator or PCIe↔core, needs negotiation. Classify every connection before selecting a protocol.",
+  "<b>Define the interface contract</b>: For every cross-block path, specify data width, valid/ready use, backpressure support, byte/channel ordering, burst length, and reset values. This contract is expensive to change after blocks diverge.",
+  "<b>Required inputs</b>: Datapath width and supply cadence from architecture (③)—a 256-wide array consumes one activation row per cycle, approximately 256 bytes entering the matrix unit each cycle—plus block frequencies and clock-domain relationships.",
+  "<b>Resolve the core assumption</b>: Inside the array, static dataflow and lockstep PEs make arrival time calculable at design time. Once a boundary does not guarantee aligned cadence, that premise disappears and valid/ready must negotiate transfers at runtime."
+ ],
+ "during": [
+  "<b>Inside the array, replace handshakes with regular synchrony</b>: PE↔PE uses one staging register; a moves right and psum moves down while one clock advances the whole array. With only data and clock, area, timing, and verification are minimal.",
+  "<b>Between blocks, use valid/ready to decouple rates</b>: At UB→MXU and MXU→accumulator boundaries, scheduling may not align every cycle. ready applies backpressure so a fast producer can wait for a slow consumer without losing or overflowing data.",
+  "<b>Freeze handshake semantics</b>: valid must not depend combinationally on ready; transfer occurs when valid&ready are high together; data remains stable while valid is high and ready is low. These rules prevent loops, drops, and duplicates when interfaces compose.",
+  "<b>Decide how far backpressure travels</b>: A running systolic wave should not stop mid-array because restarting would disturb alignment. Prefer buffers and scheduling before the array entrance to absorb rate differences instead of propagating backpressure through the PE grid.",
+  "<b>Trade interface width against wiring</b>: A cross-block port must support requirements such as 256 activations per cycle. A wider interface uses fewer handshakes but more routing; a narrower interface saves wires but needs more cycles or a higher clock. Balance against the boundary’s bandwidth budget.",
+  "<b>Handle CDC honestly</b>: TPU v1 does not publish its internal domain partition or CDC details. Standard datacenter-ASIC practice uses asynchronous FIFOs and multistage synchronizers at true clock crossings, such as PCIe↔core, while keeping the MAC array in one synchronous domain; this is not a disclosed v1 implementation detail."
+ ],
+ "result": [
+  {
+   "label": "In-array interface",
+   "value": "Synchronous shift registers; no handshake"
+  },
+  {
+   "label": "In-array arrival time",
+   "value": "Statically determined by cycle count at design time"
+  },
+  {
+   "label": "Cross-block interface",
+   "value": "data + valid/ready handshake"
+  },
+  {
+   "label": "Transfer condition",
+   "value": "valid & ready high in the same cycle"
+  },
+  {
+   "label": "Backpressure policy",
+   "value": "Prefer buffering before the array; do not disrupt its cadence"
+  },
+  {
+   "label": "Clock crossing (CDC)",
+   "value": "Asynchronous FIFO + synchronizer at domain boundaries (common practice, not disclosed for v1)"
+  }
+ ],
+ "after": [
+  "<b>Review every interface contract</b>: Align width, valid/ready behavior, backpressure, and reset values between each producer and consumer. Mismatched interpretation of one wire is a common integration bug.",
+  "<b>Check handshakes formally and in simulation</b>: Assert that valid does not depend on ready, data stays stable under backpressure, and transfers are neither dropped nor duplicated. Inside the array, compare registered shifts against the cycle-level timing model.",
+  "<b>Stress backpressure and boundaries</b>: Cover sustained and intermittent ready=0, upstream bursts, the first transfer after reset, and handoff around array fill and drain.",
+  "<b>Hand off to RTL (⑤)</b>: Implement synchronous shift registers, valid/ready logic, entrance buffers, and asynchronous FIFOs in synthesizable Verilog. Apply dedicated lint and timing constraints to CDC boundaries.",
+  "<b>Update the integration view</b>: Consolidate all cross-block interface contracts into a top-level connection table so integration and timing closure can detect wiring errors even when each block is locally correct."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (cycle-by-cycle local movement in the systolic array is described by the paper; cross-block valid/ready and CDC details follow common datacenter-inference ASIC practice rather than itemized v1 disclosure)"
+}

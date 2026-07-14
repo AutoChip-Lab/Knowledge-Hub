@@ -1,0 +1,123 @@
+{
+ "secNum": "3.7",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Timing Closure and ECO: Repeated STA After Placement, CTS, and Routing Until Setup/Hold Pass Every Corner",
+ "oneLine": "Timing closure is the back end’s longest iterative struggle after mapping the netlist into a 28 nm layout. Run STA after placement, CTS, and routing; repair setup failures by speeding paths with faster cells, shorter wires, closer placement, or higher drive, and repair hold failures by adding delay cells. Useful skew redistributes margin, while incremental ECO changes only local regions rather than rerunning the full chip. In TPU’s 256×256 array, long UB↔array↔accumulator routes dominate setup repair, while massive numbers of short neighboring-PE paths make hold repair tedious. Closure means setup and hold slack ≥0 at every sign-off corner.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 410\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"26\">Timing closure: repeat STA after placement/CTS/routing; fix setup/hold with useful skew + incremental ECO</text><g class=\"cs-part\" data-k=\"sta\" data-g=\"sta\"><rect class=\"cs-box\" x=\"24\" y=\"52\" width=\"170\" height=\"78\" rx=\"8\"/><text class=\"cs-t\" x=\"109\" y=\"80\">STA</text><text class=\"cs-sub\" x=\"109\" y=\"100\">Run after placement / CTS / routing</text><text class=\"cs-sub\" x=\"109\" y=\"118\">Report setup / hold paths</text></g><line class=\"cs-arr\" x1=\"194\" y1=\"78\" x2=\"252\" y2=\"60\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"194\" y1=\"104\" x2=\"252\" y2=\"124\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"setup\" data-g=\"setup\"><rect class=\"cs-box\" x=\"256\" y=\"40\" width=\"210\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"361\" y=\"64\">Setup violation (too slow)</text><text class=\"cs-sub\" x=\"361\" y=\"84\">Long global path: UB↔array↔accumulator</text></g><g class=\"cs-part\" data-k=\"hold\" data-g=\"hold\"><rect class=\"cs-box\" x=\"256\" y=\"106\" width=\"210\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"361\" y=\"130\">Hold violation (too fast)</text><text class=\"cs-sub\" x=\"361\" y=\"150\">Many short neighboring-PE paths</text></g><line class=\"cs-arr\" x1=\"466\" y1=\"69\" x2=\"524\" y2=\"69\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"466\" y1=\"135\" x2=\"524\" y2=\"135\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"fixfast\" data-g=\"fixfast\"><rect class=\"cs-box\" x=\"528\" y=\"40\" width=\"168\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"612\" y=\"62\">Fix setup: speed up</text><text class=\"cs-sub\" x=\"612\" y=\"82\">Faster cells / shorter wire / replace / upsize</text></g><g class=\"cs-part\" data-k=\"fixslow\" data-g=\"fixslow\"><rect class=\"cs-box\" x=\"528\" y=\"106\" width=\"168\" height=\"58\" rx=\"8\"/><text class=\"cs-t\" x=\"612\" y=\"128\">Fix hold: add delay</text><text class=\"cs-sub\" x=\"612\" y=\"148\">Insert buffer / delay cell</text></g><g class=\"cs-part\" data-k=\"skew\" data-g=\"skew\"><rect class=\"cs-box\" x=\"180\" y=\"190\" width=\"360\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"214\">Useful skew (intentional clock arrival)</text><text class=\"cs-sub\" x=\"360\" y=\"234\">Shift selected clock arrivals; borrow neighboring margin without extra logic</text></g><line class=\"cs-arr\" x1=\"612\" y1=\"98\" x2=\"540\" y2=\"192\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><line class=\"cs-arr\" x1=\"612\" y1=\"164\" x2=\"540\" y2=\"210\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><g class=\"cs-part\" data-k=\"eco\" data-g=\"eco\"><rect class=\"cs-box\" x=\"180\" y=\"270\" width=\"360\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"296\">Incremental ECO (change only local violations)</text><text class=\"cs-sub\" x=\"360\" y=\"318\">Edit → local replace/reroute → local STA → check collateral slack</text></g><line class=\"cs-arr\" x1=\"360\" y1=\"246\" x2=\"360\" y2=\"268\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"180,302 110,302 110,91 22,91\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"118\" y=\"360\">Back-annotate STA: did this fix create another violation?</text><g class=\"cs-part\" data-k=\"green\" data-g=\"green\"><rect class=\"cs-box\" x=\"560\" y=\"270\" width=\"136\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"628\" y=\"298\">All conditions pass</text><text class=\"cs-sub\" x=\"628\" y=\"318\">setup/hold ≥0 at every corner</text></g><line class=\"cs-arr\" x1=\"540\" y1=\"302\" x2=\"558\" y2=\"302\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"24\" y=\"396\">Note: STA/useful skew/ECO/delay cells are standard practice; TPU v1 path/QoR/layout data are not public. Context: 256×256 array / 24 MiB UB / 700 MHz / 28 nm.</text></svg>",
+ "legend": [
+  {
+   "k": "sta",
+   "name": "STA (static timing analysis: violation detector)",
+   "desc": "STA analyzes netlist and delay models without vectors, computes arrival time for every register path, and reports setup failures when data arrives late and hold failures when data arrives too early, with slack. It runs after placement, CTS, and routing because wire length, parasitics, and clock skew become progressively more physical. Each report drives the next closure iteration."
+  },
+  {
+   "k": "setup",
+   "name": "Setup violation → speed up the path",
+   "desc": "Data misses the capture edge after logic plus interconnect. Repair by replacing slow cells with higher-drive or low-Vt equivalents, shortening routes, moving related cells closer, or increasing drive. In TPU, long global paths between Unified Buffer, array, and 4 MiB accumulator are more setup-sensitive than short neighboring-PE paths, which usually have comfortable setup margin at 700 MHz."
+  },
+  {
+   "k": "hold",
+   "name": "Hold violation → add delay",
+   "desc": "Data changes too soon after the capture edge. The counterintuitive repair is to add a delay cell or buffer. Hold depends on the shortest path, not clock frequency, so a 256×256 = 65,536-MAC array can contain thousands of tiny neighbor paths requiring individually simple but numerous repairs."
+  },
+  {
+   "k": "skew",
+   "name": "Useful skew (intentional clock offset)",
+   "desc": "Adjust clock arrival deliberately: a later capture edge grants more setup time to the preceding path, while an earlier edge may help a downstream hold relationship. Useful skew borrows surplus margin between neighboring paths and may save area/power versus cell upsizing, but excessive skew can create new hold failures and must be checked across corners."
+  },
+  {
+   "k": "eco",
+   "name": "Incremental ECO (Engineering Change Order)",
+   "desc": "Repair only the local neighborhood of a violating path—replace or insert a few cells and locally replace/reroute—rather than rerunning the full chip for many hours and disturbing closed regions. Each small, reversible change can shift margin elsewhere, so global STA back-annotation is required after local analysis."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "sta",
+    "setup",
+    "hold"
+   ],
+   "cap": "① Run STA after placement, CTS, and routing. Separate setup violations, where data arrives late, from hold violations, where data arrives too early, and record each slack."
+  },
+  {
+   "keys": [
+    "setup",
+    "fixfast"
+   ],
+   "cap": "② Fix setup by speeding late global paths such as UB↔array↔accumulator: use faster cells, shorter routes, closer placement, and greater drive to reach the next clock edge."
+  },
+  {
+   "keys": [
+    "hold",
+    "fixslow"
+   ],
+   "cap": "③ Fix hold by inserting delay cells on extremely short neighboring-PE paths. Each repair is simple, but the 256×256 array may contain a very large number."
+  },
+  {
+   "keys": [
+    "skew",
+    "fixfast",
+    "fixslow"
+   ],
+   "cap": "④ Apply useful skew to the tightest paths: adjust clock arrival during CTS so a later edge helps setup or an earlier edge helps hold, borrowing adjacent margin while reducing area/power overhead."
+  },
+  {
+   "keys": [
+    "eco",
+    "sta",
+    "green"
+   ],
+   "cap": "⑤ Use incremental ECO and back-annotated STA: modify only local violations, rerun local timing, then verify globally that no new violation appeared. Repeat across placement/CTS/routing until setup and hold are ≥0 at all process corners."
+  }
+ ],
+ "before": [
+  "<b>Freeze SDC constraints</b>: Define 700 MHz≈1.43 ns, I/O delays, multicycle/false paths, clock-domain relationships, input transition, and output loads. Every setup/hold calculation uses this contract; one incorrect constraint closes the wrong design. TPU’s actual scripts are not public.",
+  "<b>Define corners and OCV for closure</b>: Meet setup at the slow SS/low-voltage/high-temperature corner and hold at the fast FF/high-voltage/low-temperature corner, including OCV/AOCV. Enumerate all multi-mode multi-corner (MMMC) cases at the start rather than discovering a failing corner late.",
+  "<b>Provide accurate libraries and parasitics</b>: Use 28 nm .lib data with fast/slow and delay cells, post-route SPEF RC, and real CTS clock delays. Early placement relies on estimated wire length; later stages become more accurate, so the same path may be reclassified repeatedly.",
+  "<b>Reserve implementation ammunition</b>: Provide multiple drive strengths and Vt options for setup, delay cells for hold, and spare ECO placement sites. A reported violation cannot be repaired if the library or layout has no legal solution.",
+  "<b>Evidence boundary</b>: STA, setup/hold repair, useful skew, incremental ECO, and MMMC closure are standard back-end EDA practice. TPU v1 does not disclose paths, slack, QoR, or layout. The disclosed 256×256 array, 24 MiB UB, 4 MiB accumulator, 700 MHz, 28 nm, and weight-stationary flow serve only as the closure target; all paths and numbers here are illustrative."
+ ],
+ "during": [
+  "<b>Rerun STA after every physical stage</b>: Post-placement timing uses estimated wire and ideal clocks; post-CTS adds clock skew and often exposes hold; post-route uses extracted RC and tightens setup. A single final closure pass is unrealistic—timing evolves throughout implementation.",
+  "<b>Setup and hold require opposite treatments</b>: Setup means too slow, so accelerate; hold means too fast, so add delay. A setup speedup can worsen hold, and a hold delay can worsen setup. Track both ends on the same timing graph.",
+  "<b>Target TPU’s actual structural pain points</b>: In the 256×256 array, neighboring PEs have short setup paths at 700 MHz, while long UB↔array↔accumulator routes need setup work. Conversely, the array’s huge population of short neighbor paths can create massive hold-fix volume. Allocate effort accordingly.",
+  "<b>Prefer useful skew before indiscriminate cell insertion</b>: For the tightest paths, adjust clock arrival during CTS to borrow neighboring margin. This can save larger drivers, buffers, area, power, and IR-drop, but must be revalidated across corners because excessive skew creates hold risk.",
+  "<b>Use incremental ECO rather than full-chip replacement</b>: Replace/insert a few cells and reroute only affected nets, then run local STA. Post-route ECO should use reserved sites and spare cells with minimal disturbance to completed routing.",
+  "<b>First principle: every fix needs global back-annotation</b>. A local repair can create a remote failure by moving setup, hold, or clock margin. Iterate modify → local STA → global verification until one ECO pass produces no new violations."
+ ],
+ "result": [
+  {
+   "label": "Closure entry",
+   "value": "Run STA after placement / CTS / routing; report setup (late) and hold (early) violations with slack"
+  },
+  {
+   "label": "Setup repair (speed up)",
+   "value": "Faster high-drive/low-Vt cells, shorter routes, closer placement, greater drive for UB↔array↔accumulator paths"
+  },
+  {
+   "label": "Hold repair (add delay)",
+   "value": "Delay cell/buffer insertion on numerous short neighboring-PE paths"
+  },
+  {
+   "label": "Useful skew (illustrative)",
+   "value": "Intentional CTS arrival adjustment: later for setup, earlier for hold; borrow margin and save area/power"
+  },
+  {
+   "label": "Incremental ECO",
+   "value": "Local edit + local STA + global back-annotation; do not rerun the full chip, and use reserved spare sites post-route"
+  },
+  {
+   "label": "Closure criterion",
+   "value": "Setup/hold slack ≥0 in every slow/fast process corner + OCV (illustrative target, not public TPU data)"
+  }
+ ],
+ "after": [
+  "<b>Verify every corner and mode, not only typical</b>: Confirm setup at slow corners, hold at fast corners, and OCV across functional, test, and low-power modes with all slack ≥0. A green typical corner is not sign-off closure.",
+  "<b>Recheck congestion and DRC</b>: Larger setup cells and many hold-delay cells add local area and routing, potentially causing congestion, spacing, or antenna violations. Every ECO must preserve manufacturability.",
+  "<b>Recheck power and IR-drop</b>: Upsizing and buffers raise dynamic/leakage power and transient current, which can worsen IR-drop and slow timing again. Revalidate power budget and voltage integrity after timing repair.",
+  "<b>Stop oscillation</b>: If fixing path A breaks B and repairing B breaks A, use useful skew or revisit floorplan/constraints rather than adding cells indefinitely. Closure ends only when a full ECO iteration creates no new violation.",
+  "<b>Hand off to sign-off</b>: Run sign-off STA with qualified tools, libraries, SPEF, and all corner/OCV cases. Provide final timing plus congestion, DRC, power, and IR-drop evidence; only an all-green sign-off report releases the layout toward DRC/LVS and GDSII."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the disclosed 256×256 8-bit MAC array, 24 MiB Unified Buffer, 4 MiB accumulator, 700 MHz, 28 nm, and weight-stationary flow are the closure target; STA, setup/hold repair, useful skew, delay cells, incremental ECO, MMMC closure, and sign-off are standard back-end EDA practice, and every path/slack/QoR value shown is illustrative rather than public TPU v1 timing or layout data)"
+}

@@ -1,0 +1,117 @@
+{
+ "secNum": "3.2",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · First Power-On and Initial Activation: Apply power to the PCIe accelerator card for the first time, stabilize each rail in sequence, start the PLL, release reset, complete boot, establish host visibility, and finally make the 256×256 array produce its first result.",
+ "oneLine": "This is the most stressful moment in bring-up: not simulation or virtual tester stimulus, but the first application of real power to real silicon on a real board. Every supply must settle under the approved power sequence without a short; the PLL must start and lock; reset must release at the correct time; boot must complete; the host must enumerate and configure the card through PCIe 3.0; weights must load; and all 65,536 MACs must produce the first operator result. Latent defects—power shorts, a clock that never starts, a stuck reset, or accumulated reset-initialization debt—may remain hidden until this physical test and surface together.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"24\">First power-on: sequence supplies → establish power/clock readiness (PLL lock) → release reset → boot → enumerate/configure through PCIe → load weights and prove the silicon is alive.</text><g class=\"cs-part\" data-k=\"pwr\" data-g=\"pwr\"><rect class=\"cs-box\" x=\"30\" y=\"58\" width=\"150\" height=\"70\" rx=\"8\"/><text class=\"cs-t\" x=\"105\" y=\"84\">① Power sequence</text><text class=\"cs-sub\" x=\"105\" y=\"102\">power sequencing</text><text class=\"cs-sub\" x=\"105\" y=\"118\">Ramp each rail in order with current limits</text></g><line class=\"cs-arr\" x1=\"180\" y1=\"93\" x2=\"208\" y2=\"93\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"clk\" data-g=\"clk\"><rect class=\"cs-box\" x=\"210\" y=\"58\" width=\"150\" height=\"70\" rx=\"8\"/><text class=\"cs-t\" x=\"285\" y=\"84\">② Clock / power ready</text><text class=\"cs-sub\" x=\"285\" y=\"102\">PLL starts and locks</text><text class=\"cs-sub\" x=\"285\" y=\"118\">700 MHz main clock stable</text></g><line class=\"cs-arr\" x1=\"360\" y1=\"93\" x2=\"388\" y2=\"93\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"rst\" data-g=\"rst\"><rect class=\"cs-box\" x=\"390\" y=\"58\" width=\"150\" height=\"70\" rx=\"8\"/><text class=\"cs-t\" x=\"465\" y=\"84\">③ Reset release</text><text class=\"cs-sub\" x=\"465\" y=\"102\">deassert reset</text><text class=\"cs-sub\" x=\"465\" y=\"118\">Reset-initialization debt is paid here</text></g><line class=\"cs-arr\" x1=\"540\" y1=\"93\" x2=\"568\" y2=\"93\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"boot\" data-g=\"boot\"><rect class=\"cs-box\" x=\"570\" y=\"58\" width=\"120\" height=\"70\" rx=\"8\"/><text class=\"cs-t\" x=\"630\" y=\"84\">④ Boot</text><text class=\"cs-sub\" x=\"630\" y=\"102\">Internal power-on self-test</text><text class=\"cs-sub\" x=\"630\" y=\"118\">Logic reaches ready state</text></g><line class=\"cs-arr\" x1=\"630\" y1=\"128\" x2=\"630\" y2=\"158\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"pcie\" data-g=\"pcie\"><rect class=\"cs-box\" x=\"390\" y=\"160\" width=\"300\" height=\"64\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"540\" y=\"186\">⑤ Host enumerates/configures via PCIe 3.0</text><text class=\"cs-sub\" x=\"540\" y=\"206\">Link training → accelerator enumeration → BAR/interrupt setup → roughly a dozen CISC instructions</text><text class=\"cs-sub\" x=\"540\" y=\"220\">(PCIe card / TensorFlow·XLA host stack)</text></g><line class=\"cs-arr\" x1=\"390\" y1=\"192\" x2=\"362\" y2=\"192\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"alive\" data-g=\"alive\"><rect class=\"cs-box\" x=\"30\" y=\"160\" width=\"330\" height=\"64\" rx=\"8\" fill=\"#dcfce7\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"195\" y=\"186\">⑥ Load weights; prove it is alive</text><text class=\"cs-sub\" x=\"195\" y=\"206\">DDR3 → Unified Buffer → first minimal operator on the powered 256×256 array</text><text class=\"cs-sub\" x=\"195\" y=\"220\">First power-on is the flow's highest-stress moment</text></g><g class=\"cs-part\" data-k=\"risk\" data-g=\"risk\"><rect class=\"cs-box\" x=\"30\" y=\"252\" width=\"660\" height=\"58\" rx=\"8\" fill=\"#fef2f2\" stroke=\"#fca5a5\"/><text class=\"cs-t\" x=\"360\" y=\"276\">Typical activation failures: power short / PLL clock does not start / reset stuck</text><text class=\"cs-sub\" x=\"360\" y=\"296\">Many defects stay latent until real power is applied—the first power-on is the peak stress of bring-up.</text></g><text class=\"cs-note\" x=\"40\" y=\"338\">Read left to right: stabilize and current-limit power → lock PLL → release reset only after clocks are stable → boot/self-test → PCIe host enumeration/configuration → load weights and produce the first result.</text><text class=\"cs-note\" x=\"40\" y=\"362\">Why the stress peaks here: every prior design, manufacturing, and package/test decision is physically validated together. A short can damage the card, no clock stops everything, and reset-timing debt is collected at once.</text><text class=\"cs-note\" x=\"40\" y=\"386\">Evidence boundary: sequencing, PLL lock, reset release, PCIe enumeration, and activation are standard for 28 nm-class PCIe accelerators. TPU v1's private rails, timing thresholds, self-test, and logs are not public; known 700 MHz/256×256/24 MiB UB/DDR3/PCIe attributes are used only qualitatively.</text></svg>",
+ "legend": [
+  {
+   "k": "pwr",
+   "name": "① Power sequencing",
+   "desc": "First power is never applied to every rail at once. Core, I/O, PLL/analog, memory, and other supplies ramp in a predetermined order under current limits, with specified settling intervals and acceptable voltage/current windows. A wrong order or loose current limit can turn a short on a large 28 nm die into immediate overcurrent and heating, ranging from protection trips to permanent card damage. Start conservatively, verify every rail, and proceed only when no short or abnormal current is present. For a 28–40 W TPU-class PCIe card, the objective is simply safe, stable power."
+  },
+  {
+   "k": "clk",
+   "name": "② Clock and power ready (PLL start-up and lock)",
+   "desc": "After rails stabilize, the clock system must actually run. The external reference reaches the on-chip PLL, which starts, multiplies/divides, and locks at the target; TPU v1's public main-clock frequency is approximately 700 MHz. A PLL that does not start or lock is a common first-power failure: synchronous logic cannot move, so reset, boot, and PCIe cannot progress and the card appears dead. Confirm the reference, lock indication, and stable main-clock frequency before enabling logic."
+  },
+  {
+   "k": "rst",
+   "name": "③ Reset release → boot to ready state",
+   "desc": "With power and clocks valid, deassert reset in the designed domain order and at the designed times so registers and state machines start from known states. This is where reset-initialization debt becomes physical: incomplete reset coverage, unsafe deassertion, or unreliable initialization can produce a stuck reset, a state machine that never starts, or random, non-reproducible behavior. Releasing too early or in the wrong domain order can prevent activation. Boot then performs basic self-test and initialization and brings buffers, controls, and interfaces into a host-accessible ready state. For an accelerator controlled by roughly a dozen CISC instructions over PCIe, boot need not be complex, but it must make enumeration and command receipt possible."
+  },
+  {
+   "k": "pcie",
+   "name": "⑤ Host identification and configuration through PCIe 3.0",
+   "desc": "Once the card is internally ready, the outside world must recognize it. PCIe 3.0 completes link training, BIOS/OS enumerates the device and reads its vendor/device ID, address space is assigned through BARs, interrupts are configured, the driver loads, and the TensorFlow/XLA host stack takes ownership. Only then can the host issue roughly a dozen CISC instructions and access the Unified Buffer. Failed link training, missing enumeration, or BAR setup failure means the card may be alive internally but remains invisible to the host."
+  },
+  {
+   "k": "alive",
+   "name": "⑥ Load weights and prove the chip is alive",
+   "desc": "After all prior gates pass, load weights from the external 8 GiB DDR3 into the 24 MiB Unified Buffer, issue a minimal instruction sequence, and drive the weight-stationary 256×256 = 65,536 8-bit-MAC systolic array through its first minimal operator. Read the result back and compare it with the golden value. A match proves the complete power, clock, reset, PCIe, and datapath chain and establishes the first bring-up milestone. This moment physically tests the cumulative design, synthesis, implementation, masks, fabrication, packaging, test, and initialization flow; a short, dead PLL, or stuck reset can invalidate everything at once."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "pwr"
+   ],
+   "cap": "① Establish safe power first: apply every rail under current limit and the approved power sequence while checking its voltage/current window. Eliminate shorts and abnormal overcurrent before proceeding."
+  },
+  {
+   "keys": [
+    "clk",
+    "rst"
+   ],
+   "cap": "② Make the device move: verify PLL start-up and lock at ~700 MHz—without a clock, all synchronous logic is dead—then release reset in the correct sequence only after power and clocks are both ready. Reset-initialization debt is collected here."
+  },
+  {
+   "keys": [
+    "boot"
+   ],
+   "cap": "③ Complete boot and enter ready state: after reset release, run internal power-on self-test and initialization until the interface is ready for host enumeration and commands."
+  },
+  {
+   "keys": [
+    "pcie"
+   ],
+   "cap": "④ Make the host recognize the card: complete PCIe 3.0 link training and enumeration, configure BARs and interrupts, load the driver and TF/XLA stack, and prove that the host can issue roughly a dozen CISC instructions."
+  },
+  {
+   "keys": [
+    "alive",
+    "risk"
+   ],
+   "cap": "⑤ Prove useful life: load weights through DDR3 into the Unified Buffer and execute the first minimal operator on the 256×256 array with a correct result. This end-to-end success is initial activation—and the stage most likely to expose a short, missing clock, or stuck reset."
+  }
+ ],
+ "before": [
+  "<b>Approve the power-on script before touching the switch</b>: document power-rail order and timing, acceptable voltage/current windows and limits, reference-clock source, PLL lock criterion, domain-by-domain reset release, and the boot-ready state. First power-on must follow an engineered procedure, not live improvisation.",
+  "<b>Prepare the complete activation environment</b>: provide a current-limited programmable supply or equipped host, oscilloscope/logic analyzer for rails, clocks, and resets, a host that exposes PCIe link state, installed drivers and TensorFlow/XLA software, and a minimal known-good weight/instruction workload.",
+  "<b>Verify required inputs</b>: use a packaged and electrically connected sample card from §3.1, the chip's power and electrical specification, PCIe parameters, reset-tree and initialization checklist, and the golden result for the first operator.",
+  "<b>Precompute the likely failure tree</b>: identify which short is most dangerous, a safe initial current limit, evidence for PLL non-lock, effects of early or late reset release, and the first PCIe checks. Knowing each failure mode in advance determines what to monitor and where diagnosis begins.",
+  "<b>Declare the evidence boundary</b>: TPU v1's rail sequence, voltage/timing thresholds, PLL-lock parameters, self-test, and activation logs are not public. This case follows standard 28 nm-class PCIe-accelerator bring-up and uses only the known 700 MHz, 256×256 array, 24 MiB UB, DDR3, PCIe-card form, and TF/XLA stack as the activation target."
+ ],
+ "during": [
+  "<b>Stabilize power before anything else and protect against shorts</b>: begin with conservative current limits, ramp rails in sequence, and verify each voltage and current against its window. A real short can produce immediate overcurrent and heat, from a protection trip to card damage; exploratory current limits are safer than applying full current immediately.",
+  "<b>Watch PLL start-up and lock—no clock means nothing moves</b>: after power is stable, verify the incoming reference, PLL start-up, lock near 700 MHz, and a stable main clock. Failure at any point stops all synchronous logic and makes the card appear dead. Power and clock readiness are prerequisites for releasing logic.",
+  "<b>Release reset at the correct time and settle initialization debt</b>: deassert resets in the specified sequence only after clocks and rails are ready. Missing reset-tree coverage, incorrect deassertion order, or incompletely initialized registers manifests here as a stuck reset, inert state machine, or random and non-reproducible behavior.",
+  "<b>Complete boot before host enumeration</b>: after reset, internal self-test and initialization place interfaces in ready state. The host then performs PCIe 3.0 link training, enumerates the device, reads IDs, assigns BARs and interrupts, and loads the driver and TF/XLA stack. Separate a card-readiness failure from a link/enumeration failure.",
+  "<b>Load weights and run the first operator</b>: once host visibility is established, transfer a minimal weight set through DDR3 into the 24 MiB Unified Buffer, issue the smallest instruction sequence, and execute one operator on the weight-stationary 256×256 array. A golden-result match proves the complete power/clock/reset/PCIe/datapath chain.",
+  "<b>Evidence boundary</b>: power sequencing, PLL lock, reset release, PCIe enumeration, and minimal-operator activation are standard practices for 28 nm-class PCIe accelerators. TPU v1's private rail sequence, electrical/timing limits, self-test, and logs are not public; the procedure is qualitative and does not invent TPU-specific values."
+ ],
+ "result": [
+  {
+   "label": "Power status",
+   "value": "All rails reach nominal values in the approved power sequence with no short or abnormal overcurrent; total power is in the 28–40 W class."
+  },
+  {
+   "label": "Clock status",
+   "value": "PLL starts and locks; the main clock remains stable at ~700 MHz."
+  },
+  {
+   "label": "Reset / boot",
+   "value": "Reset releases in sequence, logic starts from known states, and boot reaches ready state."
+  },
+  {
+   "label": "Host visibility",
+   "value": "PCIe 3.0 link training and enumeration pass; BARs, interrupts, driver, and TF/XLA stack are configured, enabling roughly a dozen CISC instructions."
+  },
+  {
+   "label": "Activation proof",
+   "value": "Weights load through DDR3 into the 24 MiB UB, and the 256×256 = 65,536-MAC array executes its first minimal operator with the expected result."
+  },
+  {
+   "label": "Milestone",
+   "value": "The silicon is alive: the first bring-up milestone is complete and the tapeout → fabrication → packaging/test → production chain receives its first physical end-to-end proof."
+  }
+ ],
+ "after": [
+  "<b>Confirm every activation criterion</b>: require voltage/current within bounds, continuous PLL lock, clean reset release, stable PCIe connectivity, and a correct first-operator result. All five must pass; any marginal or intermittent result requires root-cause analysis before further bring-up.",
+  "<b>Localize a failed activation by layer</b>: walk the chain power short → PLL failure → stuck reset → boot not ready → no PCIe enumeration → datapath failure. Identify the broken layer before returning to its design, fabrication, package/test, or initialization cause.",
+  "<b>Feed first-power measurements back into engineering</b>: archive measured sequencing, current limits, reset windows, PLL lock time, and PCIe parameters. Return every deviation from expectation—especially reset/initialization behavior—to the design and next revision.",
+  "<b>Hand off to deeper bring-up and production</b>: after activation, enable functions incrementally and run broader workloads. Harden this power-on procedure into the standard production power, burn-in, and test sequence reused after §3.3.",
+  "<b>Keep the record honest</b>: label the power/reset/PCIe procedure as standard bring-up practice and distinguish public TPU structure and PCIe form factor from unpublished rail timing, thresholds, and logs. Do not infer the latter."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (power sequencing, PLL start-up and lock, reset release, PCIe enumeration/configuration, and minimal-operator activation are standard bring-up and production practices for a 28 nm-class PCIe accelerator. TPU v1's private power sequence, voltage/timing thresholds, self-test, and activation logs are not public. This section combines standard practice with disclosed TPU structure qualitatively and does not invent product-specific figures.)"
+}

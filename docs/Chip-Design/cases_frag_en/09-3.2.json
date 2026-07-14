@@ -1,0 +1,118 @@
+{
+  "secNum": "3.2",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · Signoff Static Timing Analysis: Exhaustive Setup and Hold at 700 MHz with Extracted SPEF",
+  "oneLine": "Signoff STA gives the final verdict on whether 700 MHz is real. Using layout-extracted SPEF, it statically analyzes every PE-to-PE, control, and UB→array→accumulator path across worst PVT corners. Setup asks whether data arrives early enough; hold asks whether it changes too soon. Only nonnegative setup and hold slack on every path in every required mode/corner supports 700 MHz as a final specification.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-t\" x=\"360\" y=\"26\">Signoff STA: extracted parasitics · exhaustive paths · setup and hold</text><g class=\"cs-part\" data-k=\"launch\" data-g=\"launch\"><rect class=\"cs-box\" x=\"40\" y=\"120\" width=\"120\" height=\"74\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"100\" y=\"150\">Launch FF</text><text class=\"cs-sub\" x=\"100\" y=\"170\">D Q · rising edge</text><text class=\"cs-sub\" x=\"100\" y=\"186\">700 MHz clock</text></g><g class=\"cs-part\" data-k=\"logic\" data-g=\"logic\"><rect class=\"cs-box\" x=\"250\" y=\"120\" width=\"200\" height=\"74\" rx=\"8\" fill=\"#dcfce7\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"350\" y=\"150\">Combinational path</text><text class=\"cs-sub\" x=\"350\" y=\"170\">Extracted RC (SPEF)</text><text class=\"cs-sub\" x=\"350\" y=\"186\">Array PE / control / global</text></g><g class=\"cs-part\" data-k=\"capture\" data-g=\"capture\"><rect class=\"cs-box\" x=\"540\" y=\"120\" width=\"120\" height=\"74\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"600\" y=\"150\">Capture FF</text><text class=\"cs-sub\" x=\"600\" y=\"170\">D Q · next edge</text><text class=\"cs-sub\" x=\"600\" y=\"186\">Setup/hold window</text></g><line class=\"cs-arr\" x1=\"160\" y1=\"157\" x2=\"248\" y2=\"157\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"450\" y1=\"157\" x2=\"538\" y2=\"157\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"clk\" data-g=\"clk\"><rect class=\"cs-box\" x=\"250\" y=\"226\" width=\"200\" height=\"50\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"350\" y=\"252\">Clock arrival (with skew)</text><text class=\"cs-sub\" x=\"350\" y=\"270\">Clock → launch / capture FF</text></g><line class=\"cs-arr\" x1=\"300\" y1=\"226\" x2=\"120\" y2=\"196\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><line class=\"cs-arr\" x1=\"400\" y1=\"226\" x2=\"580\" y2=\"196\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><g class=\"cs-part\" data-k=\"setup\" data-g=\"setup\"><rect class=\"cs-box\" x=\"40\" y=\"300\" width=\"300\" height=\"76\" rx=\"8\" fill=\"#eef2ff\"/><text class=\"cs-t\" x=\"190\" y=\"326\">Setup check: fast enough?</text><text class=\"cs-sub\" x=\"190\" y=\"346\">Data stable ≥ setup before capture edge</text><text class=\"cs-sub\" x=\"190\" y=\"364\">slack ≥ 0 (example); frequency can help</text></g><g class=\"cs-part\" data-k=\"hold\" data-g=\"hold\"><rect class=\"cs-box\" x=\"360\" y=\"300\" width=\"320\" height=\"76\" rx=\"8\" fill=\"#fef2f2\" stroke=\"#fca5a5\"/><text class=\"cs-t\" x=\"520\" y=\"326\">Hold check: not too fast?</text><text class=\"cs-sub\" x=\"520\" y=\"346\">Data stable ≥ hold after capture edge</text><text class=\"cs-sub\" x=\"520\" y=\"364\">Hold is mandatory; clear all violations</text></g><g class=\"cs-part\" data-k=\"exhaust\" data-g=\"exhaust\"><rect class=\"cs-box\" x=\"500\" y=\"60\" width=\"200\" height=\"44\" rx=\"8\" fill=\"#f1f5f9\" stroke=\"#94a3b8\"/><text class=\"cs-t\" x=\"600\" y=\"84\">Exhaustive paths</text><text class=\"cs-sub\" x=\"600\" y=\"100\">Vectorless · no stimulus</text></g></svg>",
+  "legend": [
+    {
+      "k": "launch",
+      "name": "Launch FF / capture FF",
+      "desc": "STA decomposes the design into launch-register → combinational-logic → capture-register paths. The launch FF emits data at a 700 MHz edge; the data must stabilize before the next capture edge. This path is the fundamental unit for judging timing closure."
+    },
+    {
+      "k": "logic",
+      "name": "Combinational path + extracted SPEF",
+      "desc": "The path may be one PE stage, control decode, or UB-to-array datapath. Signoff delay combines cell timing with R and C extracted from actual routed geometry, replacing pre-layout estimates with values representative of the silicon implementation."
+    },
+    {
+      "k": "setup",
+      "name": "Setup check (fast enough; frequency-dependent)",
+      "desc": "Setup requires data to stabilize before the capture edge by at least the setup time. setup slack = required − arrival should be ≥0. A setup miss may be relieved by a longer clock period, but then the 700 MHz performance claim decreases."
+    },
+    {
+      "k": "hold",
+      "name": "Hold check (not too fast; mandatory fix)",
+      "desc": "Hold requires old data to remain stable after the capture edge for the hold time. A too-fast new value can overwrite it. Hold is essentially independent of clock period, so lowering frequency does not fix it; insert delay and clear every violation."
+    },
+    {
+      "k": "exhaust",
+      "name": "Exhaustive vectorless coverage",
+      "desc": "STA uses the timing graph to enumerate paths without simulation vectors. A 256×256 array contains too many paths for dynamic timing simulation to cover exhaustively, while STA reports worst-case setup and hold across all of them."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "launch",
+        "logic",
+        "capture"
+      ],
+      "cap": "① Decompose the design into launch FF → combinational logic → capture FF paths, including PE links, control logic, and global UB→array→accumulator paths."
+    },
+    {
+      "keys": [
+        "logic",
+        "clk"
+      ],
+      "cap": "② Use layout-extracted SPEF for real wire/cell delay and the implemented clock tree for launch/capture arrival and skew."
+    },
+    {
+      "keys": [
+        "exhaust"
+      ],
+      "cap": "③ Enumerate all paths statically without stimulus; vectorless coverage supplies the exhaustive basis that simulation cannot provide."
+    },
+    {
+      "keys": [
+        "setup"
+      ],
+      "cap": "④ Check setup: data must stabilize before the capture edge by at least setup time; illustrative criterion slack ≥0. Lower frequency can help but reduces the 700 MHz claim."
+    },
+    {
+      "keys": [
+        "hold"
+      ],
+      "cap": "⑤ Check hold: data must remain stable after the edge by at least hold time. Frequency cannot repair hold; every violation must be eliminated."
+    }
+  ],
+  "before": [
+    "<b>Prepare extracted SPEF</b>: Run post-route RC extraction for every net. Signoff timing must use real R, C, and coupling from the implemented layout rather than early estimates.",
+    "<b>Define the MMMC corner set</b>: Combine process, voltage, temperature, and RC corners with operating modes. Slow/low-voltage/hot conditions often dominate setup; fast/high-voltage/cold often dominate hold.",
+    "<b>Define modes and SDC</b>: Provide functional and test/scan modes, the 700 MHz clock, I/O timing, and justified multicycle/false-path exceptions. Bad exceptions create false failures or hide real ones.",
+    "<b>Set criteria and the signoff engine</b>: Require setup slack ≥0 and hold slack ≥0 on every real path in every required mode/corner, with zero hold violations. PrimeTime-class STA is the standard golden analysis.",
+    "<b>Set OCV/derating and waiver policy</b>: Apply OCV/AOCV/POCV margins for manufacturing variation and require evidence and approval for every legitimate exception; never hide a real path casually with set_false_path."
+  ],
+  "during": [
+    "<b>Core rule: STA is vectorless and exhaustive</b>. It traverses the timing graph and solves worst delay for every launch-to-capture path without stimulus. That coverage is essential for a path-rich 256×256 array.",
+    "<b>Check setup and hold together but treat them differently</b>. Setup asks whether slow paths complete in time, typically at slow corners; hold asks whether fast paths change too soon, typically at fast corners. Both require their own worst-case corners.",
+    "<b>Setup may be rescued by frequency, at a performance cost</b>. Extending the clock period restores setup margin, but TPU's ~92 TOPS depends on 700 MHz, so frequency reduction is a last resort.",
+    "<b>Hold is a hard defect and must be fully cleared</b>. Because hold does not improve with a longer period, add delay buffers to every fast failing path. One remaining hold violation can break function at any frequency.",
+    "<b>Use real path and clock data</b>. Path delay comes from SPEF, clock arrival and skew from the implemented clock tree, and variation from OCV/derating. Signoff is valid only when all inputs represent the final implementation.",
+    "<b>State the boundary honestly</b>: SPEF-based STA, MMMC, OCV, PrimeTime, and setup/hold criteria are standard signoff practice. TPU's actual SPEF, corners, reports, and slack are unpublished; all thresholds here are illustrative."
+  ],
+  "result": [
+    {
+      "label": "Signoff scope",
+      "value": "All PE links + control paths + global UB→array→accumulator paths (vectorless exhaustive analysis)"
+    },
+    {
+      "label": "Delay / clock inputs",
+      "value": "Layout-extracted SPEF + implemented clock tree with skew + OCV/derating"
+    },
+    {
+      "label": "Setup criterion (example)",
+      "value": "All paths · slow corners · setup slack ≥0; frequency reduction is possible but sacrifices 700 MHz"
+    },
+    {
+      "label": "Hold criterion (example)",
+      "value": "All paths · fast corners · hold slack ≥0; mandatory zero-violation closure"
+    },
+    {
+      "label": "Coverage matrix",
+      "value": "All required PVT/RC corners × all operating modes under MMMC"
+    },
+    {
+      "label": "Primary conclusion",
+      "value": "Setup/hold pass at 700 MHz → frequency can enter final specification; PrimeTime report is golden evidence"
+    }
+  ],
+  "after": [
+    "<b>Repair setup failures in ⑧</b>: Upsize cells, buffer or restructure paths, adjust useful skew, or as a last resort lower frequency and revise the signoff maximum.",
+    "<b>Repair every hold failure with delay</b>: Insert delay buffers on each fast path and rerun analysis. Hold is zero tolerance and cannot proceed with any violation.",
+    "<b>Re-extract after ECO and re-sign</b>: Any layout ECO changes parasitics. Extract updated SPEF and rerun STA, ensuring hold fixes did not create setup failures or vice versa.",
+    "<b>Feed STA into the tapeout gate</b>: Combine all-mode/all-corner timing results with EM/IR, DRC/LVS, LEC, and other signoff dimensions. Only a green timing cell permits 700 MHz in the final specification.",
+    "<b>Release only after STA is fully green</b>: Exhaustive setup and hold closure across the array and global paths provides the final timing evidence for 700 MHz/~92 TOPS and tapeout."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (SPEF extraction, MMMC, OCV/derating, PrimeTime-class STA, and setup/hold criteria are standard signoff practice. TPU-specific SPEF, corners, timing reports, and slack are not public; all thresholds and frequency-reduction discussion are illustrative.)"
+}

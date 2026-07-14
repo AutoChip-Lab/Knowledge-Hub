@@ -1,0 +1,120 @@
+{
+  "secNum": "3.8",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · Final Logical-Equivalence Signoff: Post-Backend/ECO Netlist ≡ Verified RTL",
+  "oneLine": "Verification stage ⑥ proves RTL behavior, but synthesis, place-and-route, CTS, and every timing/IR/DRC ECO keep rewriting the netlist. Final LEC is the signoff gate that proves the actual tapeout netlist logically equivalent to frozen golden RTL through exhaustive cone comparison rather than simulation. Equivalence preserves functional correctness from verified RTL to silicon; any mismatch blocks release.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">Final LEC: prove the post-synthesis/backend/ECO netlist ≡ verified RTL</text><g class=\"cs-part\" data-k=\"rtl\" data-g=\"rtl\"><rect class=\"cs-box\" x=\"40\" y=\"70\" width=\"200\" height=\"90\" rx=\"8\"/><text class=\"cs-t\" x=\"140\" y=\"100\">Golden RTL</text><text class=\"cs-sub\" x=\"140\" y=\"122\">Functionally verified in ⑥</text><text class=\"cs-sub\" x=\"140\" y=\"140\">Frozen as the reference</text></g><g class=\"cs-part\" data-k=\"net\" data-g=\"net\"><rect class=\"cs-box\" x=\"40\" y=\"240\" width=\"200\" height=\"90\" rx=\"8\"/><text class=\"cs-t\" x=\"140\" y=\"270\">Final gate netlist</text><text class=\"cs-sub\" x=\"140\" y=\"292\">After synthesis + place-and-route</text><text class=\"cs-sub\" x=\"140\" y=\"310\">Includes every ⑧ ECO</text></g><line class=\"cs-arr\" x1=\"240\" y1=\"115\" x2=\"316\" y2=\"180\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"240\" y1=\"285\" x2=\"316\" y2=\"222\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"lec\" data-g=\"lec\"><rect class=\"cs-box\" x=\"320\" y=\"158\" width=\"190\" height=\"86\" rx=\"8\"/><text class=\"cs-t\" x=\"415\" y=\"188\">LEC decision</text><text class=\"cs-sub\" x=\"415\" y=\"210\">Cone comparison · not simulation</text><text class=\"cs-sub\" x=\"415\" y=\"228\">Exhaustive functional proof</text></g><line class=\"cs-arr\" x1=\"510\" y1=\"180\" x2=\"582\" y2=\"118\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"510\" y1=\"222\" x2=\"582\" y2=\"300\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"eq\" data-g=\"eq\"><rect class=\"cs-box\" x=\"586\" y=\"84\" width=\"120\" height=\"66\" rx=\"8\"/><text class=\"cs-t\" x=\"646\" y=\"112\">Equivalent ✓</text><text class=\"cs-sub\" x=\"646\" y=\"132\">Release tapeout</text></g><g class=\"cs-part\" data-k=\"diff\" data-g=\"diff\"><rect class=\"cs-box\" x=\"586\" y=\"270\" width=\"120\" height=\"66\" rx=\"8\"/><text class=\"cs-t\" x=\"646\" y=\"298\">Non-equivalent ✗</text><text class=\"cs-sub\" x=\"646\" y=\"318\">Counterexample → return to ⑧</text></g><g class=\"cs-part\" data-k=\"ecoloop\" data-g=\"ecoloop\"><rect class=\"cs-box\" x=\"320\" y=\"300\" width=\"190\" height=\"62\" rx=\"8\"/><text class=\"cs-t\" x=\"415\" y=\"326\">Every physical optimization / ECO</text><text class=\"cs-sub\" x=\"415\" y=\"346\">can change logic → re-sign</text></g><line class=\"cs-arr\" x1=\"415\" y1=\"300\" x2=\"415\" y2=\"246\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/></svg>",
+  "legend": [
+    {
+      "k": "rtl",
+      "name": "Golden reference RTL",
+      "desc": "The RTL that passed simulation, formal, and coverage closure in ⑥ is frozen as the sole reference. LEC does not prove the reference itself correct; it proves implementation consistency with that verified version."
+    },
+    {
+      "k": "net",
+      "name": "Final implementation netlist",
+      "desc": "The exact tapeout netlist after synthesis, placement/routing, CTS, scan insertion, and all timing, EM/IR, DRC, or patch ECOs. Thousands of automated and manual transformations create functional risk, making this the proof target."
+    },
+    {
+      "k": "lec",
+      "name": "LEC equivalence engine",
+      "desc": "Formality/Conformal-class tools match registers, ports, and key points, partition combinational logic into cones, and exhaustively prove corresponding Boolean functions equal for all inputs. This is formal proof, not sampled simulation."
+    },
+    {
+      "k": "eq",
+      "name": "Equivalent verdict",
+      "desc": "All cones compare, every key point maps, and no unverified point remains. The final netlist preserves the behavior verified in ⑥ and contributes a green tapeout-gate result."
+    },
+    {
+      "k": "diff",
+      "name": "Non-equivalent verdict",
+      "desc": "A mismatched cone produces a failing point and counterexample input. Use it to identify which ECO or optimization changed behavior. Any true non-equivalence is a hard stop and must be repaired and re-proven."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "rtl"
+      ],
+      "cap": "① Freeze the RTL verified in ⑥ as golden. LEC checks implementation consistency with it; functional correctness of the reference belongs to verification."
+    },
+    {
+      "keys": [
+        "net",
+        "ecoloop"
+      ],
+      "cap": "② Select the exact netlist intended for tapeout after synthesis, place-and-route, CTS, and every ⑧ timing/IR/DRC/patch ECO."
+    },
+    {
+      "keys": [
+        "rtl",
+        "net",
+        "lec"
+      ],
+      "cap": "③ Match ports/registers and cut combinational cones, then formally prove each pair implements the same Boolean function for every possible input."
+    },
+    {
+      "keys": [
+        "lec",
+        "eq"
+      ],
+      "cap": "④ If all cones match, key points map, and no point remains unverified, return equivalent and give the tapeout gate a green functional result."
+    },
+    {
+      "keys": [
+        "lec",
+        "diff",
+        "ecoloop"
+      ],
+      "cap": "⑤ If a cone differs, return non-equivalent with its point and counterexample; repair the offending ECO in ⑧ and rerun full LEC."
+    }
+  ],
+  "before": [
+    "<b>Fix the exact golden RTL revision</b>: It must be the tagged RTL signed in ⑥, not an intermediate branch. Proving against the wrong reference produces a meaningless green report.",
+    "<b>Define mapping and legal transformations</b>: Retiming, phase inversion, constant propagation, and scan/test insertion can prevent one-to-one register mapping. Configure the tool to recognize legitimate transformations without masking real changes.",
+    "<b>Control black boxes and excluded domains</b>: Document memory macros, PLL, I/O, and analog IP treated as black boxes and constrain their interfaces. Every exclusion needs justification; none may hide changed logic.",
+    "<b>Make LEC mandatory after every netlist change and finally before tapeout</b>: Acceptance requires the final ECO-complete netlist equivalent, zero unexplained unmapped/unverified points, and zero true mismatch."
+  ],
+  "during": [
+    "<b>Compare the exact final tapeout netlist</b>: The common fatal mistake is signing an older version and then fabricating a later edit. Any byte-level netlist change invalidates the prior LEC result.",
+    "<b>Resolve unmapped points before trusting equivalence</b>: Unmapped means untested, not equivalent. Add legitimate mapping or confirm documented black-box status until every required key point is covered.",
+    "<b>Classify each failure as a real bug or setup issue</b>: Determine whether retiming/phase/mapping configuration created a false mismatch or an ECO truly changed logic. Repair the right root cause and re-prove.",
+    "<b>Use partitioning to converge, never to shrink proof scope</b>: Large hard cones may require hierarchical proof, specialized engines, or assumptions. Silently black-boxing or disabling them merely to obtain green is unacceptable.",
+    "<b>Run full equivalence after ECO</b>: Even a small named ECO may trigger additional tool optimization. Compare the complete final netlist, not only the intended changed region.",
+    "<b>Disclosure boundary</b>: Large ASICs require final equivalence signoff, but TPU's exact tool, retiming/black-box setup, and report are unpublished. This case describes standard practice using public TPU structure as context."
+  ],
+  "result": [
+    {
+      "label": "Signoff proposition",
+      "value": "Final gate netlist ≡ golden RTL verified in ⑥"
+    },
+    {
+      "label": "Method",
+      "value": "Formal exhaustive Boolean-cone proof, not sampled simulation"
+    },
+    {
+      "label": "Implementation revision",
+      "value": "Exact tapeout netlist after synthesis, backend, and every ⑧ ECO"
+    },
+    {
+      "label": "Pass criterion (example)",
+      "value": "equivalent · key-point unmapped = 0 · true non-equivalent = 0"
+    },
+    {
+      "label": "Failure artifact",
+      "value": "non-equivalent point + failing cone + counterexample input"
+    },
+    {
+      "label": "Gate role",
+      "value": "Final hard gate proving function was not changed before tapeout"
+    }
+  ],
+  "after": [
+    "<b>Repair non-equivalence in ⑧ and re-sign</b>: Use the counterexample to locate the faulty optimization/ECO, fix the netlist or RTL as appropriate, and rerun complete LEC. No true mismatch may proceed.",
+    "<b>Re-sign after every later edit</b>: Equivalence belongs to one exact netlist revision. Any subsequent gate or ECO change immediately invalidates the previous result.",
+    "<b>Close all accounting</b>: Require zero unexplained unmapped, inconclusive, or aborted points and justify every black box or waiver. An equivalent report with unproven logic does not pass.",
+    "<b>Feed LEC into the tapeout gate</b>: Functional equivalence joins STA, EM/IR, DRC/LVS, and other signoff dimensions. Only all-green status releases fabrication.",
+    "<b>Archive the evidence</b>: Lock golden RTL tag, final netlist, equivalence report, mappings, and exemptions as traceable evidence of which RTL behavior the silicon implements."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (public TPU v1 systolic array, 24 MiB Unified Buffer, 700 MHz, and 28 nm facts provide context. Specific LEC tools, setup, waivers, and reports are unpublished; the methodology shown is standard signoff practice.)"
+}

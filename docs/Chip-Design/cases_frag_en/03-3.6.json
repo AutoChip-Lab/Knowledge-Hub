@@ -1,0 +1,119 @@
+{
+  "secNum": "3.6",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · End-to-End Datapath Where Weight and Activation Streams Converge",
+  "oneLine": "Dataflow determines how data traverses the chip and how transfer overlaps compute. TPU builds independent weight and activation pipelines that meet at the MXU, using double buffering to hide movement beneath computation and keep the array busy.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"40\">Weight stream (DDR3 → array; stationary after load)</text><g class=\"cs-part\" data-k=\"ddr\" data-g=\"wpath\"><rect class=\"cs-box\" x=\"36\" y=\"56\" width=\"116\" height=\"50\" rx=\"8\"/><text class=\"cs-t\" x=\"94\" y=\"78\">DDR3 · 8 GiB</text><text class=\"cs-sub\" x=\"94\" y=\"94\">~30 GB/s · weights</text></g><line class=\"cs-arr\" x1=\"152\" y1=\"81\" x2=\"218\" y2=\"81\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"wfifo\" data-g=\"wpath\"><rect class=\"cs-box\" x=\"222\" y=\"56\" width=\"120\" height=\"50\" rx=\"8\"/><text class=\"cs-t\" x=\"282\" y=\"78\">Weight FIFO</text><text class=\"cs-sub\" x=\"282\" y=\"94\">Prefetch next weights</text></g><line class=\"cs-arr\" x1=\"342\" y1=\"100\" x2=\"430\" y2=\"158\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"40\" y=\"190\">Activation stream (Host → UB → array → accumulate → activate → UB)</text><g class=\"cs-part\" data-k=\"host\" data-g=\"apath\"><rect class=\"cs-box\" x=\"36\" y=\"206\" width=\"116\" height=\"50\" rx=\"8\"/><text class=\"cs-t\" x=\"94\" y=\"228\">Host / PCIe</text><text class=\"cs-sub\" x=\"94\" y=\"244\">DMA transfer</text></g><line class=\"cs-arr\" x1=\"152\" y1=\"231\" x2=\"218\" y2=\"231\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"ub\" data-g=\"apath\"><rect class=\"cs-box\" x=\"222\" y=\"206\" width=\"120\" height=\"50\" rx=\"8\"/><text class=\"cs-t\" x=\"282\" y=\"228\">Unified Buffer</text><text class=\"cs-sub\" x=\"282\" y=\"244\">24 MiB · activations</text></g><line class=\"cs-arr\" x1=\"342\" y1=\"221\" x2=\"430\" y2=\"186\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"mxu\" data-g=\"mxu\"><rect class=\"cs-box\" x=\"434\" y=\"148\" width=\"160\" height=\"86\" rx=\"8\"/><text class=\"cs-t\" x=\"514\" y=\"178\">MXU systolic array</text><text class=\"cs-sub\" x=\"514\" y=\"196\">256×256 MACs</text><text class=\"cs-sub\" x=\"514\" y=\"212\">Weights ↓ Activations → converge</text></g><text class=\"cs-note\" x=\"430\" y=\"142\">Two streams converge here ↗↘</text><line class=\"cs-arr\" x1=\"514\" y1=\"234\" x2=\"514\" y2=\"276\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"acc\" data-g=\"acc\"><rect class=\"cs-box\" x=\"434\" y=\"278\" width=\"160\" height=\"40\" rx=\"8\"/><text class=\"cs-t\" x=\"514\" y=\"303\">Accumulators · 4 MiB</text></g><line class=\"cs-arr\" x1=\"594\" y1=\"298\" x2=\"640\" y2=\"298\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"act\" data-g=\"act\"><rect class=\"cs-box\" x=\"610\" y=\"206\" width=\"96\" height=\"50\" rx=\"8\"/><text class=\"cs-t\" x=\"658\" y=\"228\">Activation / normalization</text><text class=\"cs-sub\" x=\"658\" y=\"244\">Elementwise</text></g><polyline class=\"cs-arr\" points=\"640,298 658,298 658,256\" fill=\"none\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"658,206 658,128 282,128 282,206\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"300\" y=\"122\">Results return to UB as next-layer activations →</text><g class=\"cs-part\" data-k=\"ov\" data-g=\"ov\"><rect class=\"cs-box\" x=\"36\" y=\"340\" width=\"660\" height=\"44\" rx=\"8\"/><text class=\"cs-t\" x=\"366\" y=\"362\">Double-buffered overlap: transfer runs with compute</text><text class=\"cs-sub\" x=\"366\" y=\"378\">Goal: keep the array continuously busy</text></g></svg>",
+  "legend": [
+    {
+      "k": "wpath",
+      "name": "Weight stream",
+      "desc": "DDR3 → Weight FIFO → MXU. The FIFO prefetches weights; after they enter the array they remain stationary. The next weight set queues while the current one computes."
+    },
+    {
+      "k": "apath",
+      "name": "Activation stream",
+      "desc": "The host moves data through PCIe/DMA into the 24 MiB Unified Buffer, then streams activations across array rows. As a software-managed scratchpad, the UB provides explicit, predictable transfer timing."
+    },
+    {
+      "k": "mxu",
+      "name": "MXU convergence point",
+      "desc": "Weights remain stationary while activations advance horizontally and products accumulate. The MXU is the throughput-critical node and must stay fully fed."
+    },
+    {
+      "k": "acc",
+      "name": "Accumulate → activate",
+      "desc": "Partial sums land in 4 MiB of 32-bit accumulators, pass through activation/normalization, and return to the Unified Buffer as the next layer's inputs."
+    },
+    {
+      "k": "ov",
+      "name": "Double-buffered overlap",
+      "desc": "Ping-pong buffers schedule weight fetches, activation delivery, and result writes in parallel with computation, hiding transfer latency behind useful work."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "wpath",
+        "mxu"
+      ],
+      "cap": "① Weight stream: prefetch from DDR3 through the Weight FIFO, load the array, and hold weights stationary."
+    },
+    {
+      "keys": [
+        "apath",
+        "mxu"
+      ],
+      "cap": "② Activation stream: DMA data from the host into the Unified Buffer, then inject activations across rows each cycle."
+    },
+    {
+      "keys": [
+        "mxu",
+        "acc"
+      ],
+      "cap": "③ Converge at the MXU: activations move right while partial sums accumulate downward into 32-bit accumulators."
+    },
+    {
+      "keys": [
+        "acc",
+        "act",
+        "apath"
+      ],
+      "cap": "④ Apply activation/normalization and return results to the Unified Buffer as next-layer activations."
+    },
+    {
+      "keys": [
+        "ov"
+      ],
+      "cap": "⑤ Crucial overlap: fetch the next weights, deliver the next activations, and write the previous results while the current computation runs, preventing array idle time."
+    }
+  ],
+  "before": [
+    "<b>Define the question</b>: Which path does every value take, can each node supply enough bandwidth, and can computation hide movement? The objective is to keep the expensive MXU fully utilized.",
+    "<b>Decisions to make</b>: Dataflow style (weight-, output-, or row-stationary), buffer capacities and port counts, double- or triple-buffer depth, FIFO depths, and the bandwidth ratio between DMA and on-chip reads/writes.",
+    "<b>Required inputs</b>: Array dimensions and consumption cadence from compute (§3.3), Unified Buffer capacity and bandwidth from memory (§3.4), the ~30 GB/s DDR3 ceiling, and representative tensor shapes that determine reuse.",
+    "<b>Hard constraint</b>: The array's per-cycle demand must not exceed delivery bandwidth. Scarce off-chip bandwidth requires on-chip reuse instead of repeatedly refetching data."
+  ],
+  "during": [
+    "<b>Split two independent streams</b>: Weights and activations differ in source, lifetime, and reuse. Pipeline DDR3→FIFO→resident weights separately from Host→UB→streaming activations, converging only at the MXU.",
+    "<b>Select weight-stationary</b>: Load weights once and reuse them across many activations. Off-chip bandwidth pays mainly for one-time weight delivery while reuse happens inside the array.",
+    "<b>Hide latency with double buffering</b>: The Weight FIFO prefetches the next layer while the current one computes; ping-pong UB regions alternately feed the array and receive DMA/results. Movement runs beneath computation instead of serially around it.",
+    "<b>Budget fill and drain cycles</b>: A systolic array incurs fill and drain latency. Continuous streams amortize this fixed cost over large batches and avoid repeated start/stop operation.",
+    "<b>Balance bandwidth</b>: Unified Buffer ports must simultaneously support array reads, DMA writes, and result writes. Any imbalance stalls the array—the primary failure this dataflow must prevent.",
+    "<b>Accept host-driven tradeoffs</b>: The host sequences the pipeline over PCIe with roughly a dozen CISC commands. This is simple and deterministic but less flexible, relying on XLA to tile and overlap movement with compute."
+  ],
+  "result": [
+    {
+      "label": "Dataflow",
+      "value": "Weight-stationary systolic; two streams converge"
+    },
+    {
+      "label": "Weight path",
+      "value": "DDR3 → Weight FIFO → stationary array"
+    },
+    {
+      "label": "Activation path",
+      "value": "Host/DMA → 24 MiB UB → array → accumulate → UB"
+    },
+    {
+      "label": "Overlap mechanism",
+      "value": "Weight FIFO prefetch + UB double buffering"
+    },
+    {
+      "label": "Off-chip bandwidth",
+      "value": "DDR3 ~30 GB/s, used sparingly"
+    },
+    {
+      "label": "Orchestration",
+      "value": "Host-driven CISC commands (about a dozen)"
+    }
+  ],
+  "after": [
+    "<b>Verify that supply keeps up</b>: Use a cycle-level model on real matrix and convolution layers to measure array utilization and stalls. If stalls are high, deepen buffers, rebalance bandwidth, or revise the dataflow.",
+    "<b>Classify compute- versus memory-bound layers</b>: Use a roofline model to find layers constrained by ~30 GB/s off-chip bandwidth and decide whether they need more aggressive reuse or a larger Unified Buffer.",
+    "<b>Propagate constraints</b>: Give microarchitecture (④) FIFO depths, double-buffer switch points, and array fill/drain timing; give XLA the tiling and overlap contract.",
+    "<b>Add performance counters</b>: Track array utilization, UB port occupancy, FIFO empty/full events, and DMA waits to diagnose delivery bottlenecks in production.",
+    "<b>State the boundary honestly</b>: This case uses disclosed v1 datapath facts—weight and activation streams plus buffering. Exact FIFO depths and UB port counts were not published and are presented only as standard inference-ASIC practice."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017. Facts disclosed in the paper are distinguished from illustrative examples and standard industry practice; the latter are not presented as disclosed TPU v1 implementation details."
+}

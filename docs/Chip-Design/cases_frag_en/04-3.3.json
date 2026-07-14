@@ -1,0 +1,121 @@
+{
+ "secNum": "3.3",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Controller FSM for Tiled GEMM on a Systolic Array",
+ "oneLine": "A large matrix multiply is decomposed into tiles and sequenced by an FSM through load weights → stream activations → accumulate → write back → check for the next tile—a clear example of expressing cycle-level hardware behavior as a finite-state machine.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><g class=\"cs-part\" data-k=\"idle\" data-g=\"idle\"><rect class=\"cs-box\" x=\"40\" y=\"170\" width=\"120\" height=\"60\" rx=\"24\"/><text class=\"cs-t\" x=\"100\" y=\"196\">Idle</text><text class=\"cs-sub\" x=\"100\" y=\"214\">Wait for host command</text></g><g class=\"cs-part\" data-k=\"loadw\" data-g=\"loadw\"><rect class=\"cs-box\" x=\"230\" y=\"40\" width=\"150\" height=\"62\" rx=\"24\"/><text class=\"cs-t\" x=\"305\" y=\"66\">LoadWeights</text><text class=\"cs-sub\" x=\"305\" y=\"84\">Load current weight tile</text></g><g class=\"cs-part\" data-k=\"stream\" data-g=\"stream\"><rect class=\"cs-box\" x=\"450\" y=\"40\" width=\"160\" height=\"62\" rx=\"24\"/><text class=\"cs-t\" x=\"530\" y=\"66\">StreamActiv</text><text class=\"cs-sub\" x=\"530\" y=\"84\">Stream activations from UB</text></g><g class=\"cs-part\" data-k=\"accum\" data-g=\"accum\"><rect class=\"cs-box\" x=\"450\" y=\"170\" width=\"160\" height=\"62\" rx=\"24\"/><text class=\"cs-t\" x=\"530\" y=\"196\">Accumulate</text><text class=\"cs-sub\" x=\"530\" y=\"214\">Accumulate partial sums</text></g><g class=\"cs-part\" data-k=\"wb\" data-g=\"wb\"><rect class=\"cs-box\" x=\"450\" y=\"300\" width=\"160\" height=\"62\" rx=\"24\"/><text class=\"cs-t\" x=\"530\" y=\"326\">WriteBack</text><text class=\"cs-sub\" x=\"530\" y=\"344\">Write result to UB</text></g><g class=\"cs-part\" data-k=\"next\" data-g=\"next\"><rect class=\"cs-box\" x=\"230\" y=\"300\" width=\"150\" height=\"62\" rx=\"24\"/><text class=\"cs-t\" x=\"305\" y=\"320\">NextTile?</text><text class=\"cs-sub\" x=\"305\" y=\"338\">More tiles?</text></g><g class=\"cs-part\" data-g=\"t0\"><line class=\"cs-arr\" x1=\"120\" y1=\"172\" x2=\"244\" y2=\"100\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"150\" y=\"128\">GEMM command received</text><g class=\"cs-part\" data-g=\"t1\"><line class=\"cs-arr\" x1=\"380\" y1=\"71\" x2=\"446\" y2=\"71\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"384\" y=\"32\">Weights ready</text><g class=\"cs-part\" data-g=\"t2\"><line class=\"cs-arr\" x1=\"530\" y1=\"102\" x2=\"530\" y2=\"166\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"538\" y=\"138\">Pipeline full</text><g class=\"cs-part\" data-g=\"t3\"><line class=\"cs-arr\" x1=\"530\" y1=\"232\" x2=\"530\" y2=\"296\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"538\" y=\"268\">Tile complete</text><g class=\"cs-part\" data-g=\"t4\"><line class=\"cs-arr\" x1=\"446\" y1=\"331\" x2=\"384\" y2=\"331\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"388\" y=\"292\">Writeback done</text><g class=\"cs-part\" data-g=\"t5\"><polyline class=\"cs-arr\" points=\"232,318 180,300 130,250 110,234\" fill=\"none\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"120\" y=\"300\">No: return to Idle</text><g class=\"cs-part\" data-g=\"t6\"><polyline class=\"cs-arr\" points=\"305,300 305,140 300,104\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"312\" y=\"200\">Yes: load next weights</text><text class=\"cs-note\" x=\"40\" y=\"382\">Note: TPU v1 FSM details are not public; this is a typical tiled-GEMM controller.</text></svg>",
+ "legend": [
+  {
+   "k": "loadw",
+   "name": "LoadWeights state",
+   "desc": "Loads the current weight tile into the 256×256 array. Under weight-stationary dataflow, weights are placed first and then remain fixed. This state produces no result; it prepares the next phase."
+  },
+  {
+   "k": "stream",
+   "name": "StreamActiv state",
+   "desc": "Streams activations row by row from the 24 MiB Unified Buffer into the array, initiating fill of the two-dimensional pipeline."
+  },
+  {
+   "k": "accum",
+   "name": "Accumulate state",
+   "desc": "Runs the array in steady state while partial sums accumulate down the columns into the 4 MiB accumulator. If an output tile spans multiple K-dimension tiles, accumulation repeats in this state."
+  },
+  {
+   "k": "wb",
+   "name": "WriteBack state",
+   "desc": "Passes a completed result tile through activation or normalization and writes it back to Unified Buffer for the next layer or host retrieval."
+  },
+  {
+   "k": "next",
+   "name": "NextTile? branch",
+   "desc": "Tests whether the full matrix still has unprocessed tiles. If so, control returns to LoadWeights with a new tile; otherwise it returns to Idle. This is the FSM loop exit."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "idle",
+    "loadw"
+   ],
+   "cap": "① The host sends one CISC GEMM command over PCIe. The FSM leaves Idle for LoadWeights and begins loading the first weight tile."
+  },
+  {
+   "keys": [
+    "loadw",
+    "stream",
+    "accum"
+   ],
+   "cap": "② When weights are ready, the FSM enters StreamActivations. Once pipeline fill completes, it moves to Accumulate and forms the current tile’s partial sums in the array."
+  },
+  {
+   "keys": [
+    "accum",
+    "wb"
+   ],
+   "cap": "③ When the tile is complete, the FSM enters WriteBack and stores the accumulator result tile in Unified Buffer."
+  },
+  {
+   "keys": [
+    "wb",
+    "next"
+   ],
+   "cap": "④ After writeback, NextTile? checks whether the large matrix has more tiles to process."
+  },
+  {
+   "keys": [
+    "next",
+    "loadw",
+    "idle"
+   ],
+   "cap": "⑤ More tiles → return to LoadWeights with new weights (dashed normal loop); all tiles complete → return to Idle for the next command."
+  }
+ ],
+ "before": [
+  "<b>Define the FSM boundary</b>: This controller sequences one tiled matrix multiply on the systolic array—load weights, stream activations, accumulate, write back, and advance to the next tile. It does not implement the MXU arithmetic itself.",
+  "<b>Enumerate states and events</b>: Split the control flow into stable phases and list every entry and exit event, including weights ready, pipeline full, tile complete, writeback complete, and whether another tile remains.",
+  "<b>Required inputs</b>: The tiling policy, including how a large matrix maps to roughly 256×256 tiles and whether K requires multiple accumulation passes; array fill/drain latency; and Unified Buffer and accumulator capacities.",
+  "<b>Trade-off to resolve</b>: In a host-driven model, how coarse is each instruction? TPU v1 has roughly a dozen CISC-style operations, so one command may cover an entire tile loop and the FSM must expand that command into a multicycle state sequence."
+ ],
+ "during": [
+  "<b>Partition states by data phase</b>: Use weight load, activation streaming and accumulation, and result writeback. Each state drives a deterministic control set—UB address, accumulator clear policy, and writeback destination—with clean, nonoverlapping boundaries.",
+  "<b>Choose transition triggers</b>: Prefer counter completion to complex handshakes. Systolic-array flow is static and deterministic, so fill, compute, and drain cycle counts are known. A state can start a counter and transition when it expires, producing simple, synthesizable, verifiable control.",
+  "<b>Structure the loop explicitly</b>: Make NextTile? a branch state so the single-tile sequence remains reusable. A large matrix becomes an outer tile counter around a fixed-size FSM rather than a larger state graph.",
+  "<b>Amortize weight changes</b>: Loading weights has a cost under weight-stationary flow. When multiple activation tiles reuse one weight tile, keep the FSM in StreamActiv/Accumulate for multiple passes and return to LoadWeights only for a new weight tile.",
+  "<b>Handle K-dimension accumulation</b>: One output tile may combine partial sums from several K tiles. Keep the accumulator uncleared and repeat Accumulate; only the last pass proceeds to WriteBack. A K counter avoids proliferating states.",
+  "<b>Handle reset and abort honestly</b>: TPU v1 does not publish controller error or reset details. Common practice for a datacenter-inference ASIC is an any-state-to-Idle reset or abort path for host aborts and timeouts, ensuring recovery to a clean starting point; this is not a disclosed v1 detail."
+ ],
+ "result": [
+  {
+   "label": "State count",
+   "value": "Approximately 5~6 (Idle/LoadW/Stream/Accum/WriteBack/+decision)"
+  },
+  {
+   "label": "Primary transition trigger",
+   "value": "Usually cycle-counter completion for deterministic pipeline timing"
+  },
+  {
+   "label": "Loop structure",
+   "value": "Single-tile subsequence + outer tile counter"
+  },
+  {
+   "label": "Weight policy",
+   "value": "Weight-stationary; do not reload while reusing"
+  },
+  {
+   "label": "Command source",
+   "value": "Host CISC command (host-driven)"
+  },
+  {
+   "label": "Reset / abort",
+   "value": "Any state may return to Idle (common practice, not disclosed for v1)"
+  }
+ ],
+ "after": [
+  "<b>Draw the state graph and traverse every edge</b>: Ensure each state’s entry and exit conditions are mutually exclusive and complete, with no dead end or simultaneous transitions. Pay particular attention to the two NextTile? branches and reset path.",
+  "<b>Build a cycle model</b>: Hand-calculate load + fill + compute + drain + writeback cycles for a small matrix and align them with each state counter, ensuring fill and drain overhead are not omitted.",
+  "<b>Define FSM verification cases</b>: Cover one tile, multi-tile loops, repeated K accumulation, weight reuse without reload, and reset or abort back to Idle.",
+  "<b>Hand off to RTL (⑤)</b>: Implement the state register, transition logic, per-state controls, and counters as synthesizable Verilog, typically with one-hot or binary state encoding and combinational output logic.",
+  "<b>Reserve clock-gating hooks</b>: During Idle and weight-load or writeback phases when the array is inactive, use the FSM state as a natural coarse-grained clock-gating enable for the MAC array."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the specific controller FSM is not public; this state partition follows common tiled-GEMM controller practice)"
+}

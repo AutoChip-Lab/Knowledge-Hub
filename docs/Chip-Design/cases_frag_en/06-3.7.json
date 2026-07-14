@@ -1,0 +1,125 @@
+{
+ "secNum": "3.7",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Assertion sentinels for handshakes, FIFOs, and the systolic array—localize bugs immediately and reuse properties in formal",
+ "oneLine": "Assertions/SVA are always-true contracts attached to RTL interfaces. Encode “data remains stable after valid until handshake,” “Weight FIFO never overflows,” and “the array never outputs before loading completes” as assert property. Simulation then flags the exact signal and cycle where a violation occurs, replacing thousand-cycle backward debug with an immediate snapshot. The same properties can feed formal tools for exhaustive proof.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"26\">SVA sentinels on RTL interfaces: flag the exact signal and cycle when a bug appears</text><g class=\"cs-part\" data-k=\"drv\" data-g=\"drv\"><rect class=\"cs-box\" x=\"40\" y=\"60\" width=\"130\" height=\"78\" rx=\"8\"/><text class=\"cs-t\" x=\"105\" y=\"92\">Stimulus (Driver)</text><text class=\"cs-sub\" x=\"105\" y=\"112\">Handshake/load sequences</text><text class=\"cs-sub\" x=\"105\" y=\"128\">Directed + random backpressure</text></g><line class=\"cs-arr\" x1=\"170\" y1=\"99\" x2=\"252\" y2=\"99\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"dut\" data-g=\"dut\"><rect class=\"cs-box\" x=\"256\" y=\"48\" width=\"210\" height=\"170\" rx=\"8\"/><text class=\"cs-t\" x=\"361\" y=\"74\">DUT: verified RTL</text><g class=\"cs-part\" data-k=\"hs\" data-g=\"hs\"><rect class=\"cs-cell\" x=\"276\" y=\"90\" width=\"170\" height=\"30\"/><text class=\"cs-cellt\" x=\"361\" y=\"109\">valid/ready interface</text></g><g class=\"cs-part\" data-k=\"fifo\" data-g=\"fifo\"><rect class=\"cs-cell\" x=\"276\" y=\"128\" width=\"170\" height=\"30\"/><text class=\"cs-cellt\" x=\"361\" y=\"147\">Weight FIFO (full/empty)</text></g><g class=\"cs-part\" data-k=\"arr\" data-g=\"arr\"><rect class=\"cs-cell\" x=\"276\" y=\"166\" width=\"170\" height=\"34\"/><text class=\"cs-cellt\" x=\"361\" y=\"187\">256×256 systolic array</text></g></g><g class=\"cs-part\" data-k=\"sva\" data-g=\"sva\"><rect class=\"cs-box\" x=\"510\" y=\"48\" width=\"180\" height=\"170\" rx=\"8\"/><text class=\"cs-t\" x=\"600\" y=\"72\">Assertion sentinels (SVA)</text><text class=\"cs-sub\" x=\"600\" y=\"94\">assert property @(clk)</text><text class=\"cs-sub\" x=\"600\" y=\"112\">A1 valid→stable data</text><text class=\"cs-sub\" x=\"600\" y=\"130\">A2 FIFO no overflow</text><text class=\"cs-sub\" x=\"600\" y=\"148\">A3 no output before load</text><g class=\"cs-part\" data-k=\"red\" data-g=\"red\"><rect class=\"cs-cell\" x=\"528\" y=\"162\" width=\"144\" height=\"44\"/><text class=\"cs-cellt\" x=\"600\" y=\"180\">Violation = red flag</text><text class=\"cs-cellt\" x=\"600\" y=\"196\">Cycle-local diagnosis</text></g></g><polyline class=\"cs-arr\" points=\"466,105 490,105 490,120 508,120\" fill=\"none\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"466,143 490,143 490,128 508,128\" fill=\"none\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"466,183 490,183 490,136 508,136\" fill=\"none\" marker-end=\"url(#csar)\"/><text class=\"cs-sub\" x=\"478\" y=\"240\">Read-only probes (never drive DUT)</text><g class=\"cs-part\" data-k=\"formal\" data-g=\"formal\"><rect class=\"cs-box\" x=\"40\" y=\"262\" width=\"300\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"190\" y=\"288\">Same assertion → formal tool</text><text class=\"cs-sub\" x=\"190\" y=\"308\">Exhaustive proof over all inputs</text></g><line class=\"cs-arr\" x1=\"510\" y1=\"180\" x2=\"344\" y2=\"294\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><g class=\"cs-part\" data-k=\"cov\" data-g=\"cov\"><rect class=\"cs-box\" x=\"392\" y=\"262\" width=\"298\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"541\" y=\"288\">cover property: was this scenario reached?</text><text class=\"cs-sub\" x=\"541\" y=\"308\">Backpressure / full-empty / load completion covered</text></g><text class=\"cs-note\" x=\"40\" y=\"352\">Value: turn a late bad result into the exact failure event; reuse assert/cover in formal and coverage</text><text class=\"cs-note\" x=\"40\" y=\"382\">Note: illustrative standard SVA; TPU v1's private verification environment is not public</text></svg>",
+ "legend": [
+  {
+   "k": "dut",
+   "name": "DUT: verified RTL (handshake/FIFO/array)",
+   "desc": "The TPU-derived RTL under verification: after CISC commands arrive over PCIe, valid/ready handshakes move data into the Weight FIFO and then load the 256×256 systolic array. These interfaces and states are assertion targets. Assertions observe beside the DUT without changing behavior."
+  },
+  {
+   "k": "sva",
+   "name": "Assertion sentinel (SVA / assert property)",
+   "desc": "A set of assert property statements attached to interfaces. At every clock edge, each checks an invariant such as handshake stability, FIFO safety, or array loading order. A violation identifies the property, cycle, and signal immediately—capturing the defect where it originates."
+  },
+  {
+   "k": "red",
+   "name": "Violation means immediate red flag (cycle-local diagnosis)",
+   "desc": "Assertions transform late “is the output wrong?” checking into an alarm at the first internal contract violation. Debug goes directly near the root-cause cycle rather than tracing backward through thousands of cycles from a bad result."
+  },
+  {
+   "k": "formal",
+   "name": "Reuse the same assertion in formal verification",
+   "desc": "assert property serves both simulation and formal property checking. A formal engine explores all possible input sequences without stimulus and either proves the property invariant or returns a counterexample. One assertion becomes a simulation sentinel and a mathematical proof target."
+  },
+  {
+   "k": "cov",
+   "name": "cover property (was the scenario reached?)",
+   "desc": "The dual of assert: assert asks whether a bad event occurred, while cover asks whether an intended scenario occurred. Examples include FIFO becoming full, backpressure occurring, or loading completing. If cover never hits, passing assertions may simply have stood guard over an unexercised scenario."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "drv",
+    "dut"
+   ],
+   "cap": "① Stimulus drives the DUT: the Driver applies valid/ready handshakes and weight-loading sequences, including random ready deassertion for backpressure, creating realistic timing scenarios."
+  },
+  {
+   "keys": [
+    "dut",
+    "hs",
+    "sva"
+   ],
+   "cap": "② Watch handshakes with A1: once valid is asserted, data and valid remain unchanged until ready completes the handshake. Attach the property to the interface; any premature change turns red in that exact cycle."
+  },
+  {
+   "keys": [
+    "dut",
+    "fifo",
+    "sva"
+   ],
+   "cap": "③ Watch the FIFO with A2: when full, no write occurs and the write pointer never advances past the read pointer. Detect overflow risk on the offending write cycle rather than after overwritten data corrupts output."
+  },
+  {
+   "keys": [
+    "dut",
+    "arr",
+    "sva",
+    "red"
+   ],
+   "cap": "④ Watch the array with A3: array output is prohibited until loading asserts done. A violation flags the exact control signal and cycle of premature output."
+  },
+  {
+   "keys": [
+    "sva",
+    "formal",
+    "cov"
+   ],
+   "cap": "⑤ Reuse each assertion: send the same assert to formal for exhaustive proof or counterexample; pair it with cover property to confirm full/empty, backpressure, and load-completion scenarios were actually exercised."
+  }
+ ],
+ "before": [
+  "<b>List the verification objects and their invariants</b>: enumerate interfaces and state—valid/ready handshakes, Weight FIFO full/empty, array load→output ordering, and clock-domain crossings—then write one “must always hold” statement for each. These become assertion candidates.",
+  "<b>Classify assertion forms</b>: immediate assertions for combinational relations such as full && wr_en never both true; concurrent assertions for temporal implications such as stable data while valid waits; and cover for scenarios that must occur. Do not encode temporal behavior as an instantaneous check.",
+  "<b>Separate internal invariants from final-result checking</b>: assertions detect contract violations but do not replace Scoreboard/Reference Model comparison of numerical results. Define which behaviors each mechanism owns. Completion requires zero assertion violations in regression and 100% hit rate for critical covers.",
+  "<b>Select properties for formal proof</b>: prioritize safety properties—no overflow, no out-of-bounds access, no premature output—and define assumptions such as post-reset operation and legal commands. Proper assume boundaries prevent false counterexamples from impossible inputs.",
+  "<b>State the evidence boundary</b>: TPU v1's verification environment is not public. SVA snippets and cover constructs are standard illustrative practice using documented systolic-array, UB, handshake, and CISC structures; no private TPU assertions or metrics are claimed."
+ ],
+ "during": [
+  "<b>Express handshake stability as a temporal implication</b> (illustrative standard practice):<br><code>property p_hold; @(posedge clk) disable iff(!rst_n)<br>&nbsp;&nbsp;(valid && !ready) |=> (valid && $stable(data)); endproperty<br>assert property(p_hold);</code><br>Meaning: when valid is high and no handshake occurs, valid remains high and data stable on the next cycle. Any change fails immediately.",
+  "<b>Express FIFO no-overflow as immediate/concurrent safety assertions</b> (illustrative):<br><code>assert property(@(posedge clk) !(full && wr_en));<br>assert property(@(posedge clk) (wr_ptr - rd_ptr) <= DEPTH);</code><br>A write while full or occupancy beyond depth turns red on that write cycle, before overwritten data causes a later numerical error.",
+  "<b>Express load order as an implication</b> (illustrative):<br><code>assert property(@(posedge clk) array_out_valid |-> load_done);</code><br>Any array result requires load_done already asserted, localizing premature output to the offending control cycle.",
+  "<b>Assertions observe only; they never drive the DUT</b>: assertion probes read interface signals without altering functionality or timing. At multi-clock boundaries, sample properties in the correct clock domain and avoid applying $stable to unsynchronized signals, which creates false failures.",
+  "<b>Pair assert with cover to prevent false green</b>: all assertions can pass because stimulus never reaches a hazardous state. Pair each critical property with cover, such as full observed, ready deasserted, or load_done toggled, and require meaningful hits.",
+  "<b>Scope note</b>: property/assert/cover syntax here is standard industrial SystemVerilog Assertion practice and illustrative only. TPU v1 does not publish its verification environment or assertions; the documented handshake/FIFO/array/CISC structures provide the DUT context."
+ ],
+ "result": [
+  {
+   "label": "Assertion vehicle",
+   "value": "SystemVerilog Assertion (assert property / cover property), attached as interface sentinels"
+  },
+  {
+   "label": "A1 handshake stability (illustrative)",
+   "value": "(valid && !ready) |=> (valid && $stable(data)) — data/valid remain stable before handshake"
+  },
+  {
+   "label": "A2 FIFO no-overflow (illustrative)",
+   "value": "!(full && wr_en) and (wr_ptr-rd_ptr) <= DEPTH — no write while full; never exceed depth"
+  },
+  {
+   "label": "A3 load ordering (illustrative)",
+   "value": "array_out_valid |-> load_done — no output before loading completes"
+  },
+  {
+   "label": "Primary benefit",
+   "value": "Violation flags the exact signal and cycle, sharply shortening the debug chain"
+  },
+  {
+   "label": "One assertion, multiple uses",
+   "value": "Feed the same assert to formal for exhaustive proof; pair with cover to confirm scenario reachability"
+  }
+ ],
+ "after": [
+  "<b>Enable assertions in every regression and require zero violations</b>: treat any failure after an RTL change as a signoff-blocking functional defect. Use the reported property/cycle/signal to debug at the scene, then rerun to prevent recurrence.",
+  "<b>Use cover hit rates to add stimulus</b>: inspect every cover property. If full/empty boundaries, worst-case backpressure, or immediate post-load behavior remain at 0, add directed or constrained-random stimulus until critical covers all hit.",
+  "<b>Submit safety assertions for formal signoff</b>: formally prove A2 no-overflow and A3 no-premature-output under legal-command assumptions, or use a counterexample to fix RTL. Proven properties may be sampled less frequently in simulation to save runtime.",
+  "<b>Freeze assertions with interface specifications</b>: retain assert/cover properties as executable contracts along the DMA→UB→Weight FIFO→systolic-array integration chain. They continue guarding boundaries in chip-level regression.",
+  "<b>Use bug convergence to release synthesis</b>: require assertion-discovered bug rate near zero, consecutively green regression, and full critical-cover hits. Only stable interfaces and invariants proceed to synthesis."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the systolic array, Unified Buffer, Weight FIFO, and CISC interface are documented; SVA assert/cover property, formal proof, and coverage convergence are standard verification practices, with illustrative diagrams and HDL rather than TPU v1's private environment or metrics)"
+}

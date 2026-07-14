@@ -1,0 +1,121 @@
+{
+  "secNum": "3.5",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · Power-Integrity Signoff: Full-Die IR-Drop Map and EM Current-Density Checks",
+  "oneLine": "A routed power network is not automatically adequate. Golden power-integrity tools must answer two questions before tapeout: does full-load current cause local IR drop that slows or corrupts 700 MHz logic, and will sustained current density cause electromigration and early opens? TPU's 65,536 MACs switching together concentrate both dynamic IR and EM stress in the array. Signoff produces voltage maps and EM reports; failures return with coordinates to ⑧ PDN ECO.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"30\" y=\"24\">Power-integrity signoff: full-die IR map + EM checks on the implemented PDN</text><g class=\"cs-part\" data-k=\"hot\" data-g=\"hot\"><rect class=\"cs-box\" x=\"46\" y=\"64\" width=\"300\" height=\"300\" rx=\"10\" fill=\"none\"/><text class=\"cs-sub\" x=\"196\" y=\"58\">Full-die IR-drop map (darker = larger drop; illustrative)</text><rect x=\"64\" y=\"84\" width=\"264\" height=\"40\" fill=\"#bbf7d0\"/><rect x=\"64\" y=\"124\" width=\"264\" height=\"40\" fill=\"#fde68a\"/><rect x=\"64\" y=\"164\" width=\"120\" height=\"120\" fill=\"#fca5a5\"/><rect x=\"184\" y=\"164\" width=\"60\" height=\"120\" fill=\"#f87171\"/><rect x=\"244\" y=\"164\" width=\"84\" height=\"120\" fill=\"#fde68a\"/><rect x=\"64\" y=\"284\" width=\"264\" height=\"40\" fill=\"#fde68a\"/><rect x=\"64\" y=\"324\" width=\"264\" height=\"20\" fill=\"#bbf7d0\"/><line x1=\"100\" y1=\"84\" x2=\"100\" y2=\"344\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"3 3\"/><line x1=\"156\" y1=\"84\" x2=\"156\" y2=\"344\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"3 3\"/><line x1=\"212\" y1=\"84\" x2=\"212\" y2=\"344\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"3 3\"/><line x1=\"268\" y1=\"84\" x2=\"268\" y2=\"344\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"3 3\"/><line x1=\"64\" y1=\"144\" x2=\"328\" y2=\"144\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"3 3\"/><line x1=\"64\" y1=\"224\" x2=\"328\" y2=\"224\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"3 3\"/><line x1=\"64\" y1=\"304\" x2=\"328\" y2=\"304\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"3 3\"/></g><g class=\"cs-part\" data-k=\"mxu\" data-g=\"mxu\"><rect class=\"cs-box\" x=\"64\" y=\"164\" width=\"180\" height=\"120\" rx=\"0\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"2.5\"/><text class=\"cs-t\" x=\"154\" y=\"214\" fill=\"#7f1d1d\">256×256 array</text><text class=\"cs-sub\" x=\"154\" y=\"234\" fill=\"#7f1d1d\">Simultaneous switching · dynamic-IR hotspot</text></g><g class=\"cs-part\" data-k=\"ub\" data-g=\"ub\"><rect class=\"cs-box\" x=\"244\" y=\"84\" width=\"84\" height=\"40\" rx=\"0\" fill=\"#e0e7ff\" fill-opacity=\"0.7\" stroke=\"#6366f1\"/><text class=\"cs-sub\" x=\"286\" y=\"108\">24 MiB UB</text></g><line class=\"cs-arr\" x1=\"346\" y1=\"160\" x2=\"408\" y2=\"120\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"346\" y1=\"240\" x2=\"408\" y2=\"240\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"ir\" data-g=\"ir\"><rect class=\"cs-box\" x=\"412\" y=\"92\" width=\"276\" height=\"100\" rx=\"8\"/><text class=\"cs-t\" x=\"550\" y=\"118\">IR-drop signoff (static + dynamic)</text><text class=\"cs-sub\" x=\"550\" y=\"140\">PrimeShield/Voltus/RedHawk-class map</text><text class=\"cs-sub\" x=\"550\" y=\"158\">Example: drop ≤ X% of VDD</text><text class=\"cs-sub\" x=\"550\" y=\"176\">Drop → undervoltage → slow/error</text></g><g class=\"cs-part\" data-k=\"em\" data-g=\"em\"><rect class=\"cs-box\" x=\"412\" y=\"204\" width=\"276\" height=\"100\" rx=\"8\"/><text class=\"cs-t\" x=\"550\" y=\"230\">Electromigration signoff</text><text class=\"cs-sub\" x=\"550\" y=\"252\">Metal/via current density vs process limit</text><text class=\"cs-sub\" x=\"550\" y=\"270\">Example: J ≤ Jmax (lifetime)</text><text class=\"cs-sub\" x=\"550\" y=\"288\">Excess → long-term open failure</text></g><line class=\"cs-arr\" x1=\"550\" y1=\"304\" x2=\"550\" y2=\"332\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"550\" y1=\"192\" x2=\"550\" y2=\"204\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><g class=\"cs-part\" data-k=\"gate\" data-g=\"gate\"><rect class=\"cs-box\" x=\"412\" y=\"332\" width=\"276\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"550\" y=\"356\">Power-integrity gate</text><text class=\"cs-sub\" x=\"550\" y=\"374\">IR + EM green to release; otherwise ⑧ ECO</text></g></svg>",
+  "legend": [
+    {
+      "k": "hot",
+      "name": "Full-die IR-drop map",
+      "desc": "Partition the die into a grid and calculate voltage loss from realistic activity, then color-code low to high drop. Engineers immediately locate voltage valleys. The depicted array/UB placement and colors illustrate physical intuition, not measured TPU data."
+    },
+    {
+      "k": "mxu",
+      "name": "256×256 array—dynamic IR and EM hotspot",
+      "desc": "At full inference, 65,536 8-bit MACs can switch in the same 700 MHz cycle, concentrating transient and sustained current. The array region and its main supply trunks therefore deserve special scrutiny for voltage red zones and EM margin."
+    },
+    {
+      "k": "ir",
+      "name": "IR-drop signoff (static + dynamic)",
+      "desc": "PrimeShield/Voltus/RedHawk-class analysis computes steady-state IR drop from average current and transient drop from simultaneous switching, including package inductive effects where modeled. Excess drop lowers effective cell voltage, increases delay, and can break function. X% of VDD is an illustrative threshold."
+    },
+    {
+      "k": "em",
+      "name": "Electromigration signoff (reliability/lifetime)",
+      "desc": "Compare every supply metal segment and via current density with PDK lifetime limits Jmax. Persistent excess current transports metal atoms, narrowing wires until they open after extended service. All hotspots, especially array supply trunks, must be cleared."
+    },
+    {
+      "k": "gate",
+      "name": "Power-integrity signoff gate",
+      "desc": "Static/dynamic IR must meet budget and every EM segment must meet lifetime limits. Any failure blocks tapeout and returns precise locations to ⑧ for strap/via/decap ECO, followed by reanalysis."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "mxu",
+        "hot"
+      ],
+      "cap": "① Freeze the implemented PDN from ⑧ and identify the simultaneously switching 256×256 array as the primary current hotspot."
+    },
+    {
+      "keys": [
+        "ir",
+        "hot"
+      ],
+      "cap": "② Use golden tools and realistic activity to compute static and dynamic voltage loss, producing a full-die IR-drop heat map."
+    },
+    {
+      "keys": [
+        "mxu",
+        "ir"
+      ],
+      "cap": "③ Judge supply adequacy: illustrative local drop must remain ≤X% of VDD; excessive drop undervolts cells and can prevent 700 MHz or cause errors."
+    },
+    {
+      "keys": [
+        "em",
+        "mxu"
+      ],
+      "cap": "④ Judge lifetime: every supply metal and via must satisfy J≤Jmax. Main trunks above the array carry the greatest current and are zero-tolerance hotspots."
+    },
+    {
+      "keys": [
+        "gate",
+        "ir",
+        "em"
+      ],
+      "cap": "⑤ Release this dimension only when IR and EM are green; otherwise return locations to ⑧ for targeted PDN ECO and re-sign."
+    }
+  ],
+  "before": [
+    "<b>Freeze extracted PDN data and limits</b>: Use post-route metal/via resistance, PDK sheet resistance, metal and via current limits, nominal VDD, and an illustrative allowable IR budget. Signoff evaluates the implemented network rather than redefining it.",
+    "<b>Define activity scenarios</b>: Dynamic IR depends on simultaneous switching. Agree on vector-based representative inference, vectorless statistical activity, and a worst-case near-full-array switching scenario.",
+    "<b>Select golden tools and corners</b>: Use PrimeShield/Voltus/RedHawk-class analysis aligned with MMMC—often low-voltage/hot for IR and high-temperature lifetime corners for EM. Missing corners miss real failures.",
+    "<b>Define criteria and waiver details</b>: Specify grid- versus instance-level IR reporting, segment/via EM reporting, special supplies, and zero-tolerance regions such as main array rails before analysis begins.",
+    "<b>Disclosure boundary</b>: Static/dynamic IR, EM, PVT corners, SPEF/PDK limits, and power-integrity tools are standard signoff practices. TPU's PDN, metal stack, corners, and reports are unpublished; all map colors and thresholds are illustrative."
+  ],
+  "during": [
+    "<b>Sign both static and dynamic IR</b>: Static drop reflects average current; dynamic drop captures simultaneous switching and package di/dt effects. The latter is the real stress case for a full 256×256 array, so both reports are mandatory.",
+    "<b>IR drop directly affects timing</b>. Local undervoltage slows cells, consuming slack. Feed the voltage map into voltage-aware STA and confirm the array still meets 700 MHz under actual local supply, not nominal VDD alone.",
+    "<b>EM is a latent lifetime failure with no later escape screen</b>. Overstressed wires may pass manufacturing test and open years later. Check every metal segment and via, particularly the heavily loaded array trunks, against lifetime models.",
+    "<b>Read hotspots and voltage valleys</b>: Inspect high-activity regions first, then locations far from bumps/C4 sources. Their coordinates provide precise PDN ECO targets.",
+    "<b>Use worst corners and scenarios, not averages</b>: Take low-V/hot worst-case IR, high-temperature EM lifetime, and high simultaneous array activity. One failing signed corner fails the dimension.",
+    "<b>Return actionable failure data</b>: For every EM/IR violation, include location, amount, supply net, and likely cause—sparse grid, insufficient vias, missing decap, or distant source—so ⑧ can make minimal targeted changes."
+  ],
+  "result": [
+    {
+      "label": "IR-drop report (example)",
+      "value": "Full-die static/dynamic heat map; each location drop ≤X% of VDD; list worst values and coordinates"
+    },
+    {
+      "label": "Worst dynamic-IR scenario (example)",
+      "value": "High simultaneous activity in the 256×256 array; peak local drop remains within budget"
+    },
+    {
+      "label": "EM report (example)",
+      "value": "Every metal/via J≤Jmax; list over-limit ratio and location; zero tolerance on main array supply"
+    },
+    {
+      "label": "IR-aware timing (example)",
+      "value": "Back-annotate local voltage into STA and confirm 700 MHz setup slack remains ≥0"
+    },
+    {
+      "label": "Corners / scenarios (example)",
+      "value": "Worst low-V/hot IR + hot EM lifetime + full-load array activity"
+    },
+    {
+      "label": "Dimension verdict",
+      "value": "Static/dynamic IR + EM green → PASS; any hotspot → FAIL and ⑧ ECO with coordinates"
+    }
+  ],
+  "after": [
+    "<b>Return failures for targeted PDN ECO</b>: Widen or densify straps, add vias, place local decoupling, or adjust supply entry near each reported hotspot. Prefer minimal localized changes over wholesale redesign.",
+    "<b>Incrementally re-sign the whole coupled network</b>: Confirm the original hotspot is fixed and that added metal or routing pressure has not created a new voltage valley or EM concentration elsewhere.",
+    "<b>Recheck voltage-aware timing and DRC</b>: Updated voltage distribution changes timing; added metal/vias can violate spacing. Rerun IR-aware STA at 700 MHz and physical rules after every PDN ECO.",
+    "<b>Feed the overall tapeout gate</b>: Only green static/dynamic IR and EM can join STA, DRC/LVS, LEC, and reliability signoff. Power integrity is a mandatory dimension.",
+    "<b>Archive signoff evidence</b>: Preserve tool versions, corners, activity scenarios, limits, final reports, and the history of hotspots/ECOs for tapeout traceability and future PDN calibration."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (published TPU v1 array, 700 MHz/~92 TOPS, 24 MiB Unified Buffer, weight-stationary dataflow, and 28 nm/≤331 mm²/28–40 W provide current-scale context. Static/dynamic IR, EM, PrimeShield/Voltus/RedHawk-class tools, PVT/OCV, SPEF, Jmax, voltage-aware STA, tapeout gating, map colors, and all thresholds are standard illustrative signoff practice, not private TPU disclosure.)"
+}

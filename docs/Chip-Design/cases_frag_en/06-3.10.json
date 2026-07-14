@@ -1,0 +1,126 @@
+{
+ "secNum": "3.10",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Specialized verification: CDC, low power, X propagation, registers, and connectivity—the five fatal defects ordinary simulation misses",
+ "oneLine": "Correct matrix multiplication does not make a usable chip. Signals crossing the core, PCIe, and DDR3 domains can fail intermittently through metastability; an idle PE block can lose state from one-cycle power sequencing errors; reset-time X values may be hidden by optimistic RTL semantics until gate level; a wrong CSR reset value can misconfigure software at boot; and an unconnected pin may never be exercised. These five risks require dedicated CDC, UPF low-power, X-propagation, RAL register, and connectivity checks.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"32\" y=\"24\">Five specialized checks ordinary simulation misses—each targets a TPU subsystem</text><g class=\"cs-part\" data-k=\"cdc\" data-g=\"chk\"><rect class=\"cs-box\" x=\"32\" y=\"44\" width=\"180\" height=\"62\" rx=\"8\" fill=\"#eff6ff\" stroke=\"#93c5fd\"/><text class=\"cs-t\" x=\"122\" y=\"68\">① CDC</text><text class=\"cs-sub\" x=\"122\" y=\"86\">Synchronizer structure + metastability injection</text><text class=\"cs-sub\" x=\"122\" y=\"101\">RDC / Gray code / handshake convergence</text></g><g class=\"cs-part\" data-k=\"lp\" data-g=\"chk\"><rect class=\"cs-box\" x=\"32\" y=\"118\" width=\"180\" height=\"62\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"122\" y=\"142\">② Low-power UPF</text><text class=\"cs-sub\" x=\"122\" y=\"160\">Gating / power-off / retention / isolation</text><text class=\"cs-sub\" x=\"122\" y=\"175\">Power sequence + recovery</text></g><g class=\"cs-part\" data-k=\"xprop\" data-g=\"chk\"><rect class=\"cs-box\" x=\"32\" y=\"192\" width=\"180\" height=\"62\" rx=\"8\" fill=\"#fef2f2\" stroke=\"#fca5a5\"/><text class=\"cs-t\" x=\"122\" y=\"216\">③ X propagation</text><text class=\"cs-sub\" x=\"122\" y=\"234\">Pre-reset / uninitialized X</text><text class=\"cs-sub\" x=\"122\" y=\"249\">RTL optimistic vs. gate pessimistic</text></g><g class=\"cs-part\" data-k=\"csr\" data-g=\"chk\"><rect class=\"cs-box\" x=\"32\" y=\"266\" width=\"180\" height=\"62\" rx=\"8\" fill=\"#fefce8\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"122\" y=\"290\">④ CSR registers</text><text class=\"cs-sub\" x=\"122\" y=\"308\">Reset / read-write / RO / W1C</text><text class=\"cs-sub\" x=\"122\" y=\"323\">Automated RAL sweep</text></g><g class=\"cs-part\" data-k=\"conn\" data-g=\"chk\"><rect class=\"cs-box\" x=\"32\" y=\"340\" width=\"180\" height=\"50\" rx=\"8\" fill=\"#faf5ff\" stroke=\"#d8b4fe\"/><text class=\"cs-t\" x=\"122\" y=\"362\">⑤ Connectivity</text><text class=\"cs-sub\" x=\"122\" y=\"380\">Pin→port point-to-point</text></g><line class=\"cs-arr\" x1=\"212\" y1=\"75\" x2=\"296\" y2=\"92\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"212\" y1=\"149\" x2=\"296\" y2=\"140\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"212\" y1=\"223\" x2=\"296\" y2=\"180\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"212\" y1=\"297\" x2=\"296\" y2=\"240\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"212\" y1=\"365\" x2=\"296\" y2=\"300\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"tpu\" data-g=\"tpu\"><rect class=\"cs-box\" x=\"300\" y=\"70\" width=\"252\" height=\"262\" rx=\"10\" fill=\"#f8fafc\" stroke=\"#cbd5e1\"/><text class=\"cs-t\" x=\"426\" y=\"94\">TPU v1 targets</text><g class=\"cs-part\" data-k=\"pcie\" data-g=\"pcie\"><rect class=\"cs-box\" x=\"318\" y=\"108\" width=\"216\" height=\"40\" rx=\"6\"/><text class=\"cs-t\" x=\"426\" y=\"126\">PCIe domain ↔ core domain ↔ DDR3 domain</text><text class=\"cs-sub\" x=\"426\" y=\"141\">→ ① CDC metastability injection</text></g><g class=\"cs-part\" data-k=\"pe\" data-g=\"pe\"><rect class=\"cs-box\" x=\"318\" y=\"156\" width=\"216\" height=\"40\" rx=\"6\"/><text class=\"cs-t\" x=\"426\" y=\"174\">256×256 PE array (idle blocks)</text><text class=\"cs-sub\" x=\"426\" y=\"189\">→ ② power gating / ③ reset X</text></g><g class=\"cs-part\" data-k=\"buf\" data-g=\"buf\"><rect class=\"cs-box\" x=\"318\" y=\"204\" width=\"216\" height=\"40\" rx=\"6\"/><text class=\"cs-t\" x=\"426\" y=\"222\">24 MiB UB · 4 MiB accumulators</text><text class=\"cs-sub\" x=\"426\" y=\"237\">→ ③ uninitialized RAM read X</text></g><g class=\"cs-part\" data-k=\"reg\" data-g=\"reg\"><rect class=\"cs-box\" x=\"318\" y=\"252\" width=\"216\" height=\"40\" rx=\"6\"/><text class=\"cs-t\" x=\"426\" y=\"270\">CSR control/status registers</text><text class=\"cs-sub\" x=\"426\" y=\"285\">→ ④ reset/read-write consistency</text></g><g class=\"cs-part\" data-k=\"pin\" data-g=\"pin\"><rect class=\"cs-box\" x=\"318\" y=\"300\" width=\"216\" height=\"24\" rx=\"6\"/><text class=\"cs-t\" x=\"426\" y=\"316\">Chip pins / IO ⑤ connectivity</text></g></g><line class=\"cs-arr\" x1=\"552\" y1=\"200\" x2=\"600\" y2=\"200\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"sign\" data-g=\"sign\"><rect class=\"cs-box\" x=\"604\" y=\"120\" width=\"104\" height=\"160\" rx=\"8\" fill=\"#ecfdf5\" stroke=\"#6ee7b7\"/><text class=\"cs-t\" x=\"656\" y=\"146\">Specialized signoff</text><text class=\"cs-sub\" x=\"656\" y=\"166\">CDC 0 violations</text><text class=\"cs-sub\" x=\"656\" y=\"184\">Correct UPF sequence</text><text class=\"cs-sub\" x=\"656\" y=\"202\">No illegal X</text><text class=\"cs-sub\" x=\"656\" y=\"220\">RAL all pass</text><text class=\"cs-sub\" x=\"656\" y=\"238\">All connections pass</text><text class=\"cs-sub\" x=\"656\" y=\"262\">→ Synthesis ⑦</text></g></svg>",
+ "legend": [
+  {
+   "k": "chk",
+   "name": "Five specialized checks (outside ordinary functional simulation)",
+   "desc": "These are not ordinary stimulus-and-output tests. Each uses dedicated tools and methodology for a structural risk: CDC, UPF/power intent, unknown-value propagation, CSR registers, and connectivity. Standard RTL simulation either masks the behavior—such as optimistically resolving X to 0/1—or does not model it, such as metastability and power domains. Each therefore needs its own plan and signoff."
+  },
+  {
+   "k": "cdc",
+   "name": "① Clock-domain crossing (CDC) verification",
+   "desc": "TPU spans at least the PCIe host, 700 MHz array-core, and off-chip DDR3 interface domains. Single-bit crossings need synchronizers; multibit transfers need Gray coding, handshakes, or asynchronous FIFOs. CDC analysis first checks structures, reconvergence, and reset-domain crossings (RDC), then simulation injects metastability/random delay before synchronizers to verify downstream robustness."
+  },
+  {
+   "k": "lp",
+   "name": "② Low-power verification (UPF)",
+   "desc": "TPU's full-chip power is 28–40 W, making clock gating or power-down of idle PE/buffer blocks a natural technique. UPF defines switchable domains, isolation values, retention state, and the required sequence: isolate → power off → power on → release isolation → restore. UPF-aware simulation verifies state preservation, isolation, recovery, and freedom from X throughout transitions."
+  },
+  {
+   "k": "xprop",
+   "name": "③ X-propagation verification",
+   "desc": "Pre-reset flip-flops, uninitialized RAM such as the 24 MiB UB and 4 MiB accumulator memory, and multiple-driver conflicts create X values. RTL simulation can be optimistic: if/ternary logic may resolve an X to a deterministic branch and hide the bug until gate level. Pessimistic X-prop verifies complete reset, write-before-read behavior, and prevention of unknowns entering the datapath."
+  },
+  {
+   "k": "csr",
+   "name": "④ CSR register verification (RAL)",
+   "desc": "The host configures many control/status registers over PCIe. A Register Abstraction Layer automatically checks each specified reset value, read/write field through write-readback, read-only behavior, W1C (write 1 to clear), and reserved bits. Ordinary functional tests rarely sweep every bit, yet one incorrect reset attribute can derail software immediately after boot."
+  },
+  {
+   "k": "conn",
+   "name": "⑤ Connectivity verification",
+   "desc": "After top-level integration, point-to-point connections from chip pins/IO to internal ports and static power, scan, JTAG, bypass, or test signals must be complete, correctly polarized, and not swapped. Formal or dedicated connectivity tools compare every source pin → destination port without relying on functional stimulus; an unused bypass path might otherwise remain untested until a critical mode."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "cdc",
+    "pcie"
+   ],
+   "cap": "① CDC: analyze PCIe ↔ core ↔ DDR3 boundaries. Confirm every crossing uses a valid synchronizer, Gray code, or handshake, then inject metastability to test robustness against occasional resampling."
+  },
+  {
+   "keys": [
+    "lp",
+    "pe"
+   ],
+   "cap": "② Low power: run idle-PE gating/power-down with UPF. Verify isolation clamps, retention, and power sequencing, with no state loss or X after recovery."
+  },
+  {
+   "keys": [
+    "xprop",
+    "pe",
+    "buf"
+   ],
+   "cap": "③ X propagation: use pessimistic semantics to confirm reset clears PE-array state and that reading the 24 MiB UB / 4 MiB accumulator before write cannot leak X into the datapath."
+  },
+  {
+   "keys": [
+    "csr",
+    "reg"
+   ],
+   "cap": "④ CSR: use RAL to sweep reset defaults, write-readback, read-only, and W1C behavior across all control/status registers, catching boot-default defects."
+  },
+  {
+   "keys": [
+    "conn",
+    "pin",
+    "sign"
+   ],
+   "cap": "⑤ Connectivity: point-to-point compare every top-level pin→port connection for swaps and omissions. Passing all five specialized checks → specialized signoff → synthesis ⑦."
+  }
+ ],
+ "before": [
+  "<b>List specialized verification as independent plan items</b>: CDC, low power, X, registers, and connectivity use different tools, criteria, and evidence. Define the target paths/domains/registers, tool, and pass gate for each before work begins. Omitting one leaves a distinct silicon risk.",
+  "<b>Establish golden intent for CDC and low power</b>: CDC needs an explicit domain inventory—PCIe, 700 MHz core, and DDR3—and asynchronous-clock constraints in SDC. Low power needs UPF definitions of domains, isolation, retention, and sequencing. Verification is meaningful only if these intent files are correct.",
+  "<b>Define the register specification as the CSR Reference Model</b>: use a machine-readable table of every address, reset value, and RO/RW/W1C/reserved-field attribute to generate the RAL model. A stale or incorrect table creates false pass results.",
+  "<b>Specify X semantics upfront</b>: enable pessimistic X behavior or a dedicated X-prop tool rather than relying on default optimistic RTL. Completion requires no X on state/control after reset and no UB/accumulator read before write.",
+  "<b>Define the connectivity checklist and method</b>: enumerate point-to-point IO, power, scan, JTAG, bypass, and test connections. Use formal/dedicated source→destination checking rather than stimulus, since an omitted static path may never activate in functional regression."
+ ],
+ "during": [
+  "<b>Rule: CDC needs structural analysis and metastability testing</b>: a recognized synchronizer alone does not prove downstream logic tolerates occasional resampling. Analyze synchronizers, Gray code, handshakes, reconvergence, and RDC, then inject metastability/random delay across PCIe↔core↔DDR3 boundaries.",
+  "<b>Low power: verify transition order and recovery, not only steady states</b>: defects cluster at power edges. Missing isolation before power-off releases X; failed retention loses configuration; wrong isolation-release/restore order corrupts FSM state. UPF-aware tests must target every transition.",
+  "<b>X propagation: reject optimistic masking</b>: an RTL pass followed by gate-level failure frequently indicates hidden X. X-prop reveals unreset FSM state, read-before-write in the 24 MiB UB / 4 MiB accumulator memory, and unisolated power crossings. Fix the root cause—reset, initialization, or isolation—rather than forcing X to 0 in simulation.",
+  "<b>CSR: automate with RAL rather than hand-writing every register test</b>: generate RAL from the specification and run reset-value, write-readback, bit-bash, and alias sequences across tens or hundreds of registers. Add directed tests only for side effects such as a write that launches hardware activity.",
+  "<b>Connectivity: use point-to-point formal comparison, not functional stimulus</b>: exhaustively compare each source→destination for correct endpoint and polarity and detect omissions or swaps. This directly covers static paths that no practical functional regression guarantees.",
+  "<b>Scope note</b>: CDC, UPF low power, X-prop, UVM RAL, and connectivity are standard large-ASIC verification disciplines. TPU v1's multiple domains, idle-block gating, large RAMs, and CSR interface are valid targets, but specific tools, metastability parameters, and register lists are undisclosed."
+ ],
+ "result": [
+  {
+   "label": "Five specialized disciplines",
+   "value": "CDC · low power (UPF) · X propagation · CSR (RAL) · connectivity"
+  },
+  {
+   "label": "CDC criterion",
+   "value": "0 structural crossing violations + no intermittent functional error after metastability injection"
+  },
+  {
+   "label": "Low-power criterion",
+   "value": "Correct power-off/retention/isolation/recovery sequence; no state loss or X"
+  },
+  {
+   "label": "X semantics (illustrative)",
+   "value": "Pessimistic X / X-prop enabled; no X after reset; no UB/accumulator X from read-before-write"
+  },
+  {
+   "label": "CSR sweep (illustrative)",
+   "value": "RAL: reset-value check + write-readback + RO/W1C attributes (automatic)"
+  },
+  {
+   "label": "Connectivity output",
+   "value": "Pin→port point-to-point comparison report (formal, stimulus-independent)"
+  }
+ ],
+ "after": [
+  "<b>Converge and sign off all five independently</b>: require no unwaived CDC violations, correct UPF transition simulations, no illegal X, full RAL pass, and a clean connectivity report. Each supplies separate evidence; none is optional.",
+  "<b>Rerun the affected specialized regression after every change</b>: crossing edits trigger CDC, UPF/domain edits trigger low-power tests, register changes regenerate and rerun RAL, and top-level wiring changes rerun connectivity. Keep these alongside functional regression in continuous verification.",
+  "<b>Keep intent files synchronized with RTL</b>: clock constraints, UPF, register specification, and connectivity map are golden intent. Review them after RTL revisions; verifying against stale intent creates false signoff.",
+  "<b>Hand constraints, power, and CDC information downstream</b>: CDC conclusions, UPF power intent, register and connectivity data continue into logic synthesis ⑦ and physical implementation. Clock trees, power networks, and scan insertion must preserve the assumptions under which verification passed."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (public TPU v1 structures include multiple clock-domain interfaces, idle-block gating, 24 MiB UB / 4 MiB accumulator memory, and PCIe CISC/register interfaces; the exact tools, parameters, and environments for CDC, UPF low power, X propagation, RAL, and connectivity are standard verification-practice examples because TPU has not published specialized-verification details)"
+}

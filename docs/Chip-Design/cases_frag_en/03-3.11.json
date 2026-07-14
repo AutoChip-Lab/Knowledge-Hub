@@ -1,0 +1,118 @@
+{
+  "secNum": "3.11",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · Security Architecture for a Data-Center Inference ASIC: Root of Trust to Isolation",
+  "oneLine": "This case explains how a server-attached inference ASIC can establish trust from power-on through runtime and isolate each tenant's models and data. Because TPU v1 publications do not emphasize security, the mechanisms shown are standard practice; published host-driven, Unified Buffer, and DDR3 facts provide context.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"30\" y=\"24\">Chain of trust: verify each stage before release</text><g class=\"cs-part\" data-k=\"rot\" data-g=\"rot\"><rect class=\"cs-box\" x=\"30\" y=\"48\" width=\"150\" height=\"70\" rx=\"8\"/><text class=\"cs-t\" x=\"105\" y=\"76\">① Root of Trust (RoT)</text><text class=\"cs-sub\" x=\"105\" y=\"94\">Immutable hardware / mask logic</text><text class=\"cs-sub\" x=\"105\" y=\"110\">Contains verification public key</text></g><line class=\"cs-arr\" x1=\"180\" y1=\"83\" x2=\"232\" y2=\"83\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"boot\" data-g=\"boot\"><rect class=\"cs-box\" x=\"234\" y=\"48\" width=\"150\" height=\"70\" rx=\"8\"/><text class=\"cs-t\" x=\"309\" y=\"76\">② Secure boot</text><text class=\"cs-sub\" x=\"309\" y=\"94\">Verify first-stage firmware</text><text class=\"cs-sub\" x=\"309\" y=\"110\">Failure halts startup</text></g><line class=\"cs-arr\" x1=\"384\" y1=\"83\" x2=\"436\" y2=\"83\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"fw\" data-g=\"fw\"><rect class=\"cs-box\" x=\"438\" y=\"48\" width=\"150\" height=\"70\" rx=\"8\"/><text class=\"cs-t\" x=\"513\" y=\"76\">③ Firmware verification</text><text class=\"cs-sub\" x=\"513\" y=\"94\">Measure / verify each stage</text><text class=\"cs-sub\" x=\"513\" y=\"110\">Prevent rollback</text></g><line class=\"cs-arr\" x1=\"588\" y1=\"83\" x2=\"640\" y2=\"83\"/><g class=\"cs-part\" data-k=\"run\" data-g=\"run\"><rect class=\"cs-box\" x=\"588\" y=\"138\" width=\"102\" height=\"60\" rx=\"8\"/><text class=\"cs-t\" x=\"639\" y=\"164\">④ Runtime</text><text class=\"cs-sub\" x=\"639\" y=\"182\">Known-good state</text></g><polyline class=\"cs-arr\" points=\"640,83 660,83 660,136\" fill=\"none\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"30\" y=\"158\">Any verification failure → deny release (dashed failure path)</text><g class=\"cs-part\" data-k=\"halt\" data-g=\"halt\"><rect class=\"cs-box\" x=\"234\" y=\"158\" width=\"150\" height=\"40\" rx=\"8\" stroke-dasharray=\"6 4\"/><text class=\"cs-t\" x=\"309\" y=\"183\">Failure: halt / do not boot</text></g><polyline class=\"cs-arr\" points=\"309,118 309,156\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"513,118 513,138 386,138 386,156\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"105,118 105,138 232,138 232,178\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"30\" y=\"240\">Multi-tenancy: isolate each user's models and data</text><g class=\"cs-part\" data-k=\"host\" data-g=\"host\"><rect class=\"cs-box\" x=\"30\" y=\"252\" width=\"150\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"105\" y=\"276\">Host / control plane</text><text class=\"cs-sub\" x=\"105\" y=\"294\">Submits work over PCIe</text></g><line class=\"cs-arr\" x1=\"180\" y1=\"280\" x2=\"232\" y2=\"280\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"iso\" data-g=\"iso\"><rect class=\"cs-box\" x=\"234\" y=\"240\" width=\"240\" height=\"120\" rx=\"8\" stroke-dasharray=\"6 4\"/><text class=\"cs-t\" x=\"354\" y=\"262\">Tenant isolation boundary</text><g class=\"cs-part\" data-k=\"tA\" data-g=\"iso\"><rect class=\"cs-box\" x=\"250\" y=\"276\" width=\"100\" height=\"70\" rx=\"8\"/><text class=\"cs-t\" x=\"300\" y=\"300\">Tenant A</text><text class=\"cs-sub\" x=\"300\" y=\"318\">Model weights A</text><text class=\"cs-sub\" x=\"300\" y=\"334\">UB partition / clear</text></g><g class=\"cs-part\" data-k=\"tB\" data-g=\"iso\"><rect class=\"cs-box\" x=\"358\" y=\"276\" width=\"100\" height=\"70\" rx=\"8\"/><text class=\"cs-t\" x=\"408\" y=\"300\">Tenant B</text><text class=\"cs-sub\" x=\"408\" y=\"318\">Model weights B</text><text class=\"cs-sub\" x=\"408\" y=\"334\">Erase on switch</text></g></g><g class=\"cs-part\" data-k=\"mem\" data-g=\"mem\"><rect class=\"cs-box\" x=\"500\" y=\"252\" width=\"190\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"595\" y=\"276\">On-chip UB / off-chip DDR3</text><text class=\"cs-sub\" x=\"595\" y=\"294\">Partition · clear before reuse · access checks</text></g><line class=\"cs-arr\" x1=\"474\" y1=\"300\" x2=\"498\" y2=\"300\" marker-end=\"url(#csar)\"/></svg>",
+  "legend": [
+    {
+      "k": "rot",
+      "name": "① Root of Trust (RoT)",
+      "desc": "The first immutable anchor: mask-programmed logic or one-time fuses containing a verification public key. Every later trust decision derives from it. This is standard data-center ASIC practice, not a published v1 detail."
+    },
+    {
+      "k": "boot",
+      "name": "② Secure boot / firmware integrity",
+      "desc": "At power-on, the RoT verifies the first firmware stage before execution; each verified stage authenticates the next. Any invalid signature halts startup so malicious firmware cannot gain control."
+    },
+    {
+      "k": "iso",
+      "name": "③ Tenant isolation boundary",
+      "desc": "When tenants or tasks reuse an accelerator, one user's weights and intermediates must remain inaccessible to another. Partitioning, access checks, and clearing before reuse establish the boundary. This is a general host-driven ASIC isolation model."
+    },
+    {
+      "k": "mem",
+      "name": "④ Storage isolation and clearing",
+      "desc": "The 24 MiB Unified Buffer and 8 GiB DDR3 are shared across tasks. Clear residual data and enforce address bounds when switching tenants to prevent weight or activation leakage."
+    },
+    {
+      "k": "halt",
+      "name": "⑤ Fail closed",
+      "desc": "The defining security rule is to deny or halt on verification failure, never continue in a degraded state. No stage receives control unless the preceding stage authenticates it."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "rot"
+      ],
+      "cap": "① Anchor trust in immutable mask logic or fuses containing the public key."
+    },
+    {
+      "keys": [
+        "boot",
+        "fw"
+      ],
+      "cap": "② Perform secure boot and staged firmware verification: authenticate before execution, measure each stage, and prevent rollback."
+    },
+    {
+      "keys": [
+        "halt"
+      ],
+      "cap": "③ If any signature check fails, halt and deny release—fail closed."
+    },
+    {
+      "keys": [
+        "run"
+      ],
+      "cap": "④ After every stage verifies, enter a known-good runtime state and begin inference."
+    },
+    {
+      "keys": [
+        "iso",
+        "tA",
+        "tB",
+        "mem"
+      ],
+      "cap": "⑤ Under multi-tenancy, partition UB/DDR3, check access bounds, and clear state on switches to isolate each user's models and data."
+    }
+  ],
+  "before": [
+    "<b>Define the threat model</b>: A data-center accelerator must resist firmware replacement, malicious code in the boot chain, and cross-tenant leakage of model weights or data. TPU v1 publications do not detail security, so use standard inference-ASIC threats.",
+    "<b>Decisions to make</b>: RoT implementation (mask logic or fuses), signature and measurement schemes, chain depth, anti-rollback policy, tenant isolation granularity, and partitioning/clearing of the UB and DDR3.",
+    "<b>Required inputs</b>: The host-driven operating model with PCIe-submitted CISC commands, shared resources such as the 24 MiB UB and 8 GiB DDR3, and cloud multi-tenancy and compliance requirements.",
+    "<b>Disclosure boundary</b>: Public v1 sources reveal almost no security mechanism. RoT, secure boot, and isolation are explicitly standard data-center inference-ASIC practice; only published host-driven, UB, and DDR3 facts are used as context."
+  ],
+  "during": [
+    "<b>Anchor trust in immutable hardware</b>: The RoT must be unmodifiable by software, using mask logic or one-time fuses, and hold the verification public key. Otherwise the trust chain has no stable starting point.",
+    "<b>Verify before execution</b>: The RoT authenticates first-stage firmware; only then may that stage run and verify the next. More verification improves assurance but adds startup latency and logic, so chain depth follows the threat model.",
+    "<b>Fail closed and prevent rollback</b>: Any failed check halts startup. Monotonic version state must also prevent installation of older firmware with known vulnerabilities.",
+    "<b>Choose the isolation model</b>: Host-driven v1-style batch operation can isolate most simply by serving one task at a time and clearing state between tasks. Concurrent tenants require hardware UB/DDR3 partitions and bounds checks at greater area and complexity.",
+    "<b>Protect shared storage</b>: Clear residual weights and activations in the 24 MiB UB and off-chip DDR3 before reuse, and validate address ranges to prevent one tenant from reading another's state.",
+    "<b>Balance security with performance</b>: Signature checks, clearing, and isolation cost latency, area, and power within a 28–40 W envelope. Put most overhead in startup and task switching so steady-state throughput remains unaffected."
+  ],
+  "result": [
+    {
+      "label": "Root of Trust",
+      "value": "Mask/fuse-anchored public key (standard practice; not disclosed for v1)"
+    },
+    {
+      "label": "Secure boot",
+      "value": "Authenticate each stage before execution; halt on failure"
+    },
+    {
+      "label": "Firmware integrity",
+      "value": "Staged measurement/signature checks + anti-rollback"
+    },
+    {
+      "label": "Tenant isolation",
+      "value": "Partition / bounds-check / clear on switch (general practice)"
+    },
+    {
+      "label": "Shared storage",
+      "value": "Clear 24 MiB UB + 8 GiB DDR3 before reuse"
+    },
+    {
+      "label": "TPU v1 disclosure",
+      "value": "Security not emphasized; mechanisms here are qualitative practice"
+    }
+  ],
+  "after": [
+    "<b>Test that the chain breaks safely</b>: Corrupt firmware and attempt rollback, verifying that hardware denies release or halts rather than continuing in a compromised state.",
+    "<b>Test that isolation does not leak</b>: After task or tenant switches, verify UB and DDR3 clearing and attempt cross-boundary reads. There are no public v1 isolation metrics, so derive tests from standard ASIC practice.",
+    "<b>Propagate requirements</b>: Give physical design layout and isolation rules for RoT, fuses, and key storage; give firmware and the TensorFlow/XLA stack signing, provisioning, and anti-rollback procedures.",
+    "<b>Reconcile performance and power</b>: Feed security latency and area into §3.9, ensuring the 28–40 W budget and steady-state throughput remain intact. Most security cost should occur at boot or task switches.",
+    "<b>Document the boundary</b>: State that RoT, secure boot, and tenant isolation are standard data-center inference-ASIC practices, not disclosed TPU v1 features; cite host-driven operation, UB, and DDR3 only as published context."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the paper does not emphasize security; RoT, secure boot, firmware verification, and tenant isolation are described as standard data-center inference-ASIC practice, not published v1 details.)"
+}

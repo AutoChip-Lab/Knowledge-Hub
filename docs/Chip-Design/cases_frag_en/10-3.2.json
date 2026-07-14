@@ -1,0 +1,116 @@
+{
+ "secNum": "3.2",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Mask data preparation (MDP / OPC / RET): signed-off GDSII from ⑩ cannot directly produce photomasks—regular right-angle polygons must be fractured into mask-writer primitives, optically pre-distorted by OPC at every edge and corner, and enhanced with RET (SRAF scattering bars / phase-shift masks / multiple patterning) to counter diffraction, so the silicon image returns close to the intended design. At 28 nm, exposure wavelength cannot resolve the smallest features directly; the mask must deliberately draw the inverse distortion, with complexity increasing at advanced nodes",
+ "oneLine": "This case covers mask data preparation (MDP / OPC / RET). Exposure wavelength cannot directly resolve the target dimensions, so printing an unmodified GDSII mask would blur the silicon image. The signed-off database therefore passes through ① fracturing into e-beam/laser-writer primitives; ② optical proximity correction (OPC), which adds serifs to shrinking corners, extends collapsing line ends, and shifts edges to precompensate diffraction; and ③ resolution enhancement techniques (RET) such as sub-resolution assist features (SRAF), phase-shift masks (PSM), and multiple patterning. More advanced nodes require stronger distortion and more masks. These are standard practices for a 28 nm large chip/PCIe accelerator; the documented TPU layout context—256×256 array, 24 MiB Unified Buffer, 700 MHz, 28 nm, and ≤331 mm²—is illustrative, not a claim about private TPU mask recipes, OPC/RET, or foundry.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 410\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"24\">Mask data preparation (MDP): signed-off GDSII cannot directly make masks—fracture writer primitives + OPC pre-distortion + RET to counter diffraction</text><g class=\"cs-part\" data-k=\"design\" data-g=\"design\"><rect class=\"cs-box\" x=\"24\" y=\"58\" width=\"150\" height=\"300\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"99\" y=\"84\">① Design layout (GDSII)</text><text class=\"cs-sub\" x=\"99\" y=\"108\">Released at signoff ⑩</text><text class=\"cs-sub\" x=\"99\" y=\"128\">Polygons = intended shape</text><text class=\"cs-sub\" x=\"99\" y=\"156\">Illustrative target:</text><text class=\"cs-sub\" x=\"99\" y=\"176\">256×256 regular array</text><text class=\"cs-sub\" x=\"99\" y=\"196\">24 MiB UB memory</text><text class=\"cs-sub\" x=\"99\" y=\"216\">700 MHz critical paths</text><text class=\"cs-sub\" x=\"99\" y=\"236\">28 nm / ≤331 mm²</text><rect class=\"cs-cell\" x=\"44\" y=\"262\" width=\"50\" height=\"22\"/><rect class=\"cs-cell\" x=\"100\" y=\"262\" width=\"50\" height=\"22\"/><rect class=\"cs-cell\" x=\"44\" y=\"290\" width=\"106\" height=\"14\"/><text class=\"cs-cellt\" x=\"99\" y=\"326\">Regular right-angle geometry</text></g><line class=\"cs-arr\" x1=\"174\" y1=\"200\" x2=\"226\" y2=\"200\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"178\" y=\"192\">Wavelength limit</text><text class=\"cs-note\" x=\"178\" y=\"218\">Needs pre-distortion</text><g class=\"cs-part\" data-k=\"mdp\" data-g=\"mdp\"><rect class=\"cs-box\" x=\"230\" y=\"58\" width=\"252\" height=\"300\" rx=\"8\" fill=\"none\" stroke=\"#cbd5e1\" stroke-dasharray=\"5 4\"/><text class=\"cs-t\" x=\"356\" y=\"80\">Mask data preparation (MDP / OPC / RET)</text><g class=\"cs-part\" data-k=\"opc\" data-g=\"opc\"><rect class=\"cs-cell\" x=\"242\" y=\"94\" width=\"228\" height=\"80\"/><text class=\"cs-cellt\" x=\"356\" y=\"114\">OPC optical proximity correction</text><text class=\"cs-cellt\" x=\"356\" y=\"132\">Pre-distort: add serifs/notches</text><text class=\"cs-cellt\" x=\"356\" y=\"150\">Corner fill and edge shifts counter diffraction</text><rect class=\"cs-cell\" x=\"300\" y=\"158\" width=\"30\" height=\"10\"/><rect class=\"cs-cell\" x=\"294\" y=\"153\" width=\"6\" height=\"6\"/><rect class=\"cs-cell\" x=\"330\" y=\"153\" width=\"6\" height=\"6\"/><rect class=\"cs-cell\" x=\"382\" y=\"158\" width=\"30\" height=\"10\"/><rect class=\"cs-cell\" x=\"378\" y=\"153\" width=\"6\" height=\"6\"/><rect class=\"cs-cell\" x=\"412\" y=\"153\" width=\"6\" height=\"6\"/></g><g class=\"cs-part\" data-k=\"ret\" data-g=\"ret\"><rect class=\"cs-cell\" x=\"242\" y=\"182\" width=\"228\" height=\"64\"/><text class=\"cs-cellt\" x=\"356\" y=\"202\">RET resolution enhancement</text><text class=\"cs-cellt\" x=\"356\" y=\"220\">SRAF bars + phase-shift masks (PSM)</text><text class=\"cs-cellt\" x=\"356\" y=\"238\">+ multiple patterning (more at advanced nodes)</text></g><g class=\"cs-part\" data-k=\"fracture\" data-g=\"fracture\"><rect class=\"cs-cell\" x=\"242\" y=\"254\" width=\"228\" height=\"64\"/><text class=\"cs-cellt\" x=\"356\" y=\"274\">Fracturing</text><text class=\"cs-cellt\" x=\"356\" y=\"292\">Polygon → writer-ready</text><text class=\"cs-cellt\" x=\"356\" y=\"310\">rectangle/trapezoid primitives + MRC</text></g><line class=\"cs-arr\" x1=\"356\" y1=\"174\" x2=\"356\" y2=\"182\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"356\" y1=\"246\" x2=\"356\" y2=\"254\" marker-end=\"url(#csar)\"/></g><line class=\"cs-arr\" x1=\"482\" y1=\"200\" x2=\"534\" y2=\"200\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"silicon\" data-g=\"silicon\"><rect class=\"cs-box\" x=\"538\" y=\"58\" width=\"158\" height=\"300\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"617\" y=\"84\">② Printed silicon image</text><text class=\"cs-sub\" x=\"617\" y=\"108\">Mask shape ≠ design</text><text class=\"cs-sub\" x=\"617\" y=\"128\">After diffraction</text><text class=\"cs-sub\" x=\"617\" y=\"148\">Silicon ≈ intended</text><rect class=\"cs-cell\" x=\"558\" y=\"170\" width=\"50\" height=\"22\" rx=\"6\"/><rect class=\"cs-cell\" x=\"624\" y=\"170\" width=\"50\" height=\"22\" rx=\"6\"/><rect class=\"cs-cell\" x=\"558\" y=\"200\" width=\"116\" height=\"14\" rx=\"4\"/><text class=\"cs-cellt\" x=\"617\" y=\"238\">Corners round but remain</text><text class=\"cs-cellt\" x=\"617\" y=\"256\">inside design tolerance</text><text class=\"cs-sub\" x=\"617\" y=\"288\">Verification: post-OPC</text><text class=\"cs-sub\" x=\"617\" y=\"308\">lithography simulation passes</text><text class=\"cs-sub\" x=\"617\" y=\"332\">→ release for mask fabrication</text></g><text class=\"cs-note\" x=\"24\" y=\"384\">Note: fracturing / OPC / RET (SRAF, PSM, multiple patterning), MRC, and lithography simulation are standard 28 nm mask-data preparation; TPU v1's private masks/recipes/foundry are not public, and the 256×256 array, 24 MiB UB, 700 MHz, and 28 nm are context only</text></svg>",
+ "legend": [
+  {
+   "k": "design",
+   "name": "Design GDSII (intended geometry and MDP input)",
+   "desc": "MDP begins with the GDSII released at signoff step ⑩. It contains ideal regular polygons with square corners and straight line ends, but those targets cannot be transferred directly: diffraction rounds corners, shortens lines, and merges dense patterns. Documented TPU context—the 256×256 array, 24 MiB Unified Buffer, 700 MHz critical paths, and 28 nm / ≤331 mm² die—illustrates the treated layout; actual TPU mask data is not public."
+  },
+  {
+   "k": "fracture",
+   "name": "Fracturing (convert geometry into mask-writer primitives)",
+   "desc": "Electron-beam or laser mask writers cannot draw arbitrary polygons in one exposure; they write rectangles, trapezoids, and related primitives shot by shot. Fracturing tessellates each polygon into these shapes, then mask rule checking (MRC) verifies primitive dimensions and grid alignment against writer capability. This is standard 28 nm mask preparation; TPU-specific fracture parameters are not public."
+  },
+  {
+   "k": "opc",
+   "name": "OPC optical proximity correction (pre-distort geometry)",
+   "desc": "Because exposure wavelength cannot reproduce the intended shape directly, OPC deliberately draws a distorted mask that diffraction converts back toward the target. It adds serif/notch material to corners that would round and shrink, dog-bone extensions to line ends that would recede, and moves edges inward or outward according to neighboring patterns. OPC masks look less like the design but print closer to it. The technique is standard at 28 nm; TPU recipes are private."
+  },
+  {
+   "k": "ret",
+   "name": "RET resolution enhancement (SRAF / phase shift / multiple patterning)",
+   "desc": "RET extends imaging below the nominal wavelength limit. SRAFs are sub-resolution bars beside primary features that improve imaging without printing themselves; PSM uses opposite optical phase in adjacent openings to create steeper edges through destructive interference; multiple patterning splits one dense layer across exposures. As nodes shrink, more RET methods and masks are needed and data volume grows. TPU v1's exact RET scheme and mask count are not public."
+  },
+  {
+   "k": "silicon",
+   "name": "Silicon image (diffraction returns it near the design)",
+   "desc": "Acceptance is based on the printed wafer image, not the intentionally distorted mask. After exposure, pre-distortion and SRAFs counter optical effects so photoresist geometry returns within design tolerance; corners may round and linewidth may shift, but critical dimension (CD) must pass. Lithography simulation / OPC verification predicts this image before mask release. TPU simulation results are not public."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "design"
+   ],
+   "cap": "① Receive signed-off GDSII: use the layout released through the Tapeout gate at step ⑩, including regular polygons from the 256×256 array and 24 MiB UB. It is the intended geometry, not directly usable mask data."
+  },
+  {
+   "keys": [
+    "mdp",
+    "opc"
+   ],
+   "cap": "② Apply OPC: pre-distort every edge and corner because the wavelength cannot resolve the target unaided. Add serifs to shrinking corners, extend collapsing line ends, and pull back over-shifted edges so the mask draws an inverse distortion."
+  },
+  {
+   "keys": [
+    "ret"
+   ],
+   "cap": "③ Add RET: combine OPC with SRAF assist bars, phase-shift masks (PSM), and multiple patterning where needed to extend resolution below the wavelength limit. More advanced nodes require more techniques and masks."
+  },
+  {
+   "keys": [
+    "fracture"
+   ],
+   "cap": "④ Fracture geometry: divide pre-distorted polygons into rectangular/trapezoidal primitives writable by e-beam/laser tools, generate mask-writer data, and run MRC to keep every shot within equipment limits."
+  },
+  {
+   "keys": [
+    "silicon"
+   ],
+   "cap": "⑤ Verify by lithography simulation, then release masks: predict the wafer image, confirm it returns near the design with CD inside tolerance, and only then send mask data for photomask fabrication and manufacturing step ⑪."
+  }
+ ],
+ "before": [
+  "<b>Establish why GDSII cannot go directly to masks</b>: exposure wavelength and diffraction prevent direct imaging of the smallest features. An uncorrected mask rounds corners, shortens line ends, and bridges dense patterns. MDP pre-distortion exists to compensate this standard 28 nm optical behavior; TPU is documented at 28 nm, but its exact lithography conditions are not public.",
+  "<b>Fix the input revision and layer-to-mask mapping</b>: identify the exact GDSII released at step ⑩ and map metal, via, active, and polysilicon layers to masks. A large chip needs one or more masks per layer; settle layer assignment, orientation, and mirroring first. Actual TPU layers/masks are not disclosed.",
+  "<b>Select OPC/RET strategy and recipe source</b>: decide rule-based versus model-based OPC, SRAF/phase-shift/multiple-patterning usage, and the foundry-supplied optical models and RET recipes. These are tightly coupled to the lithography process; TPU v1 has not disclosed its foundry or recipes.",
+  "<b>Define fracturing and MRC rules</b>: specify rectangle/trapezoid primitives, minimum shot size, grid alignment, and mask rule criteria. Every fractured shape must be writable by the e-beam/laser equipment. TPU-specific values remain private.",
+  "<b>Set acceptance criteria for CD and simulation</b>: define acceptable printed critical dimension (CD), edge-placement error (EPE), and bridge/break hotspot limits before OPC starts. Exact CD/EPE thresholds are process-private and are shown conceptually only."
+ ],
+ "during": [
+  "<b>Core intuition: MDP draws the wrong shape intentionally so the wafer prints correctly</b>. The design geometry is the target, but direct exposure distorts it. OPC/RET places an intentional inverse distortion on the mask so diffraction transforms that geometry back toward the target. A visually irregular mask can produce a more accurate wafer image.",
+  "<b>OPC responds to neighboring geometry, not isolated shapes</b>. The same edge prints differently when adjacent patterns are dense or sparse and near or far. OPC segments edges and adjusts each segment from local density/distance, so a regular dense 256×256 array receives different treatment from an isolated signal line.",
+  "<b>RET layers techniques by trading complexity for sub-wavelength resolution</b>. OPC corrects shape, SRAFs improve isolated-feature imaging, phase-shift masks sharpen edges through interference, and multiple patterning splits an overly dense layer. Each improves resolution while increasing mask complexity, count, data volume, cost, and cycle time.",
+  "<b>Fracturing makes complex corrected geometry physically writable</b>. OPC/RET produces fragmented irregular polygons, while e-beam/laser writers expose rectangles and trapezoids. Fracturing tessellates geometry into enormous primitive sets; shot strategy affects write time and precision, and MRC verifies writer capability.",
+  "<b>Simulate the lithographic print before mask release</b>. Lithography simulation / OPC verification predicts the wafer image through exposure, checks CD and EPE, and identifies bridge/break hotspots. Only a clean simulation can justify mask fabrication; an incorrect mask costs substantial money and long rework.",
+  "<b>Methodology scope</b>: fracturing, rule/model-based OPC, RET through SRAF/PSM/multiple patterning, MRC, and lithography verification are standard practices for 28 nm large chips and PCIe accelerators. TPU v1's mask data, recipes, count, foundry, and lithography conditions are not public. Its 256×256 array, 24 MiB Unified Buffer, 700 MHz, 28 nm, and ≤331 mm² context is illustrative; serif/SRAF/CD/EPE details are not private TPU figures."
+ ],
+ "result": [
+  {
+   "label": "Input and objective",
+   "value": "Input: GDSII released at ⑩ (regular right-angle polygons such as array and UB blocks); objective: printed silicon geometry inside design tolerance"
+  },
+  {
+   "label": "OPC optical proximity correction",
+   "value": "Pre-distort geometry: add serifs to shrinking corners, extend collapsing ends, and shift edges by neighborhood—draw inverse distortion to cancel diffraction"
+  },
+  {
+   "label": "RET resolution enhancement",
+   "value": "Add SRAF sub-resolution bars + PSM phase-shift masks + multiple patterning when needed; more advanced nodes require more RET"
+  },
+  {
+   "label": "Fracturing",
+   "value": "Tessellate corrected polygons into rectangular/trapezoidal e-beam/laser writer primitives and pass MRC"
+  },
+  {
+   "label": "Verification before mask release",
+   "value": "Lithography simulation predicts the print and confirms CD/EPE within tolerance with no bridge/break hotspots before release"
+  },
+  {
+   "label": "Output / exit",
+   "value": "Per-layer pre-distorted + RET mask data for mask/reticle fabrication and manufacturing step ⑪; failures return to OPC/RET iteration"
+  }
+ ],
+ "after": [
+  "<b>Qualify every layer through lithography simulation</b>: calculate each printed wafer image after OPC/RET/fracturing, inspect CD/EPE and bridge/break/necking hotspots, and release only layers whose critical dimensions meet tolerance.",
+  "<b>Iterate OPC/RET on violations</b>: if simulation predicts bridging or breaks, adjust edge shifts/serifs, add or modify SRAFs, or revise RET, then rerun. MDP loops through run → simulate → tune → rerun until every layer passes.",
+  "<b>Send qualified data for photomask/reticle fabrication</b>: mask shops write each approved layer with e-beam/laser tools. The design first becomes a physical light-blocking/transmitting object and enters manufacturing step ⑪.",
+  "<b>Inspect and repair fabricated masks</b>: detect excess or missing mask material, repair correctable defects, and qualify masks before loading the scanner. TPU-specific mask inspection and yield data are not public.",
+  "<b>Hand off to exposure and downstream tapeout manufacturing</b>: approved masks enter step ⑪ lithography and expose the wafer layer by layer. MDP has translated signed-off layout into masks the factory can print."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the 256×256 8-bit-MAC systolic array, 24 MiB Unified Buffer, 700 MHz, 28 nm, ≤331 mm², and PCIe accelerator card are documented layout context; fracturing, OPC, RET through SRAF/phase-shift masks/multiple patterning, MRC, lithography verification, mask fabrication, and inspection are standard 28 nm large-chip/PCIe-card practices. All serif/SRAF/CD/EPE/mask-count details are illustrative, not TPU v1's private mask data, OPC/RET recipe, mask count, foundry, or yield)"
+}

@@ -1,0 +1,121 @@
+{
+ "secNum": "3.5",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Coverage: automatic code coverage, hand-written functional covergroups, and CDV hole closure",
+ "oneLine": "Coverage is the only objective answer to “have we verified enough?”—but it has two layers. Simulators automatically collect line, branch, toggle, and FSM code coverage, answering which RTL structures executed. Engineers write functional covergroups with bins for TPU matrix sizes, overflow, every CISC instruction, FIFO full/empty states, and every CDC path, answering whether intended scenarios occurred. Complete coverage in both proves only that scenarios were reached, not that results were checked: covered ≠ correct.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"28\">Two coverage classes: automatic code coverage vs. hand-defined functional coverage</text><g class=\"cs-part\" data-k=\"dut\" data-g=\"dut\"><rect class=\"cs-box\" x=\"280\" y=\"44\" width=\"160\" height=\"64\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"72\">DUT: TPU submodules</text><text class=\"cs-sub\" x=\"360\" y=\"90\">Array / UB / CISC instructions / CDC</text></g><line class=\"cs-arr\" x1=\"300\" y1=\"108\" x2=\"170\" y2=\"148\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"420\" y1=\"108\" x2=\"552\" y2=\"148\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"code\" data-g=\"code\"><rect class=\"cs-box\" x=\"40\" y=\"150\" width=\"260\" height=\"118\" rx=\"8\"/><text class=\"cs-t\" x=\"170\" y=\"176\">Code coverage (automatic)</text><text class=\"cs-sub\" x=\"170\" y=\"198\">Line / branch / toggle</text><text class=\"cs-sub\" x=\"170\" y=\"216\">Condition / FSM states and transitions</text><text class=\"cs-note\" x=\"60\" y=\"240\" text-anchor=\"start\">Simulator instrumentation</text><text class=\"cs-note\" x=\"60\" y=\"256\" text-anchor=\"start\">Answers: which RTL executed?</text></g><g class=\"cs-part\" data-k=\"func\" data-g=\"func\"><rect class=\"cs-box\" x=\"420\" y=\"150\" width=\"262\" height=\"118\" rx=\"8\"/><text class=\"cs-t\" x=\"551\" y=\"176\">Functional coverage (covergroups)</text><text class=\"cs-sub\" x=\"551\" y=\"198\">Matrix sizes / overflow / instructions</text><text class=\"cs-sub\" x=\"551\" y=\"216\">FIFO full-empty / CDC paths</text><text class=\"cs-note\" x=\"440\" y=\"240\" text-anchor=\"start\">Engineer-defined bins from the plan</text><text class=\"cs-note\" x=\"440\" y=\"256\" text-anchor=\"start\">Answers: did intended scenarios occur?</text></g><line class=\"cs-arr\" x1=\"170\" y1=\"268\" x2=\"300\" y2=\"300\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"551\" y1=\"268\" x2=\"420\" y2=\"300\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"cov\" data-g=\"cov\"><rect class=\"cs-box\" x=\"280\" y=\"302\" width=\"160\" height=\"62\" rx=\"8\"/><text class=\"cs-t\" x=\"360\" y=\"328\">Coverage report</text><text class=\"cs-sub\" x=\"360\" y=\"346\">Convergence and remaining holes</text></g><g class=\"cs-part\" data-k=\"cdv\" data-g=\"cdv\"><rect class=\"cs-box\" x=\"500\" y=\"306\" width=\"190\" height=\"54\" rx=\"8\"/><text class=\"cs-t\" x=\"595\" y=\"330\">CDV: fill holes with stimulus</text><text class=\"cs-sub\" x=\"595\" y=\"348\">Coverage-driven verification loop</text></g><polyline class=\"cs-arr\" points=\"440,326 470,326 470,333 500,333\" fill=\"none\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"660,306 700,306 700,76 440,76\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"600\" y=\"290\">Feedback: add/modify stimulus</text><g class=\"cs-part\" data-k=\"warn\" data-g=\"warn\"><rect class=\"cs-box\" x=\"40\" y=\"306\" width=\"200\" height=\"62\" rx=\"8\"/><text class=\"cs-t\" x=\"140\" y=\"330\">Warning</text><text class=\"cs-sub\" x=\"140\" y=\"348\">Covered ≠ checked</text></g></svg>",
+ "legend": [
+  {
+   "k": "code",
+   "name": "Code coverage (automatically collected)",
+   "desc": "The simulator instruments RTL and records executed lines, branches, conditions, signal toggles from 0↔1, and FSM states/transitions. No hand-written coverage code is required. It answers whether structures executed. Even 100% code coverage only shows that no instrumented code was missed; it does not prove complete functional verification."
+  },
+  {
+   "k": "func",
+   "name": "Functional coverage (hand-written covergroups)",
+   "desc": "Verification engineers translate the plan into covergroups and coverpoints whose bins represent meaningful scenarios: matrix dimensions, accumulator overflow, every host CISC instruction, Weight FIFO/UB full and empty states, and every CDC path. It answers whether the intended situation occurred. Anything omitted from the covergroup remains invisible to the tool."
+  },
+  {
+   "k": "cov",
+   "name": "Coverage report (convergence and holes)",
+   "desc": "Combines both coverage classes into percentages and bin-hit tables, showing current convergence and bins still at 0—the coverage holes. It is objective evidence for verification closure and the primary input to each coverage-driven verification iteration."
+  },
+  {
+   "k": "cdv",
+   "name": "CDV: coverage-driven verification (closed-loop hole filling)",
+   "desc": "Inspect empty bins, then create or modify stimulus—adjust constraints, add directed cases, or tune random weights—to hit them. Rerun, inspect again, and repeat until coverage converges. Data from holes, rather than intuition, determines the next verification work."
+  },
+  {
+   "k": "warn",
+   "name": "Warning: covered ≠ checked correctly",
+   "desc": "Coverage proves only that stimulus activated a scenario, not that the DUT behaved correctly. Scoreboards, Reference Models, and assertions decide correctness. 100% coverage without a checker means comprehensive execution that may catch no bugs—the most dangerous misuse of coverage."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "dut",
+    "code"
+   ],
+   "cap": "① Collect code coverage automatically: instrument TPU submodules—array PEs, UB control, CISC decode, and CDC boundaries—and measure line/branch/toggle/FSM execution with no manually written coverage code."
+  },
+  {
+   "keys": [
+    "dut",
+    "func"
+   ],
+   "cap": "② Write functional coverage from the plan: create bins for matrix sizes, overflow/no overflow, every CISC instruction, FIFO full/empty, and each CDC path so tools can report whether intended scenarios occurred."
+  },
+  {
+   "keys": [
+    "code",
+    "func",
+    "cov"
+   ],
+   "cap": "③ Consolidate the report: combine both coverage classes, show convergence, and list every bin still at 0—the objective backlog of remaining verification."
+  },
+  {
+   "keys": [
+    "cov",
+    "cdv",
+    "dut"
+   ],
+   "cap": "④ Close the CDV loop: use holes to drive new constraints, directed tests, or random-weight changes; feed the DUT again and iterate until coverage reaches target."
+  },
+  {
+   "keys": [
+    "warn"
+   ],
+   "cap": "⑤ Remember the boundary: covered ≠ checked. Coverage says the scenario ran; Scoreboards, Reference Models, and assertions determine whether it was correct. Both are required."
+  }
+ ],
+ "before": [
+  "<b>Set coverage targets and signoff gates first</b>: define quantitative thresholds in the plan—for example 100% line/branch/toggle/FSM code coverage, 100% critical FSM transition coverage, and 100% of required functional bins. Define which bins may receive a written waiver and why. Without a gate, coverage is merely a decorative number.",
+  "<b>Derive functional coverpoints from the specification</b>: map every TPU variable dimension into a coverpoint—matrix size, accumulator overflow/no overflow, every CISC instruction, Weight FIFO/UB full/empty/half-full states, and every CDC path. Each varying requirement should have an explicit bin.",
+  "<b>Define cross-coverage combinations</b>: defects often hide in interactions such as large matrix × near-overflow accumulator, FIFO full × new instruction, or CDC path × reset. Decide which coverpoints need cross coverage before single dimensions reach 100% while combinations remain unseen.",
+  "<b>Define stimulus and completion criteria</b>: use constrained random as the main engine and directed tests for corners. Completion means all covergroups at target + code coverage at target + zero regression failures + a written waiver for every remaining hole.",
+  "<b>Scope note</b>: code/functional coverage, covergroups, and CDV are standard digital-IC verification practices. TPU v1's private coverage metrics and covergroups are not public. The documented systolic array, Unified Buffer, CISC interface, and clock domains provide the coverage context; all snippets are illustrative."
+ ],
+ "during": [
+  "<b>Let tools collect code coverage automatically</b>: enable line/branch/toggle/FSM instrumentation and accumulate it across regression. With no coding cost, it quickly reveals never-executed blocks such as an unreachable instruction branch or dead FSM state.",
+  "<b>Write functional coverage manually and make every bin meaningful</b>: illustrative covergroup—covergroup cg_mxu; matrix_sz: coverpoint sz { bins small={...}; bins large={...}; } overflow: coverpoint acc_ovf { bins yes; bins no; } endgroup. Bin boundaries should reflect actual risks such as extreme dimensions and overflow, not arbitrary equal partitions.",
+  "<b>Map each TPU verification object into coverpoints</b>: give every CISC instruction type a bin; cover FIFO/UB full, empty, half-full, write-while-full, and read-while-empty; give every CDC path a bin and exercise it across phase relationships. An omitted object becomes a coverage blind spot.",
+  "<b>Use CDV to drive stimulus rather than running blindly</b>: after each regression, inspect empty bins and diagnose whether constraints are too narrow, seeds insufficient, or a directed case required. Add targeted stimulus and rerun. Coverage holes identify the next work more efficiently than intuition or indiscriminate random volume.",
+  "<b>Distinguish full code coverage from full functional coverage</b>: 100% code coverage means every RTL structure executed, but one line can behave differently across data and timing combinations. Functional coverage represents those scenarios. The two are complementary and neither replaces the other.",
+  "<b>Rule: covered ≠ checked correctly</b>. Coverage records stimulus activation; Scoreboards, Reference Models, and assertions judge results. Every covered scenario must also have a checker, or attractive coverage creates false confidence."
+ ],
+ "result": [
+  {
+   "label": "Code coverage (automatic)",
+   "value": "Line / branch / toggle / condition / FSM state and transition"
+  },
+  {
+   "label": "Functional coverage (hand-written)",
+   "value": "Matrix size / overflow / every CISC instruction / FIFO full-empty / every CDC path"
+  },
+  {
+   "label": "covergroup (illustrative)",
+   "value": "coverpoint acc_ovf { bins yes; bins no; }  // one bin each for overflow/no overflow"
+  },
+  {
+   "label": "Cross coverage (illustrative)",
+   "value": "cross matrix_sz, acc_ovf;  // did large-matrix × near-overflow occur?"
+  },
+  {
+   "label": "CDV loop",
+   "value": "Inspect empty bin → add/modify stimulus → rerun → repeat to convergence"
+  },
+  {
+   "label": "Signoff criteria",
+   "value": "Coverage at target + zero regression failures + written waiver for every remaining hole"
+  }
+ ],
+ "after": [
+  "<b>Track coverage-convergence curves</b>: plot code and functional coverage after every regression. If the curve plateaus with empty bins, existing stimulus cannot reach them; create directed tests or change constraints instead of adding blind random runtime.",
+  "<b>Close every coverage hole or write a waiver</b>: hit each 0 bin with new stimulus or document why the combination is physically impossible. No unexplained hole may enter signoff.",
+  "<b>Keep coverage in continuous regression</b>: RTL and stimulus changes can reduce coverage. Collect it continuously so new changes do not empty previously hit bins or introduce new uncovered code.",
+  "<b>Evaluate coverage together with bug convergence</b>: coverage convergence is necessary, not sufficient. Confirm new-bug discovery has flattened and every covered scenario has an active checker. Covered ≠ checked remains the signoff rule.",
+  "<b>Sign off and hand off to synthesis</b>: produce a coverage report with met targets, all-green regression, waiver list, and bug-convergence evidence. Freeze the verified RTL for synthesis and retain covergroups and regressions as the baseline for later changes."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (TPU v1 documents a 256×256 8-bit-MAC systolic array, 24 MiB Unified Buffer, off-chip 8 GiB DDR3, a dozen-plus CISC instructions, and multiple clock domains as coverage targets; code/functional coverage, covergroups, CDV, metrics, and snippets are standard digital-IC verification practice and illustrations, not private TPU v1 disclosure)"
+}

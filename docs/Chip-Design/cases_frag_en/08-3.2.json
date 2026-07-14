@@ -1,0 +1,119 @@
+{
+ "secNum": "3.2",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Floorplanning: Place the 256×256 Array, 24 MiB UB SRAM, Accumulator, and IO Ring in a 28 nm Die (Illustratively ≤331 mm²)",
+ "oneLine": "Floorplanning establishes the physical foundation. On an illustrative 28 nm die of ≤331 mm², place the regular 256×256 systolic array, the 24 MiB Unified Buffer SRAM macros occupying about 29% of die area, the 4 MiB accumulator, and the peripheral IO/pad ring. Then set core utilization (illustratively 70%), add macro halos, and reserve routing and power channels. A good floorplan largely determines placement, routing, timing, and IR-drop success; a poorly oriented macro can create congestion and unfixable timing later.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 410\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-t\" x=\"360\" y=\"28\">Floorplan: place macros, set utilization, reserve channels on a 28 nm die (≤331 mm² illustrative)</text><g class=\"cs-part\" data-k=\"die\" data-g=\"die\"><rect class=\"cs-box\" x=\"40\" y=\"56\" width=\"500\" height=\"320\" rx=\"10\" fill=\"#f8fafc\" stroke=\"#94a3b8\"/><text class=\"cs-sub\" x=\"290\" y=\"74\">Die boundary / core (~70% utilized; 30% for routing + power)</text></g><g class=\"cs-part\" data-k=\"io\" data-g=\"io\"><rect class=\"cs-box\" x=\"48\" y=\"84\" width=\"484\" height=\"284\" rx=\"8\" fill=\"none\" stroke=\"#fca5a5\" stroke-dasharray=\"5 4\"/><text class=\"cs-sub\" x=\"290\" y=\"100\">IO / pad ring (PCIe 3.0 · DDR3 · power pads)</text></g><g class=\"cs-part\" data-k=\"mxu\" data-g=\"mxu\"><rect class=\"cs-box\" x=\"72\" y=\"116\" width=\"220\" height=\"200\" rx=\"6\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"182\" y=\"206\">256×256 MAC array</text><text class=\"cs-sub\" x=\"182\" y=\"228\">Systolic array (regular block)</text><text class=\"cs-sub\" x=\"182\" y=\"246\">weight-stationary · 700 MHz</text></g><g class=\"cs-part\" data-k=\"ub\" data-g=\"ub\"><rect class=\"cs-box\" x=\"308\" y=\"116\" width=\"208\" height=\"118\" rx=\"6\" fill=\"#dcfce7\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"412\" y=\"162\">24 MiB Unified Buffer</text><text class=\"cs-sub\" x=\"412\" y=\"182\">SRAM macro array (~29% of die)</text><text class=\"cs-sub\" x=\"412\" y=\"200\">Place along array edge · feed data</text></g><g class=\"cs-part\" data-k=\"acc\" data-g=\"acc\"><rect class=\"cs-box\" x=\"308\" y=\"246\" width=\"208\" height=\"70\" rx=\"6\" fill=\"#fef9c3\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"412\" y=\"276\">4 MiB accumulator</text><text class=\"cs-sub\" x=\"412\" y=\"296\">Accepts bottom array outputs</text></g><line class=\"cs-arr\" x1=\"292\" y1=\"175\" x2=\"306\" y2=\"175\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"182\" y1=\"316\" x2=\"182\" y2=\"246\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><line class=\"cs-arr\" x1=\"370\" y1=\"246\" x2=\"280\" y2=\"316\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><g class=\"cs-part\" data-k=\"chan\" data-g=\"chan\"><rect class=\"cs-box\" x=\"72\" y=\"328\" width=\"444\" height=\"32\" rx=\"4\" fill=\"none\" stroke=\"#60a5fa\" stroke-dasharray=\"3 3\"/><text class=\"cs-sub\" x=\"294\" y=\"348\">Reserve routing/power channels (macro halos prevent blockage)</text></g><g class=\"cs-part\" data-k=\"rule\" data-g=\"rule\"><rect class=\"cs-box\" x=\"556\" y=\"84\" width=\"148\" height=\"80\" rx=\"8\" fill=\"#eef2ff\"/><text class=\"cs-t\" x=\"630\" y=\"110\">Utilization</text><text class=\"cs-sub\" x=\"630\" y=\"130\">70% illustrative</text><text class=\"cs-sub\" x=\"630\" y=\"148\">Too dense → congestion / IR-drop</text></g><g class=\"cs-part\" data-k=\"macro\" data-g=\"macro\"><rect class=\"cs-box\" x=\"556\" y=\"176\" width=\"148\" height=\"92\" rx=\"8\" fill=\"#dcfce7\"/><text class=\"cs-t\" x=\"630\" y=\"202\">Macro placement</text><text class=\"cs-sub\" x=\"630\" y=\"222\">UB SRAM along edge</text><text class=\"cs-sub\" x=\"630\" y=\"240\">Pins face array</text><text class=\"cs-sub\" x=\"630\" y=\"258\">Reserve halo / blockage</text></g><g class=\"cs-part\" data-k=\"risk\" data-g=\"risk\"><rect class=\"cs-box\" x=\"556\" y=\"280\" width=\"148\" height=\"88\" rx=\"8\" fill=\"#fef2f2\" stroke=\"#fca5a5\"/><text class=\"cs-t\" x=\"630\" y=\"306\">First principle</text><text class=\"cs-sub\" x=\"630\" y=\"326\">Floorplan determines</text><text class=\"cs-sub\" x=\"630\" y=\"344\">global success: misplace</text><text class=\"cs-sub\" x=\"630\" y=\"362\">→ routing/timing fail</text></g></svg>",
+ "legend": [
+  {
+   "k": "die",
+   "name": "Die / core region (implementation canvas)",
+   "desc": "The die boundary and placeable core define the physical canvas. For a TPU v1-scale chip, this is an illustrative ≤331 mm², 28 nm die. Floorplanning sets the core and utilization, illustratively ~70%, filling seven-tenths and reserving three-tenths for routing and power—the fundamental area-versus-routability trade-off."
+  },
+  {
+   "k": "mxu",
+   "name": "256×256 MAC systolic array (regular block)",
+   "desc": "A weight-stationary array of 65,536 8-bit MACs runs matrix multiplication at 700 MHz. Its large, regular structure is treated as a coherent region with arrayed PEs and fixed horizontal/vertical flow. Square alignment and orientation make the dense internal interconnect tractable."
+  },
+  {
+   "k": "ub",
+   "name": "24 MiB Unified Buffer SRAM macro array",
+   "desc": "This large on-chip SRAM group occupies about 29% of die area. Place its macro rows along the systolic-array edge with read/write pins facing the array to shorten the high-bandwidth UB-to-array path. Distant or outward-facing pins lengthen wires, increase congestion, and degrade timing."
+  },
+  {
+   "k": "acc",
+   "name": "4 MiB accumulator + IO/pad ring",
+   "desc": "The 32-bit accumulator receives partial sums at the array output and should sit along the output edge to shorten accumulation paths. The outer IO/pad ring contains PCIe 3.0 host, 8 GiB DDR3, and power pads, forming the physical boundary to the package."
+  },
+  {
+   "k": "chan",
+   "name": "Routing/power channels and utilization (deliberate whitespace)",
+   "desc": "Floorplanning intentionally leaves whitespace around and between macros: channels for signal routing and PDN metal, plus halos/blockages that prevent standard cells from crowding macro pins. Illustrative 70% utilization quantifies this margin; too little whitespace creates congestion and IR-drop risk."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "die",
+    "io"
+   ],
+   "cap": "① Define the canvas: establish the core and IO/pad ring for PCIe 3.0, DDR3, and power on an illustrative ≤331 mm² 28 nm die; set ~70% core utilization as the overall area/routability trade-off."
+  },
+  {
+   "keys": [
+    "mxu",
+    "macro"
+   ],
+   "cap": "② Place the largest regular block first: orient and align the 256×256 systolic array as one coherent region. Its location forms the floorplan skeleton."
+  },
+  {
+   "keys": [
+    "ub",
+    "chan"
+   ],
+   "cap": "③ Place 24 MiB UB SRAM macros, about 29% of die area, along the array edge with pins facing it. Add macro halos and reserve routing/power channels between blocks."
+  },
+  {
+   "keys": [
+    "acc"
+   ],
+   "cap": "④ Place the 4 MiB accumulator along the array output edge and verify that dataflow between macros and the IO ring is direct and critical paths remain short."
+  },
+  {
+   "keys": [
+    "rule",
+    "risk"
+   ],
+   "cap": "⑤ Review globally: avoid excessive utilization, preserve channels, and align key macros. Floorplan determines global success, so iterate placements before routing exposes irreparable congestion or timing."
+  }
+ ],
+ "before": [
+  "<b>Collect physical libraries and process rules</b>: Obtain LEF views for 28 nm standard cells and hard macros, including outlines, pins, and layer definitions; SRAM physical/timing views; DRC rules; and the illustrative M1–Mx routing stack. These constrain what can be placed and how.",
+  "<b>Receive the synthesis handoff</b>: Import the gate-level netlist, post-synthesis SDC, SDF, and DFT information. The floorplan implements that netlist, while 700 MHz and IO-delay constraints guide placement and later routing.",
+  "<b>Set die size and utilization</b>: From netlist size, macro area—especially the 24 MiB UB SRAM at about 29% of die area—and the 28 nm process, choose an illustrative die ≤331 mm² and ~70% core utilization with sufficient routing and power margin.",
+  "<b>Plan power and the IO/pad ring</b>: Reserve positions and metal for voltage domains, PDN rings/straps, IR-drop budget, and PCIe 3.0, DDR3, and power pads during floorplanning.",
+  "<b>Use dataflow to determine adjacency</b>: Under weight-stationary flow, UB feeds the array and the array feeds the accumulator. Place UB along the array input edge and the accumulator along the output edge so critical paths are short by construction."
+ ],
+ "during": [
+  "<b>First principle: floorplan determines global success, and early mistakes are costly</b>. Once large macros are fixed, placement and routing can only work around them. A distant UB or poorly oriented array creates unavoidable long paths and congestion, often forcing a full refloorplan after routing.",
+  "<b>Place large blocks first, regular blocks next, then fill smaller logic</b>: Position and orient the 24 MiB UB SRAM group and the 256×256 array to establish the skeleton. Control, decode, and FSM standard-cell regions then occupy the remaining space.",
+  "<b>Place SRAM macros along the array edge with pins facing inward</b>: Row the UB macros beside the systolic array so their read/write pins face it. Reversed or distant macros make the high-bandwidth feed path longer, more congested, and harder to time.",
+  "<b>Add halos and inter-macro channels</b>: Placement blockages around each SRAM/hard macro keep standard cells from obstructing pins. Deliberate channels carry signal routing and PDN metal; illustrative 70% utilization expresses this reserved whitespace.",
+  "<b>Couple utilization to routability and IR-drop</b>: Driving core utilization toward 90% may reduce area but starves routing tracks and weakens PDN space, worsening congestion and IR-drop together. A large chip commonly retains ample margin, illustratively about 70%, even if the die grows slightly.",
+  "<b>Evidence boundary</b>: LEF/process rules, utilization, halos, channels, PDN, and IR budgeting follow standard Innovus/IC Compiler II floorplanning practice. TPU v1 does not publish its floorplan, PDN, layout, or exact coordinates. The disclosed 256×256 array, 24 MiB UB at approximately 29% of die area, accumulator, 700 MHz, 28 nm, and illustrative ≤331 mm² serve only as the implementation target; 70% utilization and M1–Mx are illustrative."
+ ],
+ "result": [
+  {
+   "label": "Canvas (illustrative)",
+   "value": "28 nm die ≤331 mm² · ~70% core utilization (illustrative)"
+  },
+  {
+   "label": "Macro placement",
+   "value": "256×256 regular array + 24 MiB UB SRAM along edge (~29% of die) + 4 MiB accumulator at output edge"
+  },
+  {
+   "label": "Periphery",
+   "value": "IO/pad ring: PCIe 3.0 · DDR3 interface · power pads"
+  },
+  {
+   "label": "Macro constraints (illustrative)",
+   "value": "Halo/blockage around each SRAM macro; routing + power channels between macros"
+  },
+  {
+   "label": "Power/layers (illustrative)",
+   "value": "Reserved PDN rings/straps + M1–Mx metal stack; defined IR-drop budget"
+  },
+  {
+   "label": "Primary deliverable",
+   "value": "Floorplan DEF with position/orientation/blockages + utilization/area report for placement and routing"
+  }
+ ],
+ "after": [
+  "<b>Inspect congestion and utilization heatmaps</b>: Run trial/global routing on the initial floorplan to find red congestion and blocked macro pins. Move macros, widen channels, or reduce utilization before proceeding.",
+  "<b>Estimate timing and path lengths</b>: Confirm UB→array and array→accumulator distances remain short. Moving a macro now is cheaper than adding extensive buffering after detailed routing.",
+  "<b>Check power and IR-drop budget</b>: Use macro positions and planned PDN for an early IR-drop estimate, focusing on the 24 MiB SRAM group and array. Strengthen power metal or adjust placement while the floorplan is flexible.",
+  "<b>Iterate until the floorplan closes</b>: Floorplans typically require many trials. Reposition large blocks whenever congestion, timing, or IR-drop fails, and release only when all three are healthy.",
+  "<b>Hand off to placement and routing</b>: Deliver macro locations, orientation, halos, PDN, utilization, netlist, and constraints. Every later DRC/LVS and sign-off STA result rests on this foundation."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (floorplanning, LEF/process rules, utilization, halos, channels, and PDN/IR-drop follow standard back-end EDA practice; TPU’s private floorplan/layout is not public, and 70% utilization, M1–Mx, and block coordinates are illustrative rather than TPU data)"
+}

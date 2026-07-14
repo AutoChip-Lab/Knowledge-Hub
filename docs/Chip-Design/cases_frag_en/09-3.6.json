@@ -1,0 +1,122 @@
+{
+  "secNum": "3.6",
+  "chip": "Google TPU v1",
+  "title": "TPU v1 · Signal-Integrity Signoff: Crosstalk on Dense Array Wiring and Long Buses",
+  "oneLine": "In TPU's 256×256 array and long Unified Buffer buses, coupling capacitance lets neighboring nets interfere. Aggressor switching changes victim delay—faster or slower—and may induce glitches. Crosstalk-aware STA such as PrimeTime SI folds delay shifts into setup/hold and analyzes noise on static nets, proving 700 MHz timing and functional noise immunity with coupled post-route parasitics.",
+  "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 380\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"24\">SI signoff: aggressor → coupling Cc → victim delay/noise → crosstalk-aware STA</text><g class=\"cs-part\" data-k=\"agg\" data-g=\"agg\"><rect class=\"cs-box\" x=\"24\" y=\"56\" width=\"172\" height=\"48\" rx=\"8\" fill=\"#fef2f2\" stroke=\"#fecaca\"/><text class=\"cs-t\" x=\"110\" y=\"78\">Aggressor</text><text class=\"cs-sub\" x=\"110\" y=\"94\">Dense array wiring / long buses</text></g><g class=\"cs-part\" data-k=\"vic\" data-g=\"vic\"><rect class=\"cs-box\" x=\"24\" y=\"150\" width=\"172\" height=\"48\" rx=\"8\" fill=\"#eff6ff\" stroke=\"#bfdbfe\"/><text class=\"cs-t\" x=\"110\" y=\"172\">Victim</text><text class=\"cs-sub\" x=\"110\" y=\"188\">Net on a 700 MHz timing path</text></g><g class=\"cs-part\" data-k=\"cc\" data-g=\"cc\"><line class=\"cs-arr\" x1=\"110\" y1=\"104\" x2=\"110\" y2=\"148\" marker-end=\"url(#csar)\" stroke-dasharray=\"5 4\"/><rect class=\"cs-cell\" x=\"118\" y=\"112\" width=\"120\" height=\"34\" rx=\"4\" fill=\"#fffbeb\" stroke=\"#fde68a\"/><text class=\"cs-note\" x=\"128\" y=\"133\">Coupling capacitance Cc</text></g><line class=\"cs-arr\" x1=\"196\" y1=\"174\" x2=\"252\" y2=\"150\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"196\" y1=\"174\" x2=\"252\" y2=\"210\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"delta\" data-g=\"delta\"><rect class=\"cs-box\" x=\"256\" y=\"124\" width=\"160\" height=\"52\" rx=\"8\" fill=\"#f5f3ff\" stroke=\"#ddd6fe\"/><text class=\"cs-t\" x=\"336\" y=\"146\">Delay change Δd</text><text class=\"cs-sub\" x=\"336\" y=\"164\">Same direction → faster / opposite → slower</text></g><g class=\"cs-part\" data-k=\"glitch\" data-g=\"glitch\"><rect class=\"cs-box\" x=\"256\" y=\"186\" width=\"160\" height=\"52\" rx=\"8\" fill=\"#fef2f2\" stroke=\"#fecaca\"/><text class=\"cs-t\" x=\"336\" y=\"208\">Noise glitch</text><text class=\"cs-sub\" x=\"336\" y=\"226\">Static net disturbance → false capture</text></g><line class=\"cs-arr\" x1=\"416\" y1=\"150\" x2=\"472\" y2=\"156\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"416\" y1=\"212\" x2=\"472\" y2=\"186\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"sta\" data-g=\"sta\"><rect class=\"cs-box\" x=\"476\" y=\"120\" width=\"220\" height=\"72\" rx=\"8\" fill=\"#ecfdf5\" stroke=\"#a7f3d0\"/><text class=\"cs-t\" x=\"586\" y=\"146\">Crosstalk-aware STA</text><text class=\"cs-sub\" x=\"586\" y=\"166\">PrimeTime SI · include Δd in</text><text class=\"cs-sub\" x=\"586\" y=\"182\">setup/hold; analyze noise</text></g><line class=\"cs-arr\" x1=\"586\" y1=\"192\" x2=\"586\" y2=\"232\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"gate\" data-g=\"gate\"><rect class=\"cs-box\" x=\"476\" y=\"236\" width=\"220\" height=\"64\" rx=\"8\" fill=\"#f8fafc\" stroke=\"#cbd5e1\"/><text class=\"cs-t\" x=\"586\" y=\"262\">SI criteria</text><text class=\"cs-sub\" x=\"586\" y=\"280\">Slack≥0 with crosstalk and</text><text class=\"cs-sub\" x=\"586\" y=\"296\">glitch below noise threshold</text></g><text class=\"cs-note\" x=\"24\" y=\"246\">At 28 nm and below, narrower spacing increases coupling; model it explicitly</text><text class=\"cs-note\" x=\"24\" y=\"270\">Failure → ⑧ ECO spacing/shield/layer/drive → re-extract SPEF and re-sign</text></svg>",
+  "legend": [
+    {
+      "k": "agg",
+      "name": "Aggressor",
+      "desc": "A switching net that injects coupled current into a neighbor. Synchronously toggling data/weight lines in the systolic array and wide, long buses to the 24 MiB Unified Buffer can form worst-case multi-aggressor groups. Any net may be aggressor in one relation and victim in another."
+    },
+    {
+      "k": "vic",
+      "name": "Victim",
+      "desc": "The net whose delay or voltage is disturbed. A timing-path victim can lose setup/hold margin; a nominally static enable or control victim can receive a glitch. SI tools identify every victim and its coupled aggressors."
+    },
+    {
+      "k": "cc",
+      "name": "Coupling capacitance Cc / mechanism",
+      "desc": "Sidewall capacitance between parallel metal lines couples aggressor transitions into victims. Same-direction switching can speed the victim and hurt hold; opposite-direction switching can slow it and hurt setup. Narrower spacing and longer parallel runs increase Cc, extracted in coupled SPEF."
+    },
+    {
+      "k": "delta",
+      "name": "Two effects: delay Δd and noise glitch",
+      "desc": "For switching victims, SI converts coupling into positive or negative delay change under worst alignment and feeds it into STA. For static victims, it analyzes glitch height/width and propagation to prevent false capture. Both timing and functional noise must pass."
+    },
+    {
+      "k": "sta",
+      "name": "Crosstalk-aware STA + SI gate",
+      "desc": "PrimeTime SI-class tools analyze setup/hold with coupled delay and static-noise glitches across MMMC. Illustratively, every path retains slack≥0 and every static-net glitch stays below receiver thresholds. Any failure returns to ⑧ physical ECO."
+    }
+  ],
+  "steps": [
+    {
+      "keys": [
+        "agg",
+        "cc",
+        "vic"
+      ],
+      "cap": "① Extract coupled SPEF and enumerate each victim's aggressors and worst feasible switching combinations on dense array wiring and long UB buses."
+    },
+    {
+      "keys": [
+        "cc",
+        "delta"
+      ],
+      "cap": "② Convert coupling into Δd: same-direction switching speeds the victim and threatens hold; opposite-direction switching slows it and threatens setup."
+    },
+    {
+      "keys": [
+        "cc",
+        "glitch"
+      ],
+      "cap": "③ Analyze noise on static victims, determining whether a coupled pulse can cross a receiver threshold, propagate, or be captured."
+    },
+    {
+      "keys": [
+        "delta",
+        "glitch",
+        "sta"
+      ],
+      "cap": "④ Run crosstalk-aware STA across MMMC, folding Δd into setup/hold and evaluating static noise to confirm 700 MHz robustness."
+    },
+    {
+      "keys": [
+        "sta",
+        "gate"
+      ],
+      "cap": "⑤ Pass only when crosstalk-aware slack≥0 and glitches remain below noise limits; otherwise repair routing in ⑧ and re-sign."
+    }
+  ],
+  "before": [
+    "<b>Use coupled post-route SPEF</b>: SI requires extracted line-to-line coupling Cc; single-net RC cannot model crosstalk. Verify extraction fidelity in the array and long UB buses.",
+    "<b>Define MMMC corners</b>: Crosstalk is PVT-dependent. Analyze setup at slow corners with worst slowdown and hold at fast corners with worst speedup, across every required mode.",
+    "<b>Define aggressor alignment and concurrency</b>: Specify which aggressors can switch within a victim window, multi-aggressor superposition, probability, and timing windows. Loose assumptions overreport; tight assumptions miss real events.",
+    "<b>Define delay and noise criteria</b>: Require setup/hold slack≥0 after crosstalk and glitch height/width below receiver noise limits with no downstream propagation. Thresholds come from libraries/IP; values here are illustrative.",
+    "<b>Define waiver rules</b>: Allow only proven infeasible alignments or safely clamped victims, with documented evidence and approval, so low-risk noise does not hide true failures."
+  ],
+  "during": [
+    "<b>Sign both delay and noise</b>: Crosstalk changes timing and can create functional glitches. Timing-only analysis can miss a static control net being falsely asserted, so both branches are mandatory.",
+    "<b>Apply worst directions to the correct corners</b>: Slow corner plus opposite-direction slowdown for setup; fast corner plus same-direction speedup for hold. Do not combine both with one generic corner.",
+    "<b>Prioritize dense array wiring and long UB buses</b>: Parallel synchronized lines in the 256×256 array produce multi-aggressor superposition, while long 24 MiB UB buses accumulate coupling. They are the primary victim sets at 700 MHz.",
+    "<b>Separate real violations from pessimistic alignment</b>: Correlate windows, logic dependence, and aggressor reachability to remove physically impossible worst-case reports without masking feasible crosstalk.",
+    "<b>Converge noise-on-delay interactions</b>: Crosstalk changes victim arrival, which changes aggressor alignment in the next iteration. Confirm the SI engine reaches a stable solution rather than oscillating.",
+    "<b>Disclosure boundary</b>: Crosstalk-aware STA, PrimeTime SI, coupled SPEF, MMMC, and aggressor/victim analysis are standard signoff methods. TPU's SI corners and reports are not public; all thresholds are illustrative."
+  ],
+  "result": [
+    {
+      "label": "Crosstalk setup (example)",
+      "value": "Slow corner + opposite-direction slowdown; critical-path setup slack ≥0 including Δd"
+    },
+    {
+      "label": "Crosstalk hold (example)",
+      "value": "Fast corner + same-direction speedup; hold slack ≥0 on minimum paths"
+    },
+    {
+      "label": "Static noise / glitch (example)",
+      "value": "Every static victim glitch stays below receiver threshold and is neither propagated nor captured"
+    },
+    {
+      "label": "Priority victim regions",
+      "value": "Parallel array nets + long 24 MiB UB buses; checked for multi-aggressor and long-run coupling"
+    },
+    {
+      "label": "Analysis mode",
+      "value": "PrimeTime SI-class crosstalk-aware STA; MMMC; coupled SPEF; converged noise-on-delay"
+    },
+    {
+      "label": "SI verdict (example)",
+      "value": "All-corner slack≥0 and no functional glitch → 700 MHz preserved → PASS"
+    }
+  ],
+  "after": [
+    "<b>Return violations to ⑧ for routing ECO</b>: Increase spacing, insert grounded shields, change layer/direction, reduce aggressor drive, or buffer. Re-extract coupled SPEF and rerun SI after layout changes.",
+    "<b>Avoid fixing one net by breaking another</b>: A modified victim can become a new aggressor or alter nearby timing. Incrementally recheck all affected nets and corners.",
+    "<b>Feed SI into the multidomain signoff gate</b>: Crosstalk delay/noise joins base STA, power/EM/IR, DRC/LVS, and LEC. SI must be green before tapeout.",
+    "<b>Archive traceable evidence</b>: Preserve parasitic revision, corner×mode matrix, alignment settings, violations, waivers, and post-fix results. Every waiver needs rationale and ownership.",
+    "<b>Tape out only when every dimension is green</b>: Resolve or formally waive every SI issue and confirm all other signoff dimensions before release."
+  ],
+  "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (the 256×256 array, 24 MiB Unified Buffer, 700 MHz, 28 nm, die≤331 mm², and weight-stationary design are published facts. Crosstalk-aware STA/PrimeTime SI, coupled SPEF, MMMC, aggressor/victim delay Δd, and static-noise analysis are standard signoff practice; all slack/noise thresholds are illustrative, not private TPU reports or corners.)"
+}

@@ -1,0 +1,113 @@
+{
+ "secNum": "3.8",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Inside One MAC: INT8 Multiply with INT32 Accumulation",
+ "oneLine": "Each systolic-array MAC multiplies 8-bit integers and accumulates in 32-bit integer precision. Low-precision multiplication saves area and power, high-precision accumulation prevents overflow across long dot products, and quantization or requantization occurs only at array boundaries—the key arithmetic and numeric-format trade-off.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"40\" y=\"28\">One MAC datapath: low-precision multiply → high-precision accumulate</text><g class=\"cs-part\" data-k=\"actin\" data-g=\"actin\"><rect class=\"cs-box\" x=\"40\" y=\"120\" width=\"120\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"100\" y=\"144\">Activation a</text><text class=\"cs-sub\" x=\"100\" y=\"162\">INT8 (8-bit)</text></g><g class=\"cs-part\" data-k=\"win\" data-g=\"win\"><rect class=\"cs-box\" x=\"40\" y=\"210\" width=\"120\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"100\" y=\"234\">Weight w</text><text class=\"cs-sub\" x=\"100\" y=\"252\">INT8 (8-bit, resident)</text></g><g class=\"cs-part\" data-k=\"mul\" data-g=\"mul\"><rect class=\"cs-box\" x=\"230\" y=\"160\" width=\"150\" height=\"68\" rx=\"8\"/><text class=\"cs-t\" x=\"305\" y=\"188\">Multiplier ×</text><text class=\"cs-sub\" x=\"305\" y=\"206\">8b×8b → 16b product</text></g><line class=\"cs-arr\" x1=\"160\" y1=\"148\" x2=\"226\" y2=\"180\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"160\" y1=\"238\" x2=\"226\" y2=\"206\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"add\" data-g=\"add\"><rect class=\"cs-box\" x=\"430\" y=\"160\" width=\"150\" height=\"68\" rx=\"8\"/><text class=\"cs-t\" x=\"505\" y=\"188\">Adder +</text><text class=\"cs-sub\" x=\"505\" y=\"206\">Accumulate into INT32</text></g><line class=\"cs-arr\" x1=\"380\" y1=\"194\" x2=\"426\" y2=\"194\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"384\" y=\"180\">16b product</text><g class=\"cs-part\" data-k=\"acc\" data-g=\"acc\"><rect class=\"cs-box\" x=\"430\" y=\"290\" width=\"150\" height=\"62\" rx=\"8\"/><text class=\"cs-t\" x=\"505\" y=\"315\">Accumulator register</text><text class=\"cs-sub\" x=\"505\" y=\"333\">INT32 (32-bit, overflow headroom)</text></g><line class=\"cs-arr\" x1=\"505\" y1=\"228\" x2=\"505\" y2=\"286\" marker-end=\"url(#csar)\"/><polyline class=\"cs-arr\" points=\"430,321 400,321 400,194 426,194\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"346\" y=\"270\">Feedback: add prior partial sum</text><g class=\"cs-part\" data-k=\"quant\" data-g=\"quant\"><rect class=\"cs-box\" x=\"600\" y=\"120\" width=\"100\" height=\"56\" rx=\"8\"/><text class=\"cs-t\" x=\"650\" y=\"144\">Quantization boundary</text><text class=\"cs-sub\" x=\"650\" y=\"162\">INT32 → INT8</text></g><polyline class=\"cs-arr\" points=\"580,300 650,300 650,180\" fill=\"none\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"600\" y=\"200\">Scale / clamp</text><text class=\"cs-note\" x=\"40\" y=\"388\">Note: v1 discloses 8-bit multiply, 32-bit accumulation, and 4 MiB accumulator; per-MAC details are not public.</text></svg>",
+ "legend": [
+  {
+   "k": "actin",
+   "name": "Activation input a (INT8)",
+   "desc": "An 8-bit integer activation streams from Unified Buffer each cycle. Low bit width proportionally shrinks buses, registers, and multipliers across all 6.5×10⁴ array cells."
+  },
+  {
+   "k": "mul",
+   "name": "INT8×INT8 multiplier",
+   "desc": "The cell’s only multiply takes two 8-bit operands and produces at most a 16-bit product. Multiplier area grows roughly with the square of width, so an 8-bit unit is dramatically smaller than a 32-bit floating-point multiplier—the central motivation for INT8."
+  },
+  {
+   "k": "add",
+   "name": "INT32 adder",
+   "desc": "Adds the 16-bit product into a running 32-bit partial sum. The adder uses higher precision: its cost grows roughly linearly with width while providing substantial dynamic-range headroom."
+  },
+  {
+   "k": "acc",
+   "name": "INT32 accumulator register",
+   "desc": "Stores the 32-bit partial sum flowing down a column. It protects a 256-element dot product and repeated K-tile accumulation from overflow; high-precision accumulation is the numeric-safety margin."
+  },
+  {
+   "k": "quant",
+   "name": "Quantization / requantization boundary",
+   "desc": "Precision conversion occurs only at array boundaries: activations and weights enter as INT8, while the outgoing INT32 result is scaled and clamped back to INT8 for the next layer. The array interior remains fixed-point."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "actin",
+    "win",
+    "mul"
+   ],
+   "cap": "① An 8-bit activation a and resident 8-bit weight w enter the multiplier and produce a product of at most 16 bits. Low-precision multiplication deliberately saves area and power."
+  },
+  {
+   "keys": [
+    "mul",
+    "add"
+   ],
+   "cap": "② The 16-bit product enters a 32-bit adder for accumulation into the running partial sum. Adder width exceeds product width to preserve headroom for long reductions."
+  },
+  {
+   "keys": [
+    "add",
+    "acc"
+   ],
+   "cap": "③ The sum returns to the INT32 accumulator register and feeds back on the next cycle. Thousands of products can accumulate over time while 32-bit precision prevents overflow."
+  },
+  {
+   "keys": [
+    "acc",
+    "quant"
+   ],
+   "cap": "④ When the dot product completes, the 32-bit result reaches the array boundary, where scaling and clamping convert it back to INT8 for the next layer. Precision conversion stays outside each MAC."
+  }
+ ],
+ "before": [
+  "<b>Choose multiply and accumulation precision separately</b>: This is the key decision. Inference tolerates low-precision weights and activations, so multiplication uses 8-bit integers; a dot product may add hundreds to hundreds of thousands of terms, so accumulation needs greater width to avoid overflow.",
+  "<b>Calculate dynamic range and overflow bounds</b>: An 8b×8b product requires at most 16 bits. Summing a 256-element column adds roughly log2(256)=8 guard bits, with further headroom for repeated K-tile passes. Compute the worst case before selecting accumulator width.",
+  "<b>Specify the quantization scheme</b>: Determine zero-point use, symmetric versus asymmetric quantization, per-tensor versus per-channel scale, and how scaling folds into boundary requantization. These choices set boundary circuitry and numeric error.",
+  "<b>Known implementation facts</b>: Public TPU v1 facts are a 256×256 array of 8-bit MACs, a 4 MiB 32-bit accumulator, and roughly 92 TOPS for INT8. Details such as carry-save structure and internal pipeline depth are not disclosed and follow common array practice here."
+ ],
+ "during": [
+  "<b>Multiply width: the 8-bit sweet spot</b>: Multiplier area grows roughly with width squared, and a 6.5×10⁴-cell array is highly sensitive to each multiplier’s size. 8-bit balances acceptable inference accuracy against area and power; 4-bit raises accuracy risk, while 16-bit multiplies cost several times more; 8-bit is TPU v1’s choice.",
+  "<b>Accumulator width: buy safety with linear cost</b>: Adder cost scales approximately linearly with width. Expanding accumulation from 16 to 32 bits is inexpensive relative to the multiplier, while 32 bits provides ample margin beyond a 16-bit product plus worst-case carry growth, removing overflow as a design risk.",
+  "<b>Push precision conversion to the boundary</b>: Quantizing inside every cell would replicate scaling circuitry 6.5×10⁴ times and inject repeated rounding error. Keep the array fixed-point end to end—INT8 inputs and INT32 accumulation—and convert once at the input/output boundary.",
+  "<b>Support clear and preload</b>: Repeated K tiles contributing to one output must preserve accumulator state, while a new output tile must clear or preload it with bias. Provide clear/preload controls aligned with the controller FSM’s tile loop.",
+  "<b>Place requantization and activation carefully</b>: At the boundary, multiply the INT32 result by a scale, add bias, apply activation, and clamp to INT8. Power-of-2 scales can replace multiplication with shifts, reducing boundary area.",
+  "<b>Evidence boundary: rounding and saturation details are not public</b>: TPU v1 does not disclose whether conversion truncates or rounds, nor whether overflow saturates or wraps. Saturating output is common INT8 inference-ASIC practice because it avoids extreme-value wraparound; it is not a disclosed v1 choice."
+ ],
+ "result": [
+  {
+   "label": "Multiply precision",
+   "value": "INT8 × INT8 (8-bit integer)"
+  },
+  {
+   "label": "Product width",
+   "value": "At most 16 bits"
+  },
+  {
+   "label": "Accumulation precision",
+   "value": "INT32 (32-bit integer, overflow headroom)"
+  },
+  {
+   "label": "Accumulator capacity",
+   "value": "4 MiB (32-bit accumulator array)"
+  },
+  {
+   "label": "Quantization location",
+   "value": "Array boundaries only (once at ingress/egress)"
+  },
+  {
+   "label": "INT8 peak compute",
+   "value": "Approximately 92 TOPS @ 700 MHz"
+  }
+ ],
+ "after": [
+  "<b>Verify numerical correctness</b>: Compare fixed-point outputs element by element against a reference that dequantizes before floating-point compute. Confirm INT8 multiply + INT32 accumulation + boundary requantization stays within tolerance and no path overflows 32 bits.",
+  "<b>Run end-to-end accuracy evaluation</b>: Deploy the quantization scheme across the full network and measure accuracy loss versus FP32. Confirm that 8-bit multiplication stays within the accuracy budget; for sensitive layers, feed results back to the model team for per-channel scaling or protected precision.",
+  "<b>Stress overflow and boundaries</b>: Use maximum-magnitude inputs and the longest K accumulation chain to validate 32-bit headroom and the intended boundary saturation or truncation behavior.",
+  "<b>Hand off to later stages</b>: Freeze multiply width, accumulator width, and quantization/requantization placement for synthesizable fixed-point RTL (⑤), and expose scale and bias configuration to the TensorFlow/XLA quantization software.",
+  "<b>Document the evidence boundary</b>: Distinguish published TPU v1 facts—8-bit multiply, 32-bit accumulation, 4 MiB accumulator, and 92 TOPS—from inferred implementation details such as rounding, saturation, and per-cell pipelining."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (8-bit multiply, 32-bit accumulation, the 4 MiB accumulator, and ~92 TOPS are public facts; per-cell MAC structure and rounding/saturation policy are completed from common INT8 inference-array practice)"
+}

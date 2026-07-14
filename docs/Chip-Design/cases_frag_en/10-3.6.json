@@ -1,0 +1,119 @@
+{
+ "secNum": "3.6",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · Handoff, approval, and post-Tapeout wait: lock the 28 nm GDSII released by signoff ⑨, complete a handoff checklist and accountable approval, formally deliver the Tapeout release to the foundry, and enter its schedule for masks and first wafers. During the weeks-to-months turnaround, prepare TensorFlow/XLA, PCIe-card bring-up, and production tests so first silicon can power on immediately",
+ "oneLine": "After the Tapeout review signs release—the gate described in 9.3.10—the work becomes formal delivery, an extended wait, and parallel preparation. The gate decides whether Tapeout is allowed and who approves; this section covers what happens after approval: package a Tapeout release, execute the checklist and accountable signature, let the foundry schedule masks and first wafers, then wait weeks to months while design changes become prohibitively expensive. The team uses the turnaround to finish the software stack, bring-up environment, and test programs so first silicon starts immediately. TPU's documented 256×256 array, 24 MiB Unified Buffer, 700 MHz, 28 nm / ≤331 mm², 28–40 W, PCIe 3.0 card with a dozen-plus CISC commands, and TensorFlow/XLA stack illustrate the delivered chip. Specific manufacturing, equipment, duration, yield, packaging, and foundry data for this standard 28 nm practice are not public.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 380\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><text class=\"cs-note\" x=\"24\" y=\"24\">Tapeout handoff: approved release → foundry starts first wafers → wait weeks to months → first silicon; dashed path = parallel software/bring-up preparation</text><g class=\"cs-part\" data-k=\"release\" data-g=\"release\"><rect class=\"cs-box\" x=\"24\" y=\"56\" width=\"174\" height=\"120\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#a5b4fc\"/><text class=\"cs-t\" x=\"111\" y=\"82\">Tapeout release</text><text class=\"cs-sub\" x=\"111\" y=\"104\">Package + signature</text><text class=\"cs-sub\" x=\"111\" y=\"124\">Final GDSII (revision-locked)</text><text class=\"cs-sub\" x=\"111\" y=\"142\">+ handoff checklist</text><text class=\"cs-sub\" x=\"111\" y=\"160\">+ accountable approval</text></g><line class=\"cs-arr\" x1=\"198\" y1=\"116\" x2=\"262\" y2=\"116\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"foundry\" data-g=\"foundry\"><rect class=\"cs-box\" x=\"266\" y=\"56\" width=\"174\" height=\"120\" rx=\"8\" fill=\"#fefce8\" stroke=\"#fde047\"/><text class=\"cs-t\" x=\"353\" y=\"82\">Foundry schedules startup</text><text class=\"cs-sub\" x=\"353\" y=\"104\">Enter line schedule</text><text class=\"cs-sub\" x=\"353\" y=\"124\">Fabricate mask set</text><text class=\"cs-sub\" x=\"353\" y=\"142\">Start first 28 nm wafers</text><text class=\"cs-sub\" x=\"353\" y=\"160\">Standard large-chip practice</text></g><line class=\"cs-arr\" x1=\"440\" y1=\"116\" x2=\"504\" y2=\"116\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"wait\" data-g=\"wait\"><rect class=\"cs-box\" x=\"508\" y=\"56\" width=\"188\" height=\"120\" rx=\"8\" fill=\"none\" stroke=\"#cbd5e1\"/><text class=\"cs-t\" x=\"602\" y=\"82\">Wait for turnaround</text><text class=\"cs-sub\" x=\"602\" y=\"104\">Weeks ~ months</text><text class=\"cs-sub\" x=\"602\" y=\"124\">No post-Tapeout design edits</text><text class=\"cs-sub\" x=\"602\" y=\"142\">(mask change = high cost)</text><text class=\"cs-sub\" x=\"602\" y=\"160\">Team prepares in parallel</text></g><line class=\"cs-arr\" x1=\"602\" y1=\"176\" x2=\"602\" y2=\"222\" marker-end=\"url(#csar)\"/><g class=\"cs-part\" data-k=\"silicon\" data-g=\"silicon\"><rect class=\"cs-box\" x=\"508\" y=\"226\" width=\"188\" height=\"56\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#86efac\"/><text class=\"cs-t\" x=\"602\" y=\"250\">First silicon arrives</text><text class=\"cs-sub\" x=\"602\" y=\"268\">Manufacturing ⑪ / package-test ⑫ / bring-up</text></g><g class=\"cs-part\" data-k=\"prep\" data-g=\"prep\"><rect class=\"cs-box\" x=\"24\" y=\"226\" width=\"416\" height=\"120\" rx=\"8\" fill=\"#fff7ed\" stroke=\"#fdba74\" stroke-dasharray=\"5 4\"/><text class=\"cs-t\" x=\"232\" y=\"250\">Parallel preparation during wait (dashed: concurrent with foundry)</text><g class=\"cs-part\" data-k=\"sw\" data-g=\"sw\"><rect class=\"cs-cell\" x=\"40\" y=\"266\" width=\"190\" height=\"32\"/><text class=\"cs-cellt\" x=\"135\" y=\"286\">Software: TF/XLA compiler, dozen-plus CISC instructions</text></g><g class=\"cs-part\" data-k=\"bringup\" data-g=\"bringup\"><rect class=\"cs-cell\" x=\"40\" y=\"304\" width=\"190\" height=\"32\"/><text class=\"cs-cellt\" x=\"135\" y=\"324\">Bring-up: power-on scripts, PCIe accelerator board</text></g><g class=\"cs-part\" data-k=\"test\" data-g=\"test\"><rect class=\"cs-cell\" x=\"238\" y=\"266\" width=\"186\" height=\"32\"/><text class=\"cs-cellt\" x=\"331\" y=\"286\">Tests: ATE vectors, production patterns</text></g><g class=\"cs-part\" data-k=\"board\" data-g=\"board\"><rect class=\"cs-cell\" x=\"238\" y=\"304\" width=\"186\" height=\"32\"/><text class=\"cs-cellt\" x=\"331\" y=\"324\">System: server/PCIe setup, 24 MiB UB cases</text></g></g><polyline class=\"cs-arr\" points=\"602,176 602,200 462,200 462,290 440,290\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"24\" y=\"368\">Note: masks/scheduling/turnaround/first wafers/package/bring-up details are standard 28 nm large-chip and PCIe-card practice; TPU v1 private data and foundry are not public</text></svg>",
+ "legend": [
+  {
+   "k": "release",
+   "name": "Tapeout release (approved delivery package)",
+   "desc": "The first handoff action packages the final, revision-locked 28 nm GDSII released by signoff ⑨ with a formal checklist for foundry delivery. The package typically includes GDSII, layer/process interface information, signoff evidence, and itemized handoff checks. An accountable owner signs that this exact revision is correct and may enter fabrication. This converts an approved decision into actual data transfer. TPU's package and foundry are not public."
+  },
+  {
+   "k": "foundry",
+   "name": "Foundry scheduling and startup (masks and first wafers)",
+   "desc": "After receiving the release, the foundry schedules the design, fabricates its mask set from GDSII, and starts the first wafers on the 28 nm line. For a TPU v1-class die ≤331 mm², masks and initial wafer starts are substantial fixed commitments, explaining the all-green release gate. Schedule, mask count, wafer quantity, line parameters, and foundry are undisclosed."
+  },
+  {
+   "k": "wait",
+   "name": "Turnaround wait (weeks to months)",
+   "desc": "From wafer start to first silicon, hundreds of deposition, lithography, etch, and related process steps take weeks to months. The design is frozen: a change means new mask work and another wafer start. This is an anxious but valuable window for the design team—not idle time, but preparation for the silicon handoff. Exact turnaround varies with process and capacity; TPU's actual cycle is private."
+  },
+  {
+   "k": "prep",
+   "name": "Parallel preparation during wait (software / bring-up / test)",
+   "desc": "Dashed paths indicate work concurrent with foundry manufacturing: finish TensorFlow/XLA compilation, the PCIe 3.0 host runtime for the dozen-plus CISC instructions, first-silicon bring-up scripts, PCIe-card board/system setup, ATE vectors, and production test patterns. The goal is immediate power-on, workload execution, and test when silicon arrives. Highly parallel preparation helped support the roughly 15-month TPU development-to-deployment schedule and more than a year of operation before announcement. Details are illustrative."
+  },
+  {
+   "k": "silicon",
+   "name": "First silicon arrives (handoff to manufacturing ⑪ / packaging-test ⑫ / bring-up)",
+   "desc": "After the first wafers complete and undergo dicing, packaging, and initial test as arranged, the team receives bare or packaged first silicon. Physical devices close the Tapeout handoff and begin manufacturing ramp ⑪, packaging/test ⑫, and PCIe-card bring-up using the prepared software and test programs. Form, quantity, schedule, packaging, and yield are not public."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "release"
+   ],
+   "cap": "① Package and approve delivery: combine the final revision-locked 28 nm GDSII released by gate ⑨ with the handoff checklist into a formal Tapeout release. An owner signs that this exact TPU 256×256-array / 24 MiB-UB / 700 MHz / PCIe-card revision is correct and may start wafers."
+  },
+  {
+   "keys": [
+    "foundry"
+   ],
+   "cap": "② Foundry schedules production: place the ≤331 mm² 28 nm die into the line schedule, fabricate the mask set, and start first wafers. Masks and wafer starts are substantial fixed commitments, so prior signoff must be all green."
+  },
+  {
+   "keys": [
+    "wait"
+   ],
+   "cap": "③ Enter turnaround: hundreds of process steps take weeks to months. The design is frozen; any change affects masks at high cost. Use this window deliberately."
+  },
+  {
+   "keys": [
+    "prep",
+    "sw",
+    "bringup"
+   ],
+   "cap": "④ Prepare in parallel rather than wait idly: finish TF/XLA compilation and PCIe CISC runtime, bring-up scripts and card/board systems, and ATE/production patterns so first silicon can power on, execute, and test immediately."
+  },
+  {
+   "keys": [
+    "silicon",
+    "test",
+    "board"
+   ],
+   "cap": "⑤ Receive first silicon and hand off: use the prepared software and tests for immediate bring-up, then continue into manufacturing ramp ⑪ / packaging-test ⑫. Software/manufacturing parallelism supports the roughly 15-month project-to-deployment cadence."
+  }
+ ],
+ "before": [
+  "<b>Define package contents and revision-lock rules</b>: specify the final GDSII, layer/process interfaces, signoff evidence, and handoff checklist in the Tapeout release. Every artifact must belong byte-for-byte to the revision released by gate ⑨; never approve revision A and deliver revision B. TPU's actual package is not public.",
+  "<b>Define the checklist and accountable signer</b>: itemize data integrity, revision, process/mask interfaces, foundry format, and other checks, then name the owner accountable for “correct package, ready for wafer start.” Checklist + signature makes delivery traceable rather than an unowned file transfer.",
+  "<b>Align foundry process, mask, and delivery interfaces</b>: confirm the 28 nm PDK/runset, mask-layer definitions, file format, and transfer channel in advance so the foundry can schedule immediately. TPU's foundry and interface details are private.",
+  "<b>Plan parallel work during turnaround</b>: before wafer start, schedule TF/XLA and PCIe CISC runtime completion, bring-up scripts, PCIe-card board/system setup, and ATE/production patterns. Converting wait into preparation shortens the total project cycle.",
+  "<b>Accept the hard constraint that post-Tapeout design is frozen</b>: once wafers start, any edit requires mask changes and another run, costing mask expense and months. The release package must be truly final; “deliver now, fix later” is not viable."
+ ],
+ "during": [
+  "<b>Rule: deliver the exact released revision, with accountable approval</b>. A Tapeout release formally transfers the revision-locked signed-off GDSII and checklist. The signer owns the statement that this exact version may fabricate. Delivering the wrong or unsigned revision is a catastrophic, irreversible handoff error discovered only after expensive masks start.",
+  "<b>Correction cost rises sharply after foundry startup</b>. Once masks are made and first wafers start, the design is frozen: accept the issue or change masks and rerun, paying money and months. The all-green gate converts caution into control before irreversible investment.",
+  "<b>Turnaround lasts weeks to months, but the team never waits idly</b>. Hundreds of fabrication steps are long. A strong team runs two parallel tracks: manufacturing at the foundry and software/bring-up/test internally. The diagram's dashed line represents this independent concurrency, essential to an approximately 15-month TPU-class schedule.",
+  "<b>First waiting-period priority: make the software stack silicon-ready</b>. Complete TensorFlow/XLA compilation, the PCIe 3.0 runtime for the dozen-plus CISC instructions, and weight-stationary scheduling so first silicon can load and run a model immediately rather than waiting for software.",
+  "<b>Second waiting-period priority: prepare bring-up and test programs</b>. Finish first-silicon power-on scripts, PCIe-card board/system infrastructure, and ATE production vectors/patterns. Better preparation shortens the path from power-on to function and manufacturability. These details are standard examples, not private TPU content.",
+  "<b>Methodology scope</b>: Tapeout release packages, handoff checklists/signatures, foundry scheduling/masks/first wafers, turnaround, parallel software/bring-up/test preparation, and first-silicon handoff are standard 28 nm large-chip and PCIe-card practices. TPU v1's private manufacturing, mask, packaging, yield, bring-up, and foundry data are not public. Its 256×256 array, 24 MiB UB, 700 MHz, 28 nm, ≤331 mm², 28–40 W, PCIe 3.0 card, dozen-plus CISC instructions, TensorFlow/XLA, and weight-stationary dataflow provide the context. Only TPU v1's 28 nm Tapeout, roughly 15 months from project start to deployment, and more than a year of pre-announcement data-center operation are documented facts; all specific process counts/durations are illustrative."
+ ],
+ "result": [
+  {
+   "label": "Handoff sequence",
+   "value": "Revision-locked GDSII + checklist form Tapeout release; owner signs → foundry schedules → turnaround → first silicon"
+  },
+  {
+   "label": "Approved delivery package",
+   "value": "Final revision-locked 28 nm GDSII + process/mask interfaces + signoff evidence + itemized checklist; owner certifies the exact revision may fabricate"
+  },
+  {
+   "label": "Foundry actions",
+   "value": "Schedule line → fabricate mask set from GDSII → start first wafers on 28 nm process (die ≤331 mm²; cycle/process illustrative)"
+  },
+  {
+   "label": "Waiting-period property",
+   "value": "Turnaround takes weeks to months; design is frozen and mask changes are expensive. Team prepares in parallel (duration illustrative)"
+  },
+  {
+   "label": "Parallel deliverables",
+   "value": "TF/XLA compiler + PCIe CISC runtime; bring-up scripts + card board/system; ATE and production test patterns"
+  },
+  {
+   "label": "Next handoff",
+   "value": "First silicon → immediate bring-up with prepared software/tests → manufacturing ramp ⑪ / packaging-test ⑫"
+  }
+ ],
+ "after": [
+  "<b>Track foundry schedule and milestones after release</b>: confirm receipt, scheduling, mask completion, and first-wafer milestones. The team monitors manufacturing progress while the frozen design remains outside its control.",
+  "<b>Fill turnaround with parallel preparation</b>: complete TF/XLA, PCIe CISC runtime, bring-up scripts, accelerator-card system, and ATE/production patterns so first silicon powers on and tests immediately.",
+  "<b>Maintain post-Tapeout design-freeze discipline</b>: optimization ideas do not modify the running revision. Record them for a later revision that repeats signoff and Tapeout.",
+  "<b>Start bring-up and packaging/test as soon as first silicon arrives</b>: prepared software and tests power on and execute basic function immediately, then support manufacturing ramp ⑪ and packaging/test ⑫. Parallelism underpins the roughly 15-month schedule and pre-announcement operation.",
+  "<b>Archive release, checklist, signature, and revision</b>: preserve exact Tapeout contents, approvals, and GDSII identifier as traceable evidence of what was fabricated and who authorized it—the first source for post-silicon root-cause analysis."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (documented TPU v1 context includes a 256×256 8-bit-MAC array, 24 MiB Unified Buffer, 700 MHz, 28 nm, ≤331 mm², 28–40 W, weight-stationary dataflow, PCIe 3.0 accelerator with a dozen-plus CISC instructions, TensorFlow/XLA, 28 nm Tapeout, roughly 15 months from project start to deployment, and more than a year of data-center operation before announcement. Tapeout release packages/checklists/signatures, foundry scheduling/masks/first wafers, turnaround, parallel software/bring-up/test work, and first-silicon handoff are standard 28 nm practices; all specific manufacturing, equipment, duration, packaging, yield, and bring-up details are illustrative rather than private TPU v1 disclosure, and TPU v1's foundry is not public)"
+}

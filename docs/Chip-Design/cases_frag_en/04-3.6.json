@@ -1,0 +1,122 @@
+{
+ "secNum": "3.6",
+ "chip": "Google TPU v1",
+ "title": "TPU v1 · A Wide, Multi-Bank 24 MiB Unified Buffer Feeds the Array",
+ "oneLine": "The central memory-microarchitecture question is not only capacity but how much data can be delivered in parallel each cycle. Feeding all 256 systolic-array rows simultaneously requires Unified Buffer to be banked and read through a very wide port—a textbook case of deriving port and bank counts from peak concurrency.",
+ "svg": "<svg class=\"cs-svg\" viewBox=\"0 0 720 400\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"csar\" markerWidth=\"9\" markerHeight=\"9\" refX=\"6.5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L7,3 L0,6 Z\" fill=\"#94a3b8\"/></marker></defs><g class=\"cs-part\" data-k=\"ddr\" data-g=\"ddr\"><rect class=\"cs-box\" x=\"30\" y=\"160\" width=\"120\" height=\"62\" rx=\"8\"/><text class=\"cs-t\" x=\"90\" y=\"186\">Off-chip DDR3</text><text class=\"cs-sub\" x=\"90\" y=\"204\">8 GiB · ~30 GB/s</text></g><line class=\"cs-arr\" x1=\"150\" y1=\"191\" x2=\"186\" y2=\"191\" marker-end=\"url(#csar)\"/><text class=\"cs-note\" x=\"148\" y=\"150\">slow · narrow</text><g class=\"cs-part\" data-k=\"ub\" data-g=\"ub\"><rect class=\"cs-box\" x=\"190\" y=\"44\" width=\"180\" height=\"300\" rx=\"8\" fill=\"#eef2ff\" stroke=\"#c7d2fe\"/><text class=\"cs-t\" x=\"280\" y=\"34\">Unified Buffer 24 MiB</text><text class=\"cs-sub\" x=\"280\" y=\"362\">Software-managed scratchpad (no hardware cache)</text></g><g class=\"cs-part\" data-k=\"b0\" data-g=\"bank\"><rect class=\"cs-cell\" x=\"204\" y=\"60\" width=\"152\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"280\" y=\"80\">bank 0</text></g><g class=\"cs-part\" data-k=\"b1\" data-g=\"bank\"><rect class=\"cs-cell\" x=\"204\" y=\"96\" width=\"152\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"280\" y=\"116\">bank 1</text></g><g class=\"cs-part\" data-k=\"b2\" data-g=\"bank\"><rect class=\"cs-cell\" x=\"204\" y=\"132\" width=\"152\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"280\" y=\"152\">bank 2</text></g><g class=\"cs-part\" data-k=\"b3\" data-g=\"bank\"><rect class=\"cs-cell\" x=\"204\" y=\"168\" width=\"152\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"280\" y=\"188\">bank 3</text></g><g class=\"cs-part\" data-k=\"bd\" data-g=\"bank\"><rect class=\"cs-cell\" x=\"204\" y=\"204\" width=\"152\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"280\" y=\"224\">bank …</text></g><g class=\"cs-part\" data-k=\"bn\" data-g=\"bank\"><rect class=\"cs-cell\" x=\"204\" y=\"240\" width=\"152\" height=\"30\" rx=\"4\"/><text class=\"cs-cellt\" x=\"280\" y=\"260\">bank N-1</text></g><text class=\"cs-note\" x=\"204\" y=\"290\">Parallel banks → one slice each cycle</text><text class=\"cs-note\" x=\"204\" y=\"306\">Combine into one wide read port</text><g class=\"cs-part\" data-g=\"wide\"><line class=\"cs-arr\" x1=\"370\" y1=\"78\" x2=\"430\" y2=\"78\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"370\" y1=\"114\" x2=\"430\" y2=\"114\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"370\" y1=\"150\" x2=\"430\" y2=\"150\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"370\" y1=\"186\" x2=\"430\" y2=\"186\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"370\" y1=\"222\" x2=\"430\" y2=\"222\" marker-end=\"url(#csar)\"/><line class=\"cs-arr\" x1=\"370\" y1=\"258\" x2=\"430\" y2=\"258\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"372\" y=\"330\">Wide port: feed 256 rows/cycle</text><g class=\"cs-part\" data-k=\"mxu\" data-g=\"mxu\"><rect class=\"cs-box\" x=\"434\" y=\"60\" width=\"150\" height=\"210\" rx=\"8\"/><text class=\"cs-t\" x=\"509\" y=\"156\">MXU</text><text class=\"cs-sub\" x=\"509\" y=\"174\">256×256 array</text><text class=\"cs-sub\" x=\"509\" y=\"192\">256 row inputs on left</text></g><g class=\"cs-part\" data-g=\"psum\"><line class=\"cs-arr\" x1=\"509\" y1=\"270\" x2=\"509\" y2=\"300\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"516\" y=\"288\">Column partial sums ↓</text><g class=\"cs-part\" data-k=\"acc\" data-g=\"acc\"><rect class=\"cs-box\" x=\"434\" y=\"302\" width=\"150\" height=\"60\" rx=\"8\"/><text class=\"cs-t\" x=\"509\" y=\"326\">4 MiB accumulator</text><text class=\"cs-sub\" x=\"509\" y=\"344\">Captures every column sum</text></g><g class=\"cs-part\" data-g=\"wb\"><polyline class=\"cs-arr\" points=\"434,332 410,332 410,300 360,300\" fill=\"none\" stroke-dasharray=\"5 4\" marker-end=\"url(#csar)\"/></g><text class=\"cs-note\" x=\"362\" y=\"294\">Activate, then write back to UB</text><text class=\"cs-note\" x=\"30\" y=\"392\">Note: v1 does not publish UB bank count or port width; these are derived from 256-row/cycle peak concurrency.</text></svg>",
+ "legend": [
+  {
+   "k": "ub",
+   "name": "24 MiB Unified Buffer",
+   "desc": "A large software-managed on-chip scratchpad rather than a hardware cache, with no tags or hit checks. Activations, intermediates, and temporaries stay here to minimize accesses to off-chip DDR3, which provides only ~30 GB/s."
+  },
+  {
+   "k": "bank",
+   "name": "Multi-bank organization",
+   "desc": "The 24 MiB store is divided into independent banks, each with its own read port. Reading a slice from every bank in the same cycle creates the aggregate width required by the array; bank count is derived from per-cycle parallel demand."
+  },
+  {
+   "k": "wide",
+   "name": "Wide read port (256 rows/cycle)",
+   "desc": "The left edge of the systolic array has 256 row inputs, all 256 requiring activations every steady-state cycle. The port width is 256 rows × element width—far wider than a conventional SRAM port—so it must be assembled from multiple banks."
+  },
+  {
+   "k": "mxu",
+   "name": "256×256 MXU array",
+   "desc": "The customer of the memory microarchitecture. Its demand for 256 rows each cycle without starvation directly defines Unified Buffer port and bandwidth requirements, turning architecture-level peak compute into a hard memory constraint."
+  },
+  {
+   "k": "acc",
+   "name": "4 MiB accumulator",
+   "desc": "Each array column emits a partial sum at the bottom. The 4 MiB 32-bit accumulator must accept all columns concurrently and support repeated accumulation across K tiles without overflow; it is the wide-port counterpart on the write side."
+  }
+ ],
+ "steps": [
+  {
+   "keys": [
+    "ddr",
+    "ub"
+   ],
+   "cap": "① Move weights and activations from off-chip DDR3 into the 24 MiB Unified Buffer. DDR3 is slow and narrow (~30 GB/s), so transfer enough once and circulate data on chip afterward."
+  },
+  {
+   "keys": [
+    "ub",
+    "bank"
+   ],
+   "cap": "② Divide UB into multiple banks and distribute addresses across them. During a read, the banks each return one slice in the same cycle, providing the physical basis of a wide port."
+  },
+  {
+   "keys": [
+    "bank",
+    "wide",
+    "mxu"
+   ],
+   "cap": "③ Concatenate bank outputs into an ultra-wide read port that feeds 256 activation rows to the MXU’s 256 left-edge inputs in one cycle, preventing array starvation."
+  },
+  {
+   "keys": [
+    "mxu",
+    "psum",
+    "acc"
+   ],
+   "cap": "④ Each array column emits a partial sum into the 4 MiB accumulator. For K-dimension tiling, partial sums accumulate repeatedly and become final only after the last pass."
+  },
+  {
+   "keys": [
+    "acc",
+    "wb",
+    "ub"
+   ],
+   "cap": "⑤ After activation or normalization, write accumulated results back to Unified Buffer for the next layer. Avoiding DDR3 keeps bandwidth pressure on chip."
+  }
+ ],
+ "before": [
+  "<b>Derive specifications from the customer</b>: The memory serves MXU. MXU consumes 256 activation rows each cycle and produces a full column of partial sums at its bottom; these rates directly set peak read and write widths and are the starting point for every bank and port decision.",
+  "<b>Decisions to make</b>: Total UB capacity (24 MiB), bank count, bank width, read/write port counts, accumulator capacity (4 MiB) and precision (32-bit), and address-to-bank mapping that avoids same-cycle conflicts.",
+  "<b>Required inputs</b>: Peak compute (~92 TOPS) and target utilization from architecture (③), off-chip bandwidth (DDR3 ~30 GB/s), target workload layer sizes and reuse, and area/power limits (28 nm, die ≤331 mm², 28–40 W).",
+  "<b>Balance the design triangle</b>: Capacity, bandwidth, and area compete. More capacity reduces DDR3 traffic but 24 MiB of SRAM already consumes substantial area; more width requires additional banks, decoding, and wiring. First satisfy the bandwidth floor needed to feed the array, then balance capacity against area."
+ ],
+ "during": [
+  "<b>Build width from banks rather than one exotic port</b>: A single SRAM macro cannot provide a 256-row-per-cycle port. Split UB into banks with conventional ports, read them in parallel, and concatenate their outputs. Bank count is approximately required width ÷ per-bank width—the direct derivation from peak concurrency.",
+  "<b>Map addresses to avoid bank conflicts</b>: Row and column activation access patterns must distribute all 256 same-cycle values across distinct banks. If two requests collide in one bank, one waits and the array stalls. Interleaving granularity is therefore a critical design choice.",
+  "<b>Size read and write sides separately</b>: Reads feed 256 activation rows per cycle, while writes receive accumulator results and next-layer data. Their concurrency, width, and timing differ, motivating multiple ports or separate read/write banks to avoid contention.",
+  "<b>Use capacity to keep data on chip</b>: The 24 MiB target should hold the active layer’s activations and reusable data so ~30 GB/s DDR3 handles mainly initial load and final store. Capacity and tiling are coupled: oversized tiles do not fit, while undersized tiles reduce reuse and increase DDR traffic.",
+  "<b>Specify the accumulator independently</b>: The 4 MiB 32-bit accumulator accepts one partial sum from every column each cycle and preserves precision across repeated K-tile accumulation. INT8 (8-bit) multiply with INT32 (32-bit) accumulation is standard fixed-point inference practice.",
+  "<b>Trade software management for simpler hardware</b>: TPU uses an explicitly managed scratchpad rather than a cache, removing tag arrays, hit logic, and replacement control. Area and power serve storage and MACs instead, while XLA must schedule every transfer correctly and deterministically."
+ ],
+ "result": [
+  {
+   "label": "On-chip buffer capacity",
+   "value": "24 MiB Unified Buffer (software-managed scratchpad)"
+  },
+  {
+   "label": "Organization",
+   "value": "Parallel multi-bank structure forming a wide read port"
+  },
+  {
+   "label": "Read-port target",
+   "value": "Feed all 256 array rows every cycle; never starve"
+  },
+  {
+   "label": "Bank / port count",
+   "value": "Derived from peak concurrency (not published bit-for-bit for v1)"
+  },
+  {
+   "label": "Accumulator",
+   "value": "4 MiB · 32-bit, accepting every column partial sum"
+  },
+  {
+   "label": "Off-chip bandwidth",
+   "value": "8 GiB DDR3 · ~30 GB/s (initial/final transfers only)"
+  }
+ ],
+ "after": [
+  "<b>Validate bandwidth and utilization</b>: Use a cycle model to confirm the UB port feeds all 256 rows every cycle for target layers and meets array-utilization goals. If bank conflicts or insufficient width cause starvation, add banks, change interleaving, or retile.",
+  "<b>Verify conflict-free address mapping</b>: Simulate bank conflicts for row-wise, column-wise, and cross-tile access patterns. Explicitly cover tail tiles and dimensions not divisible by the array size.",
+  "<b>Validate accumulator capacity and precision</b>: Confirm 32-bit values do not overflow along the deepest K-accumulation chain and 4 MiB holds all concurrently active output columns; adjust maximum tile size if required.",
+  "<b>Hand off to RTL (⑤) and memory IP</b>: Implement bank selection, read/write ports, arbitration/interleaving, and the accumulator in synthesizable RTL, and instantiate matching SRAM compiler macros while checking die-area limits.",
+  "<b>Reserve low-power hooks</b>: Clock-gate or retain banks that are not accessed in a cycle. Deterministic software-managed access timing makes enables statically schedulable; this is standard inference-ASIC practice, not a disclosed v1 detail."
+ ],
+ "source": "In-Datacenter Performance Analysis of a TPU, Jouppi et al., ISCA 2017 (internal UB bank count and port width are not published; combining banks into a wide port and deriving them from peak concurrency are common inference-ASIC practice)"
+}
