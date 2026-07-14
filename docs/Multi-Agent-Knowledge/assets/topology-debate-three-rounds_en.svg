@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 760" role="img" aria-labelledby="title desc">
+  <title id="title">Three-Round Fully Connected Debate Topology</title>
+  <desc id="desc">The question enters A1, B1, and C1. Every node in round 1 connects to all three nodes in round 2, and round 2 connects to round 3 in the same way. A3, B3, and C3 then connect to the judge. Nodes within the same round are not connected.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#7183a2"/>
+    </marker>
+    <style>
+      .band { fill: #f7faff; stroke: #d8e2f1; stroke-width: 1.5; }
+      .round { fill: #53657f; font: 600 20px system-ui, -apple-system, "Segoe UI", sans-serif; }
+      .hint { fill: #7b899e; font: 15px system-ui, -apple-system, "Segoe UI", sans-serif; }
+      .edge { fill: none; stroke: #7183a2; stroke-width: 1.7; stroke-opacity: .58; marker-end: url(#arrow); }
+      .outer-edge { stroke: #a87316; stroke-width: 2; stroke-opacity: .72; }
+      .node { fill: #eef5ff; stroke: #4a78c2; stroke-width: 2; }
+      .endpoint { fill: #fff4db; stroke: #c98200; stroke-width: 2.2; }
+      .node-text { fill: #17365d; font: 700 22px system-ui, -apple-system, "Segoe UI", sans-serif; text-anchor: middle; dominant-baseline: middle; }
+      .endpoint-text { fill: #5a3900; font: 700 21px system-ui, -apple-system, "Segoe UI", sans-serif; text-anchor: middle; dominant-baseline: middle; }
+    </style>
+  </defs>
+
+  <rect x="70" y="115" width="860" height="135" rx="18" class="band"/>
+  <rect x="70" y="300" width="860" height="135" rx="18" class="band"/>
+  <rect x="70" y="485" width="860" height="135" rx="18" class="band"/>
+
+  <text x="95" y="148" class="round">Round 1</text>
+  <text x="95" y="173" class="hint">Independent</text>
+  <text x="95" y="333" class="round">Round 2</text>
+  <text x="95" y="358" class="hint">Read round 1</text>
+  <text x="95" y="518" class="round">Round 3</text>
+  <text x="95" y="543" class="hint">Read round 2</text>
+
+  <!-- Question to round 1 -->
+  <path d="M470 76 L240 165" class="edge outer-edge"/>
+  <path d="M500 76 L500 165" class="edge outer-edge"/>
+  <path d="M530 76 L760 165" class="edge outer-edge"/>
+
+  <!-- Round 1 to round 2: 3 × 3 fully connected -->
+  <path d="M240 225 L240 350" class="edge"/>
+  <path d="M270 225 L470 350" class="edge"/>
+  <path d="M300 225 L700 350" class="edge"/>
+  <path d="M470 225 L270 350" class="edge"/>
+  <path d="M500 225 L500 350" class="edge"/>
+  <path d="M530 225 L730 350" class="edge"/>
+  <path d="M700 225 L300 350" class="edge"/>
+  <path d="M730 225 L530 350" class="edge"/>
+  <path d="M760 225 L760 350" class="edge"/>
+
+  <!-- Round 2 to round 3: 3 × 3 fully connected -->
+  <path d="M240 410 L240 535" class="edge"/>
+  <path d="M270 410 L470 535" class="edge"/>
+  <path d="M300 410 L700 535" class="edge"/>
+  <path d="M470 410 L270 535" class="edge"/>
+  <path d="M500 410 L500 535" class="edge"/>
+  <path d="M530 410 L730 535" class="edge"/>
+  <path d="M700 410 L300 535" class="edge"/>
+  <path d="M730 410 L530 535" class="edge"/>
+  <path d="M760 410 L760 535" class="edge"/>
+
+  <!-- Round 3 to the judge -->
+  <path d="M270 595 L470 680" class="edge outer-edge"/>
+  <path d="M500 595 L500 680" class="edge outer-edge"/>
+  <path d="M730 595 L530 680" class="edge outer-edge"/>
+
+  <!-- Nodes render above connectors so lines do not cross labels -->
+  <rect x="400" y="20" width="200" height="56" rx="14" class="endpoint"/>
+  <text x="500" y="49" class="endpoint-text">Question</text>
+
+  <rect x="205" y="165" width="130" height="60" rx="12" class="node"/>
+  <rect x="435" y="165" width="130" height="60" rx="12" class="node"/>
+  <rect x="665" y="165" width="130" height="60" rx="12" class="node"/>
+  <text x="270" y="196" class="node-text">A1</text>
+  <text x="500" y="196" class="node-text">B1</text>
+  <text x="730" y="196" class="node-text">C1</text>
+
+  <rect x="205" y="350" width="130" height="60" rx="12" class="node"/>
+  <rect x="435" y="350" width="130" height="60" rx="12" class="node"/>
+  <rect x="665" y="350" width="130" height="60" rx="12" class="node"/>
+  <text x="270" y="381" class="node-text">A2</text>
+  <text x="500" y="381" class="node-text">B2</text>
+  <text x="730" y="381" class="node-text">C2</text>
+
+  <rect x="205" y="535" width="130" height="60" rx="12" class="node"/>
+  <rect x="435" y="535" width="130" height="60" rx="12" class="node"/>
+  <rect x="665" y="535" width="130" height="60" rx="12" class="node"/>
+  <text x="270" y="566" class="node-text">A3</text>
+  <text x="500" y="566" class="node-text">B3</text>
+  <text x="730" y="566" class="node-text">C3</text>
+
+  <rect x="400" y="680" width="200" height="56" rx="14" class="endpoint"/>
+  <text x="500" y="709" class="endpoint-text">Judge</text>
+</svg>

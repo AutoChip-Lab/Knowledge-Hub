@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 760" role="img" aria-labelledby="title desc">
+  <title id="title">用户提供规划输入，Planner 构建任务 DAG，调度器按依赖执行任务</title>
+  <desc id="desc">用户定义目标、范围、成功标准、预算和风险边界。Planner 拆分任务，指定负责人、输入输出、验收标准和失败策略，再建立依赖边并验证图。调度器并行执行 T1、T2、T3，三项完成后执行 T4，再依次执行 T5、T6 和 T7。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#687c98"/>
+    </marker>
+    <style>
+      .arrow { fill: none; stroke: #687c98; stroke-width: 2; marker-end: url(#arrow); }
+      .input { fill: #eaf8f4; stroke: #248c78; stroke-width: 1.8; }
+      .planner { fill: #eef5ff; stroke: #4a78c2; stroke-width: 1.8; }
+      .dag { fill: #f8fbff; stroke: #d5e1ef; stroke-width: 1.6; }
+      .contract { fill: #fff8e8; stroke: #d79a2b; stroke-width: 1.8; }
+      .title { fill: #17365d; font: 700 21px system-ui, -apple-system, "Segoe UI", sans-serif; }
+      .subtitle { fill: #60738c; font: 15px system-ui, -apple-system, "Segoe UI", sans-serif; }
+      .item { fill: #ffffff; stroke-width: 1.2; }
+      .input-item { stroke: #91cbbf; }
+      .planner-item { stroke: #a7bddb; }
+      .item-text { fill: #415975; font: 600 15px system-ui, -apple-system, "Segoe UI", sans-serif; text-anchor: middle; dominant-baseline: middle; }
+      .step-title { fill: #284d79; font: 700 16px system-ui, -apple-system, "Segoe UI", sans-serif; }
+      .step-detail { fill: #5c7089; font: 14px system-ui, -apple-system, "Segoe UI", sans-serif; }
+      .edge-label { fill: #5d7088; font: 600 12px system-ui, -apple-system, "Segoe UI", sans-serif; text-anchor: middle; }
+      .task { fill: #ffffff; stroke: #8066b3; stroke-width: 1.7; }
+      .task-review { fill: #fff0f0; stroke: #bd6d67; stroke-width: 1.7; }
+      .task-final { fill: #eaf8f4; stroke: #248c78; stroke-width: 1.8; }
+      .task-id { fill: #263f62; font: 700 16px system-ui, -apple-system, "Segoe UI", sans-serif; text-anchor: middle; }
+      .task-name { fill: #5b6d84; font: 12px system-ui, -apple-system, "Segoe UI", sans-serif; text-anchor: middle; }
+      .task-owner { fill: #7d6a99; font: 12px system-ui, -apple-system, "Segoe UI", sans-serif; text-anchor: middle; }
+      .contract-title { fill: #6b4808; font: 700 18px system-ui, -apple-system, "Segoe UI", sans-serif; }
+      .contract-text { fill: #6b5429; font: 600 14px system-ui, -apple-system, "Segoe UI", sans-serif; text-anchor: middle; dominant-baseline: middle; }
+      .contract-pill { fill: #ffffff; stroke: #e2bb72; stroke-width: 1.1; }
+    </style>
+  </defs>
+
+  <!-- 输入：目标和约束 -->
+  <rect x="25" y="55" width="265" height="470" rx="20" class="input"/>
+  <text x="50" y="91" class="title">① 用户定义目标与约束</text>
+  <text x="50" y="116" class="subtitle">用户说明任务怎样才算完成</text>
+  <rect x="55" y="150" width="205" height="48" rx="11" class="item input-item"/>
+  <rect x="55" y="218" width="205" height="48" rx="11" class="item input-item"/>
+  <rect x="55" y="286" width="205" height="48" rx="11" class="item input-item"/>
+  <rect x="55" y="354" width="205" height="48" rx="11" class="item input-item"/>
+  <rect x="55" y="422" width="205" height="62" rx="11" class="item input-item"/>
+  <text x="157.5" y="175" class="item-text">用户描述目标与期望产物</text>
+  <text x="157.5" y="243" class="item-text">用户限定任务范围与非目标</text>
+  <text x="157.5" y="311" class="item-text">用户给出可检查的成功标准</text>
+  <text x="157.5" y="379" class="item-text">用户规定预算与截止时间</text>
+  <text x="157.5" y="444" class="item-text">策略层划定风险与权限边界</text>
+  <text x="157.5" y="467" class="task-name">Planner 汇总规划上下文</text>
+
+  <!-- Planner 构图 -->
+  <rect x="345" y="55" width="310" height="470" rx="20" class="planner"/>
+  <text x="370" y="91" class="title">② Planner 构建可执行任务图</text>
+  <text x="370" y="116" class="subtitle">Planner 分别定义任务节点与依赖边</text>
+
+  <rect x="375" y="148" width="250" height="88" rx="13" class="item planner-item"/>
+  <text x="395" y="178" class="step-title">Planner 拆分可执行任务</text>
+  <text x="395" y="202" class="step-detail">每个任务产出可引用的独立产物</text>
+  <text x="395" y="223" class="step-detail">Planner 不把章节标题当作任务</text>
+
+  <path d="M500 236 L500 255" class="arrow"/>
+  <rect x="375" y="255" width="250" height="112" rx="13" class="item planner-item"/>
+  <text x="395" y="285" class="step-title">Planner 补齐每个任务的契约</text>
+  <text x="395" y="309" class="step-detail">Planner 指定负责人、输入和输出</text>
+  <text x="395" y="332" class="step-detail">Planner 定义验收条件与失败策略</text>
+  <text x="395" y="353" class="step-detail">调度器检查任务状态与产物</text>
+
+  <path d="M500 367 L500 386" class="arrow"/>
+  <rect x="375" y="386" width="250" height="108" rx="13" class="item planner-item"/>
+  <text x="395" y="416" class="step-title">Planner 添加依赖并验证 DAG</text>
+  <text x="395" y="440" class="step-detail">Planner 标注等待关系与并行分支</text>
+  <text x="395" y="463" class="step-detail">Planner 排除循环、缺失依赖和孤点</text>
+  <text x="395" y="484" class="step-detail">Planner 将 DAG 交给调度器</text>
+
+  <!-- 两个阶段之间 -->
+  <path d="M290 285 L337 285" class="arrow"/>
+  <text x="313.5" y="260" class="edge-label">用户</text>
+  <text x="313.5" y="276" class="edge-label">提交输入</text>
+  <path d="M655 285 L702 285" class="arrow"/>
+  <text x="678.5" y="260" class="edge-label">Planner</text>
+  <text x="678.5" y="276" class="edge-label">提交 DAG</text>
+
+  <!-- 输出：真实 DAG -->
+  <rect x="710" y="35" width="365" height="510" rx="20" class="dag"/>
+  <text x="735" y="71" class="title">③ 调度器按依赖执行任务 DAG</text>
+  <text x="735" y="96" class="subtitle">依赖边决定任务何时进入就绪状态</text>
+
+  <!-- DAG 边放在节点后方 -->
+  <path d="M765 174 L865 228" class="arrow"/>
+  <path d="M892.5 174 L892.5 228" class="arrow"/>
+  <path d="M1020 174 L920 228" class="arrow"/>
+  <path d="M892.5 286 L892.5 310" class="arrow"/>
+  <path d="M892.5 368 L892.5 392" class="arrow"/>
+  <path d="M892.5 450 L892.5 474" class="arrow"/>
+
+  <!-- 三个并行任务 -->
+  <rect x="722" y="116" width="86" height="58" rx="11" class="task"/>
+  <rect x="849.5" y="116" width="86" height="58" rx="11" class="task"/>
+  <rect x="977" y="116" width="86" height="58" rx="11" class="task"/>
+  <text x="765" y="139" class="task-id">T1</text>
+  <text x="765" y="157" class="task-name">研究员 A 调研</text>
+  <text x="765" y="170" class="task-owner">AutoGen</text>
+  <text x="892.5" y="139" class="task-id">T2</text>
+  <text x="892.5" y="157" class="task-name">研究员 B 调研</text>
+  <text x="892.5" y="170" class="task-owner">MetaGPT</text>
+  <text x="1020" y="139" class="task-id">T3</text>
+  <text x="1020" y="157" class="task-name">研究员 C 调研</text>
+  <text x="1020" y="170" class="task-owner">CrewAI</text>
+
+  <!-- 汇合与后续任务 -->
+  <rect x="827.5" y="228" width="130" height="58" rx="11" class="task"/>
+  <text x="892.5" y="251" class="task-id">T4</text>
+  <text x="892.5" y="270" class="task-name">分析员提取</text>
+  <text x="892.5" y="283" class="task-owner">对比维度</text>
+
+  <rect x="827.5" y="310" width="130" height="58" rx="11" class="task"/>
+  <text x="892.5" y="333" class="task-id">T5</text>
+  <text x="892.5" y="352" class="task-name">撰稿人撰写</text>
+  <text x="892.5" y="365" class="task-owner">比较初稿</text>
+
+  <rect x="827.5" y="392" width="130" height="58" rx="11" class="task-review"/>
+  <text x="892.5" y="415" class="task-id">T6</text>
+  <text x="892.5" y="434" class="task-name">审阅人核查</text>
+  <text x="892.5" y="447" class="task-owner">事实与引用</text>
+
+  <rect x="827.5" y="474" width="130" height="58" rx="11" class="task-final"/>
+  <text x="892.5" y="497" class="task-id">T7</text>
+  <text x="892.5" y="516" class="task-name">负责人形成</text>
+  <text x="892.5" y="529" class="task-owner">最终建议</text>
+
+  <!-- 节点、边和图分别表达什么 -->
+  <rect x="100" y="590" width="900" height="132" rx="20" class="contract"/>
+  <text x="130" y="628" class="contract-title">调度器依据三类契约执行任务 DAG</text>
+  <rect x="130" y="652" width="250" height="44" rx="11" class="contract-pill"/>
+  <rect x="425" y="652" width="250" height="44" rx="11" class="contract-pill"/>
+  <rect x="720" y="652" width="250" height="44" rx="11" class="contract-pill"/>
+  <text x="255" y="675" class="contract-text">任务节点说明工作与验收方式</text>
+  <text x="550" y="675" class="contract-text">依赖边规定等待与信息关系</text>
+  <text x="845" y="675" class="contract-text">整张图记录就绪与完成状态</text>
+</svg>

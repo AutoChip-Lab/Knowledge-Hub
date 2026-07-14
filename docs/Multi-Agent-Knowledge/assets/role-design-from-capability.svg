@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 460" role="img" aria-labelledby="title desc">
+  <title id="title">从能力到角色的四步边界设计流程</title>
+  <desc id="desc">第一步列出所需能力，第二步决定能力合并或拆分，第三步补齐角色规格，第四步进行团队校验。校验通过形成团队角色表，未通过返回第二步重新分组。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L9,4.5 L0,9 Z" fill="#5e7898"/>
+    </marker>
+    <marker id="feedback-arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L9,4.5 L0,9 Z" fill="#b66a4f"/>
+    </marker>
+    <style>
+      .heading { fill: #17365d; font: 700 27px system-ui, -apple-system, "Segoe UI", sans-serif; text-anchor: middle; }
+      .subheading { fill: #687b92; font: 15px system-ui, -apple-system, "Segoe UI", sans-serif; text-anchor: middle; }
+      .card { stroke-width: 1.8; }
+      .card-1 { fill: #eaf8f4; stroke: #3b9c86; }
+      .card-2 { fill: #eef5ff; stroke: #5684c4; }
+      .card-3 { fill: #f4efff; stroke: #846db1; }
+      .card-4 { fill: #fff7e7; stroke: #d39a35; }
+      .number { fill: #ffffff; stroke-width: 2; }
+      .number-1 { stroke: #3b9c86; }
+      .number-2 { stroke: #5684c4; }
+      .number-3 { stroke: #846db1; }
+      .number-4 { stroke: #d39a35; }
+      .number-text { fill: #294866; font: 700 20px system-ui, -apple-system, "Segoe UI", sans-serif; text-anchor: middle; dominant-baseline: middle; }
+      .card-title { fill: #203f61; font: 700 21px system-ui, -apple-system, "Segoe UI", sans-serif; text-anchor: middle; }
+      .card-detail { fill: #5d7188; font: 15px system-ui, -apple-system, "Segoe UI", sans-serif; text-anchor: middle; }
+      .arrow { fill: none; stroke: #5e7898; stroke-width: 2.4; marker-end: url(#arrow); }
+      .feedback { fill: none; stroke: #b66a4f; stroke-width: 2.2; stroke-dasharray: 8 6; marker-end: url(#feedback-arrow); }
+      .edge-label { fill: #6a7b90; font: 600 14px system-ui, -apple-system, "Segoe UI", sans-serif; text-anchor: middle; }
+      .feedback-label { fill: #98543f; font: 600 14px system-ui, -apple-system, "Segoe UI", sans-serif; text-anchor: middle; }
+      .result { fill: #eaf8f4; stroke: #248c78; stroke-width: 2; }
+      .result-text { fill: #176553; font: 700 19px system-ui, -apple-system, "Segoe UI", sans-serif; text-anchor: middle; dominant-baseline: middle; }
+    </style>
+  </defs>
+
+  <text x="600" y="42" class="heading">从能力到角色：四步边界设计</text>
+  <text x="600" y="70" class="subheading">先确定任务需要什么，再决定由哪些角色承担</text>
+
+  <rect x="35" y="110" width="245" height="145" rx="18" class="card card-1"/>
+  <circle cx="68" cy="143" r="21" class="number number-1"/>
+  <text x="68" y="144" class="number-text">1</text>
+  <text x="157.5" y="157" class="card-title">列出所需能力</text>
+  <text x="157.5" y="195" class="card-detail">业务目标 · 成功标准</text>
+  <text x="157.5" y="221" class="card-detail">风险约束</text>
+
+  <rect x="330" y="110" width="245" height="145" rx="18" class="card card-2"/>
+  <circle cx="363" cy="143" r="21" class="number number-2"/>
+  <text x="363" y="144" class="number-text">2</text>
+  <text x="452.5" y="157" class="card-title">决定合并或拆分</text>
+  <text x="452.5" y="195" class="card-detail">能力耦合 · 职责冲突</text>
+  <text x="452.5" y="221" class="card-detail">权限风险</text>
+
+  <rect x="625" y="110" width="245" height="145" rx="18" class="card card-3"/>
+  <circle cx="658" cy="143" r="21" class="number number-3"/>
+  <text x="658" y="144" class="number-text">3</text>
+  <text x="747.5" y="157" class="card-title">补齐角色规格</text>
+  <text x="747.5" y="195" class="card-detail">使命 · 职责 · 非目标</text>
+  <text x="747.5" y="221" class="card-detail">输入输出 · 工具权限</text>
+
+  <rect x="920" y="110" width="245" height="145" rx="18" class="card card-4"/>
+  <circle cx="953" cy="143" r="21" class="number number-4"/>
+  <text x="953" y="144" class="number-text">4</text>
+  <text x="1042.5" y="157" class="card-title">团队级校验</text>
+  <text x="1042.5" y="195" class="card-detail">缺口 · 重叠 · 越权</text>
+  <text x="1042.5" y="221" class="card-detail">交接是否可消费</text>
+
+  <path d="M280 182.5 L322 182.5" class="arrow"/>
+  <path d="M575 182.5 L617 182.5" class="arrow"/>
+  <path d="M870 182.5 L912 182.5" class="arrow"/>
+
+  <path d="M1042.5 255 L1042.5 326" class="arrow"/>
+  <text x="1072" y="297" class="edge-label">通过</text>
+  <rect x="915" y="334" width="255" height="66" rx="16" class="result"/>
+  <text x="1042.5" y="368" class="result-text">形成团队角色表</text>
+
+  <path d="M920 231 L895 231 L895 300 L452.5 300 L452.5 263" class="feedback"/>
+  <text x="675" y="324" class="feedback-label">未通过：返回第二步重新分组</text>
+</svg>

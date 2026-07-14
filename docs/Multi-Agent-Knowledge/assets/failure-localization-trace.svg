@@ -1,0 +1,182 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 1040" role="img" aria-labelledby="title desc">
+  <title id="title">按时间从前往后定位首个异常事件</title>
+  <desc id="desc">先用最终失败锁定对应的 Trace，再检查 Trace 是否完整。Trace 不完整时先补齐观测；完整时从任务接收事件开始，按时间从前往后逐事件比较预期与实际，找到时间上最早的异常事件，再按目标计划、路由交接、工具运行时、证据状态、评审闸门或模型与任务边界六类定位。最后进行最小重放，问题消失后加入回归集，否则向时间更早的上游事件移动并补充证据。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L9,4.5 L0,9 Z" fill="#687c98"/>
+    </marker>
+    <marker id="green-arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L9,4.5 L0,9 Z" fill="#248c78"/>
+    </marker>
+    <style>
+      .arrow { fill: none; stroke: #687c98; stroke-width: 2.2; marker-end: url(#arrow); }
+      .branch { fill: none; stroke: #8a9bb0; stroke-width: 1.8; marker-end: url(#arrow); }
+      .loop { fill: none; stroke: #a16d45; stroke-width: 2; stroke-dasharray: 7 6; marker-end: url(#arrow); }
+      .stage { fill: #f8fbff; stroke: #cad9e9; stroke-width: 1.8; }
+      .decision { fill: #fff8e8; stroke: #d79a2b; stroke-width: 2; }
+      .observe { fill: #fff1ef; stroke: #c56d63; stroke-width: 1.8; }
+      .replay { fill: #eef5ff; stroke: #4a78c2; stroke-width: 1.8; }
+      .success { fill: #eaf8f4; stroke: #248c78; stroke-width: 1.8; }
+      .card { fill: #ffffff; stroke-width: 1.7; }
+      .plan { stroke: #8066b3; }
+      .route { stroke: #4a78c2; }
+      .tool { stroke: #bd6d67; }
+      .evidence { stroke: #248c78; }
+      .review { stroke: #d79a2b; }
+      .boundary { stroke: #718098; }
+      .title { fill: #17365d; font: 700 21px system-ui, -apple-system, "Segoe UI", sans-serif; }
+      .subtitle { fill: #60738c; font: 15px system-ui, -apple-system, "Segoe UI", sans-serif; }
+      .body { fill: #425a75; font: 14px system-ui, -apple-system, "Segoe UI", sans-serif; }
+      .body-center { fill: #425a75; font: 14px system-ui, -apple-system, "Segoe UI", sans-serif; text-anchor: middle; }
+      .strong { fill: #284d79; font: 700 16px system-ui, -apple-system, "Segoe UI", sans-serif; }
+      .strong-center { fill: #284d79; font: 700 16px system-ui, -apple-system, "Segoe UI", sans-serif; text-anchor: middle; }
+      .event { fill: #5b6d84; font: 12px ui-monospace, SFMono-Regular, Consolas, monospace; text-anchor: middle; }
+      .event-bad { fill: #9d4039; font: 700 12px ui-monospace, SFMono-Regular, Consolas, monospace; text-anchor: middle; }
+      .label { fill: #5d7088; font: 700 14px system-ui, -apple-system, "Segoe UI", sans-serif; }
+      .pill { fill: #ffffff; stroke: #b7c7d8; stroke-width: 1.2; }
+      .pill-text { fill: #496078; font: 600 14px system-ui, -apple-system, "Segoe UI", sans-serif; text-anchor: middle; dominant-baseline: middle; }
+      .line { stroke: #9badc1; stroke-width: 2.2; }
+      .scan-arrow { fill: none; stroke: #248c78; stroke-width: 3.2; marker-end: url(#green-arrow); }
+      .scan-label { fill: #16735f; font: 700 13px system-ui, -apple-system, "Segoe UI", sans-serif; text-anchor: middle; }
+      .dot { fill: #ffffff; stroke: #687c98; stroke-width: 2; }
+      .dot-bad { fill: #fff1ef; stroke: #bd6d67; stroke-width: 3; }
+    </style>
+  </defs>
+
+  <!-- 1. 固定现象 -->
+  <rect x="70" y="35" width="1040" height="108" rx="20" class="stage"/>
+  <text x="100" y="72" class="title">① 固定失败现象与运行条件</text>
+  <text x="100" y="99" class="subtitle">不要只保存最终答案；同时冻结输入、配置、模型、工具版本与预算。</text>
+  <rect x="650" y="58" width="78" height="38" rx="19" class="pill"/>
+  <rect x="742" y="58" width="78" height="38" rx="19" class="pill"/>
+  <rect x="834" y="58" width="78" height="38" rx="19" class="pill"/>
+  <rect x="926" y="58" width="78" height="38" rx="19" class="pill"/>
+  <rect x="1018" y="58" width="64" height="38" rx="19" class="pill"/>
+  <text x="689" y="78" class="pill-text">错答</text>
+  <text x="781" y="78" class="pill-text">漏答</text>
+  <text x="873" y="78" class="pill-text">超时</text>
+  <text x="965" y="78" class="pill-text">超预算</text>
+  <text x="1050" y="78" class="pill-text">越权</text>
+
+  <path d="M590 143 L590 174" class="arrow"/>
+
+  <!-- Trace 完整性判断 -->
+  <path d="M590 174 L790 224 L590 274 L390 224 Z" class="decision"/>
+  <text x="590" y="218" class="strong-center">Trace 是否完整、可重建？</text>
+  <text x="590" y="241" class="body-center">事件顺序 · 输入输出 · 产物版本 · 父子关系</text>
+
+  <path d="M390 224 L323 224" class="arrow"/>
+  <text x="349" y="210" class="label">否</text>
+  <rect x="45" y="171" width="278" height="106" rx="17" class="observe"/>
+  <text x="70" y="206" class="strong">先补观测，暂不归因</text>
+  <text x="70" y="232" class="body">补 trace / span / event / artifact 引用</text>
+  <text x="70" y="254" class="body">缺少证据时，“模型不好”只是猜测</text>
+
+  <path d="M590 274 L590 314" class="arrow"/>
+  <text x="605" y="298" class="label">是</text>
+
+  <!-- 2. 找第一个偏离点 -->
+  <rect x="70" y="314" width="1040" height="178" rx="20" class="stage"/>
+  <text x="100" y="351" class="title">② 沿时间轴比较 expected 与 actual</text>
+  <text x="100" y="377" class="subtitle">从最早事件开始，标记第一个输出、状态、耗时或产物版本偏离预期的位置。</text>
+  <path d="M145 397 L654 397" class="scan-arrow"/>
+  <text x="399.5" y="391" class="scan-label">从 task_received 开始，按时间从前往后检查，直到首个偏离</text>
+  <line x1="145" y1="423" x2="1035" y2="423" class="line"/>
+  <circle cx="145" cy="423" r="10" class="dot"/>
+  <circle cx="323" cy="423" r="10" class="dot"/>
+  <circle cx="501" cy="423" r="10" class="dot"/>
+  <circle cx="679" cy="423" r="14" class="dot-bad"/>
+  <circle cx="857" cy="423" r="10" class="dot"/>
+  <circle cx="1035" cy="423" r="10" class="dot"/>
+  <text x="145" y="454" class="event">task_received</text>
+  <text x="323" y="454" class="event">plan_created</text>
+  <text x="501" y="454" class="event">route_selected</text>
+  <text x="679" y="454" class="event-bad">tool_result ← 首个偏离</text>
+  <text x="857" y="454" class="event">artifact_saved</text>
+  <text x="1035" y="454" class="event">review_result</text>
+  <text x="100" y="479" class="body">后续事件即使也异常，通常只是上游偏差的传播结果；先修首个偏离点。</text>
+
+  <path d="M590 492 L590 530" class="arrow"/>
+
+  <!-- 3. 按事件类型定位 -->
+  <rect x="335" y="530" width="510" height="62" rx="16" class="decision"/>
+  <text x="590" y="556" class="strong-center">③ 首个异常事件属于哪一层？</text>
+  <text x="590" y="578" class="body-center">按事件责任定位，不按最终答案猜原因</text>
+
+  <path d="M590 592 L590 620 L115 620 L115 645" class="branch"/>
+  <path d="M590 620 L305 620 L305 645" class="branch"/>
+  <path d="M590 620 L495 620 L495 645" class="branch"/>
+  <path d="M590 620 L685 620 L685 645" class="branch"/>
+  <path d="M590 620 L875 620 L875 645" class="branch"/>
+  <path d="M590 620 L1065 620 L1065 645" class="branch"/>
+
+  <rect x="30" y="645" width="170" height="142" rx="16" class="card plan"/>
+  <text x="115" y="677" class="strong-center">目标 / 计划</text>
+  <text x="115" y="704" class="event">task_received</text>
+  <text x="115" y="724" class="event">plan_created</text>
+  <text x="115" y="754" class="body-center">任务契约 · 依赖</text>
+  <text x="115" y="775" class="body-center">范围与成功标准</text>
+
+  <rect x="220" y="645" width="170" height="142" rx="16" class="card route"/>
+  <text x="305" y="677" class="strong-center">路由 / 交接</text>
+  <text x="305" y="704" class="event">route_selected</text>
+  <text x="305" y="724" class="event">handoff</text>
+  <text x="305" y="754" class="body-center">能力 · 权限</text>
+  <text x="305" y="775" class="body-center">上下文是否完整</text>
+
+  <rect x="410" y="645" width="170" height="142" rx="16" class="card tool"/>
+  <text x="495" y="677" class="strong-center">工具 / Runtime</text>
+  <text x="495" y="704" class="event">tool_call</text>
+  <text x="495" y="724" class="event">tool_result</text>
+  <text x="495" y="754" class="body-center">Schema · 鉴权</text>
+  <text x="495" y="775" class="body-center">环境 · 超时 · 重试</text>
+
+  <rect x="600" y="645" width="170" height="142" rx="16" class="card evidence"/>
+  <text x="685" y="677" class="strong-center">证据 / 状态</text>
+  <text x="685" y="704" class="event">artifact / memory</text>
+  <text x="685" y="724" class="event">citation</text>
+  <text x="685" y="754" class="body-center">来源 · 版本</text>
+  <text x="685" y="775" class="body-center">共享状态与压缩</text>
+
+  <rect x="790" y="645" width="170" height="142" rx="16" class="card review"/>
+  <text x="875" y="677" class="strong-center">评审 / 闸门</text>
+  <text x="875" y="704" class="event">test / review</text>
+  <text x="875" y="724" class="event">approval</text>
+  <text x="875" y="754" class="body-center">Rubric · 阈值</text>
+  <text x="875" y="775" class="body-center">测试覆盖与拦截</text>
+
+  <rect x="980" y="645" width="170" height="142" rx="16" class="card boundary"/>
+  <text x="1065" y="677" class="strong-center">无事件偏差</text>
+  <text x="1065" y="704" class="event">final_output only</text>
+  <text x="1065" y="724" class="event">expected ≠ actual</text>
+  <text x="1065" y="754" class="body-center">模型能力 · 任务边界</text>
+  <text x="1065" y="775" class="body-center">拆小任务或人工介入</text>
+
+  <!-- 汇合到重放 -->
+  <path d="M115 787 L115 814 L590 814" class="branch"/>
+  <path d="M305 787 L305 814" class="branch"/>
+  <path d="M495 787 L495 814" class="branch"/>
+  <path d="M685 787 L685 814" class="branch"/>
+  <path d="M875 787 L875 814" class="branch"/>
+  <path d="M1065 787 L1065 814 L590 814 L590 839" class="branch"/>
+
+  <rect x="70" y="848" width="325" height="104" rx="18" class="replay"/>
+  <text x="95" y="883" class="strong">④ 最小重放</text>
+  <text x="95" y="909" class="body">保留同一输入与配置，只改变一个修复变量</text>
+  <text x="95" y="932" class="body">确认修复的是原因，而不是偶然结果</text>
+
+  <path d="M395 900 L444 900" class="arrow"/>
+  <path d="M590 848 L736 900 L590 952 L444 900 Z" class="decision"/>
+  <text x="590" y="894" class="strong-center">问题是否消失？</text>
+  <text x="590" y="918" class="body-center">重复运行仍通过</text>
+
+  <path d="M736 900 L785 900" class="arrow"/>
+  <text x="753" y="886" class="label">是</text>
+  <rect x="785" y="848" width="325" height="104" rx="18" class="success"/>
+  <text x="810" y="883" class="strong">⑤ 固化修复</text>
+  <text x="810" y="909" class="body">加入回归集，并监控该事件与故障类别</text>
+  <text x="810" y="932" class="body">让同类问题下次自动暴露</text>
+
+  <path d="M590 952 L590 996 L232 996 L232 952" class="loop"/>
+  <text x="400" y="1019" class="label">否：向上游移动一个事件，补充证据后再重放</text>
+</svg>

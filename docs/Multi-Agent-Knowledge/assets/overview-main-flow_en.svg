@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 960" role="img" aria-labelledby="title desc">
+  <title id="title">Multi-Agent System Flow and Owners</title>
+  <desc id="desc">A human states the goal; the main agent clarifies it and drafts a task specification. The human confirms critical boundaries and success criteria, while the runtime checks budget, risk, permissions, and approval requirements. The orchestrator chooses a single-agent or multi-agent path. In the multi-agent path, a planner decomposes tasks, a runtime router assigns roles, and workers execute. A reviewer, test, or judge accepts the result before the runtime delivers it and saves the trace.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#667b96"/>
+    </marker>
+    <style>
+      .flow { fill: none; stroke: #667b96; stroke-width: 2.2; marker-end: url(#arrow); }
+      .branch { fill: none; stroke: #667b96; stroke-width: 2; marker-end: url(#arrow); }
+      .return { fill: none; stroke: #a06055; stroke-width: 1.8; stroke-dasharray: 7 5; marker-end: url(#arrow); }
+      .human { fill: #eaf8f4; stroke: #248c78; stroke-width: 2; }
+      .main { fill: #eef5ff; stroke: #4a78c2; stroke-width: 2; }
+      .runtime { fill: #fff8e8; stroke: #d79a2b; stroke-width: 2; }
+      .worker { fill: #f4efff; stroke: #8066b3; stroke-width: 2; }
+      .review { fill: #fff0f0; stroke: #bd6d67; stroke-width: 2; }
+      .path-box { fill: #fafcff; stroke: #d8e2ef; stroke-width: 1.5; }
+      .title { fill: #17365d; font: 700 20px system-ui, -apple-system, "Segoe UI", sans-serif; }
+      .detail { fill: #536985; font: 15px system-ui, -apple-system, "Segoe UI", sans-serif; }
+      .owner { fill: #ffffff; font: 700 13px system-ui, -apple-system, "Segoe UI", sans-serif; text-anchor: middle; dominant-baseline: middle; }
+      .owner-human { fill: #248c78; }
+      .owner-main { fill: #4a78c2; }
+      .owner-runtime { fill: #c1851e; }
+      .owner-worker { fill: #8066b3; }
+      .owner-review { fill: #ad5e58; }
+      .path-title { fill: #60738c; font: 700 17px system-ui, -apple-system, "Segoe UI", sans-serif; }
+      .edge-label { fill: #52657e; font: 600 15px system-ui, -apple-system, "Segoe UI", sans-serif; }
+    </style>
+  </defs>
+
+  <!-- Main-flow connectors -->
+  <path d="M500 78 L500 110" class="flow"/>
+  <path d="M500 185 L500 215" class="flow"/>
+  <path d="M500 280 L500 310" class="flow"/>
+  <path d="M500 385 L500 415" class="flow"/>
+
+  <!-- Human states the goal -->
+  <rect x="270" y="18" width="460" height="60" rx="15" class="human"/>
+  <rect x="288" y="32" width="72" height="28" rx="14" class="owner-human"/>
+  <text x="324" y="47" class="owner">Human</text>
+  <text x="385" y="47" class="title">State the goal</text>
+  <text x="385" y="69" class="detail">Expected result and known constraints</text>
+
+  <!-- Main Agent drafts the task specification -->
+  <rect x="220" y="110" width="560" height="75" rx="15" class="main"/>
+  <rect x="238" y="124" width="92" height="28" rx="14" class="owner-main"/>
+  <text x="284" y="139" class="owner">Main Agent</text>
+  <text x="350" y="139" class="title">Clarify the goal; draft the task spec</text>
+  <text x="350" y="164" class="detail">Task boundary · success criteria · missing information</text>
+
+  <!-- Human confirmation -->
+  <rect x="120" y="215" width="760" height="65" rx="15" class="human"/>
+  <rect x="138" y="229" width="72" height="28" rx="14" class="owner-human"/>
+  <text x="174" y="244" class="owner">Human</text>
+  <text x="235" y="244" class="title">Confirm critical boundaries and success criteria (optional)</text>
+  <text x="235" y="266" class="detail">Confirm high-impact tradeoffs</text>
+
+  <!-- Runtime gates -->
+  <rect x="220" y="310" width="560" height="75" rx="15" class="runtime"/>
+  <rect x="238" y="324" width="88" height="28" rx="14" class="owner-runtime"/>
+  <text x="282" y="339" class="owner">Runtime</text>
+  <text x="346" y="339" class="title">Apply policy gates</text>
+  <text x="346" y="364" class="detail">Budget · risk · permissions · data boundary · approvals</text>
+
+  <!-- Main Agent selects the execution mode -->
+  <rect x="220" y="415" width="560" height="70" rx="15" class="main"/>
+  <rect x="238" y="429" width="92" height="28" rx="14" class="owner-main"/>
+  <text x="284" y="444" class="owner">Main Agent</text>
+  <text x="350" y="444" class="title">Orchestrator selects the execution mode</text>
+  <text x="350" y="468" class="detail">Choose agents by dependencies and roles</text>
+
+  <!-- Execution-mode branches -->
+  <path d="M500 485 L500 510 L260 510 L260 555" class="branch"/>
+  <path d="M500 485 L500 510 L740 510 L740 545" class="branch"/>
+  <text x="330" y="530" class="edge-label">Single agent</text>
+  <text x="650" y="530" class="edge-label">Multiple agents</text>
+
+  <rect x="70" y="540" width="380" height="230" rx="20" class="path-box"/>
+  <text x="95" y="575" class="path-title">Single-agent path</text>
+  <rect x="105" y="615" width="310" height="78" rx="15" class="main"/>
+  <rect x="123" y="629" width="92" height="28" rx="14" class="owner-main"/>
+  <text x="169" y="644" class="owner">Main Agent</text>
+  <text x="235" y="644" class="title">Execute directly</text>
+  <text x="235" y="666" class="detail" style="font-size:13px">
+    <tspan x="235">Use allowed tools</tspan>
+    <tspan x="235" dy="16">Produce artifacts</tspan>
+  </text>
+
+  <rect x="550" y="540" width="380" height="250" rx="20" class="path-box"/>
+  <text x="575" y="575" class="path-title">Multi-agent path</text>
+
+  <rect x="585" y="590" width="310" height="52" rx="13" class="main"/>
+  <rect x="600" y="602" width="92" height="27" rx="13" class="owner-main"/>
+  <text x="646" y="616" class="owner">Main Agent</text>
+  <text x="711" y="617" class="title" style="font-size:18px">Planner splits work</text>
+
+  <path d="M740 642 L740 654" class="flow"/>
+  <rect x="585" y="654" width="310" height="52" rx="13" class="runtime"/>
+  <rect x="600" y="666" width="88" height="27" rx="13" class="owner-runtime"/>
+  <text x="644" y="680" class="owner">Runtime</text>
+  <text x="708" y="681" class="title" style="font-size:17px">Router assigns roles</text>
+
+  <path d="M740 706 L740 718" class="flow"/>
+  <rect x="585" y="718" width="310" height="52" rx="13" class="worker"/>
+  <rect x="600" y="730" width="94" height="27" rx="13" class="owner-worker"/>
+  <text x="647" y="744" class="owner">Workers</text>
+  <text x="711" y="745" class="title">Execute subtasks</text>
+
+  <!-- Both paths join at quality acceptance -->
+  <path d="M260 693 L260 800 L500 800 L500 815" class="branch"/>
+  <path d="M740 770 L740 800 L500 800 L500 815" class="branch"/>
+  <rect x="225" y="815" width="550" height="70" rx="15" class="review"/>
+  <rect x="243" y="829" width="104" height="28" rx="14" class="owner-review"/>
+  <text x="295" y="844" class="owner">Quality role</text>
+  <text x="368" y="844" class="title">Reviewer / Test / Judge accepts</text>
+  <text x="368" y="868" class="detail" style="font-size:14px">Failed: return to the main agent to revise the plan or artifact</text>
+
+  <!-- Deliver after acceptance -->
+  <path d="M500 885 L500 900" class="flow"/>
+  <text x="515" y="897" class="edge-label">Passed</text>
+  <rect x="270" y="900" width="460" height="55" rx="15" class="runtime"/>
+  <rect x="288" y="913" width="88" height="28" rx="14" class="owner-runtime"/>
+  <text x="332" y="928" class="owner">Runtime</text>
+  <text x="396" y="929" class="title">Deliver result and save trace</text>
+</svg>

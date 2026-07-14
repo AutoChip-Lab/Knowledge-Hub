@@ -1,0 +1,144 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 790" role="img" aria-labelledby="title desc">
+  <title id="title">多智能体系统分层架构</title>
+  <desc id="desc">交互与任务规格层、控制面、通信与共享状态、并行 Agent 执行面和工具资源层构成系统核心。相邻层之间双向交互，不表示串行步骤。质量保障位于左侧，治理与可观测性位于右侧，并跨越多个系统层。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse" markerUnits="strokeWidth">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#657b97"/>
+    </marker>
+    <style>
+      .frame { fill: #f8fbff; stroke: #d5e1ef; stroke-width: 1.5; }
+      .frame-title { fill: #536983; font: 700 17px system-ui, -apple-system, "Segoe UI", sans-serif; }
+      .frame-note { fill: #7a8ba0; font: 15px system-ui, -apple-system, "Segoe UI", sans-serif; }
+      .layer { fill: #eef5ff; stroke: #4a78c2; stroke-width: 1.8; }
+      .interaction { fill: #eaf8f4; stroke: #248c78; stroke-width: 1.9; }
+      .coordination { fill: #edf8fa; stroke: #36899a; stroke-width: 1.9; }
+      .execution { fill: #f4efff; stroke: #8066b3; stroke-width: 1.9; }
+      .resource { fill: #f5f7fa; stroke: #75869b; stroke-width: 1.7; }
+      .layer-title { fill: #17365d; font: 700 21px system-ui, -apple-system, "Segoe UI", sans-serif; }
+      .layer-detail { fill: #536985; font: 15px system-ui, -apple-system, "Segoe UI", sans-serif; }
+      .pill { fill: #ffffff; stroke: #aac0dd; stroke-width: 1.3; }
+      .pill-coordination { fill: #ffffff; stroke: #8abcc5; stroke-width: 1.3; }
+      .pill-execution { fill: #ffffff; stroke: #b4a2d5; stroke-width: 1.3; }
+      .pill-resource { fill: #ffffff; stroke: #b5c0cd; stroke-width: 1.2; }
+      .pill-text { fill: #36516f; font: 600 15px system-ui, -apple-system, "Segoe UI", sans-serif; text-anchor: middle; dominant-baseline: middle; }
+      .bidirectional { fill: none; stroke: #657b97; stroke-width: 1.9; marker-start: url(#arrow); marker-end: url(#arrow); }
+      .edge-label { fill: #65758b; font: 600 13px system-ui, -apple-system, "Segoe UI", sans-serif; }
+      .quality { fill: #fff0f0; stroke: #bd6d67; stroke-width: 1.8; }
+      .govern { fill: #fff8e8; stroke: #d79a2b; stroke-width: 1.8; }
+      .rail-title { font: 700 18px system-ui, -apple-system, "Segoe UI", sans-serif; text-anchor: middle; }
+      .quality-title { fill: #86423d; }
+      .govern-title { fill: #6b4808; }
+      .rail-subtitle { font: 14px system-ui, -apple-system, "Segoe UI", sans-serif; text-anchor: middle; }
+      .quality-subtitle { fill: #a15d57; }
+      .govern-subtitle { fill: #936919; }
+      .rail-item { fill: #ffffff; stroke-width: 1.1; }
+      .quality-item { stroke: #d7a09c; }
+      .govern-item { stroke: #e4bd72; }
+      .rail-text { fill: #665a58; font: 600 14px system-ui, -apple-system, "Segoe UI", sans-serif; text-anchor: middle; dominant-baseline: middle; }
+      .quality-bracket { fill: none; stroke: #bd6d67; stroke-width: 2; stroke-dasharray: 6 5; }
+      .govern-bracket { fill: none; stroke: #d79a2b; stroke-width: 2; stroke-dasharray: 6 5; }
+    </style>
+  </defs>
+
+  <!-- 系统核心：上下位置表示层次，双向箭头表示交互 -->
+  <rect x="190" y="20" width="720" height="750" rx="24" class="frame"/>
+  <text x="220" y="52" class="frame-title">系统核心</text>
+  <text x="308" y="52" class="frame-note">层间双向交互，不代表串行处理顺序</text>
+
+  <!-- 交互与任务规格层 -->
+  <rect x="235" y="78" width="630" height="80" rx="15" class="interaction"/>
+  <text x="260" y="108" class="layer-title">交互与任务规格层</text>
+  <text x="260" y="135" class="layer-detail">人类目标与确认 ↔ Task Spec、成功标准、最终反馈</text>
+
+  <!-- 控制面 -->
+  <rect x="235" y="198" width="630" height="118" rx="15" class="layer"/>
+  <text x="260" y="228" class="layer-title">控制面</text>
+  <text x="260" y="251" class="layer-detail">决定角色、任务、拓扑与下一步动作</text>
+  <rect x="270" y="267" width="160" height="34" rx="10" class="pill"/>
+  <rect x="470" y="267" width="160" height="34" rx="10" class="pill"/>
+  <rect x="670" y="267" width="160" height="34" rx="10" class="pill"/>
+  <text x="350" y="285" class="pill-text">组织与拓扑设计</text>
+  <text x="550" y="285" class="pill-text">Planner</text>
+  <text x="750" y="285" class="pill-text">Router / Supervisor</text>
+
+  <!-- 协作底座 -->
+  <rect x="235" y="356" width="630" height="92" rx="15" class="coordination"/>
+  <text x="260" y="386" class="layer-title">通信与共享状态：协作底座</text>
+  <rect x="270" y="400" width="160" height="32" rx="10" class="pill-coordination"/>
+  <rect x="470" y="400" width="160" height="32" rx="10" class="pill-coordination"/>
+  <rect x="670" y="400" width="160" height="32" rx="10" class="pill-coordination"/>
+  <text x="350" y="417" class="pill-text">消息协议</text>
+  <text x="550" y="417" class="pill-text">共享状态</text>
+  <text x="750" y="417" class="pill-text">上下文与记忆</text>
+
+  <!-- 并行执行面 -->
+  <rect x="235" y="488" width="630" height="105" rx="15" class="execution"/>
+  <text x="260" y="518" class="layer-title">Agent 执行面</text>
+  <text x="260" y="541" class="layer-detail">多个 Agent 可以并行工作，并反复读写协作底座</text>
+  <rect x="270" y="551" width="160" height="30" rx="10" class="pill-execution"/>
+  <rect x="470" y="551" width="160" height="30" rx="10" class="pill-execution"/>
+  <rect x="670" y="551" width="160" height="30" rx="10" class="pill-execution"/>
+  <text x="350" y="567" class="pill-text">Agent A</text>
+  <text x="550" y="567" class="pill-text">Agent B</text>
+  <text x="750" y="567" class="pill-text">Agent C</text>
+
+  <!-- 工具与资源层 -->
+  <rect x="235" y="636" width="630" height="84" rx="15" class="resource"/>
+  <text x="260" y="666" class="layer-title">工具与资源层</text>
+  <rect x="270" y="680" width="125" height="28" rx="9" class="pill-resource"/>
+  <rect x="415" y="680" width="125" height="28" rx="9" class="pill-resource"/>
+  <rect x="560" y="680" width="125" height="28" rx="9" class="pill-resource"/>
+  <rect x="705" y="680" width="125" height="28" rx="9" class="pill-resource"/>
+  <text x="332.5" y="695" class="pill-text">文件</text>
+  <text x="477.5" y="695" class="pill-text">浏览器</text>
+  <text x="622.5" y="695" class="pill-text">代码执行</text>
+  <text x="767.5" y="695" class="pill-text">外部系统</text>
+
+  <!-- 层间双向关系 -->
+  <path d="M550 166 L550 190" class="bidirectional"/>
+  <text x="570" y="183" class="edge-label">规格 / 反馈</text>
+
+  <path d="M550 324 L550 348" class="bidirectional"/>
+  <text x="570" y="341" class="edge-label">任务 / 状态</text>
+
+  <path d="M350 456 L350 480" class="bidirectional"/>
+  <path d="M550 456 L550 480" class="bidirectional"/>
+  <path d="M750 456 L750 480" class="bidirectional"/>
+  <text x="770" y="473" class="edge-label">消息 / 观察</text>
+
+  <path d="M350 601 L350 628" class="bidirectional"/>
+  <path d="M550 601 L550 628" class="bidirectional"/>
+  <path d="M750 601 L750 628" class="bidirectional"/>
+  <text x="770" y="620" class="edge-label">调用 / 结果</text>
+
+  <!-- 左侧：跨层质量保障 -->
+  <path d="M180 198 h-12 v522 h12" class="quality-bracket"/>
+  <rect x="18" y="198" width="135" height="522" rx="18" class="quality"/>
+  <text x="85.5" y="235" class="rail-title quality-title">质量保障</text>
+  <text x="85.5" y="258" class="rail-subtitle quality-subtitle">跨层检查与反馈</text>
+  <rect x="37" y="292" width="97" height="46" rx="10" class="rail-item quality-item"/>
+  <text x="85.5" y="316" class="rail-text">验收标准</text>
+  <rect x="37" y="362" width="97" height="54" rx="10" class="rail-item quality-item"/>
+  <text x="85.5" y="383" class="rail-text">Review</text>
+  <text x="85.5" y="401" class="rail-text">Test / Judge</text>
+  <rect x="37" y="440" width="97" height="54" rx="10" class="rail-item quality-item"/>
+  <text x="85.5" y="462" class="rail-text">失败反馈</text>
+  <text x="85.5" y="480" class="rail-text">与重新规划</text>
+  <rect x="37" y="518" width="97" height="46" rx="10" class="rail-item quality-item"/>
+  <text x="85.5" y="542" class="rail-text">停止条件</text>
+
+  <!-- 右侧：跨层治理与可观测性 -->
+  <path d="M920 198 h12 v522 h-12" class="govern-bracket"/>
+  <rect x="947" y="198" width="135" height="522" rx="18" class="govern"/>
+  <text x="1014.5" y="232" class="rail-title govern-title">治理与</text>
+  <text x="1014.5" y="254" class="rail-title govern-title">可观测性</text>
+  <text x="1014.5" y="277" class="rail-subtitle govern-subtitle">跨层约束与记录</text>
+  <rect x="966" y="310" width="97" height="46" rx="10" class="rail-item govern-item"/>
+  <text x="1014.5" y="334" class="rail-text">权限与审批</text>
+  <rect x="966" y="380" width="97" height="46" rx="10" class="rail-item govern-item"/>
+  <text x="1014.5" y="404" class="rail-text">日志与轨迹</text>
+  <rect x="966" y="450" width="97" height="46" rx="10" class="rail-item govern-item"/>
+  <text x="1014.5" y="474" class="rail-text">成本与预算</text>
+  <rect x="966" y="520" width="97" height="46" rx="10" class="rail-item govern-item"/>
+  <text x="1014.5" y="544" class="rail-text">安全与回滚</text>
+</svg>

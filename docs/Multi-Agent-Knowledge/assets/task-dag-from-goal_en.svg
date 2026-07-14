@@ -1,0 +1,144 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 760" role="img" aria-labelledby="title desc">
+  <title id="title">The User Supplies Planning Inputs, the Planner Builds a DAG, and the Scheduler Executes Dependencies</title>
+  <desc id="desc">The user defines the goal, scope, success criteria, budget, and risk boundary. The planner decomposes tasks, assigns owners, inputs, outputs, acceptance criteria, and failure policies, then creates dependency edges and validates the graph. The scheduler runs T1, T2, and T3 in parallel, then T4, followed by T5, T6, and T7.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#687c98"/>
+    </marker>
+    <style>
+      .arrow { fill: none; stroke: #687c98; stroke-width: 2; marker-end: url(#arrow); }
+      .input { fill: #eaf8f4; stroke: #248c78; stroke-width: 1.8; }
+      .planner { fill: #eef5ff; stroke: #4a78c2; stroke-width: 1.8; }
+      .dag { fill: #f8fbff; stroke: #d5e1ef; stroke-width: 1.6; }
+      .contract { fill: #fff8e8; stroke: #d79a2b; stroke-width: 1.8; }
+      .title { fill: #17365d; font: 700 21px system-ui, -apple-system, "Segoe UI", sans-serif; }
+      .subtitle { fill: #60738c; font: 15px system-ui, -apple-system, "Segoe UI", sans-serif; }
+      .item { fill: #ffffff; stroke-width: 1.2; }
+      .input-item { stroke: #91cbbf; }
+      .planner-item { stroke: #a7bddb; }
+      .item-text { fill: #415975; font: 600 15px system-ui, -apple-system, "Segoe UI", sans-serif; text-anchor: middle; dominant-baseline: middle; }
+      .step-title { fill: #284d79; font: 700 16px system-ui, -apple-system, "Segoe UI", sans-serif; }
+      .step-detail { fill: #5c7089; font: 14px system-ui, -apple-system, "Segoe UI", sans-serif; }
+      .edge-label { fill: #5d7088; font: 600 12px system-ui, -apple-system, "Segoe UI", sans-serif; text-anchor: middle; }
+      .task { fill: #ffffff; stroke: #8066b3; stroke-width: 1.7; }
+      .task-review { fill: #fff0f0; stroke: #bd6d67; stroke-width: 1.7; }
+      .task-final { fill: #eaf8f4; stroke: #248c78; stroke-width: 1.8; }
+      .task-id { fill: #263f62; font: 700 16px system-ui, -apple-system, "Segoe UI", sans-serif; text-anchor: middle; }
+      .task-name { fill: #5b6d84; font: 12px system-ui, -apple-system, "Segoe UI", sans-serif; text-anchor: middle; }
+      .task-owner { fill: #7d6a99; font: 12px system-ui, -apple-system, "Segoe UI", sans-serif; text-anchor: middle; }
+      .contract-title { fill: #6b4808; font: 700 18px system-ui, -apple-system, "Segoe UI", sans-serif; }
+      .contract-text { fill: #6b5429; font: 600 14px system-ui, -apple-system, "Segoe UI", sans-serif; text-anchor: middle; dominant-baseline: middle; }
+      .contract-pill { fill: #ffffff; stroke: #e2bb72; stroke-width: 1.1; }
+    </style>
+  </defs>
+
+  <!-- Input: goal and constraints -->
+  <rect x="25" y="55" width="265" height="470" rx="20" class="input"/>
+  <text x="50" y="84" class="title" style="font-size:18px">① User Sets the Goal</text>
+  <text x="50" y="106" class="title" style="font-size:18px">and Constraints</text>
+  <text x="50" y="132" class="subtitle">Define what “done” means</text>
+  <rect x="55" y="150" width="205" height="48" rx="11" class="item input-item"/>
+  <rect x="55" y="218" width="205" height="48" rx="11" class="item input-item"/>
+  <rect x="55" y="286" width="205" height="48" rx="11" class="item input-item"/>
+  <rect x="55" y="354" width="205" height="48" rx="11" class="item input-item"/>
+  <rect x="55" y="422" width="205" height="62" rx="11" class="item input-item"/>
+  <text x="157.5" y="167" class="item-text" style="font-size:13px">Describe the goal</text>
+  <text x="157.5" y="183" class="item-text" style="font-size:13px">and expected artifact</text>
+  <text x="157.5" y="243" class="item-text">Set scope and non-goals</text>
+  <text x="157.5" y="311" class="item-text">Define testable success</text>
+  <text x="157.5" y="379" class="item-text" style="font-size:13px">Set budget and deadline</text>
+  <text x="157.5" y="439" class="item-text" style="font-size:13px">Set risk + permission</text>
+  <text x="157.5" y="455" class="item-text" style="font-size:13px">boundaries</text>
+  <text x="157.5" y="476" class="task-name">Build planning context</text>
+
+  <!-- Planner builds the graph -->
+  <rect x="345" y="55" width="310" height="470" rx="20" class="planner"/>
+  <text x="370" y="84" class="title" style="font-size:18px">② Planner Builds</text>
+  <text x="370" y="106" class="title" style="font-size:18px">an Executable DAG</text>
+  <text x="370" y="132" class="subtitle">Defines tasks and dependencies</text>
+
+  <rect x="375" y="148" width="250" height="88" rx="13" class="item planner-item"/>
+  <text x="395" y="178" class="step-title" style="font-size:15px">Decompose executable tasks</text>
+  <text x="395" y="202" class="step-detail">Each task produces an artifact</text>
+  <text x="395" y="223" class="step-detail">Outline headings are not tasks</text>
+
+  <path d="M500 236 L500 255" class="arrow"/>
+  <rect x="375" y="255" width="250" height="112" rx="13" class="item planner-item"/>
+  <text x="395" y="285" class="step-title" style="font-size:15px">Complete each task contract</text>
+  <text x="395" y="309" class="step-detail" style="font-size:13px">Assign owner, inputs, and outputs</text>
+  <text x="395" y="332" class="step-detail">Set acceptance + failure policy</text>
+  <text x="395" y="353" class="step-detail">Scheduler checks state + artifacts</text>
+
+  <path d="M500 367 L500 386" class="arrow"/>
+  <rect x="375" y="386" width="250" height="108" rx="13" class="item planner-item"/>
+  <text x="395" y="416" class="step-title">Add dependencies; validate</text>
+  <text x="395" y="440" class="step-detail">Mark waits and parallel branches</text>
+  <text x="395" y="463" class="step-detail" style="font-size:13px">Reject cycles, gaps, and orphans</text>
+  <text x="395" y="484" class="step-detail">Hand the DAG to the scheduler</text>
+
+  <!-- Between the two stages -->
+  <path d="M290 285 L337 285" class="arrow"/>
+  <text x="313.5" y="260" class="edge-label">User</text>
+  <text x="313.5" y="276" class="edge-label">Submit inputs</text>
+  <path d="M655 285 L702 285" class="arrow"/>
+  <text x="678.5" y="260" class="edge-label">Planner</text>
+  <text x="678.5" y="276" class="edge-label">Submit DAG</text>
+
+  <!-- Output: executable DAG -->
+  <rect x="710" y="35" width="365" height="510" rx="20" class="dag"/>
+  <text x="735" y="71" class="title">③ Scheduler Runs the DAG</text>
+  <text x="735" y="96" class="subtitle">Dependencies determine task readiness</text>
+
+  <!-- DAG edges sit behind the nodes -->
+  <path d="M765 174 L865 228" class="arrow"/>
+  <path d="M892.5 174 L892.5 228" class="arrow"/>
+  <path d="M1020 174 L920 228" class="arrow"/>
+  <path d="M892.5 286 L892.5 310" class="arrow"/>
+  <path d="M892.5 368 L892.5 392" class="arrow"/>
+  <path d="M892.5 450 L892.5 474" class="arrow"/>
+
+  <!-- Three parallel tasks -->
+  <rect x="722" y="116" width="86" height="58" rx="11" class="task"/>
+  <rect x="849.5" y="116" width="86" height="58" rx="11" class="task"/>
+  <rect x="977" y="116" width="86" height="58" rx="11" class="task"/>
+  <text x="765" y="138" class="task-id">T1</text>
+  <text x="765" y="154" class="task-name" style="font-size:11px">Research A</text>
+  <text x="765" y="168" class="task-owner" style="font-size:10px">AutoGen</text>
+  <text x="892.5" y="138" class="task-id">T2</text>
+  <text x="892.5" y="154" class="task-name" style="font-size:11px">Research B</text>
+  <text x="892.5" y="168" class="task-owner" style="font-size:10px">MetaGPT</text>
+  <text x="1020" y="138" class="task-id">T3</text>
+  <text x="1020" y="154" class="task-name" style="font-size:11px">Research C</text>
+  <text x="1020" y="168" class="task-owner" style="font-size:10px">CrewAI</text>
+
+  <!-- Join and downstream tasks -->
+  <rect x="827.5" y="228" width="130" height="58" rx="11" class="task"/>
+  <text x="892.5" y="250" class="task-id">T4</text>
+  <text x="892.5" y="267" class="task-name" style="font-size:11px">Analyst extracts</text>
+  <text x="892.5" y="281" class="task-owner" style="font-size:10px">compare dimensions</text>
+
+  <rect x="827.5" y="310" width="130" height="58" rx="11" class="task"/>
+  <text x="892.5" y="332" class="task-id">T5</text>
+  <text x="892.5" y="349" class="task-name" style="font-size:11px">Writer drafts</text>
+  <text x="892.5" y="363" class="task-owner" style="font-size:10px">comparison report</text>
+
+  <rect x="827.5" y="392" width="130" height="58" rx="11" class="task-review"/>
+  <text x="892.5" y="414" class="task-id">T6</text>
+  <text x="892.5" y="431" class="task-name" style="font-size:11px">Reviewer verifies</text>
+  <text x="892.5" y="445" class="task-owner" style="font-size:10px">facts + citations</text>
+
+  <rect x="827.5" y="474" width="130" height="58" rx="11" class="task-final"/>
+  <text x="892.5" y="496" class="task-id">T7</text>
+  <text x="892.5" y="513" class="task-name" style="font-size:11px">Owner produces</text>
+  <text x="892.5" y="527" class="task-owner" style="font-size:10px">final recommendation</text>
+
+  <!-- What nodes, edges, and the graph represent -->
+  <rect x="100" y="590" width="900" height="132" rx="20" class="contract"/>
+  <text x="130" y="628" class="contract-title">The scheduler executes the DAG using three contract types</text>
+  <rect x="130" y="652" width="250" height="44" rx="11" class="contract-pill"/>
+  <rect x="425" y="652" width="250" height="44" rx="11" class="contract-pill"/>
+  <rect x="720" y="652" width="250" height="44" rx="11" class="contract-pill"/>
+  <text x="255" y="675" class="contract-text">Task nodes: work + acceptance</text>
+  <text x="550" y="675" class="contract-text">Edges: waits + information flow</text>
+  <text x="845" y="675" class="contract-text">Graph: ready + completed state</text>
+</svg>
